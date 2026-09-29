@@ -1,0 +1,18 @@
+/dist
+/node_modules
+/coverage
+
+# Environment Variables
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+pnpm-debug.log*
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

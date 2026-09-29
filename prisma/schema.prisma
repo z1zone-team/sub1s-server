@@ -1,0 +1,159 @@
+// server/prisma/schema.prisma
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-arm64-openssl-3.0.x"] // OCI ARM64 배포 완벽 지원
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// 1. 사용자 모델 (Clerk 소셜 인증 연동)
+model User {
+  id              String          @id @default(uuid()) @db.Uuid
+  clerkId         String          @unique @map("clerk_id") @db.VarChar(128)
+  nickname        String          @db.VarChar(50)
+  profileImageUrl String?         @map("profile_image_url") @db.VarChar(255)
+  isRankingPublic Boolean         @default(true) @map("is_ranking_public")
+  createdAt       DateTime        @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt       DateTime        @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  preference      UserPreference?
+  travelLogs      TravelLog[]
+  rankScores      RankScore[]
+
+  @@map("users")
+}
+
+// 2. 사용자 취향 벡터 모델 (6차원 도메인 행동 피처 벡터)
+model UserPreference {
+  userId           String                     @id @map("user_id") @db.Uuid
+  user             User                       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // 6차원 도메인 행동 피처: [v_time, v_transfer, v_crowd, v_walk, v_ac, v_regular]
+  preferenceVector Unsupported("vector(6)")? @map("preference_vector")
+
+  preferredMode    String                     @default("OPTIMAL") @map("preferred_mode") @db.VarChar(20) // OPTIMAL, COMFORTABLE, PERSONAL
+  updatedAt        DateTime                   @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  @@map("user_preferences")
+}
+
+// 3. 지하철 노선 모델
+model SubwayLine {
+  id         String      @id @db.VarChar(20) // '02', '03', 'SB'
+  lineName   String      @map("line_name") @db.VarChar(50)
+  colorHex   String      @map("color_hex") @db.VarChar(10) // '#3CB44A'
+
+  stations   Station[]
+  routeEdges RouteEdge[]
+
+  @@map("subway_lines")
+}
+
+// 4. 지하철 역 모델 (복합 자연키 호선_역코드)
+model Station {
+  id          String     @id @db.VarChar(30) // '02_222' (호선_역코드)
+  lineId      String     @map("line_id") @db.VarChar(20)
+  stationCode String     @map("station_code") @db.VarChar(10)
+  stationName String     @map("station_name") @db.VarChar(50)
+  lat         Float
+  lng         Float
+  hasRestroom Boolean    @default(true) @map("has_restroom")
+  hasElevator Boolean    @default(true) @map("has_elevator")
+  createdAt   DateTime   @default(now()) @map("created_at") @db.Timestamptz
+
+  line        SubwayLine @relation(fields: [lineId], references: [id])
+
+  originRouteEdges    RouteEdge[]    @relation("RouteFromStation")
+  destRouteEdges      RouteEdge[]    @relation("RouteToStation")
+  originTransferEdges TransferEdge[] @relation("TransferFromStation")
+  destTransferEdges   TransferEdge[] @relation("TransferToStation")
+  originTravelLogs    TravelLog[]    @relation("OriginTravelLogs")
+  destTravelLogs      TravelLog[]    @relation("DestTravelLogs")
+
+  @@index([stationName], map: "idx_stations_name")
+  @@map("stations")
+}
+
+// 5. 주행 간선 모델
+model RouteEdge {
+  id            String     @id @default(uuid()) @db.Uuid
+  fromStationId String     @map("from_station_id") @db.VarChar(30)
+  toStationId   String     @map("to_station_id") @db.VarChar(30)
+  lineId        String     @map("line_id") @db.VarChar(20)
+  direction     String     @db.VarChar(10) // 'UP', 'DOWN', 'INNER', 'OUTER'
+  distanceKm    Float      @map("distance_km")
+  durationSec   Int        @map("duration_sec")
+  isExpress     Boolean    @default(false) @map("is_express") // 급행 여부 (오탑승 감지 및 9호선/경의중앙선 분기)
+
+  fromStation   Station    @relation("RouteFromStation", fields: [fromStationId], references: [id])
+  toStation     Station    @relation("RouteToStation", fields: [toStationId], references: [id])
+  line          SubwayLine @relation(fields: [lineId], references: [id])
+
+  @@index([fromStationId], map: "idx_route_edges_from")
+  @@map("route_edges")
+}
+
+// 6. 환승 간선 모델
+model TransferEdge {
+  id                 String   @id @default(uuid()) @db.Uuid
+  fromStationId      String   @map("from_station_id") @db.VarChar(30)
+  toStationId        String   @map("to_station_id") @db.VarChar(30)
+  walkingDurationSec Int      @map("walking_duration_sec")
+  recommendedDoors   String[] @default([]) @map("recommended_doors") // ['2-3', '7-4']
+  hasStairs          Boolean  @default(true) @map("has_stairs")
+  hasEscalator       Boolean  @default(true) @map("has_escalator")
+
+  fromStation        Station  @relation("TransferFromStation", fields: [fromStationId], references: [id])
+  toStation          Station  @relation("TransferToStation", fields: [toStationId], references: [id])
+
+  @@index([fromStationId], map: "idx_transfer_edges_from")
+  @@map("transfer_edges")
+}
+
+// 7. 이동 완료 기록 모델 (민감 궤적 3DES+AES 암호화 필드 적용)
+model TravelLog {
+  id                    String   @id @default(uuid()) @db.Uuid
+  userId                String   @map("user_id") @db.Uuid
+  originStationId       String   @map("origin_station_id") @db.VarChar(30)
+  destStationId         String   @map("dest_station_id") @db.VarChar(30)
+  totalDistanceKm       Float    @map("total_distance_km")
+  transferCount         Int      @map("transfer_count")
+  earnedPoints          Int      @map("earned_points")
+
+  // 개인 민감 위치정보 암호화 저장 (SECURITY.md 3-Tier 하이브리드 암호화 연동)
+  encryptedRoutePayload String?  @map("encrypted_route_payload") @db.Text // Base64 AES-256-GCM 암호문 (상세 이동 궤적/정차역 로그)
+  iv                    String?  @map("iv") @db.VarChar(32)              // Base64 Nonce/IV (12 bytes)
+  authTag               String?  @map("auth_tag") @db.VarChar(32)        // Base64 GCM Auth Tag (16 bytes)
+  wrappedDek            String?  @map("wrapped_dek") @db.VarChar(128)    // Base64 3DES-CBC로 래핑된 DEK
+
+  createdAt             DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  originStation         Station  @relation("OriginTravelLogs", fields: [originStationId], references: [id])
+  destStation           Station  @relation("DestTravelLogs", fields: [destStationId], references: [id])
+
+  @@index([userId, createdAt(sort: Desc)], map: "idx_travel_logs_user")
+  @@map("travel_logs")
+}
+
+// 8. 랭킹 점수 집계 모델
+model RankScore {
+  id              String   @id @default(uuid()) @db.Uuid
+  userId          String   @map("user_id") @db.Uuid
+  periodType      String   @map("period_type") @db.VarChar(20) // 'WEEKLY', 'MONTHLY'
+  periodKey       String   @map("period_key") @db.VarChar(20)  // '2026-W40', '2026-10'
+  totalPoints     Int      @default(0) @map("total_points")
+  totalDistanceKm Float    @default(0) @map("total_distance_km") // 리더보드 노출용 누적 이동 거리(km)
+  rankPosition    Int?     @map("rank_position")
+  updatedAt       DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, periodType, periodKey], map: "uq_user_period")
+  @@index([periodType, periodKey, totalPoints(sort: Desc)], map: "idx_rank_scores_ranking")
+  @@map("rank_scores")
+}
