@@ -21,7 +21,8 @@
     "fetch:seoul-raw": "ts-node src/scripts/fetch-seoul-raw.ts",
     "refine:stations": "ts-node src/scripts/refine-stations.ts",
     "refine:segments": "ts-node src/scripts/refine-segments.ts",
-    "refine:transfers": "ts-node src/scripts/refine-transfers.ts"
+    "refine:transfers": "ts-node src/scripts/refine-transfers.ts",
+    "fetch:kric-raw": "ts-node src/scripts/fetch-kric-raw.ts"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
