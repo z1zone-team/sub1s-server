@@ -22,7 +22,9 @@
     "refine:stations": "ts-node src/scripts/refine-stations.ts",
     "refine:segments": "ts-node src/scripts/refine-segments.ts",
     "refine:transfers": "ts-node src/scripts/refine-transfers.ts",
-    "fetch:kric-raw": "ts-node src/scripts/fetch-kric-raw.ts"
+    "fetch:kric-raw": "ts-node src/scripts/fetch-kric-raw.ts",
+    "seed:subway": "ts-node src/scripts/seed-subway-graph.ts",
+    "verify:subway-data": "ts-node src/scripts/verify-subway-data.ts"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
