@@ -3,27 +3,59 @@
   "baseFare": 1550,
   "baseDistanceKm": 10,
   "tiers": [
-    { "fromKm": 10, "toKm": 50, "stepKm": 5, "stepFare": 100 },
-    { "fromKm": 50, "stepKm": 8, "stepFare": 100 }
+    {
+      "fromKm": 10,
+      "toKm": 50,
+      "stepKm": 5,
+      "stepFare": 100
+    },
+    {
+      "fromKm": 50,
+      "stepKm": 8,
+      "stepFare": 100
+    }
   ],
   "lineSurcharges": [
-    { "type": "flat", "lineId": "UJ", "fare": 200 },
+    {
+      "type": "flat",
+      "lineId": "UJ",
+      "fare": 200
+    },
     {
       "type": "segments",
       "lineId": "SB",
       "segments": [
         {
           "key": "1",
-          "stationIds": ["SB_D4", "SB_D5", "SB_D6", "SB_D7"]
+          "stationIds": [
+            "SB_D4",
+            "SB_D5",
+            "SB_D6",
+            "SB_D7"
+          ]
         },
         {
           "key": "2",
-          "stationIds": ["SB_D7", "SB_D8", "SB_D9", "SB_D10", "SB_D11", "SB_D12"]
+          "stationIds": [
+            "SB_D7",
+            "SB_D8",
+            "SB_D9",
+            "SB_D10",
+            "SB_D11",
+            "SB_D12"
+          ]
         },
         {
           "key": "3",
           "stationIds": [
-            "SB_D12", "SB_D13", "SB_D14", "SB_D15", "SB_D16", "SB_D17", "SB_D18", "SB_D19"
+            "SB_D12",
+            "SB_D13",
+            "SB_D14",
+            "SB_D15",
+            "SB_D16",
+            "SB_D17",
+            "SB_D18",
+            "SB_D19"
           ]
         }
       ],
@@ -34,6 +66,129 @@
         "2+3": 1500,
         "1+2": 1700,
         "1+2+3": 2200
+      }
+    },
+    {
+      "type": "lineDistance",
+      "lineId": "GA",
+      "baseFare": {
+        "weekday": 1650,
+        "weekend": 1300
+      },
+      "baseDistanceKm": 10,
+      "stepKm": 5,
+      "stepFare": 150
+    }
+  ],
+  "pairFares": [
+    {
+      "lineId": "AR",
+      "source": "https://www.airportrailroad.com/train/normal/fare",
+      "fares": {
+        "AR_A01|AR_A02": 1550,
+        "AR_A01|AR_A03": 1550,
+        "AR_A01|AR_A04": 1550,
+        "AR_A01|AR_A042": 1750,
+        "AR_A01|AR_A05": 1750,
+        "AR_A01|AR_A06": 1950,
+        "AR_A01|AR_A07": 2050,
+        "AR_A01|AR_A071": 2150,
+        "AR_A01|AR_A072": 3350,
+        "AR_A01|AR_A08": 3850,
+        "AR_A01|AR_A09": 4450,
+        "AR_A01|AR_A10": 4750,
+        "AR_A01|AR_A11": 5350,
+        "AR_A02|AR_A03": 1550,
+        "AR_A02|AR_A04": 1550,
+        "AR_A02|AR_A042": 1650,
+        "AR_A02|AR_A05": 1750,
+        "AR_A02|AR_A06": 1850,
+        "AR_A02|AR_A07": 1950,
+        "AR_A02|AR_A071": 2050,
+        "AR_A02|AR_A072": 3250,
+        "AR_A02|AR_A08": 3750,
+        "AR_A02|AR_A09": 4350,
+        "AR_A02|AR_A10": 4650,
+        "AR_A02|AR_A11": 5250,
+        "AR_A03|AR_A04": 1550,
+        "AR_A03|AR_A042": 1650,
+        "AR_A03|AR_A05": 1650,
+        "AR_A03|AR_A06": 1850,
+        "AR_A03|AR_A07": 1950,
+        "AR_A03|AR_A071": 2050,
+        "AR_A03|AR_A072": 3250,
+        "AR_A03|AR_A08": 3750,
+        "AR_A03|AR_A09": 4350,
+        "AR_A03|AR_A10": 4650,
+        "AR_A03|AR_A11": 5250,
+        "AR_A042|AR_A05": 1550,
+        "AR_A042|AR_A06": 1550,
+        "AR_A042|AR_A07": 1650,
+        "AR_A042|AR_A071": 1750,
+        "AR_A042|AR_A072": 2950,
+        "AR_A042|AR_A08": 3450,
+        "AR_A042|AR_A09": 4050,
+        "AR_A042|AR_A10": 4350,
+        "AR_A042|AR_A11": 4950,
+        "AR_A04|AR_A042": 1550,
+        "AR_A04|AR_A05": 1650,
+        "AR_A04|AR_A06": 1750,
+        "AR_A04|AR_A07": 1850,
+        "AR_A04|AR_A071": 1950,
+        "AR_A04|AR_A072": 3150,
+        "AR_A04|AR_A08": 3650,
+        "AR_A04|AR_A09": 4250,
+        "AR_A04|AR_A10": 4550,
+        "AR_A04|AR_A11": 5150,
+        "AR_A05|AR_A06": 1550,
+        "AR_A05|AR_A07": 1650,
+        "AR_A05|AR_A071": 1750,
+        "AR_A05|AR_A072": 2950,
+        "AR_A05|AR_A08": 3450,
+        "AR_A05|AR_A09": 4050,
+        "AR_A05|AR_A10": 4350,
+        "AR_A05|AR_A11": 4950,
+        "AR_A06|AR_A07": 1550,
+        "AR_A06|AR_A071": 1650,
+        "AR_A06|AR_A072": 2850,
+        "AR_A06|AR_A08": 3250,
+        "AR_A06|AR_A09": 3650,
+        "AR_A06|AR_A10": 3850,
+        "AR_A06|AR_A11": 4450,
+        "AR_A071|AR_A072": 1200,
+        "AR_A071|AR_A08": 1700,
+        "AR_A071|AR_A09": 2300,
+        "AR_A071|AR_A10": 2600,
+        "AR_A071|AR_A11": 3200,
+        "AR_A072|AR_A08": 1200,
+        "AR_A072|AR_A09": 1200,
+        "AR_A072|AR_A10": 1300,
+        "AR_A072|AR_A11": 1900,
+        "AR_A07|AR_A071": 1550,
+        "AR_A07|AR_A072": 2250,
+        "AR_A07|AR_A08": 2500,
+        "AR_A07|AR_A09": 2900,
+        "AR_A07|AR_A10": 3200,
+        "AR_A07|AR_A11": 3800,
+        "AR_A08|AR_A09": 1200,
+        "AR_A08|AR_A10": 1200,
+        "AR_A08|AR_A11": 1800,
+        "AR_A09|AR_A10": 1200,
+        "AR_A09|AR_A11": 1200,
+        "AR_A10|AR_A11": 1200
+      }
+    }
+  ],
+  "independentZones": [
+    {
+      "lineId": "AR",
+      "boundaryStationId": "AR_A071",
+      "stationFares": {
+        "AR_A072": 1200,
+        "AR_A08": 1700,
+        "AR_A09": 2300,
+        "AR_A10": 2600,
+        "AR_A11": 3200
       }
     }
   ]

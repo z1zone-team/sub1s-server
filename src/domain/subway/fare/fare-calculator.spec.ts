@@ -90,3 +90,113 @@ describe('calculateFare (separate fare lines)', () => {
     ).toThrow('fare segment');
   });
 });
+
+describe('calculateFare (GTX-A, official examples)', () => {
+  const ga = (from: string, to: string, distanceKm: number) => ({
+    lineId: 'GA',
+    fromStationId: from,
+    toStationId: to,
+    distanceKm,
+  });
+
+  it.each([
+    [
+      '수서~동탄 32.8km',
+      [ga('a', 'b', 10.6), ga('b', 'c', 11), ga('c', 'd', 11.2)],
+      4450,
+    ],
+    ['수서~성남 10.6km', [ga('a', 'b', 10.6)], 3450],
+    ['10km 이내', [ga('a', 'b', 8)], 3200],
+  ])('weekday %s costs %p won', (_name, edges, expected) => {
+    const distance = edges.reduce((sum, e) => sum + e.distanceKm, 0);
+    expect(calculateFare(distance, rule, edges)).toBe(expected);
+  });
+
+  it('uses the weekend base fare', () => {
+    const edges = [ga('a', 'b', 8)];
+    expect(calculateFare(8, rule, edges, { weekend: true })).toBe(2850);
+  });
+
+  it('charges no extra when transferring to a subway line (동탄 -> 수서 -> 일원)', () => {
+    const edges = [
+      ga('a', 'b', 10.6),
+      ga('b', 'c', 11),
+      ga('c', 'd', 11.2),
+      { lineId: '03', fromStationId: 'x', toStationId: 'y', distanceKm: 1.9 },
+    ];
+    expect(calculateFare(34.7, rule, edges)).toBe(4450);
+  });
+
+  it('requires the ridden distance', () => {
+    expect(() =>
+      calculateFare(8, rule, [
+        { lineId: 'GA', fromStationId: 'a', toStationId: 'b' },
+      ]),
+    ).toThrow('distanceKm');
+  });
+});
+
+describe('calculateFare (AREX, official fare table)', () => {
+  const stations = JSON.parse(
+    readFileSync(
+      join(__dirname, '../../../data/subway/stations.json'),
+      'utf-8',
+    ),
+  ) as { id: string; lineId: string; lineSeq: number; stationName: string }[];
+  const arStations = stations
+    .filter((s) => s.lineId === 'AR')
+    .sort((a, b) => a.lineSeq - b.lineSeq);
+  const idOf = (name: string) => {
+    const found = arStations.find((s) => s.stationName === name);
+    if (!found) throw new Error(`no AR station ${name}`);
+    return found.id;
+  };
+  const ride = (from: string, to: string) => {
+    const a = arStations.findIndex((s) => s.stationName === from);
+    const b = arStations.findIndex((s) => s.stationName === to);
+    const step = a < b ? 1 : -1;
+    const edges = [];
+    for (let i = a; i !== b; i += step) {
+      edges.push({
+        lineId: 'AR',
+        fromStationId: arStations[i].id,
+        toStationId: arStations[i + step].id,
+        distanceKm: 3,
+      });
+    }
+    return edges;
+  };
+
+  it.each([
+    ['서울역', '인천공항1터미널', 4750],
+    ['서울역', '인천공항2터미널', 5350],
+    ['서울역', '영종', 3350],
+    ['영종', '인천공항2터미널', 1900],
+    ['검암', '인천공항2터미널', 3800],
+    ['청라국제도시', '영종', 1200],
+    ['공덕', '홍대입구', 1550],
+  ])('%s -> %s costs %p won', (from, to, expected) => {
+    expect(calculateFare(10, rule, ride(from, to))).toBe(expected);
+    expect(calculateFare(10, rule, ride(to, from))).toBe(expected);
+  });
+
+  it('adds the independent zone fare to the integrated fare on a mixed trip', () => {
+    const edges = [
+      { lineId: '02', fromStationId: 'p', toStationId: 'q', distanceKm: 12 },
+      ...ride('홍대입구', '청라국제도시').map((e) => ({
+        ...e,
+        distanceKm: 20,
+      })),
+      {
+        lineId: 'AR',
+        fromStationId: idOf('청라국제도시'),
+        toStationId: idOf('영종'),
+        distanceKm: 8,
+      },
+    ];
+    const total = 12 + 20 * 5 + 8;
+    expect(calculateFare(total, rule, edges)).toBe(
+      calculateFare(total - 8, rule) + 1200,
+    );
+  });
+});
