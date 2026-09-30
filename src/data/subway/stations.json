@@ -1,0 +1,7193 @@
+[
+  {
+    "id": "01_P148",
+    "lineId": "01",
+    "stationCode": "P148",
+    "lineSeq": 60,
+    "stationName": "명학",
+    "lat": 37.384653,
+    "lng": 126.935433
+  },
+  {
+    "id": "01_P150",
+    "lineId": "01",
+    "stationCode": "P150",
+    "lineSeq": 64,
+    "stationName": "군포",
+    "lat": 37.35356,
+    "lng": 126.948462
+  },
+  {
+    "id": "01_151",
+    "lineId": "01",
+    "stationCode": "151",
+    "lineSeq": 65,
+    "stationName": "부개",
+    "lat": 37.488418,
+    "lng": 126.74109
+  },
+  {
+    "id": "01_147",
+    "lineId": "01",
+    "stationCode": "147",
+    "lineSeq": 57,
+    "stationName": "소사",
+    "lat": 37.482753,
+    "lng": 126.79544
+  },
+  {
+    "id": "01_142",
+    "lineId": "01",
+    "stationCode": "142",
+    "lineSeq": 46,
+    "stationName": "구일",
+    "lat": 37.496756,
+    "lng": 126.870793
+  },
+  {
+    "id": "01_161",
+    "lineId": "01",
+    "stationCode": "161",
+    "lineSeq": 86,
+    "stationName": "인천",
+    "lat": 37.476079,
+    "lng": 126.616801
+  },
+  {
+    "id": "01_160",
+    "lineId": "01",
+    "stationCode": "160",
+    "lineSeq": 84,
+    "stationName": "동인천",
+    "lat": 37.475276,
+    "lng": 126.632802
+  },
+  {
+    "id": "01_158",
+    "lineId": "01",
+    "stationCode": "158",
+    "lineSeq": 79,
+    "stationName": "제물포",
+    "lat": 37.466769,
+    "lng": 126.656666
+  },
+  {
+    "id": "01_156",
+    "lineId": "01",
+    "stationCode": "156",
+    "lineSeq": 75,
+    "stationName": "주안",
+    "lat": 37.465047,
+    "lng": 126.679742
+  },
+  {
+    "id": "01_154",
+    "lineId": "01",
+    "stationCode": "154",
+    "lineSeq": 71,
+    "stationName": "동암",
+    "lat": 37.471408,
+    "lng": 126.702896
+  },
+  {
+    "id": "01_153",
+    "lineId": "01",
+    "stationCode": "153",
+    "lineSeq": 69,
+    "stationName": "백운",
+    "lat": 37.483664,
+    "lng": 126.707704
+  },
+  {
+    "id": "01_152",
+    "lineId": "01",
+    "stationCode": "152",
+    "lineSeq": 67,
+    "stationName": "부평",
+    "lat": 37.489445,
+    "lng": 126.724506
+  },
+  {
+    "id": "01_144",
+    "lineId": "01",
+    "stationCode": "144",
+    "lineSeq": 50,
+    "stationName": "오류동",
+    "lat": 37.494526,
+    "lng": 126.845365
+  },
+  {
+    "id": "01_143",
+    "lineId": "01",
+    "stationCode": "143",
+    "lineSeq": 48,
+    "stationName": "개봉",
+    "lat": 37.494594,
+    "lng": 126.85968
+  },
+  {
+    "id": "01_P169",
+    "lineId": "01",
+    "stationCode": "P169",
+    "lineSeq": 95,
+    "stationName": "천안",
+    "lat": 36.810005,
+    "lng": 127.146826
+  },
+  {
+    "id": "01_P168",
+    "lineId": "01",
+    "stationCode": "P168",
+    "lineSeq": 94,
+    "stationName": "두정",
+    "lat": 36.833705,
+    "lng": 127.14896
+  },
+  {
+    "id": "01_P167",
+    "lineId": "01",
+    "stationCode": "P167",
+    "lineSeq": 93,
+    "stationName": "직산",
+    "lat": 36.870593,
+    "lng": 127.143904
+  },
+  {
+    "id": "01_P166",
+    "lineId": "01",
+    "stationCode": "P166",
+    "lineSeq": 92,
+    "stationName": "성환",
+    "lat": 36.916076,
+    "lng": 127.126964
+  },
+  {
+    "id": "01_P161",
+    "lineId": "01",
+    "stationCode": "P161",
+    "lineSeq": 87,
+    "stationName": "진위",
+    "lat": 37.109447,
+    "lng": 127.062278
+  },
+  {
+    "id": "01_P155",
+    "lineId": "01",
+    "stationCode": "P155",
+    "lineSeq": 74,
+    "stationName": "수원",
+    "lat": 37.266348,
+    "lng": 126.999561
+  },
+  {
+    "id": "01_P154",
+    "lineId": "01",
+    "stationCode": "P154",
+    "lineSeq": 72,
+    "stationName": "화서",
+    "lat": 37.283862,
+    "lng": 126.989627
+  },
+  {
+    "id": "01_116",
+    "lineId": "01",
+    "stationCode": "116",
+    "lineSeq": 20,
+    "stationName": "창동",
+    "lat": 37.653088,
+    "lng": 127.047274
+  },
+  {
+    "id": "01_134",
+    "lineId": "01",
+    "stationCode": "134",
+    "lineSeq": 38,
+    "stationName": "남영",
+    "lat": 37.541021,
+    "lng": 126.9713
+  },
+  {
+    "id": "01_135",
+    "lineId": "01",
+    "stationCode": "135",
+    "lineSeq": 39,
+    "stationName": "용산",
+    "lat": 37.529849,
+    "lng": 126.964561
+  },
+  {
+    "id": "01_136",
+    "lineId": "01",
+    "stationCode": "136",
+    "lineSeq": 40,
+    "stationName": "노량진",
+    "lat": 37.514149,
+    "lng": 126.94271
+  },
+  {
+    "id": "01_137",
+    "lineId": "01",
+    "stationCode": "137",
+    "lineSeq": 41,
+    "stationName": "대방",
+    "lat": 37.513342,
+    "lng": 126.926382
+  },
+  {
+    "id": "01_139",
+    "lineId": "01",
+    "stationCode": "139",
+    "lineSeq": 43,
+    "stationName": "영등포",
+    "lat": 37.515504,
+    "lng": 126.907628
+  },
+  {
+    "id": "01_140",
+    "lineId": "01",
+    "stationCode": "140",
+    "lineSeq": 44,
+    "stationName": "신도림",
+    "lat": 37.508787,
+    "lng": 126.891144
+  },
+  {
+    "id": "01_P170",
+    "lineId": "01",
+    "stationCode": "P170",
+    "lineSeq": 96,
+    "stationName": "봉명",
+    "lat": 36.801215,
+    "lng": 127.135763
+  },
+  {
+    "id": "01_P171",
+    "lineId": "01",
+    "stationCode": "P171",
+    "lineSeq": 97,
+    "stationName": "쌍용",
+    "lat": 36.793759,
+    "lng": 127.1214
+  },
+  {
+    "id": "01_P172",
+    "lineId": "01",
+    "stationCode": "P172",
+    "lineSeq": 98,
+    "stationName": "아산",
+    "lat": 36.792053,
+    "lng": 127.104361
+  },
+  {
+    "id": "01_P173",
+    "lineId": "01",
+    "stationCode": "P173",
+    "lineSeq": 99,
+    "stationName": "탕정",
+    "lat": 36.78866,
+    "lng": 127.08485
+  },
+  {
+    "id": "01_P174",
+    "lineId": "01",
+    "stationCode": "P174",
+    "lineSeq": 100,
+    "stationName": "배방",
+    "lat": 36.777629,
+    "lng": 127.052991
+  },
+  {
+    "id": "01_122",
+    "lineId": "01",
+    "stationCode": "122",
+    "lineSeq": 26,
+    "stationName": "외대앞",
+    "lat": 37.596073,
+    "lng": 127.063549
+  },
+  {
+    "id": "01_121",
+    "lineId": "01",
+    "stationCode": "121",
+    "lineSeq": 25,
+    "stationName": "신이문",
+    "lat": 37.601854,
+    "lng": 127.067325
+  },
+  {
+    "id": "01_P176",
+    "lineId": "01",
+    "stationCode": "P176",
+    "lineSeq": 101,
+    "stationName": "온양온천",
+    "lat": 36.780483,
+    "lng": 127.003249
+  },
+  {
+    "id": "01_P177",
+    "lineId": "01",
+    "stationCode": "P177",
+    "lineSeq": 102,
+    "stationName": "신창",
+    "lat": 36.769502,
+    "lng": 126.951108
+  },
+  {
+    "id": "01_127",
+    "lineId": "01",
+    "stationCode": "127",
+    "lineSeq": 31,
+    "stationName": "동묘앞",
+    "lat": 37.573197,
+    "lng": 127.01648
+  },
+  {
+    "id": "01_124",
+    "lineId": "01",
+    "stationCode": "124",
+    "lineSeq": 28,
+    "stationName": "청량리",
+    "lat": 37.579956,
+    "lng": 127.044585
+  },
+  {
+    "id": "01_125",
+    "lineId": "01",
+    "stationCode": "125",
+    "lineSeq": 29,
+    "stationName": "제기동",
+    "lat": 37.578103,
+    "lng": 127.034893
+  },
+  {
+    "id": "01_126",
+    "lineId": "01",
+    "stationCode": "126",
+    "lineSeq": 30,
+    "stationName": "신설동",
+    "lat": 37.576048,
+    "lng": 127.024634
+  },
+  {
+    "id": "01_128",
+    "lineId": "01",
+    "stationCode": "128",
+    "lineSeq": 32,
+    "stationName": "동대문",
+    "lat": 37.571687,
+    "lng": 127.01093
+  },
+  {
+    "id": "01_129",
+    "lineId": "01",
+    "stationCode": "129",
+    "lineSeq": 33,
+    "stationName": "종로5가",
+    "lat": 37.570926,
+    "lng": 127.001849
+  },
+  {
+    "id": "01_130",
+    "lineId": "01",
+    "stationCode": "130",
+    "lineSeq": 34,
+    "stationName": "종로3가",
+    "lat": 37.570406,
+    "lng": 126.991847
+  },
+  {
+    "id": "01_131",
+    "lineId": "01",
+    "stationCode": "131",
+    "lineSeq": 35,
+    "stationName": "종각",
+    "lat": 37.570161,
+    "lng": 126.982923
+  },
+  {
+    "id": "01_132",
+    "lineId": "01",
+    "stationCode": "132",
+    "lineSeq": 36,
+    "stationName": "시청",
+    "lat": 37.565715,
+    "lng": 126.977088
+  },
+  {
+    "id": "01_133",
+    "lineId": "01",
+    "stationCode": "133",
+    "lineSeq": 37,
+    "stationName": "서울역",
+    "lat": 37.556228,
+    "lng": 126.972135
+  },
+  {
+    "id": "01_104",
+    "lineId": "01",
+    "stationCode": "104",
+    "lineSeq": 8,
+    "stationName": "지행",
+    "lat": 37.892334,
+    "lng": 127.055716
+  },
+  {
+    "id": "01_150",
+    "lineId": "01",
+    "stationCode": "150",
+    "lineSeq": 63,
+    "stationName": "송내",
+    "lat": 37.4876,
+    "lng": 126.753664
+  },
+  {
+    "id": "01_148",
+    "lineId": "01",
+    "stationCode": "148",
+    "lineSeq": 59,
+    "stationName": "부천",
+    "lat": 37.48405,
+    "lng": 126.782686
+  },
+  {
+    "id": "01_146",
+    "lineId": "01",
+    "stationCode": "146",
+    "lineSeq": 55,
+    "stationName": "역곡",
+    "lat": 37.485178,
+    "lng": 126.811502
+  },
+  {
+    "id": "01_112",
+    "lineId": "01",
+    "stationCode": "112",
+    "lineSeq": 16,
+    "stationName": "망월사",
+    "lat": 37.709914,
+    "lng": 127.047455
+  },
+  {
+    "id": "01_120",
+    "lineId": "01",
+    "stationCode": "120",
+    "lineSeq": 24,
+    "stationName": "석계",
+    "lat": 37.614532,
+    "lng": 127.065934
+  },
+  {
+    "id": "01_119",
+    "lineId": "01",
+    "stationCode": "119",
+    "lineSeq": 23,
+    "stationName": "광운대",
+    "lat": 37.623632,
+    "lng": 127.061835
+  },
+  {
+    "id": "01_113",
+    "lineId": "01",
+    "stationCode": "113",
+    "lineSeq": 17,
+    "stationName": "도봉산",
+    "lat": 37.689534,
+    "lng": 127.046049
+  },
+  {
+    "id": "01_118",
+    "lineId": "01",
+    "stationCode": "118",
+    "lineSeq": 22,
+    "stationName": "월계",
+    "lat": 37.633212,
+    "lng": 127.058831
+  },
+  {
+    "id": "01_114",
+    "lineId": "01",
+    "stationCode": "114",
+    "lineSeq": 18,
+    "stationName": "도봉",
+    "lat": 37.679563,
+    "lng": 127.045595
+  },
+  {
+    "id": "01_115",
+    "lineId": "01",
+    "stationCode": "115",
+    "lineSeq": 19,
+    "stationName": "방학",
+    "lat": 37.667503,
+    "lng": 127.044273
+  },
+  {
+    "id": "01_P144-1",
+    "lineId": "01",
+    "stationCode": "P144-1",
+    "lineSeq": 53,
+    "stationName": "광명",
+    "lat": 37.416182,
+    "lng": 126.884466
+  },
+  {
+    "id": "01_P157-1",
+    "lineId": "01",
+    "stationCode": "P157-1",
+    "lineSeq": 80,
+    "stationName": "서동탄",
+    "lat": 37.195504,
+    "lng": 127.051672
+  },
+  {
+    "id": "01_P142",
+    "lineId": "01",
+    "stationCode": "P142",
+    "lineSeq": 47,
+    "stationName": "가산디지털단지",
+    "lat": 37.481581,
+    "lng": 126.882581
+  },
+  {
+    "id": "01_P144",
+    "lineId": "01",
+    "stationCode": "P144",
+    "lineSeq": 51,
+    "stationName": "금천구청",
+    "lat": 37.455626,
+    "lng": 126.89398
+  },
+  {
+    "id": "01_P151",
+    "lineId": "01",
+    "stationCode": "P151",
+    "lineSeq": 66,
+    "stationName": "당정",
+    "lat": 37.344285,
+    "lng": 126.948345
+  },
+  {
+    "id": "01_117",
+    "lineId": "01",
+    "stationCode": "117",
+    "lineSeq": 21,
+    "stationName": "녹천",
+    "lat": 37.644799,
+    "lng": 127.051269
+  },
+  {
+    "id": "01_P145",
+    "lineId": "01",
+    "stationCode": "P145",
+    "lineSeq": 54,
+    "stationName": "석수",
+    "lat": 37.435047,
+    "lng": 126.902295
+  },
+  {
+    "id": "01_P146",
+    "lineId": "01",
+    "stationCode": "P146",
+    "lineSeq": 56,
+    "stationName": "관악",
+    "lat": 37.419232,
+    "lng": 126.908706
+  },
+  {
+    "id": "01_P165",
+    "lineId": "01",
+    "stationCode": "P165",
+    "lineSeq": 91,
+    "stationName": "평택",
+    "lat": 36.990726,
+    "lng": 127.085159
+  },
+  {
+    "id": "01_P164",
+    "lineId": "01",
+    "stationCode": "P164",
+    "lineSeq": 90,
+    "stationName": "평택지제",
+    "lat": 37.0188,
+    "lng": 127.070444
+  },
+  {
+    "id": "01_P163",
+    "lineId": "01",
+    "stationCode": "P163",
+    "lineSeq": 89,
+    "stationName": "서정리",
+    "lat": 37.056496,
+    "lng": 127.052819
+  },
+  {
+    "id": "01_141",
+    "lineId": "01",
+    "stationCode": "141",
+    "lineSeq": 45,
+    "stationName": "구로",
+    "lat": 37.503039,
+    "lng": 126.881966
+  },
+  {
+    "id": "01_103",
+    "lineId": "01",
+    "stationCode": "103",
+    "lineSeq": 7,
+    "stationName": "동두천중앙",
+    "lat": 37.901885,
+    "lng": 127.056482
+  },
+  {
+    "id": "01_101",
+    "lineId": "01",
+    "stationCode": "101",
+    "lineSeq": 5,
+    "stationName": "동두천",
+    "lat": 37.927878,
+    "lng": 127.05479
+  },
+  {
+    "id": "01_100",
+    "lineId": "01",
+    "stationCode": "100",
+    "lineSeq": 4,
+    "stationName": "소요산",
+    "lat": 37.9481,
+    "lng": 127.061034
+  },
+  {
+    "id": "01_100-1",
+    "lineId": "01",
+    "stationCode": "100-1",
+    "lineSeq": 3,
+    "stationName": "청산",
+    "lat": 37.99514,
+    "lng": 127.0741
+  },
+  {
+    "id": "01_100-2",
+    "lineId": "01",
+    "stationCode": "100-2",
+    "lineSeq": 2,
+    "stationName": "전곡",
+    "lat": 38.02458,
+    "lng": 127.0718
+  },
+  {
+    "id": "01_P153",
+    "lineId": "01",
+    "stationCode": "P153",
+    "lineSeq": 70,
+    "stationName": "성균관대",
+    "lat": 37.300349,
+    "lng": 126.97075
+  },
+  {
+    "id": "01_P152",
+    "lineId": "01",
+    "stationCode": "P152",
+    "lineSeq": 68,
+    "stationName": "의왕",
+    "lat": 37.320852,
+    "lng": 126.948217
+  },
+  {
+    "id": "01_P162",
+    "lineId": "01",
+    "stationCode": "P162",
+    "lineSeq": 88,
+    "stationName": "송탄",
+    "lat": 37.075696,
+    "lng": 127.054301
+  },
+  {
+    "id": "01_P160",
+    "lineId": "01",
+    "stationCode": "P160",
+    "lineSeq": 85,
+    "stationName": "오산",
+    "lat": 37.145885,
+    "lng": 127.06672
+  },
+  {
+    "id": "01_P159",
+    "lineId": "01",
+    "stationCode": "P159",
+    "lineSeq": 83,
+    "stationName": "오산대",
+    "lat": 37.168953,
+    "lng": 127.063197
+  },
+  {
+    "id": "01_P158",
+    "lineId": "01",
+    "stationCode": "P158",
+    "lineSeq": 81,
+    "stationName": "세마",
+    "lat": 37.187533,
+    "lng": 127.04318
+  },
+  {
+    "id": "01_P157",
+    "lineId": "01",
+    "stationCode": "P157",
+    "lineSeq": 78,
+    "stationName": "병점",
+    "lat": 37.207503,
+    "lng": 127.032731
+  },
+  {
+    "id": "01_P156",
+    "lineId": "01",
+    "stationCode": "P156",
+    "lineSeq": 76,
+    "stationName": "세류",
+    "lat": 37.245025,
+    "lng": 127.013222
+  },
+  {
+    "id": "01_P143",
+    "lineId": "01",
+    "stationCode": "P143",
+    "lineSeq": 49,
+    "stationName": "독산",
+    "lat": 37.466613,
+    "lng": 126.889249
+  },
+  {
+    "id": "01_P147",
+    "lineId": "01",
+    "stationCode": "P147",
+    "lineSeq": 58,
+    "stationName": "안양",
+    "lat": 37.401592,
+    "lng": 126.922874
+  },
+  {
+    "id": "01_100-3",
+    "lineId": "01",
+    "stationCode": "100-3",
+    "lineSeq": 1,
+    "stationName": "연천",
+    "lat": 38.10073,
+    "lng": 127.07372
+  },
+  {
+    "id": "01_111",
+    "lineId": "01",
+    "stationCode": "111",
+    "lineSeq": 15,
+    "stationName": "회룡",
+    "lat": 37.724416,
+    "lng": 127.04736
+  },
+  {
+    "id": "01_110",
+    "lineId": "01",
+    "stationCode": "110",
+    "lineSeq": 14,
+    "stationName": "의정부",
+    "lat": 37.738415,
+    "lng": 127.045958
+  },
+  {
+    "id": "01_109",
+    "lineId": "01",
+    "stationCode": "109",
+    "lineSeq": 13,
+    "stationName": "가능",
+    "lat": 37.748577,
+    "lng": 127.044213
+  },
+  {
+    "id": "01_108",
+    "lineId": "01",
+    "stationCode": "108",
+    "lineSeq": 12,
+    "stationName": "녹양",
+    "lat": 37.75938,
+    "lng": 127.042292
+  },
+  {
+    "id": "01_107",
+    "lineId": "01",
+    "stationCode": "107",
+    "lineSeq": 11,
+    "stationName": "양주",
+    "lat": 37.774381,
+    "lng": 127.044708
+  },
+  {
+    "id": "01_106",
+    "lineId": "01",
+    "stationCode": "106",
+    "lineSeq": 10,
+    "stationName": "덕계",
+    "lat": 37.818486,
+    "lng": 127.056486
+  },
+  {
+    "id": "01_105",
+    "lineId": "01",
+    "stationCode": "105",
+    "lineSeq": 9,
+    "stationName": "덕정",
+    "lat": 37.843188,
+    "lng": 127.061277
+  },
+  {
+    "id": "01_102",
+    "lineId": "01",
+    "stationCode": "102",
+    "lineSeq": 6,
+    "stationName": "보산",
+    "lat": 37.913702,
+    "lng": 127.057277
+  },
+  {
+    "id": "01_123",
+    "lineId": "01",
+    "stationCode": "123",
+    "lineSeq": 27,
+    "stationName": "회기",
+    "lat": 37.58946,
+    "lng": 127.057583
+  },
+  {
+    "id": "01_P149",
+    "lineId": "01",
+    "stationCode": "P149",
+    "lineSeq": 62,
+    "stationName": "금정",
+    "lat": 37.372221,
+    "lng": 126.943429
+  },
+  {
+    "id": "01_138",
+    "lineId": "01",
+    "stationCode": "138",
+    "lineSeq": 42,
+    "stationName": "신길",
+    "lat": 37.516862,
+    "lng": 126.917865
+  },
+  {
+    "id": "01_157",
+    "lineId": "01",
+    "stationCode": "157",
+    "lineSeq": 77,
+    "stationName": "도화",
+    "lat": 37.46607,
+    "lng": 126.668672
+  },
+  {
+    "id": "01_149",
+    "lineId": "01",
+    "stationCode": "149",
+    "lineSeq": 61,
+    "stationName": "중동",
+    "lat": 37.486562,
+    "lng": 126.764843
+  },
+  {
+    "id": "01_145",
+    "lineId": "01",
+    "stationCode": "145",
+    "lineSeq": 52,
+    "stationName": "온수",
+    "lat": 37.492433,
+    "lng": 126.824086
+  },
+  {
+    "id": "01_159",
+    "lineId": "01",
+    "stationCode": "159",
+    "lineSeq": 82,
+    "stationName": "도원",
+    "lat": 37.468446,
+    "lng": 126.642706
+  },
+  {
+    "id": "01_155",
+    "lineId": "01",
+    "stationCode": "155",
+    "lineSeq": 73,
+    "stationName": "간석",
+    "lat": 37.464737,
+    "lng": 126.694181
+  },
+  {
+    "id": "02_214",
+    "lineId": "02",
+    "stationCode": "214",
+    "lineSeq": 35,
+    "stationName": "강변",
+    "lat": 37.535095,
+    "lng": 127.094681
+  },
+  {
+    "id": "02_207",
+    "lineId": "02",
+    "stationCode": "207",
+    "lineSeq": 45,
+    "stationName": "상왕십리",
+    "lat": 37.564354,
+    "lng": 127.029354
+  },
+  {
+    "id": "02_221",
+    "lineId": "02",
+    "stationCode": "221",
+    "lineSeq": 28,
+    "stationName": "역삼",
+    "lat": 37.500622,
+    "lng": 127.036456
+  },
+  {
+    "id": "02_224",
+    "lineId": "02",
+    "stationCode": "224",
+    "lineSeq": 25,
+    "stationName": "서초",
+    "lat": 37.491897,
+    "lng": 127.007917
+  },
+  {
+    "id": "02_211",
+    "lineId": "02",
+    "stationCode": "211",
+    "lineSeq": 38,
+    "stationName": "성수",
+    "lat": 37.544581,
+    "lng": 127.055961
+  },
+  {
+    "id": "02_211-3",
+    "lineId": "02",
+    "stationCode": "211-3",
+    "lineSeq": 44,
+    "stationName": "용두",
+    "lat": 37.574028,
+    "lng": 127.038091
+  },
+  {
+    "id": "02_234-3",
+    "lineId": "02",
+    "stationCode": "234-3",
+    "lineSeq": 17,
+    "stationName": "신정네거리",
+    "lat": 37.520074,
+    "lng": 126.852912
+  },
+  {
+    "id": "02_234-2",
+    "lineId": "02",
+    "stationCode": "234-2",
+    "lineSeq": 15,
+    "stationName": "양천구청",
+    "lat": 37.512398,
+    "lng": 126.865819
+  },
+  {
+    "id": "02_234-1",
+    "lineId": "02",
+    "stationCode": "234-1",
+    "lineSeq": 13,
+    "stationName": "도림천",
+    "lat": 37.514287,
+    "lng": 126.882768
+  },
+  {
+    "id": "02_211-4",
+    "lineId": "02",
+    "stationCode": "211-4",
+    "lineSeq": 46,
+    "stationName": "신설동",
+    "lat": 37.574747,
+    "lng": 127.024932
+  },
+  {
+    "id": "02_211-2",
+    "lineId": "02",
+    "stationCode": "211-2",
+    "lineSeq": 42,
+    "stationName": "신답",
+    "lat": 37.57004,
+    "lng": 127.046481
+  },
+  {
+    "id": "02_211-1",
+    "lineId": "02",
+    "stationCode": "211-1",
+    "lineSeq": 40,
+    "stationName": "용답",
+    "lat": 37.561904,
+    "lng": 127.050899
+  },
+  {
+    "id": "02_205",
+    "lineId": "02",
+    "stationCode": "205",
+    "lineSeq": 48,
+    "stationName": "동대문역사문화공원",
+    "lat": 37.565613,
+    "lng": 127.009054
+  },
+  {
+    "id": "02_202",
+    "lineId": "02",
+    "stationCode": "202",
+    "lineSeq": 51,
+    "stationName": "을지로입구",
+    "lat": 37.566014,
+    "lng": 126.982618
+  },
+  {
+    "id": "02_223",
+    "lineId": "02",
+    "stationCode": "223",
+    "lineSeq": 26,
+    "stationName": "교대",
+    "lat": 37.493961,
+    "lng": 127.014667
+  },
+  {
+    "id": "02_201",
+    "lineId": "02",
+    "stationCode": "201",
+    "lineSeq": 1,
+    "stationName": "시청",
+    "lat": 37.563588,
+    "lng": 126.975411
+  },
+  {
+    "id": "02_243",
+    "lineId": "02",
+    "stationCode": "243",
+    "lineSeq": 2,
+    "stationName": "충정로",
+    "lat": 37.559704,
+    "lng": 126.964378
+  },
+  {
+    "id": "02_242",
+    "lineId": "02",
+    "stationCode": "242",
+    "lineSeq": 3,
+    "stationName": "아현",
+    "lat": 37.557345,
+    "lng": 126.956141
+  },
+  {
+    "id": "02_241",
+    "lineId": "02",
+    "stationCode": "241",
+    "lineSeq": 4,
+    "stationName": "이대",
+    "lat": 37.556733,
+    "lng": 126.946013
+  },
+  {
+    "id": "02_240",
+    "lineId": "02",
+    "stationCode": "240",
+    "lineSeq": 5,
+    "stationName": "신촌",
+    "lat": 37.555131,
+    "lng": 126.936926
+  },
+  {
+    "id": "02_239",
+    "lineId": "02",
+    "stationCode": "239",
+    "lineSeq": 6,
+    "stationName": "홍대입구",
+    "lat": 37.55679,
+    "lng": 126.923708
+  },
+  {
+    "id": "02_208",
+    "lineId": "02",
+    "stationCode": "208",
+    "lineSeq": 43,
+    "stationName": "왕십리",
+    "lat": 37.561238,
+    "lng": 127.036954
+  },
+  {
+    "id": "02_209",
+    "lineId": "02",
+    "stationCode": "209",
+    "lineSeq": 41,
+    "stationName": "한양대",
+    "lat": 37.555273,
+    "lng": 127.043655
+  },
+  {
+    "id": "02_210",
+    "lineId": "02",
+    "stationCode": "210",
+    "lineSeq": 39,
+    "stationName": "뚝섬",
+    "lat": 37.547184,
+    "lng": 127.047367
+  },
+  {
+    "id": "02_230",
+    "lineId": "02",
+    "stationCode": "230",
+    "lineSeq": 18,
+    "stationName": "신림",
+    "lat": 37.484201,
+    "lng": 126.929715
+  },
+  {
+    "id": "02_215",
+    "lineId": "02",
+    "stationCode": "215",
+    "lineSeq": 34,
+    "stationName": "잠실나루",
+    "lat": 37.520733,
+    "lng": 127.10379
+  },
+  {
+    "id": "02_206",
+    "lineId": "02",
+    "stationCode": "206",
+    "lineSeq": 47,
+    "stationName": "신당",
+    "lat": 37.56564,
+    "lng": 127.019614
+  },
+  {
+    "id": "02_238",
+    "lineId": "02",
+    "stationCode": "238",
+    "lineSeq": 7,
+    "stationName": "합정",
+    "lat": 37.549457,
+    "lng": 126.913808
+  },
+  {
+    "id": "02_237",
+    "lineId": "02",
+    "stationCode": "237",
+    "lineSeq": 8,
+    "stationName": "당산",
+    "lat": 37.534946,
+    "lng": 126.902767
+  },
+  {
+    "id": "02_204",
+    "lineId": "02",
+    "stationCode": "204",
+    "lineSeq": 49,
+    "stationName": "을지로4가",
+    "lat": 37.566595,
+    "lng": 126.997817
+  },
+  {
+    "id": "02_216",
+    "lineId": "02",
+    "stationCode": "216",
+    "lineSeq": 33,
+    "stationName": "잠실",
+    "lat": 37.513262,
+    "lng": 127.100159
+  },
+  {
+    "id": "02_217",
+    "lineId": "02",
+    "stationCode": "217",
+    "lineSeq": 32,
+    "stationName": "잠실새내",
+    "lat": 37.511687,
+    "lng": 127.086162
+  },
+  {
+    "id": "02_222",
+    "lineId": "02",
+    "stationCode": "222",
+    "lineSeq": 27,
+    "stationName": "강남",
+    "lat": 37.49799,
+    "lng": 127.027912
+  },
+  {
+    "id": "02_234-4",
+    "lineId": "02",
+    "stationCode": "234-4",
+    "lineSeq": 19,
+    "stationName": "까치산",
+    "lat": 37.531768,
+    "lng": 126.846683
+  },
+  {
+    "id": "02_236",
+    "lineId": "02",
+    "stationCode": "236",
+    "lineSeq": 9,
+    "stationName": "영등포구청",
+    "lat": 37.525706,
+    "lng": 126.89661
+  },
+  {
+    "id": "02_235",
+    "lineId": "02",
+    "stationCode": "235",
+    "lineSeq": 10,
+    "stationName": "문래",
+    "lat": 37.517933,
+    "lng": 126.89476
+  },
+  {
+    "id": "02_234",
+    "lineId": "02",
+    "stationCode": "234",
+    "lineSeq": 11,
+    "stationName": "신도림",
+    "lat": 37.508961,
+    "lng": 126.891084
+  },
+  {
+    "id": "02_233",
+    "lineId": "02",
+    "stationCode": "233",
+    "lineSeq": 12,
+    "stationName": "대림",
+    "lat": 37.493243,
+    "lng": 126.894932
+  },
+  {
+    "id": "02_227",
+    "lineId": "02",
+    "stationCode": "227",
+    "lineSeq": 22,
+    "stationName": "낙성대",
+    "lat": 37.47693,
+    "lng": 126.963693
+  },
+  {
+    "id": "02_232",
+    "lineId": "02",
+    "stationCode": "232",
+    "lineSeq": 14,
+    "stationName": "구로디지털단지",
+    "lat": 37.485266,
+    "lng": 126.901401
+  },
+  {
+    "id": "02_226",
+    "lineId": "02",
+    "stationCode": "226",
+    "lineSeq": 23,
+    "stationName": "사당",
+    "lat": 37.476538,
+    "lng": 126.981544
+  },
+  {
+    "id": "02_229",
+    "lineId": "02",
+    "stationCode": "229",
+    "lineSeq": 20,
+    "stationName": "봉천",
+    "lat": 37.482362,
+    "lng": 126.941892
+  },
+  {
+    "id": "02_228",
+    "lineId": "02",
+    "stationCode": "228",
+    "lineSeq": 21,
+    "stationName": "서울대입구",
+    "lat": 37.481247,
+    "lng": 126.952739
+  },
+  {
+    "id": "02_212",
+    "lineId": "02",
+    "stationCode": "212",
+    "lineSeq": 37,
+    "stationName": "건대입구",
+    "lat": 37.540373,
+    "lng": 127.069191
+  },
+  {
+    "id": "02_225",
+    "lineId": "02",
+    "stationCode": "225",
+    "lineSeq": 24,
+    "stationName": "방배",
+    "lat": 37.481426,
+    "lng": 126.997596
+  },
+  {
+    "id": "02_218",
+    "lineId": "02",
+    "stationCode": "218",
+    "lineSeq": 31,
+    "stationName": "종합운동장",
+    "lat": 37.511022,
+    "lng": 127.073704
+  },
+  {
+    "id": "02_219",
+    "lineId": "02",
+    "stationCode": "219",
+    "lineSeq": 30,
+    "stationName": "삼성",
+    "lat": 37.508844,
+    "lng": 127.06316
+  },
+  {
+    "id": "02_220",
+    "lineId": "02",
+    "stationCode": "220",
+    "lineSeq": 29,
+    "stationName": "선릉",
+    "lat": 37.504286,
+    "lng": 127.048203
+  },
+  {
+    "id": "02_203",
+    "lineId": "02",
+    "stationCode": "203",
+    "lineSeq": 50,
+    "stationName": "을지로3가",
+    "lat": 37.566306,
+    "lng": 126.991696
+  },
+  {
+    "id": "02_231",
+    "lineId": "02",
+    "stationCode": "231",
+    "lineSeq": 16,
+    "stationName": "신대방",
+    "lat": 37.487462,
+    "lng": 126.913149
+  },
+  {
+    "id": "02_213",
+    "lineId": "02",
+    "stationCode": "213",
+    "lineSeq": 36,
+    "stationName": "구의",
+    "lat": 37.537077,
+    "lng": 127.085916
+  },
+  {
+    "id": "03_311",
+    "lineId": "03",
+    "stationCode": "311",
+    "lineSeq": 3,
+    "stationName": "정발산",
+    "lat": 37.659477,
+    "lng": 126.773359
+  },
+  {
+    "id": "03_315",
+    "lineId": "03",
+    "stationCode": "315",
+    "lineSeq": 7,
+    "stationName": "화정",
+    "lat": 37.634592,
+    "lng": 126.83265
+  },
+  {
+    "id": "03_345",
+    "lineId": "03",
+    "stationCode": "345",
+    "lineSeq": 37,
+    "stationName": "대치",
+    "lat": 37.494612,
+    "lng": 127.063642
+  },
+  {
+    "id": "03_309",
+    "lineId": "03",
+    "stationCode": "309",
+    "lineSeq": 1,
+    "stationName": "대화",
+    "lat": 37.676087,
+    "lng": 126.747569
+  },
+  {
+    "id": "03_310",
+    "lineId": "03",
+    "stationCode": "310",
+    "lineSeq": 2,
+    "stationName": "주엽",
+    "lat": 37.670072,
+    "lng": 126.761334
+  },
+  {
+    "id": "03_350",
+    "lineId": "03",
+    "stationCode": "350",
+    "lineSeq": 42,
+    "stationName": "가락시장",
+    "lat": 37.492245,
+    "lng": 127.117757
+  },
+  {
+    "id": "03_337",
+    "lineId": "03",
+    "stationCode": "337",
+    "lineSeq": 29,
+    "stationName": "신사",
+    "lat": 37.516334,
+    "lng": 127.020114
+  },
+  {
+    "id": "03_336",
+    "lineId": "03",
+    "stationCode": "336",
+    "lineSeq": 28,
+    "stationName": "압구정",
+    "lat": 37.527072,
+    "lng": 127.028461
+  },
+  {
+    "id": "03_318",
+    "lineId": "03",
+    "stationCode": "318",
+    "lineSeq": 10,
+    "stationName": "삼송",
+    "lat": 37.653083,
+    "lng": 126.895558
+  },
+  {
+    "id": "03_333",
+    "lineId": "03",
+    "stationCode": "333",
+    "lineSeq": 25,
+    "stationName": "약수",
+    "lat": 37.554867,
+    "lng": 127.010541
+  },
+  {
+    "id": "03_334",
+    "lineId": "03",
+    "stationCode": "334",
+    "lineSeq": 26,
+    "stationName": "금호",
+    "lat": 37.548034,
+    "lng": 127.015872
+  },
+  {
+    "id": "03_339",
+    "lineId": "03",
+    "stationCode": "339",
+    "lineSeq": 31,
+    "stationName": "고속터미널",
+    "lat": 37.504891,
+    "lng": 127.004916
+  },
+  {
+    "id": "03_330",
+    "lineId": "03",
+    "stationCode": "330",
+    "lineSeq": 22,
+    "stationName": "을지로3가",
+    "lat": 37.566672,
+    "lng": 126.992548
+  },
+  {
+    "id": "03_344",
+    "lineId": "03",
+    "stationCode": "344",
+    "lineSeq": 36,
+    "stationName": "도곡",
+    "lat": 37.490922,
+    "lng": 127.055452
+  },
+  {
+    "id": "03_343",
+    "lineId": "03",
+    "stationCode": "343",
+    "lineSeq": 35,
+    "stationName": "매봉",
+    "lat": 37.486947,
+    "lng": 127.046769
+  },
+  {
+    "id": "03_342",
+    "lineId": "03",
+    "stationCode": "342",
+    "lineSeq": 34,
+    "stationName": "양재",
+    "lat": 37.484477,
+    "lng": 127.033902
+  },
+  {
+    "id": "03_329",
+    "lineId": "03",
+    "stationCode": "329",
+    "lineSeq": 21,
+    "stationName": "종로3가",
+    "lat": 37.571605,
+    "lng": 126.991791
+  },
+  {
+    "id": "03_349",
+    "lineId": "03",
+    "stationCode": "349",
+    "lineSeq": 41,
+    "stationName": "수서",
+    "lat": 37.487378,
+    "lng": 127.101907
+  },
+  {
+    "id": "03_348",
+    "lineId": "03",
+    "stationCode": "348",
+    "lineSeq": 40,
+    "stationName": "일원",
+    "lat": 37.483681,
+    "lng": 127.08439
+  },
+  {
+    "id": "03_316",
+    "lineId": "03",
+    "stationCode": "316",
+    "lineSeq": 8,
+    "stationName": "원당",
+    "lat": 37.653324,
+    "lng": 126.843041
+  },
+  {
+    "id": "03_347",
+    "lineId": "03",
+    "stationCode": "347",
+    "lineSeq": 39,
+    "stationName": "대청",
+    "lat": 37.493514,
+    "lng": 127.079532
+  },
+  {
+    "id": "03_335",
+    "lineId": "03",
+    "stationCode": "335",
+    "lineSeq": 27,
+    "stationName": "옥수",
+    "lat": 37.541684,
+    "lng": 127.017269
+  },
+  {
+    "id": "03_346",
+    "lineId": "03",
+    "stationCode": "346",
+    "lineSeq": 38,
+    "stationName": "학여울",
+    "lat": 37.496663,
+    "lng": 127.070594
+  },
+  {
+    "id": "03_317",
+    "lineId": "03",
+    "stationCode": "317",
+    "lineSeq": 9,
+    "stationName": "원흥",
+    "lat": 37.650658,
+    "lng": 126.872642
+  },
+  {
+    "id": "03_341",
+    "lineId": "03",
+    "stationCode": "341",
+    "lineSeq": 33,
+    "stationName": "남부터미널",
+    "lat": 37.485013,
+    "lng": 127.016189
+  },
+  {
+    "id": "03_340",
+    "lineId": "03",
+    "stationCode": "340",
+    "lineSeq": 32,
+    "stationName": "교대",
+    "lat": 37.493025,
+    "lng": 127.013786
+  },
+  {
+    "id": "03_328",
+    "lineId": "03",
+    "stationCode": "328",
+    "lineSeq": 20,
+    "stationName": "안국",
+    "lat": 37.576477,
+    "lng": 126.985443
+  },
+  {
+    "id": "03_326",
+    "lineId": "03",
+    "stationCode": "326",
+    "lineSeq": 18,
+    "stationName": "독립문",
+    "lat": 37.574571,
+    "lng": 126.957748
+  },
+  {
+    "id": "03_325",
+    "lineId": "03",
+    "stationCode": "325",
+    "lineSeq": 17,
+    "stationName": "무악재",
+    "lat": 37.582299,
+    "lng": 126.950291
+  },
+  {
+    "id": "03_324",
+    "lineId": "03",
+    "stationCode": "324",
+    "lineSeq": 16,
+    "stationName": "홍제",
+    "lat": 37.589066,
+    "lng": 126.943736
+  },
+  {
+    "id": "03_352",
+    "lineId": "03",
+    "stationCode": "352",
+    "lineSeq": 44,
+    "stationName": "오금",
+    "lat": 37.502129,
+    "lng": 127.128319
+  },
+  {
+    "id": "03_321",
+    "lineId": "03",
+    "stationCode": "321",
+    "lineSeq": 13,
+    "stationName": "연신내",
+    "lat": 37.619229,
+    "lng": 126.921038
+  },
+  {
+    "id": "03_320",
+    "lineId": "03",
+    "stationCode": "320",
+    "lineSeq": 12,
+    "stationName": "구파발",
+    "lat": 37.636763,
+    "lng": 126.918821
+  },
+  {
+    "id": "03_319",
+    "lineId": "03",
+    "stationCode": "319",
+    "lineSeq": 11,
+    "stationName": "지축",
+    "lat": 37.648033,
+    "lng": 126.913917
+  },
+  {
+    "id": "03_332",
+    "lineId": "03",
+    "stationCode": "332",
+    "lineSeq": 24,
+    "stationName": "동대입구",
+    "lat": 37.559052,
+    "lng": 127.005602
+  },
+  {
+    "id": "03_331",
+    "lineId": "03",
+    "stationCode": "331",
+    "lineSeq": 23,
+    "stationName": "충무로",
+    "lat": 37.56143,
+    "lng": 126.994072
+  },
+  {
+    "id": "03_338",
+    "lineId": "03",
+    "stationCode": "338",
+    "lineSeq": 30,
+    "stationName": "잠원",
+    "lat": 37.512759,
+    "lng": 127.01122
+  },
+  {
+    "id": "03_312",
+    "lineId": "03",
+    "stationCode": "312",
+    "lineSeq": 4,
+    "stationName": "마두",
+    "lat": 37.652206,
+    "lng": 126.77762
+  },
+  {
+    "id": "03_323",
+    "lineId": "03",
+    "stationCode": "323",
+    "lineSeq": 15,
+    "stationName": "녹번",
+    "lat": 37.600927,
+    "lng": 126.935756
+  },
+  {
+    "id": "03_322",
+    "lineId": "03",
+    "stationCode": "322",
+    "lineSeq": 14,
+    "stationName": "불광",
+    "lat": 37.610553,
+    "lng": 126.92982
+  },
+  {
+    "id": "03_327",
+    "lineId": "03",
+    "stationCode": "327",
+    "lineSeq": 19,
+    "stationName": "경복궁",
+    "lat": 37.575762,
+    "lng": 126.97353
+  },
+  {
+    "id": "03_313",
+    "lineId": "03",
+    "stationCode": "313",
+    "lineSeq": 5,
+    "stationName": "백석",
+    "lat": 37.643114,
+    "lng": 126.78787
+  },
+  {
+    "id": "03_314",
+    "lineId": "03",
+    "stationCode": "314",
+    "lineSeq": 6,
+    "stationName": "대곡",
+    "lat": 37.631626,
+    "lng": 126.811024
+  },
+  {
+    "id": "03_351",
+    "lineId": "03",
+    "stationCode": "351",
+    "lineSeq": 43,
+    "stationName": "경찰병원",
+    "lat": 37.495918,
+    "lng": 127.12454
+  },
+  {
+    "id": "04_425",
+    "lineId": "04",
+    "stationCode": "425",
+    "lineSeq": 20,
+    "stationName": "회현",
+    "lat": 37.558514,
+    "lng": 126.978246
+  },
+  {
+    "id": "04_456",
+    "lineId": "04",
+    "stationCode": "456",
+    "lineSeq": 51,
+    "stationName": "오이도",
+    "lat": 37.362357,
+    "lng": 126.738714
+  },
+  {
+    "id": "04_455",
+    "lineId": "04",
+    "stationCode": "455",
+    "lineSeq": 50,
+    "stationName": "정왕",
+    "lat": 37.351735,
+    "lng": 126.742989
+  },
+  {
+    "id": "04_433",
+    "lineId": "04",
+    "stationCode": "433",
+    "lineSeq": 28,
+    "stationName": "사당",
+    "lat": 37.476955,
+    "lng": 126.981651
+  },
+  {
+    "id": "04_434",
+    "lineId": "04",
+    "stationCode": "434",
+    "lineSeq": 29,
+    "stationName": "남태령",
+    "lat": 37.463873,
+    "lng": 126.989134
+  },
+  {
+    "id": "04_443",
+    "lineId": "04",
+    "stationCode": "443",
+    "lineSeq": 38,
+    "stationName": "금정",
+    "lat": 37.372209,
+    "lng": 126.943417
+  },
+  {
+    "id": "04_442",
+    "lineId": "04",
+    "stationCode": "442",
+    "lineSeq": 37,
+    "stationName": "범계",
+    "lat": 37.389793,
+    "lng": 126.950806
+  },
+  {
+    "id": "04_441",
+    "lineId": "04",
+    "stationCode": "441",
+    "lineSeq": 36,
+    "stationName": "평촌",
+    "lat": 37.394287,
+    "lng": 126.963883
+  },
+  {
+    "id": "04_440",
+    "lineId": "04",
+    "stationCode": "440",
+    "lineSeq": 35,
+    "stationName": "인덕원",
+    "lat": 37.401553,
+    "lng": 126.976715
+  },
+  {
+    "id": "04_432",
+    "lineId": "04",
+    "stationCode": "432",
+    "lineSeq": 27,
+    "stationName": "총신대입구",
+    "lat": 37.486263,
+    "lng": 126.981989
+  },
+  {
+    "id": "04_431",
+    "lineId": "04",
+    "stationCode": "431",
+    "lineSeq": 26,
+    "stationName": "동작",
+    "lat": 37.502852,
+    "lng": 126.980347
+  },
+  {
+    "id": "04_430",
+    "lineId": "04",
+    "stationCode": "430",
+    "lineSeq": 25,
+    "stationName": "이촌",
+    "lat": 37.522295,
+    "lng": 126.974733
+  },
+  {
+    "id": "04_429",
+    "lineId": "04",
+    "stationCode": "429",
+    "lineSeq": 24,
+    "stationName": "신용산",
+    "lat": 37.52917,
+    "lng": 126.967894
+  },
+  {
+    "id": "04_405",
+    "lineId": "04",
+    "stationCode": "405",
+    "lineSeq": 1,
+    "stationName": "진접",
+    "lat": 37.7205,
+    "lng": 127.2034
+  },
+  {
+    "id": "04_406",
+    "lineId": "04",
+    "stationCode": "406",
+    "lineSeq": 2,
+    "stationName": "오남",
+    "lat": 37.705,
+    "lng": 127.19281
+  },
+  {
+    "id": "04_408",
+    "lineId": "04",
+    "stationCode": "408",
+    "lineSeq": 3,
+    "stationName": "별내별가람",
+    "lat": 37.66778,
+    "lng": 127.11581
+  },
+  {
+    "id": "04_409",
+    "lineId": "04",
+    "stationCode": "409",
+    "lineSeq": 4,
+    "stationName": "불암산",
+    "lat": 37.670272,
+    "lng": 127.079066
+  },
+  {
+    "id": "04_435",
+    "lineId": "04",
+    "stationCode": "435",
+    "lineSeq": 30,
+    "stationName": "선바위",
+    "lat": 37.451673,
+    "lng": 127.002303
+  },
+  {
+    "id": "04_436",
+    "lineId": "04",
+    "stationCode": "436",
+    "lineSeq": 31,
+    "stationName": "경마공원",
+    "lat": 37.443885,
+    "lng": 127.007888
+  },
+  {
+    "id": "04_437",
+    "lineId": "04",
+    "stationCode": "437",
+    "lineSeq": 32,
+    "stationName": "대공원",
+    "lat": 37.435675,
+    "lng": 127.006523
+  },
+  {
+    "id": "04_438",
+    "lineId": "04",
+    "stationCode": "438",
+    "lineSeq": 33,
+    "stationName": "과천",
+    "lat": 37.433021,
+    "lng": 126.996568
+  },
+  {
+    "id": "04_450",
+    "lineId": "04",
+    "stationCode": "450",
+    "lineSeq": 45,
+    "stationName": "중앙",
+    "lat": 37.315941,
+    "lng": 126.838573
+  },
+  {
+    "id": "04_449",
+    "lineId": "04",
+    "stationCode": "449",
+    "lineSeq": 44,
+    "stationName": "한대앞",
+    "lat": 37.309689,
+    "lng": 126.85344
+  },
+  {
+    "id": "04_448",
+    "lineId": "04",
+    "stationCode": "448",
+    "lineSeq": 43,
+    "stationName": "상록수",
+    "lat": 37.302795,
+    "lng": 126.866489
+  },
+  {
+    "id": "04_447",
+    "lineId": "04",
+    "stationCode": "447",
+    "lineSeq": 42,
+    "stationName": "반월",
+    "lat": 37.312212,
+    "lng": 126.903524
+  },
+  {
+    "id": "04_410",
+    "lineId": "04",
+    "stationCode": "410",
+    "lineSeq": 5,
+    "stationName": "상계",
+    "lat": 37.660878,
+    "lng": 127.073572
+  },
+  {
+    "id": "04_446",
+    "lineId": "04",
+    "stationCode": "446",
+    "lineSeq": 41,
+    "stationName": "대야미",
+    "lat": 37.328467,
+    "lng": 126.917332
+  },
+  {
+    "id": "04_439",
+    "lineId": "04",
+    "stationCode": "439",
+    "lineSeq": 34,
+    "stationName": "정부과천청사",
+    "lat": 37.426513,
+    "lng": 126.98978
+  },
+  {
+    "id": "04_444",
+    "lineId": "04",
+    "stationCode": "444",
+    "lineSeq": 39,
+    "stationName": "산본",
+    "lat": 37.358101,
+    "lng": 126.933274
+  },
+  {
+    "id": "04_411",
+    "lineId": "04",
+    "stationCode": "411",
+    "lineSeq": 6,
+    "stationName": "노원",
+    "lat": 37.65627,
+    "lng": 127.063276
+  },
+  {
+    "id": "04_412",
+    "lineId": "04",
+    "stationCode": "412",
+    "lineSeq": 7,
+    "stationName": "창동",
+    "lat": 37.653088,
+    "lng": 127.047274
+  },
+  {
+    "id": "04_413",
+    "lineId": "04",
+    "stationCode": "413",
+    "lineSeq": 8,
+    "stationName": "쌍문",
+    "lat": 37.648627,
+    "lng": 127.034709
+  },
+  {
+    "id": "04_414",
+    "lineId": "04",
+    "stationCode": "414",
+    "lineSeq": 9,
+    "stationName": "수유",
+    "lat": 37.638052,
+    "lng": 127.025732
+  },
+  {
+    "id": "04_415",
+    "lineId": "04",
+    "stationCode": "415",
+    "lineSeq": 10,
+    "stationName": "미아",
+    "lat": 37.62667,
+    "lng": 127.025983
+  },
+  {
+    "id": "04_416",
+    "lineId": "04",
+    "stationCode": "416",
+    "lineSeq": 11,
+    "stationName": "미아사거리",
+    "lat": 37.613292,
+    "lng": 127.030053
+  },
+  {
+    "id": "04_417",
+    "lineId": "04",
+    "stationCode": "417",
+    "lineSeq": 12,
+    "stationName": "길음",
+    "lat": 37.603407,
+    "lng": 127.025053
+  },
+  {
+    "id": "04_454",
+    "lineId": "04",
+    "stationCode": "454",
+    "lineSeq": 49,
+    "stationName": "신길온천",
+    "lat": 37.338212,
+    "lng": 126.765844
+  },
+  {
+    "id": "04_445",
+    "lineId": "04",
+    "stationCode": "445",
+    "lineSeq": 40,
+    "stationName": "수리산",
+    "lat": 37.349801,
+    "lng": 126.925365
+  },
+  {
+    "id": "04_453",
+    "lineId": "04",
+    "stationCode": "453",
+    "lineSeq": 48,
+    "stationName": "안산",
+    "lat": 37.327082,
+    "lng": 126.788532
+  },
+  {
+    "id": "04_452",
+    "lineId": "04",
+    "stationCode": "452",
+    "lineSeq": 47,
+    "stationName": "초지",
+    "lat": 37.320646,
+    "lng": 126.805913
+  },
+  {
+    "id": "04_451",
+    "lineId": "04",
+    "stationCode": "451",
+    "lineSeq": 46,
+    "stationName": "고잔",
+    "lat": 37.316784,
+    "lng": 126.823144
+  },
+  {
+    "id": "04_428",
+    "lineId": "04",
+    "stationCode": "428",
+    "lineSeq": 23,
+    "stationName": "삼각지",
+    "lat": 37.534075,
+    "lng": 126.9726
+  },
+  {
+    "id": "04_418",
+    "lineId": "04",
+    "stationCode": "418",
+    "lineSeq": 13,
+    "stationName": "성신여대입구",
+    "lat": 37.592612,
+    "lng": 127.016441
+  },
+  {
+    "id": "04_419",
+    "lineId": "04",
+    "stationCode": "419",
+    "lineSeq": 14,
+    "stationName": "한성대입구",
+    "lat": 37.588458,
+    "lng": 127.006221
+  },
+  {
+    "id": "04_420",
+    "lineId": "04",
+    "stationCode": "420",
+    "lineSeq": 15,
+    "stationName": "혜화",
+    "lat": 37.582336,
+    "lng": 127.001844
+  },
+  {
+    "id": "04_421",
+    "lineId": "04",
+    "stationCode": "421",
+    "lineSeq": 16,
+    "stationName": "동대문",
+    "lat": 37.57093,
+    "lng": 127.009287
+  },
+  {
+    "id": "04_422",
+    "lineId": "04",
+    "stationCode": "422",
+    "lineSeq": 17,
+    "stationName": "동대문역사문화공원",
+    "lat": 37.565133,
+    "lng": 127.007885
+  },
+  {
+    "id": "04_423",
+    "lineId": "04",
+    "stationCode": "423",
+    "lineSeq": 18,
+    "stationName": "충무로",
+    "lat": 37.561207,
+    "lng": 126.99408
+  },
+  {
+    "id": "04_424",
+    "lineId": "04",
+    "stationCode": "424",
+    "lineSeq": 19,
+    "stationName": "명동",
+    "lat": 37.560989,
+    "lng": 126.986325
+  },
+  {
+    "id": "04_426",
+    "lineId": "04",
+    "stationCode": "426",
+    "lineSeq": 21,
+    "stationName": "서울역",
+    "lat": 37.55281,
+    "lng": 126.972556
+  },
+  {
+    "id": "04_427",
+    "lineId": "04",
+    "stationCode": "427",
+    "lineSeq": 22,
+    "stationName": "숙대입구",
+    "lat": 37.54456,
+    "lng": 126.972106
+  },
+  {
+    "id": "05_P550",
+    "lineId": "05",
+    "stationCode": "P550",
+    "lineSeq": 43,
+    "stationName": "올림픽공원",
+    "lat": 37.516201,
+    "lng": 127.130923
+  },
+  {
+    "id": "05_511",
+    "lineId": "05",
+    "stationCode": "511",
+    "lineSeq": 2,
+    "stationName": "개화산",
+    "lat": 37.572399,
+    "lng": 126.806171
+  },
+  {
+    "id": "05_P549",
+    "lineId": "05",
+    "stationCode": "P549",
+    "lineSeq": 41,
+    "stationName": "둔촌동",
+    "lat": 37.527788,
+    "lng": 127.136248
+  },
+  {
+    "id": "05_544",
+    "lineId": "05",
+    "stationCode": "544",
+    "lineSeq": 35,
+    "stationName": "군자",
+    "lat": 37.557088,
+    "lng": 127.079577
+  },
+  {
+    "id": "05_545",
+    "lineId": "05",
+    "stationCode": "545",
+    "lineSeq": 36,
+    "stationName": "아차산",
+    "lat": 37.551691,
+    "lng": 127.089761
+  },
+  {
+    "id": "05_522",
+    "lineId": "05",
+    "stationCode": "522",
+    "lineSeq": 13,
+    "stationName": "양평",
+    "lat": 37.525569,
+    "lng": 126.886129
+  },
+  {
+    "id": "05_521",
+    "lineId": "05",
+    "stationCode": "521",
+    "lineSeq": 12,
+    "stationName": "오목교",
+    "lat": 37.524496,
+    "lng": 126.875181
+  },
+  {
+    "id": "05_520",
+    "lineId": "05",
+    "stationCode": "520",
+    "lineSeq": 11,
+    "stationName": "목동",
+    "lat": 37.526065,
+    "lng": 126.864931
+  },
+  {
+    "id": "05_540",
+    "lineId": "05",
+    "stationCode": "540",
+    "lineSeq": 31,
+    "stationName": "왕십리",
+    "lat": 37.56184,
+    "lng": 127.037059
+  },
+  {
+    "id": "05_P554",
+    "lineId": "05",
+    "stationCode": "P554",
+    "lineSeq": 50,
+    "stationName": "거여",
+    "lat": 37.493105,
+    "lng": 127.14415
+  },
+  {
+    "id": "05_512",
+    "lineId": "05",
+    "stationCode": "512",
+    "lineSeq": 3,
+    "stationName": "김포공항",
+    "lat": 37.562384,
+    "lng": 126.801292
+  },
+  {
+    "id": "05_513",
+    "lineId": "05",
+    "stationCode": "513",
+    "lineSeq": 4,
+    "stationName": "송정",
+    "lat": 37.561184,
+    "lng": 126.811973
+  },
+  {
+    "id": "05_550",
+    "lineId": "05",
+    "stationCode": "550",
+    "lineSeq": 42,
+    "stationName": "굽은다리",
+    "lat": 37.545477,
+    "lng": 127.142853
+  },
+  {
+    "id": "05_551",
+    "lineId": "05",
+    "stationCode": "551",
+    "lineSeq": 44,
+    "stationName": "명일",
+    "lat": 37.55137,
+    "lng": 127.143999
+  },
+  {
+    "id": "05_552",
+    "lineId": "05",
+    "stationCode": "552",
+    "lineSeq": 46,
+    "stationName": "고덕",
+    "lat": 37.555004,
+    "lng": 127.154151
+  },
+  {
+    "id": "05_549",
+    "lineId": "05",
+    "stationCode": "549",
+    "lineSeq": 40,
+    "stationName": "길동",
+    "lat": 37.537801,
+    "lng": 127.140004
+  },
+  {
+    "id": "05_547",
+    "lineId": "05",
+    "stationCode": "547",
+    "lineSeq": 38,
+    "stationName": "천호",
+    "lat": 37.53864,
+    "lng": 127.123308
+  },
+  {
+    "id": "05_542",
+    "lineId": "05",
+    "stationCode": "542",
+    "lineSeq": 33,
+    "stationName": "답십리",
+    "lat": 37.566747,
+    "lng": 127.052704
+  },
+  {
+    "id": "05_546",
+    "lineId": "05",
+    "stationCode": "546",
+    "lineSeq": 37,
+    "stationName": "광나루",
+    "lat": 37.545303,
+    "lng": 127.10357
+  },
+  {
+    "id": "05_553",
+    "lineId": "05",
+    "stationCode": "553",
+    "lineSeq": 48,
+    "stationName": "상일동",
+    "lat": 37.556712,
+    "lng": 127.166417
+  },
+  {
+    "id": "05_541",
+    "lineId": "05",
+    "stationCode": "541",
+    "lineSeq": 32,
+    "stationName": "마장",
+    "lat": 37.5661,
+    "lng": 127.042973
+  },
+  {
+    "id": "05_538",
+    "lineId": "05",
+    "stationCode": "538",
+    "lineSeq": 29,
+    "stationName": "신금호",
+    "lat": 37.554548,
+    "lng": 127.020331
+  },
+  {
+    "id": "05_P555",
+    "lineId": "05",
+    "stationCode": "P555",
+    "lineSeq": 52,
+    "stationName": "마천",
+    "lat": 37.49499,
+    "lng": 127.152781
+  },
+  {
+    "id": "05_554",
+    "lineId": "05",
+    "stationCode": "554",
+    "lineSeq": 51,
+    "stationName": "강일",
+    "lat": 37.55749,
+    "lng": 127.17593
+  },
+  {
+    "id": "05_558",
+    "lineId": "05",
+    "stationCode": "558",
+    "lineSeq": 56,
+    "stationName": "하남검단산",
+    "lat": 37.53972,
+    "lng": 127.22345
+  },
+  {
+    "id": "05_514",
+    "lineId": "05",
+    "stationCode": "514",
+    "lineSeq": 5,
+    "stationName": "마곡",
+    "lat": 37.560183,
+    "lng": 126.825448
+  },
+  {
+    "id": "05_515",
+    "lineId": "05",
+    "stationCode": "515",
+    "lineSeq": 6,
+    "stationName": "발산",
+    "lat": 37.558598,
+    "lng": 126.837668
+  },
+  {
+    "id": "05_516",
+    "lineId": "05",
+    "stationCode": "516",
+    "lineSeq": 7,
+    "stationName": "우장산",
+    "lat": 37.548768,
+    "lng": 126.836318
+  },
+  {
+    "id": "05_518",
+    "lineId": "05",
+    "stationCode": "518",
+    "lineSeq": 9,
+    "stationName": "까치산",
+    "lat": 37.531768,
+    "lng": 126.846683
+  },
+  {
+    "id": "05_519",
+    "lineId": "05",
+    "stationCode": "519",
+    "lineSeq": 10,
+    "stationName": "신정",
+    "lat": 37.524997,
+    "lng": 126.856191
+  },
+  {
+    "id": "05_525",
+    "lineId": "05",
+    "stationCode": "525",
+    "lineSeq": 16,
+    "stationName": "신길",
+    "lat": 37.517623,
+    "lng": 126.914839
+  },
+  {
+    "id": "05_535",
+    "lineId": "05",
+    "stationCode": "535",
+    "lineSeq": 26,
+    "stationName": "을지로4가",
+    "lat": 37.567352,
+    "lng": 126.998032
+  },
+  {
+    "id": "05_537",
+    "lineId": "05",
+    "stationCode": "537",
+    "lineSeq": 28,
+    "stationName": "청구",
+    "lat": 37.560276,
+    "lng": 127.013639
+  },
+  {
+    "id": "05_536",
+    "lineId": "05",
+    "stationCode": "536",
+    "lineSeq": 27,
+    "stationName": "동대문역사문화공원",
+    "lat": 37.564665,
+    "lng": 127.005353
+  },
+  {
+    "id": "05_533",
+    "lineId": "05",
+    "stationCode": "533",
+    "lineSeq": 24,
+    "stationName": "광화문",
+    "lat": 37.571525,
+    "lng": 126.97717
+  },
+  {
+    "id": "05_532",
+    "lineId": "05",
+    "stationCode": "532",
+    "lineSeq": 23,
+    "stationName": "서대문",
+    "lat": 37.565773,
+    "lng": 126.966641
+  },
+  {
+    "id": "05_531",
+    "lineId": "05",
+    "stationCode": "531",
+    "lineSeq": 22,
+    "stationName": "충정로",
+    "lat": 37.560236,
+    "lng": 126.9629
+  },
+  {
+    "id": "05_530",
+    "lineId": "05",
+    "stationCode": "530",
+    "lineSeq": 21,
+    "stationName": "애오개",
+    "lat": 37.553736,
+    "lng": 126.95682
+  },
+  {
+    "id": "05_529",
+    "lineId": "05",
+    "stationCode": "529",
+    "lineSeq": 20,
+    "stationName": "공덕",
+    "lat": 37.544431,
+    "lng": 126.951372
+  },
+  {
+    "id": "05_548",
+    "lineId": "05",
+    "stationCode": "548",
+    "lineSeq": 39,
+    "stationName": "강동",
+    "lat": 37.535804,
+    "lng": 127.132481
+  },
+  {
+    "id": "05_534",
+    "lineId": "05",
+    "stationCode": "534",
+    "lineSeq": 25,
+    "stationName": "종로3가",
+    "lat": 37.57254,
+    "lng": 126.990305
+  },
+  {
+    "id": "05_528",
+    "lineId": "05",
+    "stationCode": "528",
+    "lineSeq": 19,
+    "stationName": "마포",
+    "lat": 37.539574,
+    "lng": 126.945932
+  },
+  {
+    "id": "05_526",
+    "lineId": "05",
+    "stationCode": "526",
+    "lineSeq": 17,
+    "stationName": "여의도",
+    "lat": 37.521747,
+    "lng": 126.924357
+  },
+  {
+    "id": "05_524",
+    "lineId": "05",
+    "stationCode": "524",
+    "lineSeq": 15,
+    "stationName": "영등포시장",
+    "lat": 37.522669,
+    "lng": 126.905139
+  },
+  {
+    "id": "05_523",
+    "lineId": "05",
+    "stationCode": "523",
+    "lineSeq": 14,
+    "stationName": "영등포구청",
+    "lat": 37.5242,
+    "lng": 126.89503
+  },
+  {
+    "id": "05_510",
+    "lineId": "05",
+    "stationCode": "510",
+    "lineSeq": 1,
+    "stationName": "방화",
+    "lat": 37.577446,
+    "lng": 126.812741
+  },
+  {
+    "id": "05_543",
+    "lineId": "05",
+    "stationCode": "543",
+    "lineSeq": 34,
+    "stationName": "장한평",
+    "lat": 37.56144,
+    "lng": 127.064623
+  },
+  {
+    "id": "05_517",
+    "lineId": "05",
+    "stationCode": "517",
+    "lineSeq": 8,
+    "stationName": "화곡",
+    "lat": 37.541513,
+    "lng": 126.840461
+  },
+  {
+    "id": "05_539",
+    "lineId": "05",
+    "stationCode": "539",
+    "lineSeq": 30,
+    "stationName": "행당",
+    "lat": 37.557322,
+    "lng": 127.029476
+  },
+  {
+    "id": "05_P553",
+    "lineId": "05",
+    "stationCode": "P553",
+    "lineSeq": 49,
+    "stationName": "개롱",
+    "lat": 37.498079,
+    "lng": 127.13482
+  },
+  {
+    "id": "05_P552",
+    "lineId": "05",
+    "stationCode": "P552",
+    "lineSeq": 47,
+    "stationName": "오금",
+    "lat": 37.502057,
+    "lng": 127.127938
+  },
+  {
+    "id": "05_527",
+    "lineId": "05",
+    "stationCode": "527",
+    "lineSeq": 18,
+    "stationName": "여의나루",
+    "lat": 37.527098,
+    "lng": 126.932901
+  },
+  {
+    "id": "05_557",
+    "lineId": "05",
+    "stationCode": "557",
+    "lineSeq": 55,
+    "stationName": "하남시청",
+    "lat": 37.54205,
+    "lng": 127.20612
+  },
+  {
+    "id": "05_556",
+    "lineId": "05",
+    "stationCode": "556",
+    "lineSeq": 54,
+    "stationName": "하남풍산",
+    "lat": 37.552034,
+    "lng": 127.203864
+  },
+  {
+    "id": "05_555",
+    "lineId": "05",
+    "stationCode": "555",
+    "lineSeq": 53,
+    "stationName": "미사",
+    "lat": 37.560927,
+    "lng": 127.193877
+  },
+  {
+    "id": "05_P551",
+    "lineId": "05",
+    "stationCode": "P551",
+    "lineSeq": 45,
+    "stationName": "방이",
+    "lat": 37.508857,
+    "lng": 127.126133
+  },
+  {
+    "id": "06_619",
+    "lineId": "06",
+    "stationCode": "619",
+    "lineSeq": 10,
+    "stationName": "월드컵경기장",
+    "lat": 37.569532,
+    "lng": 126.899298
+  },
+  {
+    "id": "06_610",
+    "lineId": "06",
+    "stationCode": "610",
+    "lineSeq": 1,
+    "stationName": "응암",
+    "lat": 37.598605,
+    "lng": 126.915577
+  },
+  {
+    "id": "06_622",
+    "lineId": "06",
+    "stationCode": "622",
+    "lineSeq": 13,
+    "stationName": "합정",
+    "lat": 37.549209,
+    "lng": 126.913366
+  },
+  {
+    "id": "06_612",
+    "lineId": "06",
+    "stationCode": "612",
+    "lineSeq": 3,
+    "stationName": "불광",
+    "lat": 37.610873,
+    "lng": 126.92939
+  },
+  {
+    "id": "06_613",
+    "lineId": "06",
+    "stationCode": "613",
+    "lineSeq": 4,
+    "stationName": "독바위",
+    "lat": 37.618456,
+    "lng": 126.933031
+  },
+  {
+    "id": "06_616",
+    "lineId": "06",
+    "stationCode": "616",
+    "lineSeq": 7,
+    "stationName": "새절",
+    "lat": 37.591148,
+    "lng": 126.913629
+  },
+  {
+    "id": "06_617",
+    "lineId": "06",
+    "stationCode": "617",
+    "lineSeq": 8,
+    "stationName": "증산",
+    "lat": 37.583876,
+    "lng": 126.909645
+  },
+  {
+    "id": "06_618",
+    "lineId": "06",
+    "stationCode": "618",
+    "lineSeq": 9,
+    "stationName": "디지털미디어시티",
+    "lat": 37.576108,
+    "lng": 126.901391
+  },
+  {
+    "id": "06_621",
+    "lineId": "06",
+    "stationCode": "621",
+    "lineSeq": 12,
+    "stationName": "망원",
+    "lat": 37.556094,
+    "lng": 126.910052
+  },
+  {
+    "id": "06_623",
+    "lineId": "06",
+    "stationCode": "623",
+    "lineSeq": 14,
+    "stationName": "상수",
+    "lat": 37.547716,
+    "lng": 126.922852
+  },
+  {
+    "id": "06_624",
+    "lineId": "06",
+    "stationCode": "624",
+    "lineSeq": 15,
+    "stationName": "광흥창",
+    "lat": 37.547456,
+    "lng": 126.931993
+  },
+  {
+    "id": "06_627",
+    "lineId": "06",
+    "stationCode": "627",
+    "lineSeq": 18,
+    "stationName": "효창공원앞",
+    "lat": 37.539233,
+    "lng": 126.961384
+  },
+  {
+    "id": "06_628",
+    "lineId": "06",
+    "stationCode": "628",
+    "lineSeq": 19,
+    "stationName": "삼각지",
+    "lat": 37.535534,
+    "lng": 126.974032
+  },
+  {
+    "id": "06_629",
+    "lineId": "06",
+    "stationCode": "629",
+    "lineSeq": 20,
+    "stationName": "녹사평",
+    "lat": 37.534675,
+    "lng": 126.986695
+  },
+  {
+    "id": "06_630",
+    "lineId": "06",
+    "stationCode": "630",
+    "lineSeq": 21,
+    "stationName": "이태원",
+    "lat": 37.534488,
+    "lng": 126.994302
+  },
+  {
+    "id": "06_631",
+    "lineId": "06",
+    "stationCode": "631",
+    "lineSeq": 22,
+    "stationName": "한강진",
+    "lat": 37.539631,
+    "lng": 127.001725
+  },
+  {
+    "id": "06_632",
+    "lineId": "06",
+    "stationCode": "632",
+    "lineSeq": 23,
+    "stationName": "버티고개",
+    "lat": 37.548013,
+    "lng": 127.007055
+  },
+  {
+    "id": "06_644",
+    "lineId": "06",
+    "stationCode": "644",
+    "lineSeq": 35,
+    "stationName": "석계",
+    "lat": 37.614872,
+    "lng": 127.065595
+  },
+  {
+    "id": "06_645",
+    "lineId": "06",
+    "stationCode": "645",
+    "lineSeq": 36,
+    "stationName": "태릉입구",
+    "lat": 37.617338,
+    "lng": 127.074735
+  },
+  {
+    "id": "06_648",
+    "lineId": "06",
+    "stationCode": "648",
+    "lineSeq": 39,
+    "stationName": "신내",
+    "lat": 37.613174,
+    "lng": 127.102231
+  },
+  {
+    "id": "06_640",
+    "lineId": "06",
+    "stationCode": "640",
+    "lineSeq": 31,
+    "stationName": "고려대",
+    "lat": 37.590508,
+    "lng": 127.036296
+  },
+  {
+    "id": "06_641",
+    "lineId": "06",
+    "stationCode": "641",
+    "lineSeq": 32,
+    "stationName": "월곡",
+    "lat": 37.601948,
+    "lng": 127.041518
+  },
+  {
+    "id": "06_646",
+    "lineId": "06",
+    "stationCode": "646",
+    "lineSeq": 37,
+    "stationName": "화랑대",
+    "lat": 37.620064,
+    "lng": 127.084689
+  },
+  {
+    "id": "06_647",
+    "lineId": "06",
+    "stationCode": "647",
+    "lineSeq": 38,
+    "stationName": "봉화산",
+    "lat": 37.617283,
+    "lng": 127.091401
+  },
+  {
+    "id": "06_614",
+    "lineId": "06",
+    "stationCode": "614",
+    "lineSeq": 5,
+    "stationName": "연신내",
+    "lat": 37.618636,
+    "lng": 126.920625
+  },
+  {
+    "id": "06_615",
+    "lineId": "06",
+    "stationCode": "615",
+    "lineSeq": 6,
+    "stationName": "구산",
+    "lat": 37.611377,
+    "lng": 126.91727
+  },
+  {
+    "id": "06_633",
+    "lineId": "06",
+    "stationCode": "633",
+    "lineSeq": 24,
+    "stationName": "약수",
+    "lat": 37.554263,
+    "lng": 127.010358
+  },
+  {
+    "id": "06_634",
+    "lineId": "06",
+    "stationCode": "634",
+    "lineSeq": 25,
+    "stationName": "청구",
+    "lat": 37.560608,
+    "lng": 127.013986
+  },
+  {
+    "id": "06_635",
+    "lineId": "06",
+    "stationCode": "635",
+    "lineSeq": 26,
+    "stationName": "신당",
+    "lat": 37.566154,
+    "lng": 127.016146
+  },
+  {
+    "id": "06_636",
+    "lineId": "06",
+    "stationCode": "636",
+    "lineSeq": 27,
+    "stationName": "동묘앞",
+    "lat": 37.572279,
+    "lng": 127.015653
+  },
+  {
+    "id": "06_637",
+    "lineId": "06",
+    "stationCode": "637",
+    "lineSeq": 28,
+    "stationName": "창신",
+    "lat": 37.579661,
+    "lng": 127.015241
+  },
+  {
+    "id": "06_638",
+    "lineId": "06",
+    "stationCode": "638",
+    "lineSeq": 29,
+    "stationName": "보문",
+    "lat": 37.585274,
+    "lng": 127.019351
+  },
+  {
+    "id": "06_639",
+    "lineId": "06",
+    "stationCode": "639",
+    "lineSeq": 30,
+    "stationName": "안암",
+    "lat": 37.586272,
+    "lng": 127.029005
+  },
+  {
+    "id": "06_642",
+    "lineId": "06",
+    "stationCode": "642",
+    "lineSeq": 33,
+    "stationName": "상월곡",
+    "lat": 37.606377,
+    "lng": 127.048491
+  },
+  {
+    "id": "06_643",
+    "lineId": "06",
+    "stationCode": "643",
+    "lineSeq": 34,
+    "stationName": "돌곶이",
+    "lat": 37.610537,
+    "lng": 127.056431
+  },
+  {
+    "id": "06_620",
+    "lineId": "06",
+    "stationCode": "620",
+    "lineSeq": 11,
+    "stationName": "마포구청",
+    "lat": 37.563515,
+    "lng": 126.903343
+  },
+  {
+    "id": "06_625",
+    "lineId": "06",
+    "stationCode": "625",
+    "lineSeq": 16,
+    "stationName": "대흥",
+    "lat": 37.547771,
+    "lng": 126.942069
+  },
+  {
+    "id": "06_626",
+    "lineId": "06",
+    "stationCode": "626",
+    "lineSeq": 17,
+    "stationName": "공덕",
+    "lat": 37.543555,
+    "lng": 126.951678
+  },
+  {
+    "id": "06_611",
+    "lineId": "06",
+    "stationCode": "611",
+    "lineSeq": 2,
+    "stationName": "역촌",
+    "lat": 37.606021,
+    "lng": 126.922744
+  },
+  {
+    "id": "07_710",
+    "lineId": "07",
+    "stationCode": "710",
+    "lineSeq": 2,
+    "stationName": "도봉산",
+    "lat": 37.689241,
+    "lng": 127.046509
+  },
+  {
+    "id": "07_721",
+    "lineId": "07",
+    "stationCode": "721",
+    "lineSeq": 13,
+    "stationName": "면목",
+    "lat": 37.588579,
+    "lng": 127.087503
+  },
+  {
+    "id": "07_722",
+    "lineId": "07",
+    "stationCode": "722",
+    "lineSeq": 14,
+    "stationName": "사가정",
+    "lat": 37.580894,
+    "lng": 127.088478
+  },
+  {
+    "id": "07_723",
+    "lineId": "07",
+    "stationCode": "723",
+    "lineSeq": 15,
+    "stationName": "용마산",
+    "lat": 37.573647,
+    "lng": 127.086727
+  },
+  {
+    "id": "07_724",
+    "lineId": "07",
+    "stationCode": "724",
+    "lineSeq": 16,
+    "stationName": "중곡",
+    "lat": 37.565923,
+    "lng": 127.08432
+  },
+  {
+    "id": "07_726",
+    "lineId": "07",
+    "stationCode": "726",
+    "lineSeq": 18,
+    "stationName": "어린이대공원",
+    "lat": 37.548014,
+    "lng": 127.074658
+  },
+  {
+    "id": "07_752",
+    "lineId": "07",
+    "stationCode": "752",
+    "lineSeq": 44,
+    "stationName": "부천종합운동장",
+    "lat": 37.50538,
+    "lng": 126.797337
+  },
+  {
+    "id": "07_740",
+    "lineId": "07",
+    "stationCode": "740",
+    "lineSeq": 32,
+    "stationName": "장승배기",
+    "lat": 37.504898,
+    "lng": 126.93915
+  },
+  {
+    "id": "07_733",
+    "lineId": "07",
+    "stationCode": "733",
+    "lineSeq": 25,
+    "stationName": "반포",
+    "lat": 37.508178,
+    "lng": 127.011727
+  },
+  {
+    "id": "07_745",
+    "lineId": "07",
+    "stationCode": "745",
+    "lineSeq": 37,
+    "stationName": "남구로",
+    "lat": 37.486056,
+    "lng": 126.887249
+  },
+  {
+    "id": "07_709",
+    "lineId": "07",
+    "stationCode": "709",
+    "lineSeq": 1,
+    "stationName": "장암",
+    "lat": 37.700109,
+    "lng": 127.053196
+  },
+  {
+    "id": "07_739",
+    "lineId": "07",
+    "stationCode": "739",
+    "lineSeq": 31,
+    "stationName": "상도",
+    "lat": 37.502834,
+    "lng": 126.94791
+  },
+  {
+    "id": "07_738",
+    "lineId": "07",
+    "stationCode": "738",
+    "lineSeq": 30,
+    "stationName": "숭실대입구",
+    "lat": 37.496029,
+    "lng": 126.953822
+  },
+  {
+    "id": "07_720",
+    "lineId": "07",
+    "stationCode": "720",
+    "lineSeq": 12,
+    "stationName": "상봉",
+    "lat": 37.595577,
+    "lng": 127.085716
+  },
+  {
+    "id": "07_719",
+    "lineId": "07",
+    "stationCode": "719",
+    "lineSeq": 11,
+    "stationName": "중화",
+    "lat": 37.602545,
+    "lng": 127.079264
+  },
+  {
+    "id": "07_718",
+    "lineId": "07",
+    "stationCode": "718",
+    "lineSeq": 10,
+    "stationName": "먹골",
+    "lat": 37.610637,
+    "lng": 127.077725
+  },
+  {
+    "id": "07_717",
+    "lineId": "07",
+    "stationCode": "717",
+    "lineSeq": 9,
+    "stationName": "태릉입구",
+    "lat": 37.618294,
+    "lng": 127.075397
+  },
+  {
+    "id": "07_716",
+    "lineId": "07",
+    "stationCode": "716",
+    "lineSeq": 8,
+    "stationName": "공릉",
+    "lat": 37.625742,
+    "lng": 127.072896
+  },
+  {
+    "id": "07_715",
+    "lineId": "07",
+    "stationCode": "715",
+    "lineSeq": 7,
+    "stationName": "하계",
+    "lat": 37.636352,
+    "lng": 127.06799
+  },
+  {
+    "id": "07_712",
+    "lineId": "07",
+    "stationCode": "712",
+    "lineSeq": 4,
+    "stationName": "마들",
+    "lat": 37.66494,
+    "lng": 127.057675
+  },
+  {
+    "id": "07_759",
+    "lineId": "07",
+    "stationCode": "759",
+    "lineSeq": 51,
+    "stationName": "부평구청",
+    "lat": 37.507394,
+    "lng": 126.721599
+  },
+  {
+    "id": "07_750",
+    "lineId": "07",
+    "stationCode": "750",
+    "lineSeq": 42,
+    "stationName": "온수",
+    "lat": 37.492092,
+    "lng": 126.823023
+  },
+  {
+    "id": "07_725",
+    "lineId": "07",
+    "stationCode": "725",
+    "lineSeq": 17,
+    "stationName": "군자",
+    "lat": 37.556897,
+    "lng": 127.079338
+  },
+  {
+    "id": "07_747",
+    "lineId": "07",
+    "stationCode": "747",
+    "lineSeq": 39,
+    "stationName": "철산",
+    "lat": 37.47605,
+    "lng": 126.867911
+  },
+  {
+    "id": "07_746",
+    "lineId": "07",
+    "stationCode": "746",
+    "lineSeq": 38,
+    "stationName": "가산디지털단지",
+    "lat": 37.480338,
+    "lng": 126.882656
+  },
+  {
+    "id": "07_711",
+    "lineId": "07",
+    "stationCode": "711",
+    "lineSeq": 3,
+    "stationName": "수락산",
+    "lat": 37.67785,
+    "lng": 127.055315
+  },
+  {
+    "id": "07_734",
+    "lineId": "07",
+    "stationCode": "734",
+    "lineSeq": 26,
+    "stationName": "고속터미널",
+    "lat": 37.503367,
+    "lng": 127.005068
+  },
+  {
+    "id": "07_735",
+    "lineId": "07",
+    "stationCode": "735",
+    "lineSeq": 27,
+    "stationName": "내방",
+    "lat": 37.487618,
+    "lng": 126.993513
+  },
+  {
+    "id": "07_736",
+    "lineId": "07",
+    "stationCode": "736",
+    "lineSeq": 28,
+    "stationName": "이수",
+    "lat": 37.485196,
+    "lng": 126.981605
+  },
+  {
+    "id": "07_741",
+    "lineId": "07",
+    "stationCode": "741",
+    "lineSeq": 33,
+    "stationName": "신대방삼거리",
+    "lat": 37.499701,
+    "lng": 126.928276
+  },
+  {
+    "id": "07_749",
+    "lineId": "07",
+    "stationCode": "749",
+    "lineSeq": 41,
+    "stationName": "천왕",
+    "lat": 37.486637,
+    "lng": 126.838713
+  },
+  {
+    "id": "07_748",
+    "lineId": "07",
+    "stationCode": "748",
+    "lineSeq": 40,
+    "stationName": "광명사거리",
+    "lat": 37.479252,
+    "lng": 126.854876
+  },
+  {
+    "id": "07_737",
+    "lineId": "07",
+    "stationCode": "737",
+    "lineSeq": 29,
+    "stationName": "남성",
+    "lat": 37.484596,
+    "lng": 126.971251
+  },
+  {
+    "id": "07_742",
+    "lineId": "07",
+    "stationCode": "742",
+    "lineSeq": 34,
+    "stationName": "보라매",
+    "lat": 37.499872,
+    "lng": 126.920428
+  },
+  {
+    "id": "07_754",
+    "lineId": "07",
+    "stationCode": "754",
+    "lineSeq": 46,
+    "stationName": "신중동",
+    "lat": 37.503048,
+    "lng": 126.77596
+  },
+  {
+    "id": "07_714",
+    "lineId": "07",
+    "stationCode": "714",
+    "lineSeq": 6,
+    "stationName": "중계",
+    "lat": 37.644583,
+    "lng": 127.064303
+  },
+  {
+    "id": "07_713",
+    "lineId": "07",
+    "stationCode": "713",
+    "lineSeq": 5,
+    "stationName": "노원",
+    "lat": 37.654836,
+    "lng": 127.060462
+  },
+  {
+    "id": "07_732",
+    "lineId": "07",
+    "stationCode": "732",
+    "lineSeq": 24,
+    "stationName": "논현",
+    "lat": 37.511093,
+    "lng": 127.021415
+  },
+  {
+    "id": "07_731",
+    "lineId": "07",
+    "stationCode": "731",
+    "lineSeq": 23,
+    "stationName": "학동",
+    "lat": 37.514229,
+    "lng": 127.031656
+  },
+  {
+    "id": "07_730",
+    "lineId": "07",
+    "stationCode": "730",
+    "lineSeq": 22,
+    "stationName": "강남구청",
+    "lat": 37.517179,
+    "lng": 127.041255
+  },
+  {
+    "id": "07_729",
+    "lineId": "07",
+    "stationCode": "729",
+    "lineSeq": 21,
+    "stationName": "청담",
+    "lat": 37.519365,
+    "lng": 127.05335
+  },
+  {
+    "id": "07_728",
+    "lineId": "07",
+    "stationCode": "728",
+    "lineSeq": 20,
+    "stationName": "자양",
+    "lat": 37.53154,
+    "lng": 127.066704
+  },
+  {
+    "id": "07_727",
+    "lineId": "07",
+    "stationCode": "727",
+    "lineSeq": 19,
+    "stationName": "건대입구",
+    "lat": 37.540786,
+    "lng": 127.071011
+  },
+  {
+    "id": "07_743",
+    "lineId": "07",
+    "stationCode": "743",
+    "lineSeq": 35,
+    "stationName": "신풍",
+    "lat": 37.50008,
+    "lng": 126.90993
+  },
+  {
+    "id": "07_744",
+    "lineId": "07",
+    "stationCode": "744",
+    "lineSeq": 36,
+    "stationName": "대림",
+    "lat": 37.493013,
+    "lng": 126.897075
+  },
+  {
+    "id": "07_761",
+    "lineId": "07",
+    "stationCode": "761",
+    "lineSeq": 53,
+    "stationName": "석남",
+    "lat": 37.5062285,
+    "lng": 126.6762813
+  },
+  {
+    "id": "07_760",
+    "lineId": "07",
+    "stationCode": "760",
+    "lineSeq": 52,
+    "stationName": "산곡",
+    "lat": 37.5086,
+    "lng": 126.7035277
+  },
+  {
+    "id": "07_758",
+    "lineId": "07",
+    "stationCode": "758",
+    "lineSeq": 50,
+    "stationName": "굴포천",
+    "lat": 37.506997,
+    "lng": 126.73128
+  },
+  {
+    "id": "07_757",
+    "lineId": "07",
+    "stationCode": "757",
+    "lineSeq": 49,
+    "stationName": "삼산체육관",
+    "lat": 37.506411,
+    "lng": 126.742153
+  },
+  {
+    "id": "07_756",
+    "lineId": "07",
+    "stationCode": "756",
+    "lineSeq": 48,
+    "stationName": "상동",
+    "lat": 37.505781,
+    "lng": 126.753083
+  },
+  {
+    "id": "07_751",
+    "lineId": "07",
+    "stationCode": "751",
+    "lineSeq": 43,
+    "stationName": "까치울",
+    "lat": 37.506207,
+    "lng": 126.810939
+  },
+  {
+    "id": "07_755",
+    "lineId": "07",
+    "stationCode": "755",
+    "lineSeq": 47,
+    "stationName": "부천시청",
+    "lat": 37.504631,
+    "lng": 126.763538
+  },
+  {
+    "id": "07_753",
+    "lineId": "07",
+    "stationCode": "753",
+    "lineSeq": 45,
+    "stationName": "춘의",
+    "lat": 37.503663,
+    "lng": 126.787036
+  },
+  {
+    "id": "08_820",
+    "lineId": "08",
+    "stationCode": "820",
+    "lineSeq": 17,
+    "stationName": "복정",
+    "lat": 37.471052,
+    "lng": 127.126732
+  },
+  {
+    "id": "08_821",
+    "lineId": "08",
+    "stationCode": "821",
+    "lineSeq": 18,
+    "stationName": "남위례",
+    "lat": 37.4624,
+    "lng": 127.13977
+  },
+  {
+    "id": "08_818",
+    "lineId": "08",
+    "stationCode": "818",
+    "lineSeq": 15,
+    "stationName": "문정",
+    "lat": 37.485855,
+    "lng": 127.1225
+  },
+  {
+    "id": "08_816",
+    "lineId": "08",
+    "stationCode": "816",
+    "lineSeq": 13,
+    "stationName": "송파",
+    "lat": 37.499703,
+    "lng": 127.112183
+  },
+  {
+    "id": "08_808",
+    "lineId": "08",
+    "stationCode": "808",
+    "lineSeq": 5,
+    "stationName": "장자호수공원",
+    "lat": 37.58738,
+    "lng": 127.13794
+  },
+  {
+    "id": "08_817",
+    "lineId": "08",
+    "stationCode": "817",
+    "lineSeq": 14,
+    "stationName": "가락시장",
+    "lat": 37.492888,
+    "lng": 127.118398
+  },
+  {
+    "id": "08_819",
+    "lineId": "08",
+    "stationCode": "819",
+    "lineSeq": 16,
+    "stationName": "장지",
+    "lat": 37.478703,
+    "lng": 127.126191
+  },
+  {
+    "id": "08_806",
+    "lineId": "08",
+    "stationCode": "806",
+    "lineSeq": 3,
+    "stationName": "동구릉",
+    "lat": 37.61105,
+    "lng": 127.13793
+  },
+  {
+    "id": "08_807",
+    "lineId": "08",
+    "stationCode": "807",
+    "lineSeq": 4,
+    "stationName": "구리",
+    "lat": 37.60262,
+    "lng": 127.1407
+  },
+  {
+    "id": "08_805",
+    "lineId": "08",
+    "stationCode": "805",
+    "lineSeq": 2,
+    "stationName": "다산",
+    "lat": 37.62429,
+    "lng": 127.14973
+  },
+  {
+    "id": "08_804",
+    "lineId": "08",
+    "stationCode": "804",
+    "lineSeq": 1,
+    "stationName": "별내",
+    "lat": 37.64232,
+    "lng": 127.1276
+  },
+  {
+    "id": "08_814",
+    "lineId": "08",
+    "stationCode": "814",
+    "lineSeq": 11,
+    "stationName": "잠실",
+    "lat": 37.514692,
+    "lng": 127.104338
+  },
+  {
+    "id": "08_813",
+    "lineId": "08",
+    "stationCode": "813",
+    "lineSeq": 10,
+    "stationName": "몽촌토성",
+    "lat": 37.517409,
+    "lng": 127.112359
+  },
+  {
+    "id": "08_812",
+    "lineId": "08",
+    "stationCode": "812",
+    "lineSeq": 9,
+    "stationName": "강동구청",
+    "lat": 37.530341,
+    "lng": 127.120508
+  },
+  {
+    "id": "08_811",
+    "lineId": "08",
+    "stationCode": "811",
+    "lineSeq": 8,
+    "stationName": "천호",
+    "lat": 37.538113,
+    "lng": 127.123254
+  },
+  {
+    "id": "08_810",
+    "lineId": "08",
+    "stationCode": "810",
+    "lineSeq": 7,
+    "stationName": "암사",
+    "lat": 37.55021,
+    "lng": 127.127562
+  },
+  {
+    "id": "08_809",
+    "lineId": "08",
+    "stationCode": "809",
+    "lineSeq": 6,
+    "stationName": "암사역사공원",
+    "lat": 37.55695,
+    "lng": 127.13702
+  },
+  {
+    "id": "08_827",
+    "lineId": "08",
+    "stationCode": "827",
+    "lineSeq": 24,
+    "stationName": "모란",
+    "lat": 37.433824,
+    "lng": 127.129837
+  },
+  {
+    "id": "08_826",
+    "lineId": "08",
+    "stationCode": "826",
+    "lineSeq": 23,
+    "stationName": "수진",
+    "lat": 37.437428,
+    "lng": 127.140722
+  },
+  {
+    "id": "08_825",
+    "lineId": "08",
+    "stationCode": "825",
+    "lineSeq": 22,
+    "stationName": "신흥",
+    "lat": 37.440918,
+    "lng": 127.147564
+  },
+  {
+    "id": "08_824",
+    "lineId": "08",
+    "stationCode": "824",
+    "lineSeq": 21,
+    "stationName": "단대오거리",
+    "lat": 37.44521,
+    "lng": 127.156866
+  },
+  {
+    "id": "08_823",
+    "lineId": "08",
+    "stationCode": "823",
+    "lineSeq": 20,
+    "stationName": "남한산성입구",
+    "lat": 37.451535,
+    "lng": 127.159816
+  },
+  {
+    "id": "08_822",
+    "lineId": "08",
+    "stationCode": "822",
+    "lineSeq": 19,
+    "stationName": "산성",
+    "lat": 37.457122,
+    "lng": 127.149908
+  },
+  {
+    "id": "08_815",
+    "lineId": "08",
+    "stationCode": "815",
+    "lineSeq": 12,
+    "stationName": "석촌",
+    "lat": 37.505557,
+    "lng": 127.106832
+  },
+  {
+    "id": "09_909",
+    "lineId": "09",
+    "stationCode": "909",
+    "lineSeq": 9,
+    "stationName": "등촌",
+    "lat": 37.550632,
+    "lng": 126.865689
+  },
+  {
+    "id": "09_930",
+    "lineId": "09",
+    "stationCode": "930",
+    "lineSeq": 30,
+    "stationName": "종합운동장",
+    "lat": 37.511426,
+    "lng": 127.076275
+  },
+  {
+    "id": "09_929",
+    "lineId": "09",
+    "stationCode": "929",
+    "lineSeq": 29,
+    "stationName": "봉은사",
+    "lat": 37.514219,
+    "lng": 127.060245
+  },
+  {
+    "id": "09_928",
+    "lineId": "09",
+    "stationCode": "928",
+    "lineSeq": 28,
+    "stationName": "삼성중앙",
+    "lat": 37.513011,
+    "lng": 127.053282
+  },
+  {
+    "id": "09_924",
+    "lineId": "09",
+    "stationCode": "924",
+    "lineSeq": 24,
+    "stationName": "사평",
+    "lat": 37.504206,
+    "lng": 127.015259
+  },
+  {
+    "id": "09_923",
+    "lineId": "09",
+    "stationCode": "923",
+    "lineSeq": 23,
+    "stationName": "고속터미널",
+    "lat": 37.50598,
+    "lng": 127.004403
+  },
+  {
+    "id": "09_922",
+    "lineId": "09",
+    "stationCode": "922",
+    "lineSeq": 22,
+    "stationName": "신반포",
+    "lat": 37.503415,
+    "lng": 126.995925
+  },
+  {
+    "id": "09_921",
+    "lineId": "09",
+    "stationCode": "921",
+    "lineSeq": 21,
+    "stationName": "구반포",
+    "lat": 37.501364,
+    "lng": 126.987332
+  },
+  {
+    "id": "09_918",
+    "lineId": "09",
+    "stationCode": "918",
+    "lineSeq": 18,
+    "stationName": "노들",
+    "lat": 37.512887,
+    "lng": 126.953222
+  },
+  {
+    "id": "09_919",
+    "lineId": "09",
+    "stationCode": "919",
+    "lineSeq": 19,
+    "stationName": "흑석",
+    "lat": 37.50877,
+    "lng": 126.963708
+  },
+  {
+    "id": "09_920",
+    "lineId": "09",
+    "stationCode": "920",
+    "lineSeq": 20,
+    "stationName": "동작",
+    "lat": 37.502878,
+    "lng": 126.978153
+  },
+  {
+    "id": "09_933",
+    "lineId": "09",
+    "stationCode": "933",
+    "lineSeq": 33,
+    "stationName": "석촌",
+    "lat": 37.505208,
+    "lng": 127.10704
+  },
+  {
+    "id": "09_934",
+    "lineId": "09",
+    "stationCode": "934",
+    "lineSeq": 34,
+    "stationName": "송파나루",
+    "lat": 37.510372,
+    "lng": 127.112216
+  },
+  {
+    "id": "09_935",
+    "lineId": "09",
+    "stationCode": "935",
+    "lineSeq": 35,
+    "stationName": "한성백제",
+    "lat": 37.516404,
+    "lng": 127.116503
+  },
+  {
+    "id": "09_925",
+    "lineId": "09",
+    "stationCode": "925",
+    "lineSeq": 25,
+    "stationName": "신논현",
+    "lat": 37.504598,
+    "lng": 127.02506
+  },
+  {
+    "id": "09_926",
+    "lineId": "09",
+    "stationCode": "926",
+    "lineSeq": 26,
+    "stationName": "언주",
+    "lat": 37.507287,
+    "lng": 127.033868
+  },
+  {
+    "id": "09_927",
+    "lineId": "09",
+    "stationCode": "927",
+    "lineSeq": 27,
+    "stationName": "선정릉",
+    "lat": 37.510297,
+    "lng": 127.043999
+  },
+  {
+    "id": "09_916",
+    "lineId": "09",
+    "stationCode": "916",
+    "lineSeq": 16,
+    "stationName": "샛강",
+    "lat": 37.517274,
+    "lng": 126.928422
+  },
+  {
+    "id": "09_936",
+    "lineId": "09",
+    "stationCode": "936",
+    "lineSeq": 36,
+    "stationName": "올림픽공원",
+    "lat": 37.516269,
+    "lng": 127.130288
+  },
+  {
+    "id": "09_917",
+    "lineId": "09",
+    "stationCode": "917",
+    "lineSeq": 17,
+    "stationName": "노량진",
+    "lat": 37.513534,
+    "lng": 126.941005
+  },
+  {
+    "id": "09_901",
+    "lineId": "09",
+    "stationCode": "901",
+    "lineSeq": 1,
+    "stationName": "개화",
+    "lat": 37.578608,
+    "lng": 126.798153
+  },
+  {
+    "id": "09_902",
+    "lineId": "09",
+    "stationCode": "902",
+    "lineSeq": 2,
+    "stationName": "김포공항",
+    "lat": 37.561916,
+    "lng": 126.802152
+  },
+  {
+    "id": "09_903",
+    "lineId": "09",
+    "stationCode": "903",
+    "lineSeq": 3,
+    "stationName": "공항시장",
+    "lat": 37.563726,
+    "lng": 126.810678
+  },
+  {
+    "id": "09_904",
+    "lineId": "09",
+    "stationCode": "904",
+    "lineSeq": 4,
+    "stationName": "신방화",
+    "lat": 37.567532,
+    "lng": 126.816601
+  },
+  {
+    "id": "09_912",
+    "lineId": "09",
+    "stationCode": "912",
+    "lineSeq": 12,
+    "stationName": "선유도",
+    "lat": 37.53802,
+    "lng": 126.893525
+  },
+  {
+    "id": "09_913",
+    "lineId": "09",
+    "stationCode": "913",
+    "lineSeq": 13,
+    "stationName": "당산",
+    "lat": 37.533406,
+    "lng": 126.902809
+  },
+  {
+    "id": "09_938",
+    "lineId": "09",
+    "stationCode": "938",
+    "lineSeq": 38,
+    "stationName": "중앙보훈병원",
+    "lat": 37.529191,
+    "lng": 127.148739
+  },
+  {
+    "id": "09_937",
+    "lineId": "09",
+    "stationCode": "937",
+    "lineSeq": 37,
+    "stationName": "둔촌오륜",
+    "lat": 37.519683,
+    "lng": 127.137989
+  },
+  {
+    "id": "09_932",
+    "lineId": "09",
+    "stationCode": "932",
+    "lineSeq": 32,
+    "stationName": "석촌고분",
+    "lat": 37.502558,
+    "lng": 127.097033
+  },
+  {
+    "id": "09_911",
+    "lineId": "09",
+    "stationCode": "911",
+    "lineSeq": 11,
+    "stationName": "신목동",
+    "lat": 37.544277,
+    "lng": 126.88308
+  },
+  {
+    "id": "09_910",
+    "lineId": "09",
+    "stationCode": "910",
+    "lineSeq": 10,
+    "stationName": "염창",
+    "lat": 37.546936,
+    "lng": 126.874916
+  },
+  {
+    "id": "09_931",
+    "lineId": "09",
+    "stationCode": "931",
+    "lineSeq": 31,
+    "stationName": "삼전",
+    "lat": 37.504738,
+    "lng": 127.088025
+  },
+  {
+    "id": "09_908",
+    "lineId": "09",
+    "stationCode": "908",
+    "lineSeq": 8,
+    "stationName": "증미",
+    "lat": 37.557402,
+    "lng": 126.861939
+  },
+  {
+    "id": "09_907",
+    "lineId": "09",
+    "stationCode": "907",
+    "lineSeq": 7,
+    "stationName": "가양",
+    "lat": 37.561391,
+    "lng": 126.854456
+  },
+  {
+    "id": "09_906",
+    "lineId": "09",
+    "stationCode": "906",
+    "lineSeq": 6,
+    "stationName": "양천향교",
+    "lat": 37.568381,
+    "lng": 126.841333
+  },
+  {
+    "id": "09_905",
+    "lineId": "09",
+    "stationCode": "905",
+    "lineSeq": 5,
+    "stationName": "마곡나루",
+    "lat": 37.566778,
+    "lng": 126.82731
+  },
+  {
+    "id": "09_915",
+    "lineId": "09",
+    "stationCode": "915",
+    "lineSeq": 15,
+    "stationName": "여의도",
+    "lat": 37.52176,
+    "lng": 126.92403
+  },
+  {
+    "id": "09_914",
+    "lineId": "09",
+    "stationCode": "914",
+    "lineSeq": 14,
+    "stationName": "국회의사당",
+    "lat": 37.528105,
+    "lng": 126.917874
+  },
+  {
+    "id": "GA_X106",
+    "lineId": "GA",
+    "stationCode": "X106",
+    "lineSeq": 5,
+    "stationName": "서울",
+    "lat": 37.55569,
+    "lng": 126.97296
+  },
+  {
+    "id": "GA_X110",
+    "lineId": "GA",
+    "stationCode": "X110",
+    "lineSeq": 3,
+    "stationName": "구성",
+    "lat": 37.29913,
+    "lng": 127.10389
+  },
+  {
+    "id": "GA_X105",
+    "lineId": "GA",
+    "stationCode": "X105",
+    "lineSeq": 6,
+    "stationName": "연신내",
+    "lat": 37.61878,
+    "lng": 126.9213
+  },
+  {
+    "id": "GA_X102",
+    "lineId": "GA",
+    "stationCode": "X102",
+    "lineSeq": 8,
+    "stationName": "킨텍스",
+    "lat": 37.66532,
+    "lng": 126.74843
+  },
+  {
+    "id": "GA_X103",
+    "lineId": "GA",
+    "stationCode": "X103",
+    "lineSeq": 7,
+    "stationName": "대곡",
+    "lat": 37.63191,
+    "lng": 126.81113
+  },
+  {
+    "id": "GA_X111",
+    "lineId": "GA",
+    "stationCode": "X111",
+    "lineSeq": 4,
+    "stationName": "동탄",
+    "lat": 37.20034,
+    "lng": 127.09569
+  },
+  {
+    "id": "GA_X108",
+    "lineId": "GA",
+    "stationCode": "X108",
+    "lineSeq": 1,
+    "stationName": "수서",
+    "lat": 37.48637,
+    "lng": 127.10161
+  },
+  {
+    "id": "GA_X109",
+    "lineId": "GA",
+    "stationCode": "X109",
+    "lineSeq": 2,
+    "stationName": "성남",
+    "lat": 37.39467,
+    "lng": 127.12058
+  },
+  {
+    "id": "GA_X101",
+    "lineId": "GA",
+    "stationCode": "X101",
+    "lineSeq": 9,
+    "stationName": "운정중앙",
+    "lat": 37.71667,
+    "lng": 126.72833
+  },
+  {
+    "id": "GG_K415",
+    "lineId": "GG",
+    "stationCode": "K415",
+    "lineSeq": 7,
+    "stationName": "곤지암",
+    "lat": 37.351315,
+    "lng": 127.34674
+  },
+  {
+    "id": "GG_K413",
+    "lineId": "GG",
+    "stationCode": "K413",
+    "lineSeq": 5,
+    "stationName": "경기광주",
+    "lat": 37.399907,
+    "lng": 127.25263
+  },
+  {
+    "id": "GG_K420",
+    "lineId": "GG",
+    "stationCode": "K420",
+    "lineSeq": 12,
+    "stationName": "여주",
+    "lat": 37.282308,
+    "lng": 127.628816
+  },
+  {
+    "id": "GG_K410",
+    "lineId": "GG",
+    "stationCode": "K410",
+    "lineSeq": 2,
+    "stationName": "성남",
+    "lat": 37.39468,
+    "lng": 127.11945
+  },
+  {
+    "id": "GG_K416",
+    "lineId": "GG",
+    "stationCode": "K416",
+    "lineSeq": 8,
+    "stationName": "신둔도예촌",
+    "lat": 37.317185,
+    "lng": 127.40476
+  },
+  {
+    "id": "GG_K414",
+    "lineId": "GG",
+    "stationCode": "K414",
+    "lineSeq": 6,
+    "stationName": "초월",
+    "lat": 37.374419,
+    "lng": 127.299
+  },
+  {
+    "id": "GG_K409",
+    "lineId": "GG",
+    "stationCode": "K409",
+    "lineSeq": 1,
+    "stationName": "판교",
+    "lat": 37.394761,
+    "lng": 127.111217
+  },
+  {
+    "id": "GG_K411",
+    "lineId": "GG",
+    "stationCode": "K411",
+    "lineSeq": 3,
+    "stationName": "이매",
+    "lat": 37.394655,
+    "lng": 127.127819
+  },
+  {
+    "id": "GG_K419",
+    "lineId": "GG",
+    "stationCode": "K419",
+    "lineSeq": 11,
+    "stationName": "세종대왕릉",
+    "lat": 37.295309,
+    "lng": 127.570938
+  },
+  {
+    "id": "GG_K418",
+    "lineId": "GG",
+    "stationCode": "K418",
+    "lineSeq": 10,
+    "stationName": "부발",
+    "lat": 37.260192,
+    "lng": 127.490277
+  },
+  {
+    "id": "GG_K412",
+    "lineId": "GG",
+    "stationCode": "K412",
+    "lineSeq": 4,
+    "stationName": "삼동",
+    "lat": 37.409522,
+    "lng": 127.20336
+  },
+  {
+    "id": "GG_K417",
+    "lineId": "GG",
+    "stationCode": "K417",
+    "lineSeq": 9,
+    "stationName": "이천",
+    "lat": 37.265579,
+    "lng": 127.44226
+  },
+  {
+    "id": "GJ_K135",
+    "lineId": "GJ",
+    "stationCode": "K135",
+    "lineSeq": 54,
+    "stationName": "양평",
+    "lat": 37.492773,
+    "lng": 127.491837
+  },
+  {
+    "id": "GJ_K314",
+    "lineId": "GJ",
+    "stationCode": "K314",
+    "lineSeq": 25,
+    "stationName": "홍대입구",
+    "lat": 37.557641,
+    "lng": 126.926683
+  },
+  {
+    "id": "GJ_K136",
+    "lineId": "GJ",
+    "stationCode": "K136",
+    "lineSeq": 55,
+    "stationName": "원덕",
+    "lat": 37.468672,
+    "lng": 127.547076
+  },
+  {
+    "id": "GJ_K117",
+    "lineId": "GJ",
+    "stationCode": "K117",
+    "lineSeq": 36,
+    "stationName": "청량리",
+    "lat": 37.579956,
+    "lng": 127.044585
+  },
+  {
+    "id": "GJ_K113",
+    "lineId": "GJ",
+    "stationCode": "K113",
+    "lineSeq": 32,
+    "stationName": "한남",
+    "lat": 37.52943,
+    "lng": 127.009169
+  },
+  {
+    "id": "GJ_K114",
+    "lineId": "GJ",
+    "stationCode": "K114",
+    "lineSeq": 33,
+    "stationName": "옥수",
+    "lat": 37.541684,
+    "lng": 127.017269
+  },
+  {
+    "id": "GJ_K110",
+    "lineId": "GJ",
+    "stationCode": "K110",
+    "lineSeq": 29,
+    "stationName": "용산",
+    "lat": 37.529849,
+    "lng": 126.964561
+  },
+  {
+    "id": "GJ_K137",
+    "lineId": "GJ",
+    "stationCode": "K137",
+    "lineSeq": 56,
+    "stationName": "용문",
+    "lat": 37.48223,
+    "lng": 127.594647
+  },
+  {
+    "id": "GJ_K138",
+    "lineId": "GJ",
+    "stationCode": "K138",
+    "lineSeq": 57,
+    "stationName": "지평",
+    "lat": 37.476393,
+    "lng": 127.629874
+  },
+  {
+    "id": "GJ_K121",
+    "lineId": "GJ",
+    "stationCode": "K121",
+    "lineSeq": 40,
+    "stationName": "망우",
+    "lat": 37.59955,
+    "lng": 127.091909
+  },
+  {
+    "id": "GJ_K120",
+    "lineId": "GJ",
+    "stationCode": "K120",
+    "lineSeq": 39,
+    "stationName": "상봉",
+    "lat": 37.596678,
+    "lng": 127.08504
+  },
+  {
+    "id": "GJ_K119",
+    "lineId": "GJ",
+    "stationCode": "K119",
+    "lineSeq": 38,
+    "stationName": "중랑",
+    "lat": 37.594917,
+    "lng": 127.076116
+  },
+  {
+    "id": "GJ_K315",
+    "lineId": "GJ",
+    "stationCode": "K315",
+    "lineSeq": 24,
+    "stationName": "가좌",
+    "lat": 37.568491,
+    "lng": 126.915487
+  },
+  {
+    "id": "GJ_K316",
+    "lineId": "GJ",
+    "stationCode": "K316",
+    "lineSeq": 22,
+    "stationName": "디지털미디어시티",
+    "lat": 37.577475,
+    "lng": 126.900453
+  },
+  {
+    "id": "GJ_K317",
+    "lineId": "GJ",
+    "stationCode": "K317",
+    "lineSeq": 20,
+    "stationName": "수색",
+    "lat": 37.580842,
+    "lng": 126.895611
+  },
+  {
+    "id": "GJ_K318",
+    "lineId": "GJ",
+    "stationCode": "K318",
+    "lineSeq": 19,
+    "stationName": "한국항공대",
+    "lat": 37.602888,
+    "lng": 126.868387
+  },
+  {
+    "id": "GJ_K319",
+    "lineId": "GJ",
+    "stationCode": "K319",
+    "lineSeq": 18,
+    "stationName": "강매",
+    "lat": 37.612314,
+    "lng": 126.843223
+  },
+  {
+    "id": "GJ_K320",
+    "lineId": "GJ",
+    "stationCode": "K320",
+    "lineSeq": 17,
+    "stationName": "행신",
+    "lat": 37.612102,
+    "lng": 126.834146
+  },
+  {
+    "id": "GJ_K325",
+    "lineId": "GJ",
+    "stationCode": "K325",
+    "lineSeq": 12,
+    "stationName": "풍산",
+    "lat": 37.672346,
+    "lng": 126.786243
+  },
+  {
+    "id": "GJ_K326",
+    "lineId": "GJ",
+    "stationCode": "K326",
+    "lineSeq": 11,
+    "stationName": "일산",
+    "lat": 37.682077,
+    "lng": 126.769846
+  },
+  {
+    "id": "GJ_K327",
+    "lineId": "GJ",
+    "stationCode": "K327",
+    "lineSeq": 10,
+    "stationName": "탄현",
+    "lat": 37.694023,
+    "lng": 126.761086
+  },
+  {
+    "id": "GJ_K328",
+    "lineId": "GJ",
+    "stationCode": "K328",
+    "lineSeq": 9,
+    "stationName": "야당",
+    "lat": 37.712327,
+    "lng": 126.761356
+  },
+  {
+    "id": "GJ_K329",
+    "lineId": "GJ",
+    "stationCode": "K329",
+    "lineSeq": 8,
+    "stationName": "운정",
+    "lat": 37.725826,
+    "lng": 126.767257
+  },
+  {
+    "id": "GJ_K330",
+    "lineId": "GJ",
+    "stationCode": "K330",
+    "lineSeq": 7,
+    "stationName": "금릉",
+    "lat": 37.751322,
+    "lng": 126.765347
+  },
+  {
+    "id": "GJ_K331",
+    "lineId": "GJ",
+    "stationCode": "K331",
+    "lineSeq": 6,
+    "stationName": "금촌",
+    "lat": 37.766217,
+    "lng": 126.774644
+  },
+  {
+    "id": "GJ_K334",
+    "lineId": "GJ",
+    "stationCode": "K334",
+    "lineSeq": 4,
+    "stationName": "파주",
+    "lat": 37.815298,
+    "lng": 126.792783
+  },
+  {
+    "id": "GJ_K335",
+    "lineId": "GJ",
+    "stationCode": "K335",
+    "lineSeq": 3,
+    "stationName": "문산",
+    "lat": 37.854619,
+    "lng": 126.788047
+  },
+  {
+    "id": "GJ_K337",
+    "lineId": "GJ",
+    "stationCode": "K337",
+    "lineSeq": 1,
+    "stationName": "임진강",
+    "lat": 37.888421,
+    "lng": 126.746765
+  },
+  {
+    "id": "GJ_K336",
+    "lineId": "GJ",
+    "stationCode": "K336",
+    "lineSeq": 2,
+    "stationName": "운천",
+    "lat": 37.879942,
+    "lng": 126.769999
+  },
+  {
+    "id": "GJ_K123",
+    "lineId": "GJ",
+    "stationCode": "K123",
+    "lineSeq": 42,
+    "stationName": "구리",
+    "lat": 37.603392,
+    "lng": 127.143869
+  },
+  {
+    "id": "GJ_K122",
+    "lineId": "GJ",
+    "stationCode": "K122",
+    "lineSeq": 41,
+    "stationName": "양원",
+    "lat": 37.606596,
+    "lng": 127.107906
+  },
+  {
+    "id": "GJ_K321",
+    "lineId": "GJ",
+    "stationCode": "K321",
+    "lineSeq": 16,
+    "stationName": "능곡",
+    "lat": 37.618808,
+    "lng": 126.820783
+  },
+  {
+    "id": "GJ_K333",
+    "lineId": "GJ",
+    "stationCode": "K333",
+    "lineSeq": 5,
+    "stationName": "월롱",
+    "lat": 37.796188,
+    "lng": 126.792587
+  },
+  {
+    "id": "GJ_K324",
+    "lineId": "GJ",
+    "stationCode": "K324",
+    "lineSeq": 13,
+    "stationName": "백마",
+    "lat": 37.658239,
+    "lng": 126.794461
+  },
+  {
+    "id": "GJ_K118",
+    "lineId": "GJ",
+    "stationCode": "K118",
+    "lineSeq": 37,
+    "stationName": "회기",
+    "lat": 37.58946,
+    "lng": 127.057583
+  },
+  {
+    "id": "GJ_K322",
+    "lineId": "GJ",
+    "stationCode": "K322",
+    "lineSeq": 15,
+    "stationName": "대곡",
+    "lat": 37.631626,
+    "lng": 126.811024
+  },
+  {
+    "id": "GJ_K111",
+    "lineId": "GJ",
+    "stationCode": "K111",
+    "lineSeq": 30,
+    "stationName": "이촌",
+    "lat": 37.522295,
+    "lng": 126.974733
+  },
+  {
+    "id": "GJ_K323",
+    "lineId": "GJ",
+    "stationCode": "K323",
+    "lineSeq": 14,
+    "stationName": "곡산",
+    "lat": 37.645676,
+    "lng": 126.801762
+  },
+  {
+    "id": "GJ_K115",
+    "lineId": "GJ",
+    "stationCode": "K115",
+    "lineSeq": 34,
+    "stationName": "응봉",
+    "lat": 37.549946,
+    "lng": 127.034538
+  },
+  {
+    "id": "GJ_K116",
+    "lineId": "GJ",
+    "stationCode": "K116",
+    "lineSeq": 35,
+    "stationName": "왕십리",
+    "lat": 37.561238,
+    "lng": 127.036954
+  },
+  {
+    "id": "GJ_K112",
+    "lineId": "GJ",
+    "stationCode": "K112",
+    "lineSeq": 31,
+    "stationName": "서빙고",
+    "lat": 37.519594,
+    "lng": 126.988537
+  },
+  {
+    "id": "GJ_K130",
+    "lineId": "GJ",
+    "stationCode": "K130",
+    "lineSeq": 49,
+    "stationName": "양수",
+    "lat": 37.545981,
+    "lng": 127.329098
+  },
+  {
+    "id": "GJ_K127",
+    "lineId": "GJ",
+    "stationCode": "K127",
+    "lineSeq": 46,
+    "stationName": "도심",
+    "lat": 37.579622,
+    "lng": 127.222672
+  },
+  {
+    "id": "GJ_K126",
+    "lineId": "GJ",
+    "stationCode": "K126",
+    "lineSeq": 45,
+    "stationName": "덕소",
+    "lat": 37.586781,
+    "lng": 127.208832
+  },
+  {
+    "id": "GJ_K125",
+    "lineId": "GJ",
+    "stationCode": "K125",
+    "lineSeq": 44,
+    "stationName": "양정",
+    "lat": 37.60533,
+    "lng": 127.19364
+  },
+  {
+    "id": "GJ_K128",
+    "lineId": "GJ",
+    "stationCode": "K128",
+    "lineSeq": 47,
+    "stationName": "팔당",
+    "lat": 37.547371,
+    "lng": 127.243939
+  },
+  {
+    "id": "GJ_K132",
+    "lineId": "GJ",
+    "stationCode": "K132",
+    "lineSeq": 51,
+    "stationName": "국수",
+    "lat": 37.516169,
+    "lng": 127.399367
+  },
+  {
+    "id": "GJ_K129",
+    "lineId": "GJ",
+    "stationCode": "K129",
+    "lineSeq": 48,
+    "stationName": "운길산",
+    "lat": 37.554669,
+    "lng": 127.310115
+  },
+  {
+    "id": "GJ_K131",
+    "lineId": "GJ",
+    "stationCode": "K131",
+    "lineSeq": 50,
+    "stationName": "신원",
+    "lat": 37.525545,
+    "lng": 127.372921
+  },
+  {
+    "id": "GJ_P313",
+    "lineId": "GJ",
+    "stationCode": "P313",
+    "lineSeq": 23,
+    "stationName": "서울역",
+    "lat": 37.557231,
+    "lng": 126.97103
+  },
+  {
+    "id": "GJ_K133",
+    "lineId": "GJ",
+    "stationCode": "K133",
+    "lineSeq": 52,
+    "stationName": "아신",
+    "lat": 37.51382,
+    "lng": 127.443173
+  },
+  {
+    "id": "GJ_P312",
+    "lineId": "GJ",
+    "stationCode": "P312",
+    "lineSeq": 21,
+    "stationName": "신촌",
+    "lat": 37.559733,
+    "lng": 126.942597
+  },
+  {
+    "id": "GJ_K826",
+    "lineId": "GJ",
+    "stationCode": "K826",
+    "lineSeq": 28,
+    "stationName": "효창공원앞",
+    "lat": 37.538579,
+    "lng": 126.96221
+  },
+  {
+    "id": "GJ_K312",
+    "lineId": "GJ",
+    "stationCode": "K312",
+    "lineSeq": 27,
+    "stationName": "공덕",
+    "lat": 37.542596,
+    "lng": 126.952099
+  },
+  {
+    "id": "GJ_K134",
+    "lineId": "GJ",
+    "stationCode": "K134",
+    "lineSeq": 53,
+    "stationName": "오빈",
+    "lat": 37.506062,
+    "lng": 127.473868
+  },
+  {
+    "id": "GJ_K124",
+    "lineId": "GJ",
+    "stationCode": "K124",
+    "lineSeq": 43,
+    "stationName": "도농",
+    "lat": 37.608806,
+    "lng": 127.161153
+  },
+  {
+    "id": "GJ_K313",
+    "lineId": "GJ",
+    "stationCode": "K313",
+    "lineSeq": 26,
+    "stationName": "서강대",
+    "lat": 37.551881,
+    "lng": 126.935711
+  },
+  {
+    "id": "GC_P126",
+    "lineId": "GC",
+    "stationCode": "P126",
+    "lineSeq": 11,
+    "stationName": "사릉",
+    "lat": 37.65108,
+    "lng": 127.176933
+  },
+  {
+    "id": "GC_P116",
+    "lineId": "GC",
+    "stationCode": "P116",
+    "lineSeq": 5,
+    "stationName": "광운대",
+    "lat": 37.623632,
+    "lng": 127.061835
+  },
+  {
+    "id": "GC_P117",
+    "lineId": "GC",
+    "stationCode": "P117",
+    "lineSeq": 1,
+    "stationName": "청량리",
+    "lat": 37.579956,
+    "lng": 127.044585
+  },
+  {
+    "id": "GC_P128",
+    "lineId": "GC",
+    "stationCode": "P128",
+    "lineSeq": 13,
+    "stationName": "평내호평",
+    "lat": 37.653225,
+    "lng": 127.244493
+  },
+  {
+    "id": "GC_P129",
+    "lineId": "GC",
+    "stationCode": "P129",
+    "lineSeq": 14,
+    "stationName": "천마산",
+    "lat": 37.658978,
+    "lng": 127.285379
+  },
+  {
+    "id": "GC_P130",
+    "lineId": "GC",
+    "stationCode": "P130",
+    "lineSeq": 15,
+    "stationName": "마석",
+    "lat": 37.652782,
+    "lng": 127.311767
+  },
+  {
+    "id": "GC_P131",
+    "lineId": "GC",
+    "stationCode": "P131",
+    "lineSeq": 16,
+    "stationName": "대성리",
+    "lat": 37.684071,
+    "lng": 127.379319
+  },
+  {
+    "id": "GC_P132",
+    "lineId": "GC",
+    "stationCode": "P132",
+    "lineSeq": 17,
+    "stationName": "청평",
+    "lat": 37.735488,
+    "lng": 127.42661
+  },
+  {
+    "id": "GC_P133",
+    "lineId": "GC",
+    "stationCode": "P133",
+    "lineSeq": 18,
+    "stationName": "상천",
+    "lat": 37.770246,
+    "lng": 127.454821
+  },
+  {
+    "id": "GC_P134",
+    "lineId": "GC",
+    "stationCode": "P134",
+    "lineSeq": 19,
+    "stationName": "가평",
+    "lat": 37.814536,
+    "lng": 127.510739
+  },
+  {
+    "id": "GC_P140",
+    "lineId": "GC",
+    "stationCode": "P140",
+    "lineSeq": 25,
+    "stationName": "춘천",
+    "lat": 37.885054,
+    "lng": 127.717023
+  },
+  {
+    "id": "GC_P139",
+    "lineId": "GC",
+    "stationCode": "P139",
+    "lineSeq": 24,
+    "stationName": "남춘천",
+    "lat": 37.864007,
+    "lng": 127.723792
+  },
+  {
+    "id": "GC_P138",
+    "lineId": "GC",
+    "stationCode": "P138",
+    "lineSeq": 23,
+    "stationName": "김유정",
+    "lat": 37.818466,
+    "lng": 127.71434
+  },
+  {
+    "id": "GC_P135",
+    "lineId": "GC",
+    "stationCode": "P135",
+    "lineSeq": 20,
+    "stationName": "굴봉산",
+    "lat": 37.832067,
+    "lng": 127.557695
+  },
+  {
+    "id": "GC_P127",
+    "lineId": "GC",
+    "stationCode": "P127",
+    "lineSeq": 12,
+    "stationName": "금곡",
+    "lat": 37.637382,
+    "lng": 127.207853
+  },
+  {
+    "id": "GC_P125",
+    "lineId": "GC",
+    "stationCode": "P125",
+    "lineSeq": 10,
+    "stationName": "퇴계원",
+    "lat": 37.648311,
+    "lng": 127.143952
+  },
+  {
+    "id": "GC_P124",
+    "lineId": "GC",
+    "stationCode": "P124",
+    "lineSeq": 9,
+    "stationName": "별내",
+    "lat": 37.64202,
+    "lng": 127.12684
+  },
+  {
+    "id": "GC_P123",
+    "lineId": "GC",
+    "stationCode": "P123",
+    "lineSeq": 8,
+    "stationName": "갈매",
+    "lat": 37.634118,
+    "lng": 127.114757
+  },
+  {
+    "id": "GC_P122",
+    "lineId": "GC",
+    "stationCode": "P122",
+    "lineSeq": 7,
+    "stationName": "신내",
+    "lat": 37.612887,
+    "lng": 127.103218
+  },
+  {
+    "id": "GC_P121",
+    "lineId": "GC",
+    "stationCode": "P121",
+    "lineSeq": 6,
+    "stationName": "망우",
+    "lat": 37.59955,
+    "lng": 127.091909
+  },
+  {
+    "id": "GC_P120",
+    "lineId": "GC",
+    "stationCode": "P120",
+    "lineSeq": 4,
+    "stationName": "상봉",
+    "lat": 37.596678,
+    "lng": 127.08504
+  },
+  {
+    "id": "GC_P119",
+    "lineId": "GC",
+    "stationCode": "P119",
+    "lineSeq": 3,
+    "stationName": "중랑",
+    "lat": 37.594917,
+    "lng": 127.076116
+  },
+  {
+    "id": "GC_P137",
+    "lineId": "GC",
+    "stationCode": "P137",
+    "lineSeq": 22,
+    "stationName": "강촌",
+    "lat": 37.805723,
+    "lng": 127.634146
+  },
+  {
+    "id": "GC_P118",
+    "lineId": "GC",
+    "stationCode": "P118",
+    "lineSeq": 2,
+    "stationName": "회기",
+    "lat": 37.58946,
+    "lng": 127.057583
+  },
+  {
+    "id": "GC_P136",
+    "lineId": "GC",
+    "stationCode": "P136",
+    "lineSeq": 21,
+    "stationName": "백양리",
+    "lat": 37.830779,
+    "lng": 127.58933
+  },
+  {
+    "id": "AR_A042",
+    "lineId": "AR",
+    "stationCode": "A042",
+    "lineSeq": 5,
+    "stationName": "마곡나루",
+    "lat": 37.565543,
+    "lng": 126.827378
+  },
+  {
+    "id": "AR_A04",
+    "lineId": "AR",
+    "stationCode": "A04",
+    "lineSeq": 4,
+    "stationName": "디지털미디어시티",
+    "lat": 37.576958,
+    "lng": 126.898609
+  },
+  {
+    "id": "AR_A072",
+    "lineId": "AR",
+    "stationCode": "A072",
+    "lineSeq": 10,
+    "stationName": "영종",
+    "lat": 37.51202,
+    "lng": 126.524254
+  },
+  {
+    "id": "AR_A03",
+    "lineId": "AR",
+    "stationCode": "A03",
+    "lineSeq": 3,
+    "stationName": "홍대입구",
+    "lat": 37.557438,
+    "lng": 126.926715
+  },
+  {
+    "id": "AR_A11",
+    "lineId": "AR",
+    "stationCode": "A11",
+    "lineSeq": 14,
+    "stationName": "인천공항2터미널",
+    "lat": 37.46866,
+    "lng": 126.43341
+  },
+  {
+    "id": "AR_A10",
+    "lineId": "AR",
+    "stationCode": "A10",
+    "lineSeq": 13,
+    "stationName": "인천공항1터미널",
+    "lat": 37.447464,
+    "lng": 126.452508
+  },
+  {
+    "id": "AR_A09",
+    "lineId": "AR",
+    "stationCode": "A09",
+    "lineSeq": 12,
+    "stationName": "공항화물청사",
+    "lat": 37.459041,
+    "lng": 126.477516
+  },
+  {
+    "id": "AR_A08",
+    "lineId": "AR",
+    "stationCode": "A08",
+    "lineSeq": 11,
+    "stationName": "운서",
+    "lat": 37.492904,
+    "lng": 126.49379
+  },
+  {
+    "id": "AR_A02",
+    "lineId": "AR",
+    "stationCode": "A02",
+    "lineSeq": 2,
+    "stationName": "공덕",
+    "lat": 37.54253,
+    "lng": 126.952024
+  },
+  {
+    "id": "AR_A01",
+    "lineId": "AR",
+    "stationCode": "A01",
+    "lineSeq": 1,
+    "stationName": "서울역",
+    "lat": 37.553247,
+    "lng": 126.969769
+  },
+  {
+    "id": "AR_A06",
+    "lineId": "AR",
+    "stationCode": "A06",
+    "lineSeq": 7,
+    "stationName": "계양",
+    "lat": 37.571662,
+    "lng": 126.7363
+  },
+  {
+    "id": "AR_A07",
+    "lineId": "AR",
+    "stationCode": "A07",
+    "lineSeq": 8,
+    "stationName": "검암",
+    "lat": 37.569098,
+    "lng": 126.674007
+  },
+  {
+    "id": "AR_A05",
+    "lineId": "AR",
+    "stationCode": "A05",
+    "lineSeq": 6,
+    "stationName": "김포공항",
+    "lat": 37.561842,
+    "lng": 126.801904
+  },
+  {
+    "id": "AR_A071",
+    "lineId": "AR",
+    "stationCode": "A071",
+    "lineSeq": 9,
+    "stationName": "청라국제도시",
+    "lat": 37.556409,
+    "lng": 126.624648
+  },
+  {
+    "id": "GM_696",
+    "lineId": "GM",
+    "stationCode": "696",
+    "lineSeq": 7,
+    "stationName": "사우",
+    "lat": 37.620249,
+    "lng": 126.719731
+  },
+  {
+    "id": "GM_699",
+    "lineId": "GM",
+    "stationCode": "699",
+    "lineSeq": 10,
+    "stationName": "김포공항",
+    "lat": 37.56236,
+    "lng": 126.801868
+  },
+  {
+    "id": "GM_698",
+    "lineId": "GM",
+    "stationCode": "698",
+    "lineSeq": 9,
+    "stationName": "고촌",
+    "lat": 37.601243,
+    "lng": 126.770345
+  },
+  {
+    "id": "GM_697",
+    "lineId": "GM",
+    "stationCode": "697",
+    "lineSeq": 8,
+    "stationName": "풍무",
+    "lat": 37.612488,
+    "lng": 126.732387
+  },
+  {
+    "id": "GM_695",
+    "lineId": "GM",
+    "stationCode": "695",
+    "lineSeq": 6,
+    "stationName": "걸포북변",
+    "lat": 37.63165,
+    "lng": 126.705975
+  },
+  {
+    "id": "GM_694",
+    "lineId": "GM",
+    "stationCode": "694",
+    "lineSeq": 5,
+    "stationName": "운양",
+    "lat": 37.653867,
+    "lng": 126.68393
+  },
+  {
+    "id": "GM_693",
+    "lineId": "GM",
+    "stationCode": "693",
+    "lineSeq": 4,
+    "stationName": "장기",
+    "lat": 37.643986,
+    "lng": 126.669017
+  },
+  {
+    "id": "GM_692",
+    "lineId": "GM",
+    "stationCode": "692",
+    "lineSeq": 3,
+    "stationName": "마산",
+    "lat": 37.640732,
+    "lng": 126.644344
+  },
+  {
+    "id": "GM_691",
+    "lineId": "GM",
+    "stationCode": "691",
+    "lineSeq": 2,
+    "stationName": "구래",
+    "lat": 37.645384,
+    "lng": 126.628633
+  },
+  {
+    "id": "GM_690",
+    "lineId": "GM",
+    "stationCode": "690",
+    "lineSeq": 1,
+    "stationName": "양촌",
+    "lat": 37.642379,
+    "lng": 126.614309
+  },
+  {
+    "id": "SH_S23",
+    "lineId": "SH",
+    "stationCode": "S23",
+    "lineSeq": 16,
+    "stationName": "시흥능곡",
+    "lat": 37.369864,
+    "lng": 126.808573
+  },
+  {
+    "id": "SH_S12",
+    "lineId": "SH",
+    "stationCode": "S12",
+    "lineSeq": 6,
+    "stationName": "능곡",
+    "lat": 37.618808,
+    "lng": 126.820783
+  },
+  {
+    "id": "SH_S10",
+    "lineId": "SH",
+    "stationCode": "S10",
+    "lineSeq": 4,
+    "stationName": "곡산",
+    "lat": 37.645676,
+    "lng": 126.801762
+  },
+  {
+    "id": "SH_S15",
+    "lineId": "SH",
+    "stationCode": "S15",
+    "lineSeq": 9,
+    "stationName": "부천종합운동장",
+    "lat": 37.505457,
+    "lng": 126.797289
+  },
+  {
+    "id": "SH_S14",
+    "lineId": "SH",
+    "stationCode": "S14",
+    "lineSeq": 8,
+    "stationName": "원종",
+    "lat": 37.5239,
+    "lng": 126.8049
+  },
+  {
+    "id": "SH_S09",
+    "lineId": "SH",
+    "stationCode": "S09",
+    "lineSeq": 3,
+    "stationName": "백마",
+    "lat": 37.658239,
+    "lng": 126.794461
+  },
+  {
+    "id": "SH_S08",
+    "lineId": "SH",
+    "stationCode": "S08",
+    "lineSeq": 2,
+    "stationName": "풍산",
+    "lat": 37.672346,
+    "lng": 126.786243
+  },
+  {
+    "id": "SH_S07",
+    "lineId": "SH",
+    "stationCode": "S07",
+    "lineSeq": 1,
+    "stationName": "일산",
+    "lat": 37.682077,
+    "lng": 126.769846
+  },
+  {
+    "id": "SH_S28",
+    "lineId": "SH",
+    "stationCode": "S28",
+    "lineSeq": 21,
+    "stationName": "원시",
+    "lat": 37.302371,
+    "lng": 126.786691
+  },
+  {
+    "id": "SH_S27",
+    "lineId": "SH",
+    "stationCode": "S27",
+    "lineSeq": 20,
+    "stationName": "시우",
+    "lat": 37.31321,
+    "lng": 126.796261
+  },
+  {
+    "id": "SH_S26",
+    "lineId": "SH",
+    "stationCode": "S26",
+    "lineSeq": 19,
+    "stationName": "초지",
+    "lat": 37.319619,
+    "lng": 126.808147
+  },
+  {
+    "id": "SH_S17",
+    "lineId": "SH",
+    "stationCode": "S17",
+    "lineSeq": 11,
+    "stationName": "소새울",
+    "lat": 37.468467,
+    "lng": 126.797252
+  },
+  {
+    "id": "SH_S25",
+    "lineId": "SH",
+    "stationCode": "S25",
+    "lineSeq": 18,
+    "stationName": "선부",
+    "lat": 37.334353,
+    "lng": 126.809904
+  },
+  {
+    "id": "SH_S24",
+    "lineId": "SH",
+    "stationCode": "S24",
+    "lineSeq": 17,
+    "stationName": "달미",
+    "lat": 37.348847,
+    "lng": 126.809409
+  },
+  {
+    "id": "SH_S11",
+    "lineId": "SH",
+    "stationCode": "S11",
+    "lineSeq": 5,
+    "stationName": "대곡",
+    "lat": 37.631626,
+    "lng": 126.811024
+  },
+  {
+    "id": "SH_S20",
+    "lineId": "SH",
+    "stationCode": "S20",
+    "lineSeq": 14,
+    "stationName": "신현",
+    "lat": 37.409008,
+    "lng": 126.788017
+  },
+  {
+    "id": "SH_S16",
+    "lineId": "SH",
+    "stationCode": "S16",
+    "lineSeq": 10,
+    "stationName": "소사",
+    "lat": 37.483279,
+    "lng": 126.795023
+  },
+  {
+    "id": "SH_S19",
+    "lineId": "SH",
+    "stationCode": "S19",
+    "lineSeq": 13,
+    "stationName": "신천",
+    "lat": 37.439066,
+    "lng": 126.786788
+  },
+  {
+    "id": "SH_S13",
+    "lineId": "SH",
+    "stationCode": "S13",
+    "lineSeq": 7,
+    "stationName": "김포공항",
+    "lat": 37.5617,
+    "lng": 126.8041
+  },
+  {
+    "id": "SH_S18",
+    "lineId": "SH",
+    "stationCode": "S18",
+    "lineSeq": 12,
+    "stationName": "시흥대야",
+    "lat": 37.450145,
+    "lng": 126.793041
+  },
+  {
+    "id": "SH_S22",
+    "lineId": "SH",
+    "stationCode": "S22",
+    "lineSeq": 15,
+    "stationName": "시흥시청",
+    "lat": 37.382223,
+    "lng": 126.805625
+  },
+  {
+    "id": "SD_K272",
+    "lineId": "SD",
+    "stationCode": "K272",
+    "lineSeq": 63,
+    "stationName": "인천",
+    "lat": 37.476403,
+    "lng": 126.617326
+  },
+  {
+    "id": "SD_K246",
+    "lineId": "SD",
+    "stationCode": "K246",
+    "lineSeq": 38,
+    "stationName": "고색",
+    "lat": 37.24963,
+    "lng": 126.980248
+  },
+  {
+    "id": "SD_K250",
+    "lineId": "SD",
+    "stationCode": "K250",
+    "lineSeq": 42,
+    "stationName": "사리",
+    "lat": 37.28998,
+    "lng": 126.85685
+  },
+  {
+    "id": "SD_K209",
+    "lineId": "SD",
+    "stationCode": "K209",
+    "lineSeq": 1,
+    "stationName": "청량리",
+    "lat": 37.579956,
+    "lng": 127.044585
+  },
+  {
+    "id": "SD_K257",
+    "lineId": "SD",
+    "stationCode": "K257",
+    "lineSeq": 49,
+    "stationName": "정왕",
+    "lat": 37.351735,
+    "lng": 126.742989
+  },
+  {
+    "id": "SD_K226",
+    "lineId": "SD",
+    "stationCode": "K226",
+    "lineSeq": 18,
+    "stationName": "야탑",
+    "lat": 37.411185,
+    "lng": 127.128715
+  },
+  {
+    "id": "SD_K255",
+    "lineId": "SD",
+    "stationCode": "K255",
+    "lineSeq": 47,
+    "stationName": "안산",
+    "lat": 37.327082,
+    "lng": 126.788532
+  },
+  {
+    "id": "SD_K259",
+    "lineId": "SD",
+    "stationCode": "K259",
+    "lineSeq": 51,
+    "stationName": "달월",
+    "lat": 37.379681,
+    "lng": 126.745177
+  },
+  {
+    "id": "SD_K260",
+    "lineId": "SD",
+    "stationCode": "K260",
+    "lineSeq": 52,
+    "stationName": "월곶",
+    "lat": 37.391769,
+    "lng": 126.742699
+  },
+  {
+    "id": "SD_K256",
+    "lineId": "SD",
+    "stationCode": "K256",
+    "lineSeq": 48,
+    "stationName": "신길온천",
+    "lat": 37.338212,
+    "lng": 126.765844
+  },
+  {
+    "id": "SD_K245",
+    "lineId": "SD",
+    "stationCode": "K245",
+    "lineSeq": 37,
+    "stationName": "수원",
+    "lat": 37.265917,
+    "lng": 126.999422
+  },
+  {
+    "id": "SD_K224",
+    "lineId": "SD",
+    "stationCode": "K224",
+    "lineSeq": 16,
+    "stationName": "태평",
+    "lat": 37.440019,
+    "lng": 127.127709
+  },
+  {
+    "id": "SD_K262",
+    "lineId": "SD",
+    "stationCode": "K262",
+    "lineSeq": 54,
+    "stationName": "인천논현",
+    "lat": 37.400614,
+    "lng": 126.722478
+  },
+  {
+    "id": "SD_K229",
+    "lineId": "SD",
+    "stationCode": "K229",
+    "lineSeq": 21,
+    "stationName": "수내",
+    "lat": 37.378455,
+    "lng": 127.114322
+  },
+  {
+    "id": "SD_K230",
+    "lineId": "SD",
+    "stationCode": "K230",
+    "lineSeq": 22,
+    "stationName": "정자",
+    "lat": 37.365994,
+    "lng": 127.10807
+  },
+  {
+    "id": "SD_K231",
+    "lineId": "SD",
+    "stationCode": "K231",
+    "lineSeq": 23,
+    "stationName": "미금",
+    "lat": 37.350077,
+    "lng": 127.10891
+  },
+  {
+    "id": "SD_K232",
+    "lineId": "SD",
+    "stationCode": "K232",
+    "lineSeq": 24,
+    "stationName": "오리",
+    "lat": 37.339824,
+    "lng": 127.108942
+  },
+  {
+    "id": "SD_K227",
+    "lineId": "SD",
+    "stationCode": "K227",
+    "lineSeq": 19,
+    "stationName": "이매",
+    "lat": 37.395371,
+    "lng": 127.128248
+  },
+  {
+    "id": "SD_K234",
+    "lineId": "SD",
+    "stationCode": "K234",
+    "lineSeq": 26,
+    "stationName": "보정",
+    "lat": 37.312752,
+    "lng": 127.108196
+  },
+  {
+    "id": "SD_K236",
+    "lineId": "SD",
+    "stationCode": "K236",
+    "lineSeq": 28,
+    "stationName": "신갈",
+    "lat": 37.286102,
+    "lng": 127.111313
+  },
+  {
+    "id": "SD_K242",
+    "lineId": "SD",
+    "stationCode": "K242",
+    "lineSeq": 34,
+    "stationName": "매탄권선",
+    "lat": 37.252759,
+    "lng": 127.040566
+  },
+  {
+    "id": "SD_K243",
+    "lineId": "SD",
+    "stationCode": "K243",
+    "lineSeq": 35,
+    "stationName": "수원시청",
+    "lat": 37.261911,
+    "lng": 127.030736
+  },
+  {
+    "id": "SD_K261",
+    "lineId": "SD",
+    "stationCode": "K261",
+    "lineSeq": 53,
+    "stationName": "소래포구",
+    "lat": 37.40095,
+    "lng": 126.733522
+  },
+  {
+    "id": "SD_K248",
+    "lineId": "SD",
+    "stationCode": "K248",
+    "lineSeq": 40,
+    "stationName": "어천",
+    "lat": 37.250102,
+    "lng": 126.90879
+  },
+  {
+    "id": "SD_K223",
+    "lineId": "SD",
+    "stationCode": "K223",
+    "lineSeq": 15,
+    "stationName": "가천대",
+    "lat": 37.448605,
+    "lng": 127.126697
+  },
+  {
+    "id": "SD_K214",
+    "lineId": "SD",
+    "stationCode": "K214",
+    "lineSeq": 6,
+    "stationName": "선정릉",
+    "lat": 37.510735,
+    "lng": 127.043677
+  },
+  {
+    "id": "SD_K213",
+    "lineId": "SD",
+    "stationCode": "K213",
+    "lineSeq": 5,
+    "stationName": "강남구청",
+    "lat": 37.517469,
+    "lng": 127.041151
+  },
+  {
+    "id": "SD_K212",
+    "lineId": "SD",
+    "stationCode": "K212",
+    "lineSeq": 4,
+    "stationName": "압구정로데오",
+    "lat": 37.527381,
+    "lng": 127.040534
+  },
+  {
+    "id": "SD_K211",
+    "lineId": "SD",
+    "stationCode": "K211",
+    "lineSeq": 3,
+    "stationName": "서울숲",
+    "lat": 37.543617,
+    "lng": 127.044707
+  },
+  {
+    "id": "SD_K247",
+    "lineId": "SD",
+    "stationCode": "K247",
+    "lineSeq": 39,
+    "stationName": "오목천",
+    "lat": 37.24304,
+    "lng": 126.963676
+  },
+  {
+    "id": "SD_K269",
+    "lineId": "SD",
+    "stationCode": "K269",
+    "lineSeq": 60,
+    "stationName": "인하대",
+    "lat": 37.448493,
+    "lng": 126.649619
+  },
+  {
+    "id": "SD_K271",
+    "lineId": "SD",
+    "stationCode": "K271",
+    "lineSeq": 62,
+    "stationName": "신포",
+    "lat": 37.46874,
+    "lng": 126.623853
+  },
+  {
+    "id": "SD_K225",
+    "lineId": "SD",
+    "stationCode": "K225",
+    "lineSeq": 17,
+    "stationName": "모란",
+    "lat": 37.432052,
+    "lng": 127.129104
+  },
+  {
+    "id": "SD_K263",
+    "lineId": "SD",
+    "stationCode": "K263",
+    "lineSeq": 55,
+    "stationName": "호구포",
+    "lat": 37.401637,
+    "lng": 126.708627
+  },
+  {
+    "id": "SD_K216",
+    "lineId": "SD",
+    "stationCode": "K216",
+    "lineSeq": 8,
+    "stationName": "한티",
+    "lat": 37.496237,
+    "lng": 127.052873
+  },
+  {
+    "id": "SD_K237",
+    "lineId": "SD",
+    "stationCode": "K237",
+    "lineSeq": 29,
+    "stationName": "기흥",
+    "lat": 37.275061,
+    "lng": 127.11591
+  },
+  {
+    "id": "SD_K249",
+    "lineId": "SD",
+    "stationCode": "K249",
+    "lineSeq": 41,
+    "stationName": "야목",
+    "lat": 37.26121,
+    "lng": 126.88403
+  },
+  {
+    "id": "SD_K215",
+    "lineId": "SD",
+    "stationCode": "K215",
+    "lineSeq": 7,
+    "stationName": "선릉",
+    "lat": 37.504856,
+    "lng": 127.048807
+  },
+  {
+    "id": "SD_K238",
+    "lineId": "SD",
+    "stationCode": "K238",
+    "lineSeq": 30,
+    "stationName": "상갈",
+    "lat": 37.26181,
+    "lng": 127.108847
+  },
+  {
+    "id": "SD_K239",
+    "lineId": "SD",
+    "stationCode": "K239",
+    "lineSeq": 31,
+    "stationName": "청명",
+    "lat": 37.259489,
+    "lng": 127.078934
+  },
+  {
+    "id": "SD_K240",
+    "lineId": "SD",
+    "stationCode": "K240",
+    "lineSeq": 32,
+    "stationName": "영통",
+    "lat": 37.251568,
+    "lng": 127.071394
+  },
+  {
+    "id": "SD_K217",
+    "lineId": "SD",
+    "stationCode": "K217",
+    "lineSeq": 9,
+    "stationName": "도곡",
+    "lat": 37.491224,
+    "lng": 127.055186
+  },
+  {
+    "id": "SD_K218",
+    "lineId": "SD",
+    "stationCode": "K218",
+    "lineSeq": 10,
+    "stationName": "구룡",
+    "lat": 37.486839,
+    "lng": 127.058856
+  },
+  {
+    "id": "SD_K219",
+    "lineId": "SD",
+    "stationCode": "K219",
+    "lineSeq": 11,
+    "stationName": "개포동",
+    "lat": 37.489116,
+    "lng": 127.06614
+  },
+  {
+    "id": "SD_K220",
+    "lineId": "SD",
+    "stationCode": "K220",
+    "lineSeq": 12,
+    "stationName": "대모산입구",
+    "lat": 37.491373,
+    "lng": 127.07272
+  },
+  {
+    "id": "SD_K210",
+    "lineId": "SD",
+    "stationCode": "K210",
+    "lineSeq": 2,
+    "stationName": "왕십리",
+    "lat": 37.561238,
+    "lng": 127.036954
+  },
+  {
+    "id": "SD_K221",
+    "lineId": "SD",
+    "stationCode": "K221",
+    "lineSeq": 13,
+    "stationName": "수서",
+    "lat": 37.487472,
+    "lng": 127.101422
+  },
+  {
+    "id": "SD_K222",
+    "lineId": "SD",
+    "stationCode": "K222",
+    "lineSeq": 14,
+    "stationName": "복정",
+    "lat": 37.470047,
+    "lng": 127.12666
+  },
+  {
+    "id": "SD_K241",
+    "lineId": "SD",
+    "stationCode": "K241",
+    "lineSeq": 33,
+    "stationName": "망포",
+    "lat": 37.245795,
+    "lng": 127.057353
+  },
+  {
+    "id": "SD_K244",
+    "lineId": "SD",
+    "stationCode": "K244",
+    "lineSeq": 36,
+    "stationName": "매교",
+    "lat": 37.265481,
+    "lng": 127.015678
+  },
+  {
+    "id": "SD_K265",
+    "lineId": "SD",
+    "stationCode": "K265",
+    "lineSeq": 57,
+    "stationName": "원인재",
+    "lat": 37.413049,
+    "lng": 126.686648
+  },
+  {
+    "id": "SD_K266",
+    "lineId": "SD",
+    "stationCode": "K266",
+    "lineSeq": 58,
+    "stationName": "연수",
+    "lat": 37.417804,
+    "lng": 126.67894
+  },
+  {
+    "id": "SD_K267",
+    "lineId": "SD",
+    "stationCode": "K267",
+    "lineSeq": 59,
+    "stationName": "송도",
+    "lat": 37.42971,
+    "lng": 126.65449
+  },
+  {
+    "id": "SD_K270",
+    "lineId": "SD",
+    "stationCode": "K270",
+    "lineSeq": 61,
+    "stationName": "숭의",
+    "lat": 37.460789,
+    "lng": 126.638297
+  },
+  {
+    "id": "SD_K252",
+    "lineId": "SD",
+    "stationCode": "K252",
+    "lineSeq": 44,
+    "stationName": "중앙",
+    "lat": 37.315941,
+    "lng": 126.838573
+  },
+  {
+    "id": "SD_K258",
+    "lineId": "SD",
+    "stationCode": "K258",
+    "lineSeq": 50,
+    "stationName": "오이도",
+    "lat": 37.362357,
+    "lng": 126.738714
+  },
+  {
+    "id": "SD_K233",
+    "lineId": "SD",
+    "stationCode": "K233",
+    "lineSeq": 25,
+    "stationName": "죽전",
+    "lat": 37.324753,
+    "lng": 127.107395
+  },
+  {
+    "id": "SD_K254",
+    "lineId": "SD",
+    "stationCode": "K254",
+    "lineSeq": 46,
+    "stationName": "초지",
+    "lat": 37.320646,
+    "lng": 126.805913
+  },
+  {
+    "id": "SD_K253",
+    "lineId": "SD",
+    "stationCode": "K253",
+    "lineSeq": 45,
+    "stationName": "고잔",
+    "lat": 37.316784,
+    "lng": 126.823144
+  },
+  {
+    "id": "SD_K251",
+    "lineId": "SD",
+    "stationCode": "K251",
+    "lineSeq": 43,
+    "stationName": "한대앞",
+    "lat": 37.309689,
+    "lng": 126.85344
+  },
+  {
+    "id": "SD_K264",
+    "lineId": "SD",
+    "stationCode": "K264",
+    "lineSeq": 56,
+    "stationName": "남동인더스파크",
+    "lat": 37.407722,
+    "lng": 126.695216
+  },
+  {
+    "id": "SD_K235",
+    "lineId": "SD",
+    "stationCode": "K235",
+    "lineSeq": 27,
+    "stationName": "구성",
+    "lat": 37.298969,
+    "lng": 127.105664
+  },
+  {
+    "id": "SD_K228",
+    "lineId": "SD",
+    "stationCode": "K228",
+    "lineSeq": 20,
+    "stationName": "서현",
+    "lat": 37.385126,
+    "lng": 127.123592
+  },
+  {
+    "id": "SL_S404",
+    "lineId": "SL",
+    "stationCode": "S404",
+    "lineSeq": 4,
+    "stationName": "보라매",
+    "lat": 37.5002739,
+    "lng": 126.9204355
+  },
+  {
+    "id": "SL_S403",
+    "lineId": "SL",
+    "stationCode": "S403",
+    "lineSeq": 3,
+    "stationName": "서울지방병무청",
+    "lat": 37.5060464,
+    "lng": 126.9227083
+  },
+  {
+    "id": "SL_S408",
+    "lineId": "SL",
+    "stationCode": "S408",
+    "lineSeq": 8,
+    "stationName": "신림",
+    "lat": 37.4849266,
+    "lng": 126.9296159
+  },
+  {
+    "id": "SL_S407",
+    "lineId": "SL",
+    "stationCode": "S407",
+    "lineSeq": 7,
+    "stationName": "당곡",
+    "lat": 37.4902998,
+    "lng": 126.9275133
+  },
+  {
+    "id": "SL_S406",
+    "lineId": "SL",
+    "stationCode": "S406",
+    "lineSeq": 6,
+    "stationName": "보라매병원",
+    "lat": 37.4929598,
+    "lng": 126.9234964
+  },
+  {
+    "id": "SL_S405",
+    "lineId": "SL",
+    "stationCode": "S405",
+    "lineSeq": 5,
+    "stationName": "보라매공원",
+    "lat": 37.4955691,
+    "lng": 126.9180827
+  },
+  {
+    "id": "SL_S411",
+    "lineId": "SL",
+    "stationCode": "S411",
+    "lineSeq": 11,
+    "stationName": "관악산",
+    "lat": 37.4691018,
+    "lng": 126.9450639
+  },
+  {
+    "id": "SL_S410",
+    "lineId": "SL",
+    "stationCode": "S410",
+    "lineSeq": 10,
+    "stationName": "서울대벤처타운",
+    "lat": 37.4720019,
+    "lng": 126.9339351
+  },
+  {
+    "id": "SL_S409",
+    "lineId": "SL",
+    "stationCode": "S409",
+    "lineSeq": 9,
+    "stationName": "서원",
+    "lat": 37.4782341,
+    "lng": 126.9330365
+  },
+  {
+    "id": "SL_S402",
+    "lineId": "SL",
+    "stationCode": "S402",
+    "lineSeq": 2,
+    "stationName": "대방",
+    "lat": 37.5133059,
+    "lng": 126.9257265
+  },
+  {
+    "id": "SL_S401",
+    "lineId": "SL",
+    "stationCode": "S401",
+    "lineSeq": 1,
+    "stationName": "샛강",
+    "lat": 37.5170969,
+    "lng": 126.929399
+  },
+  {
+    "id": "SB_D14",
+    "lineId": "SB",
+    "stationCode": "D14",
+    "lineSeq": 11,
+    "stationName": "동천",
+    "lat": 37.337928,
+    "lng": 127.102976
+  },
+  {
+    "id": "SB_D8",
+    "lineId": "SB",
+    "stationCode": "D8",
+    "lineSeq": 5,
+    "stationName": "양재",
+    "lat": 37.483809,
+    "lng": 127.034653
+  },
+  {
+    "id": "SB_D7",
+    "lineId": "SB",
+    "stationCode": "D7",
+    "lineSeq": 4,
+    "stationName": "강남",
+    "lat": 37.496837,
+    "lng": 127.028104
+  },
+  {
+    "id": "SB_D4",
+    "lineId": "SB",
+    "stationCode": "D4",
+    "lineSeq": 1,
+    "stationName": "신사",
+    "lat": 37.516334,
+    "lng": 127.020114
+  },
+  {
+    "id": "SB_D9",
+    "lineId": "SB",
+    "stationCode": "D9",
+    "lineSeq": 6,
+    "stationName": "양재시민의숲",
+    "lat": 37.470023,
+    "lng": 127.03842
+  },
+  {
+    "id": "SB_D11",
+    "lineId": "SB",
+    "stationCode": "D11",
+    "lineSeq": 8,
+    "stationName": "판교",
+    "lat": 37.394761,
+    "lng": 127.112217
+  },
+  {
+    "id": "SB_D12",
+    "lineId": "SB",
+    "stationCode": "D12",
+    "lineSeq": 9,
+    "stationName": "정자",
+    "lat": 37.367098,
+    "lng": 127.108403
+  },
+  {
+    "id": "SB_D5",
+    "lineId": "SB",
+    "stationCode": "D5",
+    "lineSeq": 2,
+    "stationName": "논현",
+    "lat": 37.511093,
+    "lng": 127.021415
+  },
+  {
+    "id": "SB_D13",
+    "lineId": "SB",
+    "stationCode": "D13",
+    "lineSeq": 10,
+    "stationName": "미금",
+    "lat": 37.349982,
+    "lng": 127.108918
+  },
+  {
+    "id": "SB_D15",
+    "lineId": "SB",
+    "stationCode": "D15",
+    "lineSeq": 12,
+    "stationName": "수지구청",
+    "lat": 37.322702,
+    "lng": 127.095026
+  },
+  {
+    "id": "SB_D16",
+    "lineId": "SB",
+    "stationCode": "D16",
+    "lineSeq": 13,
+    "stationName": "성복",
+    "lat": 37.313335,
+    "lng": 127.0801
+  },
+  {
+    "id": "SB_D17",
+    "lineId": "SB",
+    "stationCode": "D17",
+    "lineSeq": 14,
+    "stationName": "상현",
+    "lat": 37.297664,
+    "lng": 127.069342
+  },
+  {
+    "id": "SB_D18",
+    "lineId": "SB",
+    "stationCode": "D18",
+    "lineSeq": 15,
+    "stationName": "광교중앙",
+    "lat": 37.288617,
+    "lng": 127.051478
+  },
+  {
+    "id": "SB_D6",
+    "lineId": "SB",
+    "stationCode": "D6",
+    "lineSeq": 3,
+    "stationName": "신논현",
+    "lat": 37.504598,
+    "lng": 127.02506
+  },
+  {
+    "id": "SB_D19",
+    "lineId": "SB",
+    "stationCode": "D19",
+    "lineSeq": 16,
+    "stationName": "광교",
+    "lat": 37.30211,
+    "lng": 127.044483
+  },
+  {
+    "id": "SB_D10",
+    "lineId": "SB",
+    "stationCode": "D10",
+    "lineSeq": 7,
+    "stationName": "청계산입구",
+    "lat": 37.447211,
+    "lng": 127.055664
+  },
+  {
+    "id": "EV_Y121",
+    "lineId": "EV",
+    "stationCode": "Y121",
+    "lineSeq": 12,
+    "stationName": "고진",
+    "lat": 37.24484,
+    "lng": 127.214251
+  },
+  {
+    "id": "EV_Y110",
+    "lineId": "EV",
+    "stationCode": "Y110",
+    "lineSeq": 1,
+    "stationName": "기흥",
+    "lat": 37.275449,
+    "lng": 127.116665
+  },
+  {
+    "id": "EV_Y126",
+    "lineId": "EV",
+    "stationCode": "Y126",
+    "lineSeq": 15,
+    "stationName": "전대.에버랜드",
+    "lat": 37.285342,
+    "lng": 127.219561
+  },
+  {
+    "id": "EV_Y116",
+    "lineId": "EV",
+    "stationCode": "Y116",
+    "lineSeq": 7,
+    "stationName": "삼가",
+    "lat": 37.242115,
+    "lng": 127.168075
+  },
+  {
+    "id": "EV_Y117",
+    "lineId": "EV",
+    "stationCode": "Y117",
+    "lineSeq": 8,
+    "stationName": "시청.용인대",
+    "lat": 37.239151,
+    "lng": 127.178406
+  },
+  {
+    "id": "EV_Y114",
+    "lineId": "EV",
+    "stationCode": "Y114",
+    "lineSeq": 5,
+    "stationName": "동백",
+    "lat": 37.269043,
+    "lng": 127.152716
+  },
+  {
+    "id": "EV_Y112",
+    "lineId": "EV",
+    "stationCode": "Y112",
+    "lineSeq": 3,
+    "stationName": "지석",
+    "lat": 37.269606,
+    "lng": 127.136515
+  },
+  {
+    "id": "EV_Y123",
+    "lineId": "EV",
+    "stationCode": "Y123",
+    "lineSeq": 13,
+    "stationName": "보평",
+    "lat": 37.258965,
+    "lng": 127.218457
+  },
+  {
+    "id": "EV_Y125",
+    "lineId": "EV",
+    "stationCode": "Y125",
+    "lineSeq": 14,
+    "stationName": "둔전",
+    "lat": 37.267051,
+    "lng": 127.21364
+  },
+  {
+    "id": "EV_Y115",
+    "lineId": "EV",
+    "stationCode": "Y115",
+    "lineSeq": 6,
+    "stationName": "초당",
+    "lat": 37.260752,
+    "lng": 127.159443
+  },
+  {
+    "id": "EV_Y113",
+    "lineId": "EV",
+    "stationCode": "Y113",
+    "lineSeq": 4,
+    "stationName": "어정",
+    "lat": 37.274917,
+    "lng": 127.143714
+  },
+  {
+    "id": "EV_Y111",
+    "lineId": "EV",
+    "stationCode": "Y111",
+    "lineSeq": 2,
+    "stationName": "강남대",
+    "lat": 37.270161,
+    "lng": 127.126033
+  },
+  {
+    "id": "EV_Y119",
+    "lineId": "EV",
+    "stationCode": "Y119",
+    "lineSeq": 10,
+    "stationName": "김량장",
+    "lat": 37.237247,
+    "lng": 127.198781
+  },
+  {
+    "id": "EV_Y120",
+    "lineId": "EV",
+    "stationCode": "Y120",
+    "lineSeq": 11,
+    "stationName": "용인중앙시장",
+    "lat": 37.237845,
+    "lng": 127.209198
+  },
+  {
+    "id": "EV_Y118",
+    "lineId": "EV",
+    "stationCode": "Y118",
+    "lineSeq": 9,
+    "stationName": "명지대",
+    "lat": 37.237964,
+    "lng": 127.190294
+  },
+  {
+    "id": "UI_952",
+    "lineId": "UI",
+    "stationCode": "952",
+    "lineSeq": 12,
+    "stationName": "보문",
+    "lat": 37.585286,
+    "lng": 127.019381
+  },
+  {
+    "id": "UI_945",
+    "lineId": "UI",
+    "stationCode": "945",
+    "lineSeq": 5,
+    "stationName": "화계",
+    "lat": 37.634133,
+    "lng": 127.017511
+  },
+  {
+    "id": "UI_953",
+    "lineId": "UI",
+    "stationCode": "953",
+    "lineSeq": 13,
+    "stationName": "신설동",
+    "lat": 37.576095,
+    "lng": 127.023242
+  },
+  {
+    "id": "UI_941",
+    "lineId": "UI",
+    "stationCode": "941",
+    "lineSeq": 1,
+    "stationName": "북한산우이",
+    "lat": 37.662909,
+    "lng": 127.012706
+  },
+  {
+    "id": "UI_942",
+    "lineId": "UI",
+    "stationCode": "942",
+    "lineSeq": 2,
+    "stationName": "솔밭공원",
+    "lat": 37.65603,
+    "lng": 127.013273
+  },
+  {
+    "id": "UI_943",
+    "lineId": "UI",
+    "stationCode": "943",
+    "lineSeq": 3,
+    "stationName": "4·19민주묘지",
+    "lat": 37.649502,
+    "lng": 127.013684
+  },
+  {
+    "id": "UI_944",
+    "lineId": "UI",
+    "stationCode": "944",
+    "lineSeq": 4,
+    "stationName": "가오리",
+    "lat": 37.641537,
+    "lng": 127.016789
+  },
+  {
+    "id": "UI_946",
+    "lineId": "UI",
+    "stationCode": "946",
+    "lineSeq": 6,
+    "stationName": "삼양",
+    "lat": 37.626914,
+    "lng": 127.018106
+  },
+  {
+    "id": "UI_947",
+    "lineId": "UI",
+    "stationCode": "947",
+    "lineSeq": 7,
+    "stationName": "삼양사거리",
+    "lat": 37.621337,
+    "lng": 127.020473
+  },
+  {
+    "id": "UI_948",
+    "lineId": "UI",
+    "stationCode": "948",
+    "lineSeq": 8,
+    "stationName": "솔샘",
+    "lat": 37.620238,
+    "lng": 127.013626
+  },
+  {
+    "id": "UI_949",
+    "lineId": "UI",
+    "stationCode": "949",
+    "lineSeq": 9,
+    "stationName": "북한산보국문",
+    "lat": 37.612072,
+    "lng": 127.008251
+  },
+  {
+    "id": "UI_950",
+    "lineId": "UI",
+    "stationCode": "950",
+    "lineSeq": 10,
+    "stationName": "정릉",
+    "lat": 37.603133,
+    "lng": 127.013396
+  },
+  {
+    "id": "UI_951",
+    "lineId": "UI",
+    "stationCode": "951",
+    "lineSeq": 11,
+    "stationName": "성신여대입구",
+    "lat": 37.592467,
+    "lng": 127.016516
+  },
+  {
+    "id": "UJ_U113",
+    "lineId": "UJ",
+    "stationCode": "U113",
+    "lineSeq": 4,
+    "stationName": "경전철의정부",
+    "lat": 37.737202,
+    "lng": 127.043257
+  },
+  {
+    "id": "UJ_U115",
+    "lineId": "UJ",
+    "stationCode": "U115",
+    "lineSeq": 6,
+    "stationName": "흥선",
+    "lat": 37.743302,
+    "lng": 127.037023
+  },
+  {
+    "id": "UJ_U112",
+    "lineId": "UJ",
+    "stationCode": "U112",
+    "lineSeq": 3,
+    "stationName": "범골",
+    "lat": 37.728755,
+    "lng": 127.04353
+  },
+  {
+    "id": "UJ_U111",
+    "lineId": "UJ",
+    "stationCode": "U111",
+    "lineSeq": 2,
+    "stationName": "회룡",
+    "lat": 37.725006,
+    "lng": 127.047073
+  },
+  {
+    "id": "UJ_U110",
+    "lineId": "UJ",
+    "stationCode": "U110",
+    "lineSeq": 1,
+    "stationName": "발곡",
+    "lat": 37.727048,
+    "lng": 127.052803
+  },
+  {
+    "id": "UJ_U117",
+    "lineId": "UJ",
+    "stationCode": "U117",
+    "lineSeq": 7,
+    "stationName": "의정부중앙",
+    "lat": 37.743676,
+    "lng": 127.049565
+  },
+  {
+    "id": "UJ_U118",
+    "lineId": "UJ",
+    "stationCode": "U118",
+    "lineSeq": 8,
+    "stationName": "동오",
+    "lat": 37.745271,
+    "lng": 127.056947
+  },
+  {
+    "id": "UJ_U119",
+    "lineId": "UJ",
+    "stationCode": "U119",
+    "lineSeq": 9,
+    "stationName": "새말",
+    "lat": 37.748885,
+    "lng": 127.06362
+  },
+  {
+    "id": "UJ_U120",
+    "lineId": "UJ",
+    "stationCode": "U120",
+    "lineSeq": 10,
+    "stationName": "경기도청북부청사",
+    "lat": 37.75059,
+    "lng": 127.071495
+  },
+  {
+    "id": "UJ_U121",
+    "lineId": "UJ",
+    "stationCode": "U121",
+    "lineSeq": 11,
+    "stationName": "효자",
+    "lat": 37.754025,
+    "lng": 127.076902
+  },
+  {
+    "id": "UJ_U122",
+    "lineId": "UJ",
+    "stationCode": "U122",
+    "lineSeq": 12,
+    "stationName": "곤제",
+    "lat": 37.750471,
+    "lng": 127.083715
+  },
+  {
+    "id": "UJ_U123",
+    "lineId": "UJ",
+    "stationCode": "U123",
+    "lineSeq": 13,
+    "stationName": "어룡",
+    "lat": 37.742802,
+    "lng": 127.085035
+  },
+  {
+    "id": "UJ_U124",
+    "lineId": "UJ",
+    "stationCode": "U124",
+    "lineSeq": 14,
+    "stationName": "송산",
+    "lat": 37.737279,
+    "lng": 127.087159
+  },
+  {
+    "id": "UJ_U125",
+    "lineId": "UJ",
+    "stationCode": "U125",
+    "lineSeq": 15,
+    "stationName": "탑석",
+    "lat": 37.733579,
+    "lng": 127.088704
+  },
+  {
+    "id": "UJ_U114",
+    "lineId": "UJ",
+    "stationCode": "U114",
+    "lineSeq": 5,
+    "stationName": "의정부시청",
+    "lat": 37.739256,
+    "lng": 127.034781
+  },
+  {
+    "id": "I2_I203",
+    "lineId": "I2",
+    "stationCode": "I203",
+    "lineSeq": 3,
+    "stationName": "검단사거리",
+    "lat": 37.60185,
+    "lng": 126.657108
+  },
+  {
+    "id": "I2_I202",
+    "lineId": "I2",
+    "stationCode": "I202",
+    "lineSeq": 2,
+    "stationName": "왕길",
+    "lat": 37.59518,
+    "lng": 126.642696
+  },
+  {
+    "id": "I2_I218",
+    "lineId": "I2",
+    "stationCode": "I218",
+    "lineSeq": 18,
+    "stationName": "주안",
+    "lat": 37.464992,
+    "lng": 126.679098
+  },
+  {
+    "id": "I2_I212",
+    "lineId": "I2",
+    "stationCode": "I212",
+    "lineSeq": 12,
+    "stationName": "가정중앙시장",
+    "lat": 37.517054,
+    "lng": 126.676672
+  },
+  {
+    "id": "I2_I201",
+    "lineId": "I2",
+    "stationCode": "I201",
+    "lineSeq": 1,
+    "stationName": "검단오류",
+    "lat": 37.594877,
+    "lng": 126.627178
+  },
+  {
+    "id": "I2_I208",
+    "lineId": "I2",
+    "stationCode": "I208",
+    "lineSeq": 8,
+    "stationName": "검바위",
+    "lat": 37.561405,
+    "lng": 126.677566
+  },
+  {
+    "id": "I2_I211",
+    "lineId": "I2",
+    "stationCode": "I211",
+    "lineSeq": 11,
+    "stationName": "가정",
+    "lat": 37.524649,
+    "lng": 126.675539
+  },
+  {
+    "id": "I2_I209",
+    "lineId": "I2",
+    "stationCode": "I209",
+    "lineSeq": 9,
+    "stationName": "아시아드경기장",
+    "lat": 37.5517,
+    "lng": 126.677122
+  },
+  {
+    "id": "I2_I210",
+    "lineId": "I2",
+    "stationCode": "I210",
+    "lineSeq": 10,
+    "stationName": "서해구청",
+    "lat": 37.543742,
+    "lng": 126.676787
+  },
+  {
+    "id": "I2_I215",
+    "lineId": "I2",
+    "stationCode": "I215",
+    "lineSeq": 15,
+    "stationName": "인천가좌",
+    "lat": 37.4897,
+    "lng": 126.675208
+  },
+  {
+    "id": "I2_I214",
+    "lineId": "I2",
+    "stationCode": "I214",
+    "lineSeq": 14,
+    "stationName": "서부여성회관",
+    "lat": 37.500168,
+    "lng": 126.675795
+  },
+  {
+    "id": "I2_I204",
+    "lineId": "I2",
+    "stationCode": "I204",
+    "lineSeq": 4,
+    "stationName": "마전",
+    "lat": 37.597566,
+    "lng": 126.666998
+  },
+  {
+    "id": "I2_I213",
+    "lineId": "I2",
+    "stationCode": "I213",
+    "lineSeq": 13,
+    "stationName": "석남",
+    "lat": 37.506193,
+    "lng": 126.676203
+  },
+  {
+    "id": "I2_I206",
+    "lineId": "I2",
+    "stationCode": "I206",
+    "lineSeq": 6,
+    "stationName": "독정",
+    "lat": 37.585212,
+    "lng": 126.675844
+  },
+  {
+    "id": "I2_I207",
+    "lineId": "I2",
+    "stationCode": "I207",
+    "lineSeq": 7,
+    "stationName": "검암",
+    "lat": 37.56866,
+    "lng": 126.675687
+  },
+  {
+    "id": "I2_I205",
+    "lineId": "I2",
+    "stationCode": "I205",
+    "lineSeq": 5,
+    "stationName": "완정",
+    "lat": 37.592928,
+    "lng": 126.673203
+  },
+  {
+    "id": "I2_I216",
+    "lineId": "I2",
+    "stationCode": "I216",
+    "lineSeq": 16,
+    "stationName": "가재울",
+    "lat": 37.484192,
+    "lng": 126.683673
+  },
+  {
+    "id": "I2_I217",
+    "lineId": "I2",
+    "stationCode": "I217",
+    "lineSeq": 17,
+    "stationName": "주안국가산단",
+    "lat": 37.473703,
+    "lng": 126.68113
+  },
+  {
+    "id": "I2_I221",
+    "lineId": "I2",
+    "stationCode": "I221",
+    "lineSeq": 21,
+    "stationName": "인천시청",
+    "lat": 37.456833,
+    "lng": 126.701306
+  },
+  {
+    "id": "I2_I222",
+    "lineId": "I2",
+    "stationCode": "I222",
+    "lineSeq": 22,
+    "stationName": "석천사거리",
+    "lat": 37.456805,
+    "lng": 126.709986
+  },
+  {
+    "id": "I2_I223",
+    "lineId": "I2",
+    "stationCode": "I223",
+    "lineSeq": 23,
+    "stationName": "모래내시장",
+    "lat": 37.45583,
+    "lng": 126.719298
+  },
+  {
+    "id": "I2_I224",
+    "lineId": "I2",
+    "stationCode": "I224",
+    "lineSeq": 24,
+    "stationName": "만수",
+    "lat": 37.454911,
+    "lng": 126.732094
+  },
+  {
+    "id": "I2_I225",
+    "lineId": "I2",
+    "stationCode": "I225",
+    "lineSeq": 25,
+    "stationName": "남동구청",
+    "lat": 37.448161,
+    "lng": 126.736939
+  },
+  {
+    "id": "I2_I226",
+    "lineId": "I2",
+    "stationCode": "I226",
+    "lineSeq": 26,
+    "stationName": "인천대공원",
+    "lat": 37.448769,
+    "lng": 126.752618
+  },
+  {
+    "id": "I2_I227",
+    "lineId": "I2",
+    "stationCode": "I227",
+    "lineSeq": 27,
+    "stationName": "운연",
+    "lat": 37.440127,
+    "lng": 126.75997
+  },
+  {
+    "id": "I2_I220",
+    "lineId": "I2",
+    "stationCode": "I220",
+    "lineSeq": 20,
+    "stationName": "석바위시장",
+    "lat": 37.457611,
+    "lng": 126.692575
+  },
+  {
+    "id": "I2_I219",
+    "lineId": "I2",
+    "stationCode": "I219",
+    "lineSeq": 19,
+    "stationName": "시민공원",
+    "lat": 37.458335,
+    "lng": 126.681192
+  },
+  {
+    "id": "I1_I130",
+    "lineId": "I1",
+    "stationCode": "I130",
+    "lineSeq": 24,
+    "stationName": "원인재",
+    "lat": 37.412333,
+    "lng": 126.687869
+  },
+  {
+    "id": "I1_I128",
+    "lineId": "I1",
+    "stationCode": "I128",
+    "lineSeq": 22,
+    "stationName": "선학",
+    "lat": 37.426684,
+    "lng": 126.698863
+  },
+  {
+    "id": "I1_I123",
+    "lineId": "I1",
+    "stationCode": "I123",
+    "lineSeq": 17,
+    "stationName": "간석오거리",
+    "lat": 37.467048,
+    "lng": 126.707938
+  },
+  {
+    "id": "I1_I125",
+    "lineId": "I1",
+    "stationCode": "I125",
+    "lineSeq": 19,
+    "stationName": "예술회관",
+    "lat": 37.449396,
+    "lng": 126.701012
+  },
+  {
+    "id": "I1_I129",
+    "lineId": "I1",
+    "stationCode": "I129",
+    "lineSeq": 23,
+    "stationName": "신연수",
+    "lat": 37.41804,
+    "lng": 126.693863
+  },
+  {
+    "id": "I1_I107",
+    "lineId": "I1",
+    "stationCode": "I107",
+    "lineSeq": 1,
+    "stationName": "검단호수공원",
+    "lat": 37.60244,
+    "lng": 126.688566
+  },
+  {
+    "id": "I1_I124",
+    "lineId": "I1",
+    "stationCode": "I124",
+    "lineSeq": 18,
+    "stationName": "인천시청",
+    "lat": 37.457263,
+    "lng": 126.702143
+  },
+  {
+    "id": "I1_I122",
+    "lineId": "I1",
+    "stationCode": "I122",
+    "lineSeq": 16,
+    "stationName": "부평삼거리",
+    "lat": 37.477679,
+    "lng": 126.710208
+  },
+  {
+    "id": "I1_I139",
+    "lineId": "I1",
+    "stationCode": "I139",
+    "lineSeq": 33,
+    "stationName": "송도달빛축제공원",
+    "lat": 37.407143,
+    "lng": 126.62597
+  },
+  {
+    "id": "I1_I110",
+    "lineId": "I1",
+    "stationCode": "I110",
+    "lineSeq": 4,
+    "stationName": "계양",
+    "lat": 37.571449,
+    "lng": 126.73578
+  },
+  {
+    "id": "I1_I121",
+    "lineId": "I1",
+    "stationCode": "I121",
+    "lineSeq": 15,
+    "stationName": "동수",
+    "lat": 37.485312,
+    "lng": 126.718247
+  },
+  {
+    "id": "I1_I108",
+    "lineId": "I1",
+    "stationCode": "I108",
+    "lineSeq": 2,
+    "stationName": "신검단중앙",
+    "lat": 37.602676,
+    "lng": 126.698527
+  },
+  {
+    "id": "I1_I112",
+    "lineId": "I1",
+    "stationCode": "I112",
+    "lineSeq": 6,
+    "stationName": "박촌",
+    "lat": 37.553703,
+    "lng": 126.745077
+  },
+  {
+    "id": "I1_I137",
+    "lineId": "I1",
+    "stationCode": "I137",
+    "lineSeq": 31,
+    "stationName": "센트럴파크",
+    "lat": 37.393054,
+    "lng": 126.634729
+  },
+  {
+    "id": "I1_I136",
+    "lineId": "I1",
+    "stationCode": "I136",
+    "lineSeq": 30,
+    "stationName": "인천대입구",
+    "lat": 37.386007,
+    "lng": 126.639484
+  },
+  {
+    "id": "I1_I113",
+    "lineId": "I1",
+    "stationCode": "I113",
+    "lineSeq": 7,
+    "stationName": "임학",
+    "lat": 37.545059,
+    "lng": 126.738665
+  },
+  {
+    "id": "I1_I118",
+    "lineId": "I1",
+    "stationCode": "I118",
+    "lineSeq": 12,
+    "stationName": "부평구청",
+    "lat": 37.508407,
+    "lng": 126.720555
+  },
+  {
+    "id": "I1_I117",
+    "lineId": "I1",
+    "stationCode": "I117",
+    "lineSeq": 11,
+    "stationName": "갈산",
+    "lat": 37.517268,
+    "lng": 126.721514
+  },
+  {
+    "id": "I1_I116",
+    "lineId": "I1",
+    "stationCode": "I116",
+    "lineSeq": 10,
+    "stationName": "작전",
+    "lat": 37.530415,
+    "lng": 126.722527
+  },
+  {
+    "id": "I1_I115",
+    "lineId": "I1",
+    "stationCode": "I115",
+    "lineSeq": 9,
+    "stationName": "경인교대입구",
+    "lat": 37.538157,
+    "lng": 126.722597
+  },
+  {
+    "id": "I1_I119",
+    "lineId": "I1",
+    "stationCode": "I119",
+    "lineSeq": 13,
+    "stationName": "부평시장",
+    "lat": 37.498383,
+    "lng": 126.722244
+  },
+  {
+    "id": "I1_I111",
+    "lineId": "I1",
+    "stationCode": "I111",
+    "lineSeq": 5,
+    "stationName": "귤현",
+    "lat": 37.566379,
+    "lng": 126.742654
+  },
+  {
+    "id": "I1_I109",
+    "lineId": "I1",
+    "stationCode": "I109",
+    "lineSeq": 3,
+    "stationName": "아라",
+    "lat": 37.592259,
+    "lng": 126.713301
+  },
+  {
+    "id": "I1_I114",
+    "lineId": "I1",
+    "stationCode": "I114",
+    "lineSeq": 8,
+    "stationName": "계산",
+    "lat": 37.543238,
+    "lng": 126.728128
+  },
+  {
+    "id": "I1_I120",
+    "lineId": "I1",
+    "stationCode": "I120",
+    "lineSeq": 14,
+    "stationName": "부평",
+    "lat": 37.490535,
+    "lng": 126.723453
+  },
+  {
+    "id": "I1_I127",
+    "lineId": "I1",
+    "stationCode": "I127",
+    "lineSeq": 21,
+    "stationName": "문학경기장",
+    "lat": 37.434935,
+    "lng": 126.698579
+  },
+  {
+    "id": "I1_I126",
+    "lineId": "I1",
+    "stationCode": "I126",
+    "lineSeq": 20,
+    "stationName": "인천터미널",
+    "lat": 37.442383,
+    "lng": 126.699706
+  },
+  {
+    "id": "I1_I138",
+    "lineId": "I1",
+    "stationCode": "I138",
+    "lineSeq": 32,
+    "stationName": "국제업무지구",
+    "lat": 37.399907,
+    "lng": 126.630347
+  },
+  {
+    "id": "I1_I135",
+    "lineId": "I1",
+    "stationCode": "I135",
+    "lineSeq": 29,
+    "stationName": "지식정보단지",
+    "lat": 37.378384,
+    "lng": 126.645168
+  },
+  {
+    "id": "I1_I134",
+    "lineId": "I1",
+    "stationCode": "I134",
+    "lineSeq": 28,
+    "stationName": "테크노파크",
+    "lat": 37.382268,
+    "lng": 126.656365
+  },
+  {
+    "id": "I1_I133",
+    "lineId": "I1",
+    "stationCode": "I133",
+    "lineSeq": 27,
+    "stationName": "캠퍼스타운",
+    "lat": 37.387855,
+    "lng": 126.661673
+  },
+  {
+    "id": "I1_I132",
+    "lineId": "I1",
+    "stationCode": "I132",
+    "lineSeq": 26,
+    "stationName": "동막",
+    "lat": 37.397878,
+    "lng": 126.674005
+  },
+  {
+    "id": "I1_I131",
+    "lineId": "I1",
+    "stationCode": "I131",
+    "lineSeq": 25,
+    "stationName": "동춘",
+    "lat": 37.404737,
+    "lng": 126.681015
+  }
+]

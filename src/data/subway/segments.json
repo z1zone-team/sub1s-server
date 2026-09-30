@@ -1,0 +1,1892 @@
+[
+  {
+    "lineId": "01",
+    "fromStationId": "01_133",
+    "toStationId": "01_132",
+    "distanceKm": 1.1,
+    "durationSec": 120
+  },
+  {
+    "lineId": "01",
+    "fromStationId": "01_132",
+    "toStationId": "01_131",
+    "distanceKm": 1,
+    "durationSec": 120
+  },
+  {
+    "lineId": "01",
+    "fromStationId": "01_131",
+    "toStationId": "01_130",
+    "distanceKm": 0.8,
+    "durationSec": 90
+  },
+  {
+    "lineId": "01",
+    "fromStationId": "01_130",
+    "toStationId": "01_129",
+    "distanceKm": 0.9,
+    "durationSec": 90
+  },
+  {
+    "lineId": "01",
+    "fromStationId": "01_129",
+    "toStationId": "01_128",
+    "distanceKm": 0.8,
+    "durationSec": 90
+  },
+  {
+    "lineId": "01",
+    "fromStationId": "01_128",
+    "toStationId": "01_127",
+    "distanceKm": 0.6,
+    "durationSec": 60
+  },
+  {
+    "lineId": "01",
+    "fromStationId": "01_127",
+    "toStationId": "01_126",
+    "distanceKm": 0.7,
+    "durationSec": 90
+  },
+  {
+    "lineId": "01",
+    "fromStationId": "01_126",
+    "toStationId": "01_125",
+    "distanceKm": 0.9,
+    "durationSec": 90
+  },
+  {
+    "lineId": "01",
+    "fromStationId": "01_125",
+    "toStationId": "01_124",
+    "distanceKm": 1,
+    "durationSec": 90
+  },
+  {
+    "lineId": "02",
+    "fromStationId": "02_201",
+    "toStationId": "02_202",
+    "distanceKm": 0.7,
+    "durationSec": 90
+  },
+  {
+    "lineId": "02",
+    "fromStationId": "02_202",
+    "toStationId": "02_203",
+    "distanceKm": 0.8,
+    "durationSec": 60
+  },
+  {
+    "lineId": "02",
+    "fromStationId": "02_203",
+    "toStationId": "02_204",
+    "distanceKm": 0.6,
+    "durationSec": 60
+  },
+  {
+    "lineId": "02",
+    "fromStationId": "02_204",
+    "toStationId": "02_205",
+    "distanceKm": 1,
+    "durationSec": 90
+  },
+  {
+    "lineId": "02",
+    "fromStationId": "02_205",
+    "toStationId": "02_206",
+    "distanceKm": 0.9,
+    "durationSec": 90
+  },
+  {
+    "lineId": "02",
+    "fromStationId": "02_206",
+    "toStationId": "02_207",
+    "distanceKm": 0.9,
+    "durationSec": 60
+  },
+  {
+    "lineId": "02",
+    "fromStationId": "02_207",
+    "toStationId": "02_208",
+    "distanceKm": 0.8,
+    "durationSec": 60
+  },
+  {
+    "lineId": "02",
+    "fromStationId": "02_208",
+    "toStationId": "02_209",
+    "distanceKm": 1,
+    "durationSec": 90
+  },
+  {
+    "lineId": "02",
+    "fromStationId": "02_209",
+    "toStationId": "02_210",
+    "distanceKm": 1.1,
+    "durationSec": 90
+  },
+  {
+    "lineId": "02",
+    "fromStationId": "02_210",
+    "toStationId": "02_211",
+    "distanceKm": 0.8,
+    "durationSec": 60
+  },
+  {
+    "lineId": "02",
+    "fromStationId": "02_211",
+    "toStationId": "02_212",
+    "distanceKm": 1.2,
+    "durationSec": 90
+  },
+  {
+    "lineId": "02",
+    "fromStationId": "02_212",
+    "toStationId": "02_213",
+    "distanceKm": 1.6,
+    "durationSec": 120
+  },
+  {
+    "lineId": "02",
+    "fromStationId": "02_213",
+    "toStationId": "02_214",
+    "distanceKm": 0.9,
+    "durationSec": 60
+  },
+  {
+    "lineId": "02",
+    "fromStationId": "02_214",
+    "toStationId": "02_215",
+    "distanceKm": 1.8,
+    "durationSec": 120
+  },
+  {
+    "lineId": "02",
+    "fromStationId": "02_215",
+    "toStationId": "02_216",
+    "distanceKm": 1,
+    "durationSec": 90
+  },
+  {
+    "lineId": "02",
+    "fromStationId": "02_216",
+    "toStationId": "02_217",
+    "distanceKm": 1.2,
+    "durationSec": 90
+  },
+  {
+    "lineId": "02",
+    "fromStationId": "02_217",
+    "toStationId": "02_218",
+    "distanceKm": 1.2,
+    "durationSec": 90
+  },
+  {
+    "lineId": "02",
+    "fromStationId": "02_218",
+    "toStationId": "02_219",
+    "distanceKm": 1,
+    "durationSec": 90
+  },
+  {
+    "lineId": "02",
+    "fromStationId": "02_219",
+    "toStationId": "02_220",
+    "distanceKm": 1.3,
+    "durationSec": 90
+  },
+  {
+    "lineId": "02",
+    "fromStationId": "02_220",
+    "toStationId": "02_221",
+    "distanceKm": 1.2,
+    "durationSec": 90
+  },
+  {
+    "lineId": "02",
+    "fromStationId": "02_221",
+    "toStationId": "02_222",
+    "distanceKm": 0.8,
+    "durationSec": 60
+  },
+  {
+    "lineId": "02",
+    "fromStationId": "02_222",
+    "toStationId": "02_223",
+    "distanceKm": 1.2,
+    "durationSec": 90
+  },
+  {
+    "lineId": "02",
+    "fromStationId": "02_223",
+    "toStationId": "02_224",
+    "distanceKm": 0.7,
+    "durationSec": 60
+  },
+  {
+    "lineId": "02",
+    "fromStationId": "02_224",
+    "toStationId": "02_225",
+    "distanceKm": 1.7,
+    "durationSec": 120
+  },
+  {
+    "lineId": "02",
+    "fromStationId": "02_225",
+    "toStationId": "02_226",
+    "distanceKm": 1.6,
+    "durationSec": 150
+  },
+  {
+    "lineId": "02",
+    "fromStationId": "02_226",
+    "toStationId": "02_227",
+    "distanceKm": 1.7,
+    "durationSec": 120
+  },
+  {
+    "lineId": "02",
+    "fromStationId": "02_227",
+    "toStationId": "02_228",
+    "distanceKm": 1,
+    "durationSec": 90
+  },
+  {
+    "lineId": "02",
+    "fromStationId": "02_228",
+    "toStationId": "02_229",
+    "distanceKm": 1,
+    "durationSec": 60
+  },
+  {
+    "lineId": "02",
+    "fromStationId": "02_229",
+    "toStationId": "02_230",
+    "distanceKm": 1.1,
+    "durationSec": 90
+  },
+  {
+    "lineId": "02",
+    "fromStationId": "02_230",
+    "toStationId": "02_231",
+    "distanceKm": 1.8,
+    "durationSec": 120
+  },
+  {
+    "lineId": "02",
+    "fromStationId": "02_231",
+    "toStationId": "02_232",
+    "distanceKm": 1.1,
+    "durationSec": 90
+  },
+  {
+    "lineId": "02",
+    "fromStationId": "02_232",
+    "toStationId": "02_233",
+    "distanceKm": 1.1,
+    "durationSec": 90
+  },
+  {
+    "lineId": "02",
+    "fromStationId": "02_233",
+    "toStationId": "02_234",
+    "distanceKm": 1.8,
+    "durationSec": 150
+  },
+  {
+    "lineId": "02",
+    "fromStationId": "02_234",
+    "toStationId": "02_235",
+    "distanceKm": 1.2,
+    "durationSec": 120
+  },
+  {
+    "lineId": "02",
+    "fromStationId": "02_235",
+    "toStationId": "02_236",
+    "distanceKm": 0.9,
+    "durationSec": 60
+  },
+  {
+    "lineId": "02",
+    "fromStationId": "02_236",
+    "toStationId": "02_237",
+    "distanceKm": 1.1,
+    "durationSec": 90
+  },
+  {
+    "lineId": "02",
+    "fromStationId": "02_237",
+    "toStationId": "02_238",
+    "distanceKm": 2,
+    "durationSec": 150
+  },
+  {
+    "lineId": "02",
+    "fromStationId": "02_238",
+    "toStationId": "02_239",
+    "distanceKm": 1.1,
+    "durationSec": 90
+  },
+  {
+    "lineId": "02",
+    "fromStationId": "02_239",
+    "toStationId": "02_240",
+    "distanceKm": 1.3,
+    "durationSec": 120
+  },
+  {
+    "lineId": "02",
+    "fromStationId": "02_240",
+    "toStationId": "02_241",
+    "distanceKm": 0.8,
+    "durationSec": 60
+  },
+  {
+    "lineId": "02",
+    "fromStationId": "02_241",
+    "toStationId": "02_242",
+    "distanceKm": 0.9,
+    "durationSec": 60
+  },
+  {
+    "lineId": "02",
+    "fromStationId": "02_242",
+    "toStationId": "02_243",
+    "distanceKm": 0.8,
+    "durationSec": 90
+  },
+  {
+    "lineId": "02",
+    "fromStationId": "02_243",
+    "toStationId": "02_201",
+    "distanceKm": 1.1,
+    "durationSec": 90
+  },
+  {
+    "lineId": "02",
+    "fromStationId": "02_211",
+    "toStationId": "02_211-1",
+    "distanceKm": 2.3,
+    "durationSec": 180
+  },
+  {
+    "lineId": "02",
+    "fromStationId": "02_211-1",
+    "toStationId": "02_211-2",
+    "distanceKm": 1,
+    "durationSec": 90
+  },
+  {
+    "lineId": "02",
+    "fromStationId": "02_211-2",
+    "toStationId": "02_211-3",
+    "distanceKm": 0.9,
+    "durationSec": 90
+  },
+  {
+    "lineId": "02",
+    "fromStationId": "02_211-3",
+    "toStationId": "02_211-4",
+    "distanceKm": 1.2,
+    "durationSec": 90
+  },
+  {
+    "lineId": "02",
+    "fromStationId": "02_234",
+    "toStationId": "02_234-1",
+    "distanceKm": 1,
+    "durationSec": 90
+  },
+  {
+    "lineId": "02",
+    "fromStationId": "02_234-1",
+    "toStationId": "02_234-2",
+    "distanceKm": 1.7,
+    "durationSec": 150
+  },
+  {
+    "lineId": "02",
+    "fromStationId": "02_234-2",
+    "toStationId": "02_234-3",
+    "distanceKm": 1.9,
+    "durationSec": 180
+  },
+  {
+    "lineId": "02",
+    "fromStationId": "02_234-3",
+    "toStationId": "02_234-4",
+    "distanceKm": 1.4,
+    "durationSec": 150
+  },
+  {
+    "lineId": "03",
+    "fromStationId": "03_319",
+    "toStationId": "03_320",
+    "distanceKm": 1.5,
+    "durationSec": 180
+  },
+  {
+    "lineId": "03",
+    "fromStationId": "03_320",
+    "toStationId": "03_321",
+    "distanceKm": 2,
+    "durationSec": 120
+  },
+  {
+    "lineId": "03",
+    "fromStationId": "03_321",
+    "toStationId": "03_322",
+    "distanceKm": 1.3,
+    "durationSec": 90
+  },
+  {
+    "lineId": "03",
+    "fromStationId": "03_322",
+    "toStationId": "03_323",
+    "distanceKm": 1.1,
+    "durationSec": 90
+  },
+  {
+    "lineId": "03",
+    "fromStationId": "03_323",
+    "toStationId": "03_324",
+    "distanceKm": 1.6,
+    "durationSec": 120
+  },
+  {
+    "lineId": "03",
+    "fromStationId": "03_324",
+    "toStationId": "03_325",
+    "distanceKm": 0.9,
+    "durationSec": 90
+  },
+  {
+    "lineId": "03",
+    "fromStationId": "03_325",
+    "toStationId": "03_326",
+    "distanceKm": 1.1,
+    "durationSec": 90
+  },
+  {
+    "lineId": "03",
+    "fromStationId": "03_326",
+    "toStationId": "03_327",
+    "distanceKm": 1.6,
+    "durationSec": 120
+  },
+  {
+    "lineId": "03",
+    "fromStationId": "03_327",
+    "toStationId": "03_328",
+    "distanceKm": 1.1,
+    "durationSec": 90
+  },
+  {
+    "lineId": "03",
+    "fromStationId": "03_328",
+    "toStationId": "03_329",
+    "distanceKm": 1,
+    "durationSec": 90
+  },
+  {
+    "lineId": "03",
+    "fromStationId": "03_329",
+    "toStationId": "03_330",
+    "distanceKm": 0.6,
+    "durationSec": 60
+  },
+  {
+    "lineId": "03",
+    "fromStationId": "03_330",
+    "toStationId": "03_331",
+    "distanceKm": 0.7,
+    "durationSec": 60
+  },
+  {
+    "lineId": "03",
+    "fromStationId": "03_331",
+    "toStationId": "03_332",
+    "distanceKm": 0.9,
+    "durationSec": 90
+  },
+  {
+    "lineId": "03",
+    "fromStationId": "03_332",
+    "toStationId": "03_333",
+    "distanceKm": 0.7,
+    "durationSec": 60
+  },
+  {
+    "lineId": "03",
+    "fromStationId": "03_333",
+    "toStationId": "03_334",
+    "distanceKm": 0.8,
+    "durationSec": 60
+  },
+  {
+    "lineId": "03",
+    "fromStationId": "03_334",
+    "toStationId": "03_335",
+    "distanceKm": 0.8,
+    "durationSec": 60
+  },
+  {
+    "lineId": "03",
+    "fromStationId": "03_335",
+    "toStationId": "03_336",
+    "distanceKm": 2.1,
+    "durationSec": 120
+  },
+  {
+    "lineId": "03",
+    "fromStationId": "03_336",
+    "toStationId": "03_337",
+    "distanceKm": 1.5,
+    "durationSec": 120
+  },
+  {
+    "lineId": "03",
+    "fromStationId": "03_337",
+    "toStationId": "03_338",
+    "distanceKm": 0.9,
+    "durationSec": 90
+  },
+  {
+    "lineId": "03",
+    "fromStationId": "03_338",
+    "toStationId": "03_339",
+    "distanceKm": 1.2,
+    "durationSec": 90
+  },
+  {
+    "lineId": "03",
+    "fromStationId": "03_339",
+    "toStationId": "03_340",
+    "distanceKm": 1.6,
+    "durationSec": 120
+  },
+  {
+    "lineId": "03",
+    "fromStationId": "03_340",
+    "toStationId": "03_341",
+    "distanceKm": 0.9,
+    "durationSec": 90
+  },
+  {
+    "lineId": "03",
+    "fromStationId": "03_341",
+    "toStationId": "03_342",
+    "distanceKm": 1.8,
+    "durationSec": 120
+  },
+  {
+    "lineId": "03",
+    "fromStationId": "03_342",
+    "toStationId": "03_343",
+    "distanceKm": 1.2,
+    "durationSec": 120
+  },
+  {
+    "lineId": "03",
+    "fromStationId": "03_343",
+    "toStationId": "03_344",
+    "distanceKm": 0.8,
+    "durationSec": 90
+  },
+  {
+    "lineId": "03",
+    "fromStationId": "03_344",
+    "toStationId": "03_345",
+    "distanceKm": 0.8,
+    "durationSec": 60
+  },
+  {
+    "lineId": "03",
+    "fromStationId": "03_345",
+    "toStationId": "03_346",
+    "distanceKm": 0.8,
+    "durationSec": 60
+  },
+  {
+    "lineId": "03",
+    "fromStationId": "03_346",
+    "toStationId": "03_347",
+    "distanceKm": 0.9,
+    "durationSec": 90
+  },
+  {
+    "lineId": "03",
+    "fromStationId": "03_347",
+    "toStationId": "03_348",
+    "distanceKm": 1.2,
+    "durationSec": 90
+  },
+  {
+    "lineId": "03",
+    "fromStationId": "03_348",
+    "toStationId": "03_349",
+    "distanceKm": 1.8,
+    "durationSec": 120
+  },
+  {
+    "lineId": "03",
+    "fromStationId": "03_349",
+    "toStationId": "03_350",
+    "distanceKm": 1.4,
+    "durationSec": 120
+  },
+  {
+    "lineId": "03",
+    "fromStationId": "03_350",
+    "toStationId": "03_351",
+    "distanceKm": 0.8,
+    "durationSec": 60
+  },
+  {
+    "lineId": "03",
+    "fromStationId": "03_351",
+    "toStationId": "03_352",
+    "distanceKm": 0.8,
+    "durationSec": 60
+  },
+  {
+    "lineId": "04",
+    "fromStationId": "04_409",
+    "toStationId": "04_410",
+    "distanceKm": 1.2,
+    "durationSec": 90
+  },
+  {
+    "lineId": "04",
+    "fromStationId": "04_410",
+    "toStationId": "04_411",
+    "distanceKm": 1,
+    "durationSec": 90
+  },
+  {
+    "lineId": "04",
+    "fromStationId": "04_411",
+    "toStationId": "04_412",
+    "distanceKm": 1.4,
+    "durationSec": 120
+  },
+  {
+    "lineId": "04",
+    "fromStationId": "04_412",
+    "toStationId": "04_413",
+    "distanceKm": 1.3,
+    "durationSec": 90
+  },
+  {
+    "lineId": "04",
+    "fromStationId": "04_413",
+    "toStationId": "04_414",
+    "distanceKm": 1.5,
+    "durationSec": 120
+  },
+  {
+    "lineId": "04",
+    "fromStationId": "04_414",
+    "toStationId": "04_415",
+    "distanceKm": 1.4,
+    "durationSec": 90
+  },
+  {
+    "lineId": "04",
+    "fromStationId": "04_415",
+    "toStationId": "04_416",
+    "distanceKm": 1.5,
+    "durationSec": 120
+  },
+  {
+    "lineId": "04",
+    "fromStationId": "04_416",
+    "toStationId": "04_417",
+    "distanceKm": 1.3,
+    "durationSec": 90
+  },
+  {
+    "lineId": "04",
+    "fromStationId": "04_417",
+    "toStationId": "04_418",
+    "distanceKm": 1.4,
+    "durationSec": 120
+  },
+  {
+    "lineId": "04",
+    "fromStationId": "04_418",
+    "toStationId": "04_419",
+    "distanceKm": 1,
+    "durationSec": 90
+  },
+  {
+    "lineId": "04",
+    "fromStationId": "04_419",
+    "toStationId": "04_420",
+    "distanceKm": 0.9,
+    "durationSec": 90
+  },
+  {
+    "lineId": "04",
+    "fromStationId": "04_420",
+    "toStationId": "04_421",
+    "distanceKm": 1.5,
+    "durationSec": 120
+  },
+  {
+    "lineId": "04",
+    "fromStationId": "04_421",
+    "toStationId": "04_422",
+    "distanceKm": 0.7,
+    "durationSec": 60
+  },
+  {
+    "lineId": "04",
+    "fromStationId": "04_422",
+    "toStationId": "04_423",
+    "distanceKm": 1.3,
+    "durationSec": 120
+  },
+  {
+    "lineId": "04",
+    "fromStationId": "04_423",
+    "toStationId": "04_424",
+    "distanceKm": 0.7,
+    "durationSec": 60
+  },
+  {
+    "lineId": "04",
+    "fromStationId": "04_424",
+    "toStationId": "04_425",
+    "distanceKm": 0.7,
+    "durationSec": 60
+  },
+  {
+    "lineId": "04",
+    "fromStationId": "04_425",
+    "toStationId": "04_426",
+    "distanceKm": 0.9,
+    "durationSec": 90
+  },
+  {
+    "lineId": "04",
+    "fromStationId": "04_426",
+    "toStationId": "04_427",
+    "distanceKm": 1,
+    "durationSec": 90
+  },
+  {
+    "lineId": "04",
+    "fromStationId": "04_427",
+    "toStationId": "04_428",
+    "distanceKm": 1.2,
+    "durationSec": 90
+  },
+  {
+    "lineId": "04",
+    "fromStationId": "04_428",
+    "toStationId": "04_429",
+    "distanceKm": 0.7,
+    "durationSec": 60
+  },
+  {
+    "lineId": "04",
+    "fromStationId": "04_429",
+    "toStationId": "04_430",
+    "distanceKm": 1.3,
+    "durationSec": 90
+  },
+  {
+    "lineId": "04",
+    "fromStationId": "04_430",
+    "toStationId": "04_431",
+    "distanceKm": 2.7,
+    "durationSec": 180
+  },
+  {
+    "lineId": "04",
+    "fromStationId": "04_431",
+    "toStationId": "04_432",
+    "distanceKm": 1.8,
+    "durationSec": 150
+  },
+  {
+    "lineId": "04",
+    "fromStationId": "04_432",
+    "toStationId": "04_433",
+    "distanceKm": 1.1,
+    "durationSec": 90
+  },
+  {
+    "lineId": "04",
+    "fromStationId": "04_433",
+    "toStationId": "04_434",
+    "distanceKm": 2.2,
+    "durationSec": 90
+  },
+  {
+    "lineId": "05",
+    "fromStationId": "05_510",
+    "toStationId": "05_511",
+    "distanceKm": 0.9,
+    "durationSec": 90
+  },
+  {
+    "lineId": "05",
+    "fromStationId": "05_511",
+    "toStationId": "05_512",
+    "distanceKm": 1.2,
+    "durationSec": 100
+  },
+  {
+    "lineId": "05",
+    "fromStationId": "05_512",
+    "toStationId": "05_513",
+    "distanceKm": 1.2,
+    "durationSec": 130
+  },
+  {
+    "lineId": "05",
+    "fromStationId": "05_513",
+    "toStationId": "05_514",
+    "distanceKm": 1.1,
+    "durationSec": 90
+  },
+  {
+    "lineId": "05",
+    "fromStationId": "05_514",
+    "toStationId": "05_515",
+    "distanceKm": 1.2,
+    "durationSec": 100
+  },
+  {
+    "lineId": "05",
+    "fromStationId": "05_515",
+    "toStationId": "05_516",
+    "distanceKm": 1.1,
+    "durationSec": 90
+  },
+  {
+    "lineId": "05",
+    "fromStationId": "05_516",
+    "toStationId": "05_517",
+    "distanceKm": 1,
+    "durationSec": 90
+  },
+  {
+    "lineId": "05",
+    "fromStationId": "05_517",
+    "toStationId": "05_518",
+    "distanceKm": 1.2,
+    "durationSec": 90
+  },
+  {
+    "lineId": "05",
+    "fromStationId": "05_518",
+    "toStationId": "05_519",
+    "distanceKm": 1.3,
+    "durationSec": 110
+  },
+  {
+    "lineId": "05",
+    "fromStationId": "05_519",
+    "toStationId": "05_520",
+    "distanceKm": 0.8,
+    "durationSec": 70
+  },
+  {
+    "lineId": "05",
+    "fromStationId": "05_520",
+    "toStationId": "05_521",
+    "distanceKm": 0.9,
+    "durationSec": 80
+  },
+  {
+    "lineId": "05",
+    "fromStationId": "05_521",
+    "toStationId": "05_522",
+    "distanceKm": 1,
+    "durationSec": 80
+  },
+  {
+    "lineId": "05",
+    "fromStationId": "05_522",
+    "toStationId": "05_523",
+    "distanceKm": 0.8,
+    "durationSec": 70
+  },
+  {
+    "lineId": "05",
+    "fromStationId": "05_523",
+    "toStationId": "05_524",
+    "distanceKm": 0.9,
+    "durationSec": 70
+  },
+  {
+    "lineId": "05",
+    "fromStationId": "05_524",
+    "toStationId": "05_525",
+    "distanceKm": 1.1,
+    "durationSec": 90
+  },
+  {
+    "lineId": "05",
+    "fromStationId": "05_525",
+    "toStationId": "05_526",
+    "distanceKm": 1,
+    "durationSec": 90
+  },
+  {
+    "lineId": "05",
+    "fromStationId": "05_526",
+    "toStationId": "05_527",
+    "distanceKm": 1,
+    "durationSec": 80
+  },
+  {
+    "lineId": "05",
+    "fromStationId": "05_527",
+    "toStationId": "05_528",
+    "distanceKm": 1.8,
+    "durationSec": 120
+  },
+  {
+    "lineId": "05",
+    "fromStationId": "05_528",
+    "toStationId": "05_529",
+    "distanceKm": 0.8,
+    "durationSec": 70
+  },
+  {
+    "lineId": "05",
+    "fromStationId": "05_529",
+    "toStationId": "05_530",
+    "distanceKm": 1.1,
+    "durationSec": 80
+  },
+  {
+    "lineId": "05",
+    "fromStationId": "05_530",
+    "toStationId": "05_531",
+    "distanceKm": 0.9,
+    "durationSec": 80
+  },
+  {
+    "lineId": "05",
+    "fromStationId": "05_531",
+    "toStationId": "05_532",
+    "distanceKm": 0.7,
+    "durationSec": 60
+  },
+  {
+    "lineId": "05",
+    "fromStationId": "05_532",
+    "toStationId": "05_533",
+    "distanceKm": 1.1,
+    "durationSec": 90
+  },
+  {
+    "lineId": "05",
+    "fromStationId": "05_533",
+    "toStationId": "05_534",
+    "distanceKm": 1.2,
+    "durationSec": 100
+  },
+  {
+    "lineId": "05",
+    "fromStationId": "05_534",
+    "toStationId": "05_535",
+    "distanceKm": 1,
+    "durationSec": 100
+  },
+  {
+    "lineId": "05",
+    "fromStationId": "05_535",
+    "toStationId": "05_536",
+    "distanceKm": 0.9,
+    "durationSec": 90
+  },
+  {
+    "lineId": "05",
+    "fromStationId": "05_536",
+    "toStationId": "05_537",
+    "distanceKm": 0.9,
+    "durationSec": 80
+  },
+  {
+    "lineId": "05",
+    "fromStationId": "05_537",
+    "toStationId": "05_538",
+    "distanceKm": 0.9,
+    "durationSec": 90
+  },
+  {
+    "lineId": "05",
+    "fromStationId": "05_538",
+    "toStationId": "05_539",
+    "distanceKm": 0.9,
+    "durationSec": 80
+  },
+  {
+    "lineId": "05",
+    "fromStationId": "05_539",
+    "toStationId": "05_540",
+    "distanceKm": 0.9,
+    "durationSec": 70
+  },
+  {
+    "lineId": "05",
+    "fromStationId": "05_540",
+    "toStationId": "05_541",
+    "distanceKm": 0.7,
+    "durationSec": 60
+  },
+  {
+    "lineId": "05",
+    "fromStationId": "05_541",
+    "toStationId": "05_542",
+    "distanceKm": 1,
+    "durationSec": 100
+  },
+  {
+    "lineId": "05",
+    "fromStationId": "05_542",
+    "toStationId": "05_543",
+    "distanceKm": 1.2,
+    "durationSec": 100
+  },
+  {
+    "lineId": "05",
+    "fromStationId": "05_543",
+    "toStationId": "05_544",
+    "distanceKm": 1.5,
+    "durationSec": 100
+  },
+  {
+    "lineId": "05",
+    "fromStationId": "05_544",
+    "toStationId": "05_545",
+    "distanceKm": 1,
+    "durationSec": 90
+  },
+  {
+    "lineId": "05",
+    "fromStationId": "05_545",
+    "toStationId": "05_546",
+    "distanceKm": 1.5,
+    "durationSec": 110
+  },
+  {
+    "lineId": "05",
+    "fromStationId": "05_546",
+    "toStationId": "05_547",
+    "distanceKm": 2,
+    "durationSec": 130
+  },
+  {
+    "lineId": "05",
+    "fromStationId": "05_547",
+    "toStationId": "05_548",
+    "distanceKm": 0.8,
+    "durationSec": 70
+  },
+  {
+    "lineId": "05",
+    "fromStationId": "05_548",
+    "toStationId": "05_549",
+    "distanceKm": 0.9,
+    "durationSec": 90
+  },
+  {
+    "lineId": "05",
+    "fromStationId": "05_549",
+    "toStationId": "05_550",
+    "distanceKm": 0.8,
+    "durationSec": 70
+  },
+  {
+    "lineId": "05",
+    "fromStationId": "05_550",
+    "toStationId": "05_551",
+    "distanceKm": 0.8,
+    "durationSec": 70
+  },
+  {
+    "lineId": "05",
+    "fromStationId": "05_551",
+    "toStationId": "05_552",
+    "distanceKm": 1.2,
+    "durationSec": 100
+  },
+  {
+    "lineId": "05",
+    "fromStationId": "05_552",
+    "toStationId": "05_553",
+    "distanceKm": 1.1,
+    "durationSec": 100
+  },
+  {
+    "lineId": "05",
+    "fromStationId": "05_553",
+    "toStationId": "05_554",
+    "distanceKm": 0.8,
+    "durationSec": 110
+  },
+  {
+    "lineId": "05",
+    "fromStationId": "05_554",
+    "toStationId": "05_555",
+    "distanceKm": 1.7,
+    "durationSec": 110
+  },
+  {
+    "lineId": "05",
+    "fromStationId": "05_555",
+    "toStationId": "05_556",
+    "distanceKm": 2.1,
+    "durationSec": 150
+  },
+  {
+    "lineId": "05",
+    "fromStationId": "05_556",
+    "toStationId": "05_557",
+    "distanceKm": 1.3,
+    "durationSec": 110
+  },
+  {
+    "lineId": "05",
+    "fromStationId": "05_557",
+    "toStationId": "05_558",
+    "distanceKm": 1.6,
+    "durationSec": 150
+  },
+  {
+    "lineId": "05",
+    "fromStationId": "05_548",
+    "toStationId": "05_P549",
+    "distanceKm": 1.2,
+    "durationSec": 110
+  },
+  {
+    "lineId": "05",
+    "fromStationId": "05_P549",
+    "toStationId": "05_P550",
+    "distanceKm": 1.4,
+    "durationSec": 100
+  },
+  {
+    "lineId": "05",
+    "fromStationId": "05_P550",
+    "toStationId": "05_P551",
+    "distanceKm": 0.8,
+    "durationSec": 80
+  },
+  {
+    "lineId": "05",
+    "fromStationId": "05_P551",
+    "toStationId": "05_P552",
+    "distanceKm": 0.9,
+    "durationSec": 80
+  },
+  {
+    "lineId": "05",
+    "fromStationId": "05_P552",
+    "toStationId": "05_P553",
+    "distanceKm": 0.9,
+    "durationSec": 70
+  },
+  {
+    "lineId": "05",
+    "fromStationId": "05_P553",
+    "toStationId": "05_P554",
+    "distanceKm": 0.9,
+    "durationSec": 80
+  },
+  {
+    "lineId": "05",
+    "fromStationId": "05_P554",
+    "toStationId": "05_P555",
+    "distanceKm": 0.9,
+    "durationSec": 90
+  },
+  {
+    "lineId": "06",
+    "fromStationId": "06_610",
+    "toStationId": "06_611",
+    "distanceKm": 1.1,
+    "durationSec": 100
+  },
+  {
+    "lineId": "06",
+    "fromStationId": "06_611",
+    "toStationId": "06_612",
+    "distanceKm": 0.8,
+    "durationSec": 80
+  },
+  {
+    "lineId": "06",
+    "fromStationId": "06_612",
+    "toStationId": "06_613",
+    "distanceKm": 0.9,
+    "durationSec": 80
+  },
+  {
+    "lineId": "06",
+    "fromStationId": "06_613",
+    "toStationId": "06_614",
+    "distanceKm": 1.4,
+    "durationSec": 130
+  },
+  {
+    "lineId": "06",
+    "fromStationId": "06_614",
+    "toStationId": "06_615",
+    "distanceKm": 0.9,
+    "durationSec": 80
+  },
+  {
+    "lineId": "06",
+    "fromStationId": "06_615",
+    "toStationId": "06_610",
+    "distanceKm": 1.5,
+    "durationSec": 120
+  },
+  {
+    "lineId": "06",
+    "fromStationId": "06_610",
+    "toStationId": "06_616",
+    "distanceKm": 0.9,
+    "durationSec": 80
+  },
+  {
+    "lineId": "06",
+    "fromStationId": "06_616",
+    "toStationId": "06_617",
+    "distanceKm": 0.9,
+    "durationSec": 80
+  },
+  {
+    "lineId": "06",
+    "fromStationId": "06_617",
+    "toStationId": "06_618",
+    "distanceKm": 1.1,
+    "durationSec": 80
+  },
+  {
+    "lineId": "06",
+    "fromStationId": "06_618",
+    "toStationId": "06_619",
+    "distanceKm": 0.8,
+    "durationSec": 70
+  },
+  {
+    "lineId": "06",
+    "fromStationId": "06_619",
+    "toStationId": "06_620",
+    "distanceKm": 0.8,
+    "durationSec": 70
+  },
+  {
+    "lineId": "06",
+    "fromStationId": "06_620",
+    "toStationId": "06_621",
+    "distanceKm": 1,
+    "durationSec": 80
+  },
+  {
+    "lineId": "06",
+    "fromStationId": "06_621",
+    "toStationId": "06_622",
+    "distanceKm": 0.8,
+    "durationSec": 80
+  },
+  {
+    "lineId": "06",
+    "fromStationId": "06_622",
+    "toStationId": "06_623",
+    "distanceKm": 0.8,
+    "durationSec": 70
+  },
+  {
+    "lineId": "06",
+    "fromStationId": "06_623",
+    "toStationId": "06_624",
+    "distanceKm": 0.9,
+    "durationSec": 70
+  },
+  {
+    "lineId": "06",
+    "fromStationId": "06_624",
+    "toStationId": "06_625",
+    "distanceKm": 1,
+    "durationSec": 90
+  },
+  {
+    "lineId": "06",
+    "fromStationId": "06_625",
+    "toStationId": "06_626",
+    "distanceKm": 0.9,
+    "durationSec": 80
+  },
+  {
+    "lineId": "06",
+    "fromStationId": "06_626",
+    "toStationId": "06_627",
+    "distanceKm": 0.9,
+    "durationSec": 80
+  },
+  {
+    "lineId": "06",
+    "fromStationId": "06_627",
+    "toStationId": "06_628",
+    "distanceKm": 1.2,
+    "durationSec": 90
+  },
+  {
+    "lineId": "06",
+    "fromStationId": "06_628",
+    "toStationId": "06_629",
+    "distanceKm": 1.1,
+    "durationSec": 100
+  },
+  {
+    "lineId": "06",
+    "fromStationId": "06_629",
+    "toStationId": "06_630",
+    "distanceKm": 0.8,
+    "durationSec": 70
+  },
+  {
+    "lineId": "06",
+    "fromStationId": "06_630",
+    "toStationId": "06_631",
+    "distanceKm": 1,
+    "durationSec": 90
+  },
+  {
+    "lineId": "06",
+    "fromStationId": "06_631",
+    "toStationId": "06_632",
+    "distanceKm": 1,
+    "durationSec": 90
+  },
+  {
+    "lineId": "06",
+    "fromStationId": "06_632",
+    "toStationId": "06_633",
+    "distanceKm": 0.7,
+    "durationSec": 70
+  },
+  {
+    "lineId": "06",
+    "fromStationId": "06_633",
+    "toStationId": "06_634",
+    "distanceKm": 0.8,
+    "durationSec": 70
+  },
+  {
+    "lineId": "06",
+    "fromStationId": "06_634",
+    "toStationId": "06_635",
+    "distanceKm": 0.7,
+    "durationSec": 70
+  },
+  {
+    "lineId": "06",
+    "fromStationId": "06_635",
+    "toStationId": "06_636",
+    "distanceKm": 0.6,
+    "durationSec": 60
+  },
+  {
+    "lineId": "06",
+    "fromStationId": "06_636",
+    "toStationId": "06_637",
+    "distanceKm": 0.9,
+    "durationSec": 80
+  },
+  {
+    "lineId": "06",
+    "fromStationId": "06_637",
+    "toStationId": "06_638",
+    "distanceKm": 0.8,
+    "durationSec": 70
+  },
+  {
+    "lineId": "06",
+    "fromStationId": "06_638",
+    "toStationId": "06_639",
+    "distanceKm": 0.9,
+    "durationSec": 70
+  },
+  {
+    "lineId": "06",
+    "fromStationId": "06_639",
+    "toStationId": "06_640",
+    "distanceKm": 0.8,
+    "durationSec": 70
+  },
+  {
+    "lineId": "06",
+    "fromStationId": "06_640",
+    "toStationId": "06_641",
+    "distanceKm": 1.4,
+    "durationSec": 100
+  },
+  {
+    "lineId": "06",
+    "fromStationId": "06_641",
+    "toStationId": "06_642",
+    "distanceKm": 0.8,
+    "durationSec": 70
+  },
+  {
+    "lineId": "06",
+    "fromStationId": "06_642",
+    "toStationId": "06_643",
+    "distanceKm": 0.8,
+    "durationSec": 70
+  },
+  {
+    "lineId": "06",
+    "fromStationId": "06_643",
+    "toStationId": "06_644",
+    "distanceKm": 1,
+    "durationSec": 80
+  },
+  {
+    "lineId": "06",
+    "fromStationId": "06_644",
+    "toStationId": "06_645",
+    "distanceKm": 0.8,
+    "durationSec": 70
+  },
+  {
+    "lineId": "06",
+    "fromStationId": "06_645",
+    "toStationId": "06_646",
+    "distanceKm": 0.9,
+    "durationSec": 70
+  },
+  {
+    "lineId": "06",
+    "fromStationId": "06_646",
+    "toStationId": "06_647",
+    "distanceKm": 0.7,
+    "durationSec": 80
+  },
+  {
+    "lineId": "06",
+    "fromStationId": "06_647",
+    "toStationId": "06_648",
+    "distanceKm": 1.3,
+    "durationSec": 270
+  },
+  {
+    "lineId": "07",
+    "fromStationId": "07_709",
+    "toStationId": "07_710",
+    "distanceKm": 1.4,
+    "durationSec": 270
+  },
+  {
+    "lineId": "07",
+    "fromStationId": "07_710",
+    "toStationId": "07_711",
+    "distanceKm": 1.6,
+    "durationSec": 140
+  },
+  {
+    "lineId": "07",
+    "fromStationId": "07_711",
+    "toStationId": "07_712",
+    "distanceKm": 1.4,
+    "durationSec": 120
+  },
+  {
+    "lineId": "07",
+    "fromStationId": "07_712",
+    "toStationId": "07_713",
+    "distanceKm": 1.2,
+    "durationSec": 90
+  },
+  {
+    "lineId": "07",
+    "fromStationId": "07_713",
+    "toStationId": "07_714",
+    "distanceKm": 1.1,
+    "durationSec": 80
+  },
+  {
+    "lineId": "07",
+    "fromStationId": "07_714",
+    "toStationId": "07_715",
+    "distanceKm": 1,
+    "durationSec": 70
+  },
+  {
+    "lineId": "07",
+    "fromStationId": "07_715",
+    "toStationId": "07_716",
+    "distanceKm": 1.3,
+    "durationSec": 90
+  },
+  {
+    "lineId": "07",
+    "fromStationId": "07_716",
+    "toStationId": "07_717",
+    "distanceKm": 0.8,
+    "durationSec": 60
+  },
+  {
+    "lineId": "07",
+    "fromStationId": "07_717",
+    "toStationId": "07_718",
+    "distanceKm": 0.9,
+    "durationSec": 70
+  },
+  {
+    "lineId": "07",
+    "fromStationId": "07_718",
+    "toStationId": "07_719",
+    "distanceKm": 0.9,
+    "durationSec": 80
+  },
+  {
+    "lineId": "07",
+    "fromStationId": "07_719",
+    "toStationId": "07_720",
+    "distanceKm": 1,
+    "durationSec": 110
+  },
+  {
+    "lineId": "07",
+    "fromStationId": "07_720",
+    "toStationId": "07_721",
+    "distanceKm": 0.8,
+    "durationSec": 70
+  },
+  {
+    "lineId": "07",
+    "fromStationId": "07_721",
+    "toStationId": "07_722",
+    "distanceKm": 0.9,
+    "durationSec": 70
+  },
+  {
+    "lineId": "07",
+    "fromStationId": "07_722",
+    "toStationId": "07_723",
+    "distanceKm": 0.8,
+    "durationSec": 70
+  },
+  {
+    "lineId": "07",
+    "fromStationId": "07_723",
+    "toStationId": "07_724",
+    "distanceKm": 0.9,
+    "durationSec": 80
+  },
+  {
+    "lineId": "07",
+    "fromStationId": "07_724",
+    "toStationId": "07_725",
+    "distanceKm": 1.1,
+    "durationSec": 80
+  },
+  {
+    "lineId": "07",
+    "fromStationId": "07_725",
+    "toStationId": "07_726",
+    "distanceKm": 1.1,
+    "durationSec": 80
+  },
+  {
+    "lineId": "07",
+    "fromStationId": "07_726",
+    "toStationId": "07_727",
+    "distanceKm": 0.8,
+    "durationSec": 80
+  },
+  {
+    "lineId": "07",
+    "fromStationId": "07_727",
+    "toStationId": "07_728",
+    "distanceKm": 1,
+    "durationSec": 90
+  },
+  {
+    "lineId": "07",
+    "fromStationId": "07_728",
+    "toStationId": "07_729",
+    "distanceKm": 2,
+    "durationSec": 150
+  },
+  {
+    "lineId": "07",
+    "fromStationId": "07_729",
+    "toStationId": "07_730",
+    "distanceKm": 1.1,
+    "durationSec": 90
+  },
+  {
+    "lineId": "07",
+    "fromStationId": "07_730",
+    "toStationId": "07_731",
+    "distanceKm": 0.9,
+    "durationSec": 70
+  },
+  {
+    "lineId": "07",
+    "fromStationId": "07_731",
+    "toStationId": "07_732",
+    "distanceKm": 1,
+    "durationSec": 80
+  },
+  {
+    "lineId": "07",
+    "fromStationId": "07_732",
+    "toStationId": "07_733",
+    "distanceKm": 0.9,
+    "durationSec": 70
+  },
+  {
+    "lineId": "07",
+    "fromStationId": "07_733",
+    "toStationId": "07_734",
+    "distanceKm": 0.9,
+    "durationSec": 90
+  },
+  {
+    "lineId": "07",
+    "fromStationId": "07_734",
+    "toStationId": "07_735",
+    "distanceKm": 2.2,
+    "durationSec": 150
+  },
+  {
+    "lineId": "07",
+    "fromStationId": "07_735",
+    "toStationId": "07_736",
+    "distanceKm": 1,
+    "durationSec": 90
+  },
+  {
+    "lineId": "07",
+    "fromStationId": "07_736",
+    "toStationId": "07_737",
+    "distanceKm": 1,
+    "durationSec": 80
+  },
+  {
+    "lineId": "07",
+    "fromStationId": "07_737",
+    "toStationId": "07_738",
+    "distanceKm": 2,
+    "durationSec": 150
+  },
+  {
+    "lineId": "07",
+    "fromStationId": "07_738",
+    "toStationId": "07_739",
+    "distanceKm": 0.9,
+    "durationSec": 70
+  },
+  {
+    "lineId": "07",
+    "fromStationId": "07_739",
+    "toStationId": "07_740",
+    "distanceKm": 0.9,
+    "durationSec": 150
+  },
+  {
+    "lineId": "07",
+    "fromStationId": "07_740",
+    "toStationId": "07_741",
+    "distanceKm": 1.2,
+    "durationSec": 110
+  },
+  {
+    "lineId": "07",
+    "fromStationId": "07_741",
+    "toStationId": "07_742",
+    "distanceKm": 0.8,
+    "durationSec": 70
+  },
+  {
+    "lineId": "07",
+    "fromStationId": "07_742",
+    "toStationId": "07_743",
+    "distanceKm": 0.9,
+    "durationSec": 140
+  },
+  {
+    "lineId": "07",
+    "fromStationId": "07_743",
+    "toStationId": "07_744",
+    "distanceKm": 1.4,
+    "durationSec": 120
+  },
+  {
+    "lineId": "07",
+    "fromStationId": "07_744",
+    "toStationId": "07_745",
+    "distanceKm": 1.1,
+    "durationSec": 90
+  },
+  {
+    "lineId": "07",
+    "fromStationId": "07_745",
+    "toStationId": "07_746",
+    "distanceKm": 0.8,
+    "durationSec": 80
+  },
+  {
+    "lineId": "07",
+    "fromStationId": "07_746",
+    "toStationId": "07_747",
+    "distanceKm": 1.4,
+    "durationSec": 120
+  },
+  {
+    "lineId": "07",
+    "fromStationId": "07_747",
+    "toStationId": "07_748",
+    "distanceKm": 1.3,
+    "durationSec": 110
+  },
+  {
+    "lineId": "07",
+    "fromStationId": "07_748",
+    "toStationId": "07_749",
+    "distanceKm": 1.7,
+    "durationSec": 120
+  },
+  {
+    "lineId": "07",
+    "fromStationId": "07_749",
+    "toStationId": "07_750",
+    "distanceKm": 1.5,
+    "durationSec": 140
+  },
+  {
+    "lineId": "08",
+    "fromStationId": "08_810",
+    "toStationId": "08_811",
+    "distanceKm": 1.3,
+    "durationSec": 90
+  },
+  {
+    "lineId": "08",
+    "fromStationId": "08_811",
+    "toStationId": "08_812",
+    "distanceKm": 0.9,
+    "durationSec": 80
+  },
+  {
+    "lineId": "08",
+    "fromStationId": "08_812",
+    "toStationId": "08_813",
+    "distanceKm": 1.6,
+    "durationSec": 120
+  },
+  {
+    "lineId": "08",
+    "fromStationId": "08_813",
+    "toStationId": "08_814",
+    "distanceKm": 0.8,
+    "durationSec": 70
+  },
+  {
+    "lineId": "08",
+    "fromStationId": "08_814",
+    "toStationId": "08_815",
+    "distanceKm": 1.2,
+    "durationSec": 110
+  },
+  {
+    "lineId": "08",
+    "fromStationId": "08_815",
+    "toStationId": "08_816",
+    "distanceKm": 0.9,
+    "durationSec": 70
+  },
+  {
+    "lineId": "08",
+    "fromStationId": "08_816",
+    "toStationId": "08_817",
+    "distanceKm": 0.8,
+    "durationSec": 70
+  },
+  {
+    "lineId": "08",
+    "fromStationId": "08_817",
+    "toStationId": "08_818",
+    "distanceKm": 0.9,
+    "durationSec": 70
+  },
+  {
+    "lineId": "08",
+    "fromStationId": "08_818",
+    "toStationId": "08_819",
+    "distanceKm": 0.9,
+    "durationSec": 70
+  },
+  {
+    "lineId": "08",
+    "fromStationId": "08_819",
+    "toStationId": "08_820",
+    "distanceKm": 0.9,
+    "durationSec": 70
+  },
+  {
+    "lineId": "08",
+    "fromStationId": "08_820",
+    "toStationId": "08_821",
+    "distanceKm": 1.5,
+    "durationSec": 110
+  },
+  {
+    "lineId": "08",
+    "fromStationId": "08_821",
+    "toStationId": "08_822",
+    "distanceKm": 1.2,
+    "durationSec": 100
+  },
+  {
+    "lineId": "08",
+    "fromStationId": "08_822",
+    "toStationId": "08_823",
+    "distanceKm": 1.3,
+    "durationSec": 130
+  },
+  {
+    "lineId": "08",
+    "fromStationId": "08_823",
+    "toStationId": "08_824",
+    "distanceKm": 0.8,
+    "durationSec": 70
+  },
+  {
+    "lineId": "08",
+    "fromStationId": "08_824",
+    "toStationId": "08_825",
+    "distanceKm": 0.8,
+    "durationSec": 70
+  },
+  {
+    "lineId": "08",
+    "fromStationId": "08_825",
+    "toStationId": "08_826",
+    "distanceKm": 0.9,
+    "durationSec": 70
+  },
+  {
+    "lineId": "08",
+    "fromStationId": "08_826",
+    "toStationId": "08_827",
+    "distanceKm": 1,
+    "durationSec": 90
+  }
+]

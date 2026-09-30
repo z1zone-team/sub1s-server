@@ -58,6 +58,7 @@ model Station {
   id          String     @id @db.VarChar(30) // '02_222' (호선_역코드)
   lineId      String     @map("line_id") @db.VarChar(20)
   stationCode String     @map("station_code") @db.VarChar(10)
+  lineSeq     Int        @map("line_seq") // 호선 내 역 순서 (KRIC 구성 순서, 동순위는 역코드 순)
   stationName String     @map("station_name") @db.VarChar(50)
   lat         Float
   lng         Float
@@ -88,6 +89,7 @@ model RouteEdge {
   distanceKm    Float      @map("distance_km")
   durationSec   Int        @map("duration_sec")
   isExpress     Boolean    @default(false) @map("is_express") // 급행 여부 (오탑승 감지 및 9호선/경의중앙선 분기)
+  isEstimated   Boolean    @default(false) @map("is_estimated") // 서울교통공사 실측이 없어 좌표로 추정한 구간 여부
 
   fromStation   Station    @relation("RouteFromStation", fields: [fromStationId], references: [id])
   toStation     Station    @relation("RouteToStation", fields: [toStationId], references: [id])
