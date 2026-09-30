@@ -21,6 +21,8 @@ export interface LinePath {
   loop?: boolean;
   // explicit labels for links that follow the ascending order but are not plain DOWN/UP
   labels?: { forward: EdgeDirection; backward: EdgeDirection };
+  // trains run only from the first station to the last (e.g. the 6호선 응암순환), so no reverse edge is created
+  oneWay?: boolean;
 }
 
 export type EdgeDirection = 'UP' | 'DOWN' | 'INNER' | 'OUTER';
@@ -155,7 +157,7 @@ export function buildEdges(
       const to = ids[(i + 1) % ids.length];
       const labels = directionLabels(path);
       add(path.lineId, from, to, labels.forward);
-      add(path.lineId, to, from, labels.backward);
+      if (!path.oneWay) add(path.lineId, to, from, labels.backward);
     }
   }
   return [...edges.values()];

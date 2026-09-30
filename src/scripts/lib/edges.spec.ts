@@ -142,4 +142,18 @@ describe('buildEdges', () => {
       'INNER',
     );
   });
+
+  it('creates only the forward edge for a one-way path', () => {
+    const edges = buildEdges(
+      [{ lineId: 'T', stationIds: ['T_A', 'T_B'], oneWay: true }],
+      segments,
+      stations,
+      calibration,
+    );
+    expect(edges).toHaveLength(1);
+    expect(edges[0]).toMatchObject({
+      fromStationId: 'T_A',
+      toStationId: 'T_B',
+    });
+  });
 });

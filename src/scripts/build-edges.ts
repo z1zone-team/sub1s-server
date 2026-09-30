@@ -24,6 +24,12 @@ const BRANCH_STATION_NAMES: Record<string, string[]> = {
   ],
 };
 
+// 6호선 응암순환 runs one way only: 응암 -> 역촌 -> 불광 -> 독바위 -> 연신내 -> 구산 -> 응암.
+// The links between these stations follow that order, while 응암 - 새절 stays two-way.
+const ONE_WAY_LOOP_STATION_NAMES: Record<string, string[]> = {
+  '06': ['응암', '역촌', '불광', '독바위', '연신내', '구산'],
+};
+
 function main(): void {
   const stations = loadStations();
   const nameOf = new Map(stations.map((s) => [s.id, s.stationName]));
@@ -37,9 +43,14 @@ function main(): void {
       branch.includes(nameOf.get(id) ?? ''),
     );
     const isLoopLink = LOOP_LINES.has(link.lineId) && !onBranch;
+    const oneWayNames = ONE_WAY_LOOP_STATION_NAMES[link.lineId] ?? [];
+    const oneWay = [link.fromStationId, link.toStationId].every((id) =>
+      oneWayNames.includes(nameOf.get(id) ?? ''),
+    );
     return {
       lineId: link.lineId,
       stationIds: [link.fromStationId, link.toStationId],
+      oneWay,
       labels: isLoopLink
         ? { forward: 'OUTER', backward: 'INNER' }
         : { forward: 'DOWN', backward: 'UP' },
