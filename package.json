@@ -24,7 +24,8 @@
     "refine:transfers": "ts-node src/scripts/refine-transfers.ts",
     "fetch:kric-raw": "ts-node src/scripts/fetch-kric-raw.ts",
     "seed:subway": "ts-node src/scripts/seed-subway-graph.ts",
-    "verify:subway-data": "ts-node src/scripts/verify-subway-data.ts"
+    "verify:subway-data": "ts-node src/scripts/verify-subway-data.ts",
+    "graph:measure": "node --expose-gc -r ts-node/register src/scripts/measure-graph.ts"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",

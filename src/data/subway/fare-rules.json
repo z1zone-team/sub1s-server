@@ -1,0 +1,9 @@
+{
+  "effectiveFrom": "2025-06-28",
+  "baseFare": 1550,
+  "baseDistanceKm": 10,
+  "tiers": [
+    { "fromKm": 10, "toKm": 50, "stepKm": 5, "stepFare": 100 },
+    { "fromKm": 50, "stepKm": 8, "stepFare": 100 }
+  ]
+}
