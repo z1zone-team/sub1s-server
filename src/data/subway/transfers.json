@@ -1,0 +1,1007 @@
+[
+  {
+    "fromStationId": "01_113",
+    "toStationId": "07_710",
+    "walkingDurationSec": 37
+  },
+  {
+    "fromStationId": "01_116",
+    "toStationId": "04_412",
+    "walkingDurationSec": 70
+  },
+  {
+    "fromStationId": "01_120",
+    "toStationId": "06_644",
+    "walkingDurationSec": 104
+  },
+  {
+    "fromStationId": "01_124",
+    "toStationId": "GC_P117",
+    "walkingDurationSec": 169
+  },
+  {
+    "fromStationId": "01_124",
+    "toStationId": "GJ_K117",
+    "walkingDurationSec": 138
+  },
+  {
+    "fromStationId": "01_124",
+    "toStationId": "SD_K209",
+    "walkingDurationSec": 150
+  },
+  {
+    "fromStationId": "01_126",
+    "toStationId": "02_211-4",
+    "walkingDurationSec": 133
+  },
+  {
+    "fromStationId": "01_126",
+    "toStationId": "UI_953",
+    "walkingDurationSec": 108
+  },
+  {
+    "fromStationId": "01_127",
+    "toStationId": "06_636",
+    "walkingDurationSec": 80
+  },
+  {
+    "fromStationId": "01_128",
+    "toStationId": "04_421",
+    "walkingDurationSec": 162
+  },
+  {
+    "fromStationId": "01_130",
+    "toStationId": "03_329",
+    "walkingDurationSec": 98
+  },
+  {
+    "fromStationId": "01_130",
+    "toStationId": "05_534",
+    "walkingDurationSec": 260
+  },
+  {
+    "fromStationId": "01_132",
+    "toStationId": "02_201",
+    "walkingDurationSec": 84
+  },
+  {
+    "fromStationId": "01_133",
+    "toStationId": "04_426",
+    "walkingDurationSec": 133
+  },
+  {
+    "fromStationId": "01_133",
+    "toStationId": "AR_A01",
+    "walkingDurationSec": 258
+  },
+  {
+    "fromStationId": "01_133",
+    "toStationId": "GJ_P313",
+    "walkingDurationSec": 137
+  },
+  {
+    "fromStationId": "01_138",
+    "toStationId": "05_525",
+    "walkingDurationSec": 202
+  },
+  {
+    "fromStationId": "01_140",
+    "toStationId": "02_234",
+    "walkingDurationSec": 68
+  },
+  {
+    "fromStationId": "01_145",
+    "toStationId": "07_750",
+    "walkingDurationSec": 85
+  },
+  {
+    "fromStationId": "01_P142",
+    "toStationId": "07_746",
+    "walkingDurationSec": 92
+  },
+  {
+    "fromStationId": "02_201",
+    "toStationId": "01_132",
+    "walkingDurationSec": 84
+  },
+  {
+    "fromStationId": "02_203",
+    "toStationId": "03_330",
+    "walkingDurationSec": 124
+  },
+  {
+    "fromStationId": "02_204",
+    "toStationId": "05_535",
+    "walkingDurationSec": 64
+  },
+  {
+    "fromStationId": "02_205",
+    "toStationId": "04_422",
+    "walkingDurationSec": 38
+  },
+  {
+    "fromStationId": "02_205",
+    "toStationId": "05_536",
+    "walkingDurationSec": 195
+  },
+  {
+    "fromStationId": "02_206",
+    "toStationId": "06_635",
+    "walkingDurationSec": 202
+  },
+  {
+    "fromStationId": "02_208",
+    "toStationId": "05_540",
+    "walkingDurationSec": 72
+  },
+  {
+    "fromStationId": "02_208",
+    "toStationId": "GJ_K116",
+    "walkingDurationSec": 42
+  },
+  {
+    "fromStationId": "02_208",
+    "toStationId": "SD_K210",
+    "walkingDurationSec": 83
+  },
+  {
+    "fromStationId": "02_211-4",
+    "toStationId": "01_126",
+    "walkingDurationSec": 133
+  },
+  {
+    "fromStationId": "02_211-4",
+    "toStationId": "UI_953",
+    "walkingDurationSec": 228
+  },
+  {
+    "fromStationId": "02_211",
+    "toStationId": "02_211",
+    "walkingDurationSec": 19
+  },
+  {
+    "fromStationId": "02_212",
+    "toStationId": "07_727",
+    "walkingDurationSec": 64
+  },
+  {
+    "fromStationId": "02_216",
+    "toStationId": "08_814",
+    "walkingDurationSec": 158
+  },
+  {
+    "fromStationId": "02_218",
+    "toStationId": "09_930",
+    "walkingDurationSec": 78
+  },
+  {
+    "fromStationId": "02_220",
+    "toStationId": "SD_K215",
+    "walkingDurationSec": 68
+  },
+  {
+    "fromStationId": "02_222",
+    "toStationId": "SB_D7",
+    "walkingDurationSec": 178
+  },
+  {
+    "fromStationId": "02_223",
+    "toStationId": "03_340",
+    "walkingDurationSec": 63
+  },
+  {
+    "fromStationId": "02_226",
+    "toStationId": "04_433",
+    "walkingDurationSec": 62
+  },
+  {
+    "fromStationId": "02_230",
+    "toStationId": "SL_S408",
+    "walkingDurationSec": 73
+  },
+  {
+    "fromStationId": "02_233",
+    "toStationId": "07_744",
+    "walkingDurationSec": 230
+  },
+  {
+    "fromStationId": "02_234-4",
+    "toStationId": "05_518",
+    "walkingDurationSec": 14
+  },
+  {
+    "fromStationId": "02_234",
+    "toStationId": "01_140",
+    "walkingDurationSec": 68
+  },
+  {
+    "fromStationId": "02_234",
+    "toStationId": "02_234",
+    "walkingDurationSec": 68
+  },
+  {
+    "fromStationId": "02_236",
+    "toStationId": "05_523",
+    "walkingDurationSec": 92
+  },
+  {
+    "fromStationId": "02_237",
+    "toStationId": "09_913",
+    "walkingDurationSec": 88
+  },
+  {
+    "fromStationId": "02_238",
+    "toStationId": "06_622",
+    "walkingDurationSec": 68
+  },
+  {
+    "fromStationId": "02_239",
+    "toStationId": "AR_A03",
+    "walkingDurationSec": 296
+  },
+  {
+    "fromStationId": "02_239",
+    "toStationId": "GJ_K314",
+    "walkingDurationSec": 254
+  },
+  {
+    "fromStationId": "02_243",
+    "toStationId": "05_531",
+    "walkingDurationSec": 177
+  },
+  {
+    "fromStationId": "03_321",
+    "toStationId": "06_614",
+    "walkingDurationSec": 151
+  },
+  {
+    "fromStationId": "03_322",
+    "toStationId": "06_612",
+    "walkingDurationSec": 83
+  },
+  {
+    "fromStationId": "03_329",
+    "toStationId": "01_130",
+    "walkingDurationSec": 98
+  },
+  {
+    "fromStationId": "03_329",
+    "toStationId": "05_534",
+    "walkingDurationSec": 98
+  },
+  {
+    "fromStationId": "03_330",
+    "toStationId": "02_203",
+    "walkingDurationSec": 124
+  },
+  {
+    "fromStationId": "03_331",
+    "toStationId": "04_423",
+    "walkingDurationSec": 14
+  },
+  {
+    "fromStationId": "03_333",
+    "toStationId": "06_633",
+    "walkingDurationSec": 108
+  },
+  {
+    "fromStationId": "03_335",
+    "toStationId": "GJ_K114",
+    "walkingDurationSec": 129
+  },
+  {
+    "fromStationId": "03_337",
+    "toStationId": "SB_D4",
+    "walkingDurationSec": 64
+  },
+  {
+    "fromStationId": "03_339",
+    "toStationId": "07_734",
+    "walkingDurationSec": 141
+  },
+  {
+    "fromStationId": "03_339",
+    "toStationId": "09_923",
+    "walkingDurationSec": 129
+  },
+  {
+    "fromStationId": "03_340",
+    "toStationId": "02_223",
+    "walkingDurationSec": 63
+  },
+  {
+    "fromStationId": "03_342",
+    "toStationId": "SB_D8",
+    "walkingDurationSec": 78
+  },
+  {
+    "fromStationId": "03_344",
+    "toStationId": "SD_K217",
+    "walkingDurationSec": 65
+  },
+  {
+    "fromStationId": "03_349",
+    "toStationId": "SD_K221",
+    "walkingDurationSec": 77
+  },
+  {
+    "fromStationId": "03_350",
+    "toStationId": "08_817",
+    "walkingDurationSec": 29
+  },
+  {
+    "fromStationId": "03_352",
+    "toStationId": "05_P552",
+    "walkingDurationSec": 54
+  },
+  {
+    "fromStationId": "04_411",
+    "toStationId": "07_713",
+    "walkingDurationSec": 232
+  },
+  {
+    "fromStationId": "04_412",
+    "toStationId": "01_116",
+    "walkingDurationSec": 70
+  },
+  {
+    "fromStationId": "04_418",
+    "toStationId": "UI_951",
+    "walkingDurationSec": 6
+  },
+  {
+    "fromStationId": "04_421",
+    "toStationId": "01_128",
+    "walkingDurationSec": 162
+  },
+  {
+    "fromStationId": "04_422",
+    "toStationId": "02_205",
+    "walkingDurationSec": 38
+  },
+  {
+    "fromStationId": "04_422",
+    "toStationId": "05_536",
+    "walkingDurationSec": 89
+  },
+  {
+    "fromStationId": "04_423",
+    "toStationId": "03_331",
+    "walkingDurationSec": 14
+  },
+  {
+    "fromStationId": "04_426",
+    "toStationId": "01_133",
+    "walkingDurationSec": 133
+  },
+  {
+    "fromStationId": "04_426",
+    "toStationId": "AR_A01",
+    "walkingDurationSec": 187
+  },
+  {
+    "fromStationId": "04_426",
+    "toStationId": "GJ_P313",
+    "walkingDurationSec": 269
+  },
+  {
+    "fromStationId": "04_428",
+    "toStationId": "06_628",
+    "walkingDurationSec": 129
+  },
+  {
+    "fromStationId": "04_430",
+    "toStationId": "GJ_K111",
+    "walkingDurationSec": 65
+  },
+  {
+    "fromStationId": "04_431",
+    "toStationId": "09_920",
+    "walkingDurationSec": 204
+  },
+  {
+    "fromStationId": "04_432",
+    "toStationId": "07_736",
+    "walkingDurationSec": 143
+  },
+  {
+    "fromStationId": "04_433",
+    "toStationId": "02_226",
+    "walkingDurationSec": 62
+  },
+  {
+    "fromStationId": "05_512",
+    "toStationId": "09_902",
+    "walkingDurationSec": 88
+  },
+  {
+    "fromStationId": "05_512",
+    "toStationId": "AR_A05",
+    "walkingDurationSec": 102
+  },
+  {
+    "fromStationId": "05_512",
+    "toStationId": "GM_699",
+    "walkingDurationSec": 167
+  },
+  {
+    "fromStationId": "05_512",
+    "toStationId": "SH_S13",
+    "walkingDurationSec": 83
+  },
+  {
+    "fromStationId": "05_518",
+    "toStationId": "02_234-4",
+    "walkingDurationSec": 14
+  },
+  {
+    "fromStationId": "05_523",
+    "toStationId": "02_236",
+    "walkingDurationSec": 92
+  },
+  {
+    "fromStationId": "05_525",
+    "toStationId": "01_138",
+    "walkingDurationSec": 202
+  },
+  {
+    "fromStationId": "05_526",
+    "toStationId": "09_915",
+    "walkingDurationSec": 57
+  },
+  {
+    "fromStationId": "05_529",
+    "toStationId": "06_626",
+    "walkingDurationSec": 61
+  },
+  {
+    "fromStationId": "05_529",
+    "toStationId": "AR_A02",
+    "walkingDurationSec": 229
+  },
+  {
+    "fromStationId": "05_529",
+    "toStationId": "GJ_K312",
+    "walkingDurationSec": 178
+  },
+  {
+    "fromStationId": "05_531",
+    "toStationId": "02_243",
+    "walkingDurationSec": 177
+  },
+  {
+    "fromStationId": "05_534",
+    "toStationId": "01_130",
+    "walkingDurationSec": 260
+  },
+  {
+    "fromStationId": "05_534",
+    "toStationId": "03_329",
+    "walkingDurationSec": 98
+  },
+  {
+    "fromStationId": "05_535",
+    "toStationId": "02_204",
+    "walkingDurationSec": 64
+  },
+  {
+    "fromStationId": "05_536",
+    "toStationId": "02_205",
+    "walkingDurationSec": 195
+  },
+  {
+    "fromStationId": "05_536",
+    "toStationId": "04_422",
+    "walkingDurationSec": 89
+  },
+  {
+    "fromStationId": "05_537",
+    "toStationId": "06_634",
+    "walkingDurationSec": 87
+  },
+  {
+    "fromStationId": "05_540",
+    "toStationId": "02_208",
+    "walkingDurationSec": 72
+  },
+  {
+    "fromStationId": "05_540",
+    "toStationId": "GJ_K116",
+    "walkingDurationSec": 165
+  },
+  {
+    "fromStationId": "05_540",
+    "toStationId": "SD_K210",
+    "walkingDurationSec": 203
+  },
+  {
+    "fromStationId": "05_544",
+    "toStationId": "07_725",
+    "walkingDurationSec": 63
+  },
+  {
+    "fromStationId": "05_547",
+    "toStationId": "08_811",
+    "walkingDurationSec": 29
+  },
+  {
+    "fromStationId": "05_548",
+    "toStationId": "05_548",
+    "walkingDurationSec": 16
+  },
+  {
+    "fromStationId": "05_P550",
+    "toStationId": "09_936",
+    "walkingDurationSec": 78
+  },
+  {
+    "fromStationId": "05_P552",
+    "toStationId": "03_352",
+    "walkingDurationSec": 54
+  },
+  {
+    "fromStationId": "06_612",
+    "toStationId": "03_322",
+    "walkingDurationSec": 83
+  },
+  {
+    "fromStationId": "06_614",
+    "toStationId": "03_321",
+    "walkingDurationSec": 151
+  },
+  {
+    "fromStationId": "06_618",
+    "toStationId": "AR_A04",
+    "walkingDurationSec": 155
+  },
+  {
+    "fromStationId": "06_618",
+    "toStationId": "GJ_K316",
+    "walkingDurationSec": 46
+  },
+  {
+    "fromStationId": "06_622",
+    "toStationId": "02_238",
+    "walkingDurationSec": 68
+  },
+  {
+    "fromStationId": "06_626",
+    "toStationId": "05_529",
+    "walkingDurationSec": 61
+  },
+  {
+    "fromStationId": "06_626",
+    "toStationId": "AR_A02",
+    "walkingDurationSec": 221
+  },
+  {
+    "fromStationId": "06_626",
+    "toStationId": "GJ_K312",
+    "walkingDurationSec": 127
+  },
+  {
+    "fromStationId": "06_627",
+    "toStationId": "GJ_K826",
+    "walkingDurationSec": 92
+  },
+  {
+    "fromStationId": "06_628",
+    "toStationId": "04_428",
+    "walkingDurationSec": 129
+  },
+  {
+    "fromStationId": "06_633",
+    "toStationId": "03_333",
+    "walkingDurationSec": 108
+  },
+  {
+    "fromStationId": "06_634",
+    "toStationId": "05_537",
+    "walkingDurationSec": 87
+  },
+  {
+    "fromStationId": "06_635",
+    "toStationId": "02_206",
+    "walkingDurationSec": 202
+  },
+  {
+    "fromStationId": "06_636",
+    "toStationId": "01_127",
+    "walkingDurationSec": 80
+  },
+  {
+    "fromStationId": "06_638",
+    "toStationId": "UI_952",
+    "walkingDurationSec": 73
+  },
+  {
+    "fromStationId": "06_644",
+    "toStationId": "01_120",
+    "walkingDurationSec": 104
+  },
+  {
+    "fromStationId": "06_645",
+    "toStationId": "07_717",
+    "walkingDurationSec": 38
+  },
+  {
+    "fromStationId": "06_648",
+    "toStationId": "GC_P122",
+    "walkingDurationSec": 42
+  },
+  {
+    "fromStationId": "07_710",
+    "toStationId": "01_113",
+    "walkingDurationSec": 37
+  },
+  {
+    "fromStationId": "07_713",
+    "toStationId": "04_411",
+    "walkingDurationSec": 232
+  },
+  {
+    "fromStationId": "07_717",
+    "toStationId": "06_645",
+    "walkingDurationSec": 38
+  },
+  {
+    "fromStationId": "07_720",
+    "toStationId": "GC_P120",
+    "walkingDurationSec": 83
+  },
+  {
+    "fromStationId": "07_720",
+    "toStationId": "GJ_K120",
+    "walkingDurationSec": 83
+  },
+  {
+    "fromStationId": "07_725",
+    "toStationId": "05_544",
+    "walkingDurationSec": 63
+  },
+  {
+    "fromStationId": "07_727",
+    "toStationId": "02_212",
+    "walkingDurationSec": 64
+  },
+  {
+    "fromStationId": "07_730",
+    "toStationId": "SD_K213",
+    "walkingDurationSec": 104
+  },
+  {
+    "fromStationId": "07_732",
+    "toStationId": "SB_D5",
+    "walkingDurationSec": 67
+  },
+  {
+    "fromStationId": "07_734",
+    "toStationId": "03_339",
+    "walkingDurationSec": 141
+  },
+  {
+    "fromStationId": "07_734",
+    "toStationId": "09_923",
+    "walkingDurationSec": 262
+  },
+  {
+    "fromStationId": "07_736",
+    "toStationId": "04_432",
+    "walkingDurationSec": 143
+  },
+  {
+    "fromStationId": "07_742",
+    "toStationId": "SL_S404",
+    "walkingDurationSec": 59
+  },
+  {
+    "fromStationId": "07_744",
+    "toStationId": "02_233",
+    "walkingDurationSec": 230
+  },
+  {
+    "fromStationId": "07_746",
+    "toStationId": "01_P142",
+    "walkingDurationSec": 92
+  },
+  {
+    "fromStationId": "07_750",
+    "toStationId": "01_145",
+    "walkingDurationSec": 85
+  },
+  {
+    "fromStationId": "08_811",
+    "toStationId": "05_547",
+    "walkingDurationSec": 29
+  },
+  {
+    "fromStationId": "08_814",
+    "toStationId": "02_216",
+    "walkingDurationSec": 158
+  },
+  {
+    "fromStationId": "08_815",
+    "toStationId": "09_933",
+    "walkingDurationSec": 68
+  },
+  {
+    "fromStationId": "08_817",
+    "toStationId": "03_350",
+    "walkingDurationSec": 29
+  },
+  {
+    "fromStationId": "08_820",
+    "toStationId": "SD_K222",
+    "walkingDurationSec": 13
+  },
+  {
+    "fromStationId": "08_827",
+    "toStationId": "SD_K225",
+    "walkingDurationSec": 83
+  },
+  {
+    "fromStationId": "09_902",
+    "toStationId": "05_512",
+    "walkingDurationSec": 88
+  },
+  {
+    "fromStationId": "09_913",
+    "toStationId": "02_237",
+    "walkingDurationSec": 88
+  },
+  {
+    "fromStationId": "09_915",
+    "toStationId": "05_526",
+    "walkingDurationSec": 57
+  },
+  {
+    "fromStationId": "09_920",
+    "toStationId": "04_431",
+    "walkingDurationSec": 204
+  },
+  {
+    "fromStationId": "09_923",
+    "toStationId": "03_339",
+    "walkingDurationSec": 129
+  },
+  {
+    "fromStationId": "09_923",
+    "toStationId": "07_734",
+    "walkingDurationSec": 262
+  },
+  {
+    "fromStationId": "09_930",
+    "toStationId": "02_218",
+    "walkingDurationSec": 78
+  },
+  {
+    "fromStationId": "09_933",
+    "toStationId": "08_815",
+    "walkingDurationSec": 68
+  },
+  {
+    "fromStationId": "09_936",
+    "toStationId": "05_P550",
+    "walkingDurationSec": 78
+  },
+  {
+    "fromStationId": "AR_A01",
+    "toStationId": "01_133",
+    "walkingDurationSec": 258
+  },
+  {
+    "fromStationId": "AR_A01",
+    "toStationId": "04_426",
+    "walkingDurationSec": 187
+  },
+  {
+    "fromStationId": "AR_A02",
+    "toStationId": "05_529",
+    "walkingDurationSec": 229
+  },
+  {
+    "fromStationId": "AR_A02",
+    "toStationId": "06_626",
+    "walkingDurationSec": 221
+  },
+  {
+    "fromStationId": "AR_A03",
+    "toStationId": "02_239",
+    "walkingDurationSec": 296
+  },
+  {
+    "fromStationId": "AR_A04",
+    "toStationId": "06_618",
+    "walkingDurationSec": 155
+  },
+  {
+    "fromStationId": "AR_A05",
+    "toStationId": "05_512",
+    "walkingDurationSec": 102
+  },
+  {
+    "fromStationId": "GC_P117",
+    "toStationId": "01_124",
+    "walkingDurationSec": 169
+  },
+  {
+    "fromStationId": "GC_P120",
+    "toStationId": "07_720",
+    "walkingDurationSec": 83
+  },
+  {
+    "fromStationId": "GC_P122",
+    "toStationId": "06_648",
+    "walkingDurationSec": 42
+  },
+  {
+    "fromStationId": "GJ_K111",
+    "toStationId": "04_430",
+    "walkingDurationSec": 65
+  },
+  {
+    "fromStationId": "GJ_K114",
+    "toStationId": "03_335",
+    "walkingDurationSec": 129
+  },
+  {
+    "fromStationId": "GJ_K116",
+    "toStationId": "02_208",
+    "walkingDurationSec": 42
+  },
+  {
+    "fromStationId": "GJ_K116",
+    "toStationId": "05_540",
+    "walkingDurationSec": 165
+  },
+  {
+    "fromStationId": "GJ_K117",
+    "toStationId": "01_124",
+    "walkingDurationSec": 138
+  },
+  {
+    "fromStationId": "GJ_K120",
+    "toStationId": "07_720",
+    "walkingDurationSec": 83
+  },
+  {
+    "fromStationId": "GJ_K312",
+    "toStationId": "05_529",
+    "walkingDurationSec": 178
+  },
+  {
+    "fromStationId": "GJ_K312",
+    "toStationId": "06_626",
+    "walkingDurationSec": 127
+  },
+  {
+    "fromStationId": "GJ_K314",
+    "toStationId": "02_239",
+    "walkingDurationSec": 254
+  },
+  {
+    "fromStationId": "GJ_K316",
+    "toStationId": "06_618",
+    "walkingDurationSec": 46
+  },
+  {
+    "fromStationId": "GJ_K826",
+    "toStationId": "06_627",
+    "walkingDurationSec": 92
+  },
+  {
+    "fromStationId": "GJ_P313",
+    "toStationId": "01_133",
+    "walkingDurationSec": 137
+  },
+  {
+    "fromStationId": "GJ_P313",
+    "toStationId": "04_426",
+    "walkingDurationSec": 269
+  },
+  {
+    "fromStationId": "GM_699",
+    "toStationId": "05_512",
+    "walkingDurationSec": 167
+  },
+  {
+    "fromStationId": "SB_D4",
+    "toStationId": "03_337",
+    "walkingDurationSec": 64
+  },
+  {
+    "fromStationId": "SB_D5",
+    "toStationId": "07_732",
+    "walkingDurationSec": 67
+  },
+  {
+    "fromStationId": "SB_D7",
+    "toStationId": "02_222",
+    "walkingDurationSec": 178
+  },
+  {
+    "fromStationId": "SB_D8",
+    "toStationId": "03_342",
+    "walkingDurationSec": 78
+  },
+  {
+    "fromStationId": "SD_K209",
+    "toStationId": "01_124",
+    "walkingDurationSec": 150
+  },
+  {
+    "fromStationId": "SD_K210",
+    "toStationId": "02_208",
+    "walkingDurationSec": 83
+  },
+  {
+    "fromStationId": "SD_K210",
+    "toStationId": "05_540",
+    "walkingDurationSec": 203
+  },
+  {
+    "fromStationId": "SD_K213",
+    "toStationId": "07_730",
+    "walkingDurationSec": 104
+  },
+  {
+    "fromStationId": "SD_K215",
+    "toStationId": "02_220",
+    "walkingDurationSec": 68
+  },
+  {
+    "fromStationId": "SD_K217",
+    "toStationId": "03_344",
+    "walkingDurationSec": 65
+  },
+  {
+    "fromStationId": "SD_K221",
+    "toStationId": "03_349",
+    "walkingDurationSec": 77
+  },
+  {
+    "fromStationId": "SD_K222",
+    "toStationId": "08_820",
+    "walkingDurationSec": 13
+  },
+  {
+    "fromStationId": "SD_K225",
+    "toStationId": "08_827",
+    "walkingDurationSec": 83
+  },
+  {
+    "fromStationId": "SH_S13",
+    "toStationId": "05_512",
+    "walkingDurationSec": 83
+  },
+  {
+    "fromStationId": "SL_S404",
+    "toStationId": "07_742",
+    "walkingDurationSec": 59
+  },
+  {
+    "fromStationId": "SL_S408",
+    "toStationId": "02_230",
+    "walkingDurationSec": 73
+  },
+  {
+    "fromStationId": "UI_951",
+    "toStationId": "04_418",
+    "walkingDurationSec": 6
+  },
+  {
+    "fromStationId": "UI_952",
+    "toStationId": "06_638",
+    "walkingDurationSec": 73
+  },
+  {
+    "fromStationId": "UI_953",
+    "toStationId": "01_126",
+    "walkingDurationSec": 108
+  },
+  {
+    "fromStationId": "UI_953",
+    "toStationId": "02_211-4",
+    "walkingDurationSec": 228
+  }
+]

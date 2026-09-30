@@ -6,7 +6,10 @@ const OUT_DIR = join(__dirname, '../../data-raw');
 
 const DATASETS = [
   { service: 'SearchSTNBySubwayLineInfo', file: 'seoul-stations-by-line.json' },
-  { service: 'StationDstncReqreTimeHm', file: 'seoul-station-distance-time.json' },
+  {
+    service: 'StationDstncReqreTimeHm',
+    file: 'seoul-station-distance-time.json',
+  },
   { service: 'subwayTrans', file: 'seoul-transfer.json' },
   { service: 'subwayStationMaster', file: 'seoul-station-master.json' },
 ] as const;
@@ -23,14 +26,29 @@ function isServiceBody(value: unknown): value is ServiceBody {
   return typeof body.list_total_count === 'number' && Array.isArray(body.row);
 }
 
-async function fetchPage(key: string, service: string, start: number, end: number): Promise<ServiceBody> {
-  const res = await fetch(`http://openapi.seoul.go.kr:8088/${key}/json/${service}/${start}/${end}/`);
+async function fetchPage(
+  key: string,
+  service: string,
+  start: number,
+  end: number,
+): Promise<ServiceBody> {
+  const res = await fetch(
+    `http://openapi.seoul.go.kr:8088/${key}/json/${service}/${start}/${end}/`,
+  );
   if (!res.ok) throw new Error(`${service}: HTTP ${res.status}`);
   const json: unknown = await res.json();
-  const body = typeof json === 'object' && json !== null ? (json as Record<string, unknown>)[service] : undefined;
+  const body =
+    typeof json === 'object' && json !== null
+      ? (json as Record<string, unknown>)[service]
+      : undefined;
   if (!isServiceBody(body)) {
-    const result = typeof json === 'object' && json !== null ? (json as Record<string, unknown>).RESULT : undefined;
-    throw new Error(`${service}: unexpected response ${JSON.stringify(result)}`);
+    const result =
+      typeof json === 'object' && json !== null
+        ? (json as Record<string, unknown>).RESULT
+        : undefined;
+    throw new Error(
+      `${service}: unexpected response ${JSON.stringify(result)}`,
+    );
   }
   return body;
 }
