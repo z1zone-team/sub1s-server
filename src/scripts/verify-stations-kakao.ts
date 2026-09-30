@@ -11,7 +11,7 @@ const REQUEST_GAP_MS = 150;
 
 // One-off verification of the station list against Kakao Local API.
 // Kakao forbids storing API responses, so nothing is written to disk: only the verdicts are printed.
-// usage: pnpm verify:stations-kakao [limit]
+// usage: pnpm verify:stations-kakao [limit | --ids=ID1,ID2]
 async function searchStation(
   key: string,
   name: string,
@@ -45,8 +45,14 @@ async function main(): Promise<void> {
   const key = process.env.KAKAO_REST_API_KEY;
   if (!key) throw new Error('KAKAO_REST_API_KEY is not set in .env');
 
-  const limit = Number(process.argv[2] ?? Infinity);
-  const stations = loadStations().slice(0, limit);
+  // usage: [limit] or --ids=ID1,ID2
+  const idsArg = process.argv.find((arg) => arg.startsWith('--ids='));
+  const ids = idsArg ? idsArg.slice('--ids='.length).split(',') : undefined;
+  const limit = Number(process.argv.find((a) => /^\d+$/.test(a)) ?? Infinity);
+  const all = loadStations();
+  const stations = ids
+    ? all.filter((s) => ids.includes(s.id))
+    : all.slice(0, limit);
   const results: { id: string; name: string; result: CheckResult }[] = [];
 
   for (const station of stations) {

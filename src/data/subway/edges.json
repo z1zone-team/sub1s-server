@@ -25,8 +25,8 @@
     "lineId": "01",
     "direction": "DOWN",
     "isExpress": false,
-    "distanceKm": 4.94,
-    "durationSec": 418,
+    "distanceKm": 3.39,
+    "durationSec": 287,
     "isEstimated": true
   },
   {
@@ -35,8 +35,8 @@
     "lineId": "01",
     "direction": "UP",
     "isExpress": false,
-    "distanceKm": 4.94,
-    "durationSec": 418,
+    "distanceKm": 3.39,
+    "durationSec": 287,
     "isEstimated": true
   },
   {
@@ -45,8 +45,8 @@
     "lineId": "01",
     "direction": "DOWN",
     "isExpress": false,
-    "distanceKm": 3.94,
-    "durationSec": 334,
+    "distanceKm": 5.54,
+    "durationSec": 469,
     "isEstimated": true
   },
   {
@@ -55,8 +55,8 @@
     "lineId": "01",
     "direction": "UP",
     "isExpress": false,
-    "distanceKm": 3.94,
-    "durationSec": 334,
+    "distanceKm": 5.54,
+    "durationSec": 469,
     "isEstimated": true
   },
   {
@@ -9345,8 +9345,8 @@
     "lineId": "AR",
     "direction": "DOWN",
     "isExpress": false,
-    "distanceKm": 1.83,
-    "durationSec": 155,
+    "distanceKm": 3,
+    "durationSec": 254,
     "isEstimated": true
   },
   {
@@ -9355,8 +9355,8 @@
     "lineId": "AR",
     "direction": "UP",
     "isExpress": false,
-    "distanceKm": 1.83,
-    "durationSec": 155,
+    "distanceKm": 3,
+    "durationSec": 254,
     "isEstimated": true
   },
   {
@@ -12065,8 +12065,8 @@
     "lineId": "SD",
     "direction": "DOWN",
     "isExpress": false,
-    "distanceKm": 3.13,
-    "durationSec": 265,
+    "distanceKm": 2.6,
+    "durationSec": 220,
     "isEstimated": true
   },
   {
@@ -12075,8 +12075,8 @@
     "lineId": "SD",
     "direction": "UP",
     "isExpress": false,
-    "distanceKm": 3.13,
-    "durationSec": 265,
+    "distanceKm": 2.6,
+    "durationSec": 220,
     "isEstimated": true
   },
   {
@@ -12085,8 +12085,8 @@
     "lineId": "SD",
     "direction": "DOWN",
     "isExpress": false,
-    "distanceKm": 3.62,
-    "durationSec": 307,
+    "distanceKm": 4.14,
+    "durationSec": 351,
     "isEstimated": true
   },
   {
@@ -12095,8 +12095,8 @@
     "lineId": "SD",
     "direction": "UP",
     "isExpress": false,
-    "distanceKm": 3.62,
-    "durationSec": 307,
+    "distanceKm": 4.14,
+    "durationSec": 351,
     "isEstimated": true
   },
   {
@@ -12425,8 +12425,8 @@
     "lineId": "SD",
     "direction": "DOWN",
     "isExpress": false,
-    "distanceKm": 2.29,
-    "durationSec": 194,
+    "distanceKm": 2.62,
+    "durationSec": 222,
     "isEstimated": true
   },
   {
@@ -12435,8 +12435,8 @@
     "lineId": "SD",
     "direction": "UP",
     "isExpress": false,
-    "distanceKm": 2.29,
-    "durationSec": 194,
+    "distanceKm": 2.62,
+    "durationSec": 222,
     "isEstimated": true
   },
   {
@@ -12445,8 +12445,8 @@
     "lineId": "SD",
     "direction": "DOWN",
     "isExpress": false,
-    "distanceKm": 2.42,
-    "durationSec": 205,
+    "distanceKm": 2.21,
+    "durationSec": 187,
     "isEstimated": true
   },
   {
@@ -12455,8 +12455,8 @@
     "lineId": "SD",
     "direction": "UP",
     "isExpress": false,
-    "distanceKm": 2.42,
-    "durationSec": 205,
+    "distanceKm": 2.21,
+    "durationSec": 187,
     "isEstimated": true
   },
   {
