@@ -5,5 +5,36 @@
   "tiers": [
     { "fromKm": 10, "toKm": 50, "stepKm": 5, "stepFare": 100 },
     { "fromKm": 50, "stepKm": 8, "stepFare": 100 }
+  ],
+  "lineSurcharges": [
+    { "type": "flat", "lineId": "UJ", "fare": 200 },
+    {
+      "type": "segments",
+      "lineId": "SB",
+      "segments": [
+        {
+          "key": "1",
+          "stationIds": ["SB_D4", "SB_D5", "SB_D6", "SB_D7"]
+        },
+        {
+          "key": "2",
+          "stationIds": ["SB_D7", "SB_D8", "SB_D9", "SB_D10", "SB_D11", "SB_D12"]
+        },
+        {
+          "key": "3",
+          "stationIds": [
+            "SB_D12", "SB_D13", "SB_D14", "SB_D15", "SB_D16", "SB_D17", "SB_D18", "SB_D19"
+          ]
+        }
+      ],
+      "fares": {
+        "1": 700,
+        "2": 1000,
+        "3": 1000,
+        "2+3": 1500,
+        "1+2": 1700,
+        "1+2+3": 2200
+      }
+    }
   ]
 }
