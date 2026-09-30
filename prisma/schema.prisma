@@ -58,7 +58,7 @@ model Station {
   id          String     @id @db.VarChar(30) // '02_222' (호선_역코드)
   lineId      String     @map("line_id") @db.VarChar(20)
   stationCode String     @map("station_code") @db.VarChar(10)
-  lineSeq     Int?       @map("line_seq") // 호선 내 역 순서 (KRIC 순서 확정 전까지 임시로 null 허용, 확정 후 필수로 전환)
+  lineSeq     Int        @map("line_seq") // 호선 내 역 순서 (KRIC 구성 순서, 동순위는 역코드 순)
   stationName String     @map("station_name") @db.VarChar(50)
   lat         Float
   lng         Float

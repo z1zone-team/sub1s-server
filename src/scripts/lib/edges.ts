@@ -19,6 +19,8 @@ export interface LinePath {
   lineId: string;
   stationIds: string[];
   loop?: boolean;
+  // explicit labels for links that follow the ascending order but are not plain DOWN/UP
+  labels?: { forward: EdgeDirection; backward: EdgeDirection };
 }
 
 export type EdgeDirection = 'UP' | 'DOWN' | 'INNER' | 'OUTER';
@@ -89,6 +91,18 @@ export function assignLineSeq(paths: LinePath[]): Map<string, number> {
   return seqByStation;
 }
 
+// Following the KRIC order (상행 -> 하행) is DOWN. On a loop the KRIC order of line 2 runs
+// 시청 -> 충정로, which is the 외선순환, so the ascending direction of a loop is OUTER.
+function directionLabels(path: LinePath): {
+  forward: EdgeDirection;
+  backward: EdgeDirection;
+} {
+  if (path.labels) return path.labels;
+  return path.loop
+    ? { forward: 'OUTER', backward: 'INNER' }
+    : { forward: 'DOWN', backward: 'UP' };
+}
+
 export function buildEdges(
   paths: LinePath[],
   segments: Segment[],
@@ -105,8 +119,7 @@ export function buildEdges(
     lineId: string,
     from: string,
     to: string,
-    forward: boolean,
-    loop: boolean,
+    direction: EdgeDirection,
   ): void => {
     const fromId = from;
     const toId = to;
@@ -120,13 +133,6 @@ export function buildEdges(
     const geo = a && b ? distanceKm(a.lat, a.lng, b.lat, b.lng) : 0;
     const estimatedKm = Math.round(geo * calibration.circuity * 100) / 100;
     const distance = known ? known.distanceKm : estimatedKm;
-    const direction: EdgeDirection = loop
-      ? forward
-        ? 'INNER'
-        : 'OUTER'
-      : forward
-        ? 'DOWN'
-        : 'UP';
     edges.set(key, {
       fromStationId: fromId,
       toStationId: toId,
@@ -147,8 +153,9 @@ export function buildEdges(
     for (let i = 0; i < last; i += 1) {
       const from = ids[i];
       const to = ids[(i + 1) % ids.length];
-      add(path.lineId, from, to, true, path.loop === true);
-      add(path.lineId, to, from, false, path.loop === true);
+      const labels = directionLabels(path);
+      add(path.lineId, from, to, labels.forward);
+      add(path.lineId, to, from, labels.backward);
     }
   }
   return [...edges.values()];

@@ -42,6 +42,7 @@ interface StationOut {
   id: string;
   lineId: string;
   stationCode: string;
+  lineSeq?: number;
   stationName: string;
   lat: number | null;
   lng: number | null;
@@ -92,6 +93,12 @@ function main(): void {
     masterByName.set(key, [...(masterByName.get(key) ?? []), row]);
   }
 
+  // lineSeq comes from build-topology.ts (KRIC order); run refine:stations again after it
+  const topologyPath = join(OUT_DIR, 'line-topology.json');
+  const lineSeq: Record<string, number> = existsSync(topologyPath)
+    ? readJson<{ lineSeq: Record<string, number> }>(topologyPath).lineSeq
+    : {};
+
   const unresolved: string[] = [];
   const result: StationOut[] = [];
 
@@ -121,6 +128,7 @@ function main(): void {
       id,
       lineId: meta.id,
       stationCode: raw.FR_CODE,
+      lineSeq: lineSeq[id],
       stationName: raw.STATION_NM,
       lat,
       lng,

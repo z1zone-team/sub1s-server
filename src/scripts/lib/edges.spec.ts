@@ -107,11 +107,11 @@ describe('buildEdges', () => {
     expect(
       edges.find((e) => e.fromStationId === 'T_C' && e.toStationId === 'T_A')
         ?.direction,
-    ).toBe('INNER');
+    ).toBe('OUTER');
     expect(
       edges.find((e) => e.fromStationId === 'T_A' && e.toStationId === 'T_C')
         ?.direction,
-    ).toBe('OUTER');
+    ).toBe('INNER');
   });
 
   it('does not duplicate an edge shared by two paths', () => {
@@ -120,5 +120,26 @@ describe('buildEdges', () => {
       { lineId: 'T', stationIds: ['T_B', 'T_C', 'T_D'] },
     ];
     expect(buildEdges(paths, segments, stations, calibration)).toHaveLength(6);
+  });
+
+  it('uses explicit direction labels when given', () => {
+    const edges = buildEdges(
+      [
+        {
+          lineId: 'T',
+          stationIds: ['T_A', 'T_B'],
+          labels: { forward: 'OUTER', backward: 'INNER' },
+        },
+      ],
+      segments,
+      stations,
+      calibration,
+    );
+    expect(edges.find((e) => e.fromStationId === 'T_A')?.direction).toBe(
+      'OUTER',
+    );
+    expect(edges.find((e) => e.fromStationId === 'T_B')?.direction).toBe(
+      'INNER',
+    );
   });
 });

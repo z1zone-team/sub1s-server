@@ -221,3 +221,47 @@ export function equivalentNames(name: string): string[] {
   const group = EQUIVALENT_NAMES.find((names) => names.includes(name));
   return group ?? [name];
 }
+
+// KRIC line code (lnCd) -> line id of the station list
+export const KRIC_LINE_TO_LINE_ID: Record<string, string> = {
+  '1': '01',
+  '2': '02',
+  '3': '03',
+  '4': '04',
+  '5': '05',
+  '6': '06',
+  '7': '07',
+  '8': '08',
+  '9': '09',
+  A: 'GA',
+  A1: 'AR',
+  D1: 'SB',
+  E1: 'EV',
+  G1: 'GM',
+  I1: 'I1',
+  I2: 'I2',
+  K1: 'SD',
+  K2: 'GC',
+  K4: 'GJ',
+  K5: 'GG',
+  L1: 'SL',
+  U1: 'UJ',
+  UI: 'UI',
+  WS: 'SH',
+};
+
+// KRIC uses the administrative name 능길 for 신길온천, whose rename was suspended in 2021, so the signage name is kept.
+export const KRIC_NAME_ALIASES: Record<string, string> = {
+  능길: '신길온천',
+};
+
+// stations in the KRIC lists that are intentionally left out of the graph
+export const EXCLUDED_KRIC_STATIONS = ['도라산'];
+
+// KRIC names may end with 역 (e.g. 하남검단산역)
+export function kricKey(name: string): string {
+  const base = normalize(name);
+  const stripped =
+    base.endsWith('역') && base.length > 2 ? base.slice(0, -1) : base;
+  return KRIC_NAME_ALIASES[stripped] ?? stripped;
+}

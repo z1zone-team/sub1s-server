@@ -23,7 +23,7 @@ interface StationJson {
   stationName: string;
   lat: number;
   lng: number;
-  lineSeq?: number;
+  lineSeq: number;
 }
 
 interface EdgeJson {
