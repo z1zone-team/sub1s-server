@@ -425,6 +425,98 @@ describe('DijkstraRouteEngine', () => {
     });
   });
 
+  describe('congestion at the time of riding', () => {
+    const chain = new GraphBuilder()
+      .station('O_1', 'O')
+      .station('O_2', 'O')
+      .station('O_3', 'O')
+      .ride('O_1', 'O_2', 'O', 100)
+      .ride('O_2', 'O_3', 'O', 200)
+      .build();
+
+    it('asks for the congestion at the departure time plus the time already spent', async () => {
+      const calls: { from: string; direction: string; at: number }[] = [];
+      const provider: ICongestionProvider = {
+        getCongestion: (_line, from, _to, direction, at) => {
+          calls.push({ from, direction, at });
+          return 0;
+        },
+      };
+      const departureAt = new Date('2026-10-05T08:00:00+09:00');
+
+      await engineFor(chain, provider).findRoute({
+        originStationId: 'O_1',
+        destinationStationId: 'O_3',
+        mode: 'COMFORTABLE',
+        departureAt,
+      });
+
+      const down = calls.filter((c) => c.direction === 'DOWN');
+      expect(down.find((c) => c.from === 'O_1')?.at).toBe(
+        departureAt.getTime(),
+      );
+      expect(down.find((c) => c.from === 'O_2')?.at).toBe(
+        departureAt.getTime() + 100_000,
+      );
+    });
+
+    it('uses the current time when no departure time is given', async () => {
+      const seen: number[] = [];
+      const provider: ICongestionProvider = {
+        getCongestion: (_l, _f, _t, _d, at) => {
+          seen.push(at);
+          return 0;
+        },
+      };
+      const before = Date.now();
+
+      await engineFor(chain, provider).findRoute({
+        originStationId: 'O_1',
+        destinationStationId: 'O_3',
+        mode: 'COMFORTABLE',
+      });
+
+      expect(seen.length).toBeGreaterThan(0);
+      expect(Math.min(...seen)).toBeGreaterThanOrEqual(before);
+      expect(Math.min(...seen)).toBeLessThanOrEqual(Date.now());
+    });
+
+    it('chooses a different route depending on the departure time', async () => {
+      const graph = new GraphBuilder()
+        .station('X_O', 'X')
+        .station('X_D', 'X')
+        .station('Y_O', 'Y')
+        .station('Y_D', 'Y')
+        .ride('X_O', 'X_D', 'X', 600, 5)
+        .ride('Y_O', 'Y_D', 'Y', 640, 6)
+        .transfer('X_O', 'Y_O', 60)
+        .transfer('X_D', 'Y_D', 60)
+        .build();
+      const noon = new Date('2026-10-05T12:00:00+09:00').getTime();
+      const crowdedInTheMorning: ICongestionProvider = {
+        getCongestion: (lineId, _f, _t, _d, at) =>
+          lineId === 'X' && at < noon ? 0.9 : 0,
+      };
+      const query = {
+        originStationId: 'X_O',
+        destinationStationId: 'X_D',
+        mode: 'COMFORTABLE' as const,
+      };
+
+      const morning = await engineFor(graph, crowdedInTheMorning).findRoute({
+        ...query,
+        departureAt: new Date('2026-10-05T08:00:00+09:00'),
+      });
+      const afternoon = await engineFor(graph, crowdedInTheMorning).findRoute({
+        ...query,
+        departureAt: new Date('2026-10-05T14:00:00+09:00'),
+      });
+
+      expect(morning.stationIds).toEqual(['X_O', 'Y_O', 'Y_D', 'X_D']);
+      expect(afternoon.stationIds).toEqual(['X_O', 'X_D']);
+    });
+  });
+
   describe('invalid queries', () => {
     const graph = new GraphBuilder()
       .station('A_1', 'A')
