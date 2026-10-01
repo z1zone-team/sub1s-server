@@ -41,6 +41,7 @@ interface TransferJson {
   fromStationId: string;
   toStationId: string;
   walkingDurationSec: number;
+  isEstimated?: boolean;
 }
 
 function loadOptional<T>(file: string): T[] {

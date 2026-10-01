@@ -22,6 +22,7 @@ export interface TransferEdgeRecord {
   fromStationId: string;
   toStationId: string;
   walkingDurationSec: number;
+  isEstimated?: boolean;
 }
 
 export interface GraphData {
@@ -43,6 +44,7 @@ export interface GraphEdge {
 export interface GraphTransfer {
   readonly toIndex: number;
   readonly walkingDurationSec: number;
+  readonly isEstimated: boolean;
 }
 
 // Immutable adjacency list. Stations are addressed by a dense index, so neighbor lookup is an array access.
@@ -87,6 +89,7 @@ export class SubwayGraph {
         Object.freeze({
           toIndex: this.requireIndex(transfer.toStationId),
           walkingDurationSec: transfer.walkingDurationSec,
+          isEstimated: transfer.isEstimated ?? false,
         }),
       );
     }

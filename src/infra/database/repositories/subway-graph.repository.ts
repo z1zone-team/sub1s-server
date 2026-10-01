@@ -36,6 +36,7 @@ export class SubwayGraphRepository implements ISubwayGraphRepository {
           fromStationId: true,
           toStationId: true,
           walkingDurationSec: true,
+          isEstimated: true,
         },
       }),
     ]);
