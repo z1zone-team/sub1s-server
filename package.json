@@ -18,6 +18,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
+    "test:benchmark": "node --expose-gc node_modules/jest/bin/jest.js --config ./test/jest-benchmark.json --runInBand",
     "fetch:seoul-raw": "ts-node src/scripts/fetch-seoul-raw.ts",
     "refine:stations": "ts-node src/scripts/refine-stations.ts",
     "refine:segments": "ts-node src/scripts/refine-segments.ts",
@@ -74,6 +75,10 @@
     ],
     "rootDir": "src",
     "testRegex": ".*\\.spec\\.ts$",
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "benchmark-routing[.]spec[.]ts$"
+    ],
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
     },
