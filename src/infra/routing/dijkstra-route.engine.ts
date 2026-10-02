@@ -38,6 +38,7 @@ interface SearchParams {
   transferSec: number;
   blockedPairs?: Set<number>;
   blockedLines?: Set<string>;
+  departureMs: number;
 }
 
 interface Step {
@@ -84,9 +85,17 @@ export class DijkstraRouteEngine implements ISubwayRouteEngine {
       throw new UnknownStationError(query.destinationStationId);
 
     const blockedPairs = this.blockedPairs(graph, query);
+    const departureMs = query.departureAt?.getTime() ?? Date.now();
 
     if (query.mode === 'CHEAPEST') {
-      return this.findCheapest(graph, origin, destination, query, blockedPairs);
+      return this.findCheapest(
+        graph,
+        origin,
+        destination,
+        query,
+        blockedPairs,
+        departureMs,
+      );
     }
 
     const weights = this.weightsFor(query);
@@ -95,6 +104,7 @@ export class DijkstraRouteEngine implements ISubwayRouteEngine {
       congestion: weights.congestion,
       transferSec: weights.transferSec,
       blockedPairs,
+      departureMs,
     });
     if (!steps) throw new RouteNotFoundError();
     return this.toResult(graph, steps, query.mode, query.weekend);
@@ -128,6 +138,7 @@ export class DijkstraRouteEngine implements ISubwayRouteEngine {
     destination: number,
     query: RouteQuery,
     blockedPairs: Set<number> | undefined,
+    departureMs: number,
   ): RouteResult {
     const fastest = ROUTE_MODE_WEIGHTS.OPTIMAL;
     const candidates: SearchParams[] = [
@@ -136,19 +147,28 @@ export class DijkstraRouteEngine implements ISubwayRouteEngine {
         congestion: fastest.congestion,
         transferSec: fastest.transferSec,
         blockedPairs,
+        departureMs,
       },
-      { metric: 'distance', congestion: 0, transferSec: 0, blockedPairs },
+      {
+        metric: 'distance',
+        congestion: 0,
+        transferSec: 0,
+        blockedPairs,
+        departureMs,
+      },
       {
         metric: 'time',
         congestion: 0,
         transferSec: MIN_TRANSFER_PENALTY_SEC,
         blockedPairs,
+        departureMs,
       },
       {
         metric: 'time',
         congestion: fastest.congestion,
         transferSec: fastest.transferSec,
         blockedPairs,
+        departureMs,
         blockedLines: this.separatelyPricedLines(),
       },
     ];
@@ -217,6 +237,9 @@ export class DijkstraRouteEngine implements ISubwayRouteEngine {
     const prevNode = new Int32Array(count).fill(-1);
     const prevLink = new Int32Array(count).fill(-1);
     const prevIsTransfer = new Uint8Array(count);
+    // physical seconds spent when reaching each station by its cheapest path, used to look up the
+    // congestion at the time of riding
+    const elapsedSec = new Float64Array(count);
     const queue = new MinPriorityQueue(256);
 
     dist[origin] = 0;
@@ -244,6 +267,8 @@ export class DijkstraRouteEngine implements ISubwayRouteEngine {
             edge.lineId,
             graph.station(current).id,
             graph.station(edge.toIndex).id,
+            edge.direction,
+            params.departureMs + elapsedSec[current] * 1000,
           );
           cost = edge.durationSec * (1 + params.congestion * level);
         }
@@ -253,6 +278,7 @@ export class DijkstraRouteEngine implements ISubwayRouteEngine {
         prevNode[edge.toIndex] = current;
         prevLink[edge.toIndex] = i;
         prevIsTransfer[edge.toIndex] = 0;
+        elapsedSec[edge.toIndex] = elapsedSec[current] + edge.durationSec;
         queue.push(edge.toIndex, next);
       }
 
@@ -269,6 +295,8 @@ export class DijkstraRouteEngine implements ISubwayRouteEngine {
         prevNode[transfer.toIndex] = current;
         prevLink[transfer.toIndex] = i;
         prevIsTransfer[transfer.toIndex] = 1;
+        elapsedSec[transfer.toIndex] =
+          elapsedSec[current] + transfer.walkingDurationSec;
         queue.push(transfer.toIndex, next);
       }
     }

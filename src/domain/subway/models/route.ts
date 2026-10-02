@@ -20,6 +20,9 @@ export interface RouteQuery {
   // required for PERSONAL, ignored for the other modes
   weights?: RouteWeights;
   blockedSegments?: BlockedSegment[];
+  // when the trip starts; congestion is looked up at this time plus the time already spent on the route.
+  // Defaults to the time of the request.
+  departureAt?: Date;
   weekend?: boolean;
 }
 
