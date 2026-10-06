@@ -6,6 +6,7 @@ import { SecurityModule } from '../../infra/security/security.module';
 import { WebsocketModule } from '../../infra/websocket/websocket.module';
 import { RouteModule } from '../route/route.module';
 import { TrackingModule } from '../tracking/tracking.module';
+import { LineMapController } from './line-map.controller';
 import { TravelLogController } from './travel-log.controller';
 import { TravelLogService } from './travel-log.service';
 
@@ -19,7 +20,7 @@ import { TravelLogService } from './travel-log.service';
     TrackingModule,
     WebsocketModule,
   ],
-  controllers: [TravelLogController],
+  controllers: [TravelLogController, LineMapController],
   providers: [TravelLogService],
   exports: [TravelLogService],
 })

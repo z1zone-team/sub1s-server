@@ -4,9 +4,13 @@ import { AuthUser, CurrentUser } from '../../infra/auth/current-user.decorator';
 import { MockAuthGuard } from '../../infra/auth/mock-auth.guard';
 import {
   CreateTravelLogDto,
+  LineMapQueryDto,
+  LineMapResponseDto,
   TimelineQueryDto,
   TimelineResponseDto,
   TravelLogResponseDto,
+  TravelStatsQueryDto,
+  TravelStatsResponseDto,
 } from './dto';
 import { TravelLogService } from './travel-log.service';
 
@@ -34,6 +38,32 @@ export class TravelLogController {
     @Query() query: TimelineQueryDto,
   ): Promise<ApiResponse<TimelineResponseDto>> {
     const data = await this.travelLogService.getTimeline(user.id, query);
+    return {
+      success: true,
+      data,
+      timestamp: new Date().toISOString(),
+    };
+  }
+
+  @Get('stats')
+  async getStats(
+    @CurrentUser() user: AuthUser,
+    @Query() query: TravelStatsQueryDto,
+  ): Promise<ApiResponse<TravelStatsResponseDto>> {
+    const data = await this.travelLogService.getTravelStats(user.id, query);
+    return {
+      success: true,
+      data,
+      timestamp: new Date().toISOString(),
+    };
+  }
+
+  @Get('line-map')
+  async getLineMap(
+    @CurrentUser() user: AuthUser,
+    @Query() query: LineMapQueryDto,
+  ): Promise<ApiResponse<LineMapResponseDto>> {
+    const data = await this.travelLogService.getLineMap(user.id, query);
     return {
       success: true,
       data,

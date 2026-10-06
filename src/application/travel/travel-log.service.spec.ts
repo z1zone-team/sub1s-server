@@ -178,4 +178,83 @@ describe('TravelLogService', () => {
       expect(timeline.logs[0].destStationName).toBe('역삼');
     });
   });
+
+  describe('getTravelStats', () => {
+    it('returns aggregated stats for user logs within period', async () => {
+      mockPrisma.travelLog.findMany.mockResolvedValueOnce([
+        {
+          id: 'log-1',
+          originStationId: '02_222',
+          destStationId: '02_221',
+          totalDistanceKm: 1.5,
+          transferCount: 1,
+          createdAt: new Date(),
+          originStation: { stationName: '강남', lineId: '02' },
+          destStation: { stationName: '역삼', lineId: '02' },
+        },
+        {
+          id: 'log-2',
+          originStationId: '02_222',
+          destStationId: '02_221',
+          totalDistanceKm: 2.0,
+          transferCount: 0,
+          createdAt: new Date(),
+          originStation: { stationName: '강남', lineId: '02' },
+          destStation: { stationName: '역삼', lineId: '02' },
+        },
+      ]);
+
+      const stats = await service.getTravelStats('user-1', { period: 'WEEK' });
+
+      expect(stats.userId).toBe('user-1');
+      expect(stats.period).toBe('WEEK');
+      expect(stats.totalDistanceKm).toBe(3.5);
+      expect(stats.totalTravelCount).toBe(2);
+      expect(stats.transferCount).toBe(1);
+      expect(stats.totalRideDurationSec).toBeGreaterThan(0);
+      expect(stats.mostVisitedStations.length).toBe(2);
+      expect(stats.mostVisitedStations[0].stationName).toBe('강남');
+      expect(stats.mostVisitedStations[0].visitCount).toBe(2);
+      expect(stats.mostUsedLineId).toBe('02');
+    });
+
+    it('returns zero stats when user has no travel logs', async () => {
+      mockPrisma.travelLog.findMany.mockResolvedValueOnce([]);
+
+      const stats = await service.getTravelStats('user-empty', { period: 'ALL' });
+
+      expect(stats.totalDistanceKm).toBe(0);
+      expect(stats.totalTravelCount).toBe(0);
+      expect(stats.transferCount).toBe(0);
+      expect(stats.mostVisitedStations).toEqual([]);
+      expect(stats.mostUsedLineId).toBeUndefined();
+    });
+  });
+
+  describe('getLineMap', () => {
+    it('returns subway lines with visited status for stations', async () => {
+      mockPrisma.travelLog.findMany.mockResolvedValueOnce([
+        {
+          originStationId: '02_222',
+          destStationId: '02_221',
+        },
+      ]);
+
+      const res = await service.getLineMap('user-1', { period: 'MONTH' });
+
+      expect(res.userId).toBe('user-1');
+      expect(res.period).toBe('MONTH');
+      expect(res.lines.length).toBeGreaterThan(0);
+
+      const line02 = res.lines.find((l) => l.lineId === '02');
+      expect(line02).toBeDefined();
+      expect(line02?.colorHex).toBe('#00A84D');
+      expect(line02?.stations.length).toBe(2);
+
+      const gangnam = line02?.stations.find((s) => s.stationId === '02_222');
+      const yeoksam = line02?.stations.find((s) => s.stationId === '02_221');
+      expect(gangnam?.visited).toBe(true);
+      expect(yeoksam?.visited).toBe(true);
+    });
+  });
 });

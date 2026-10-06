@@ -166,4 +166,42 @@ describe('Travel and Ranking (e2e)', () => {
     expect(res.body.data.leaderboard).toBeDefined();
     expect(res.body.data.myRank).toBe(1);
   });
+
+  it('GET /api/v1/travel/stats returns travel statistics for given period', async () => {
+    const res = await request(app.getHttpServer())
+      .get('/api/v1/travel/stats?period=MONTH')
+      .expect(200);
+
+    expect(res.body.success).toBe(true);
+    expect(res.body.data.period).toBe('MONTH');
+    expect(res.body.data.totalDistanceKm).toBeGreaterThan(0);
+    expect(res.body.data.totalTravelCount).toBeGreaterThanOrEqual(1);
+    expect(res.body.data.mostVisitedStations.length).toBeGreaterThan(0);
+  });
+
+  it('GET /api/v1/line-map returns subway lines with station visited status', async () => {
+    const res = await request(app.getHttpServer())
+      .get('/api/v1/line-map?period=MONTH')
+      .expect(200);
+
+    expect(res.body.success).toBe(true);
+    expect(res.body.data.period).toBe('MONTH');
+    expect(res.body.data.lines).toBeInstanceOf(Array);
+    expect(res.body.data.lines.length).toBeGreaterThan(0);
+
+    const line02 = res.body.data.lines.find((l: any) => l.lineId === '02');
+    expect(line02).toBeDefined();
+    expect(line02.stations.length).toBeGreaterThan(0);
+    expect(line02.colorHex).toBe('#00A84D');
+  });
+
+  it('GET /api/v1/travel/line-map also works via travel route prefix', async () => {
+    const res = await request(app.getHttpServer())
+      .get('/api/v1/travel/line-map?period=ALL')
+      .expect(200);
+
+    expect(res.body.success).toBe(true);
+    expect(res.body.data.period).toBe('ALL');
+    expect(res.body.data.lines).toBeInstanceOf(Array);
+  });
 });
