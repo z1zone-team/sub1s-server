@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { CongestionModule } from './application/congestion/congestion.module';
 import { HealthModule } from './application/health/health.module';
 import { RouteModule } from './application/route/route.module';
 import { SubwayModule } from './domain/subway/subway.module';
@@ -14,6 +15,7 @@ import { RoutingModule } from './infra/routing/routing.module';
     SubwayModule,
     RoutingModule,
     RouteModule,
+    CongestionModule,
   ],
 })
 export class AppModule {}
