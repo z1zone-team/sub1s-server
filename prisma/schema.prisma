@@ -105,6 +105,7 @@ model TransferEdge {
   fromStationId      String   @map("from_station_id") @db.VarChar(30)
   toStationId        String   @map("to_station_id") @db.VarChar(30)
   walkingDurationSec Int      @map("walking_duration_sec")
+  isEstimated        Boolean  @default(false) @map("is_estimated") // true: walking time estimated from coordinates, not measured
   recommendedDoors   String[] @default([]) @map("recommended_doors") // ['2-3', '7-4']
   hasStairs          Boolean  @default(true) @map("has_stairs")
   hasEscalator       Boolean  @default(true) @map("has_escalator")

@@ -81,9 +81,25 @@ describe('SubwayGraph', () => {
     const b = graph.indexOf('T_B') as number;
     const u = graph.indexOf('U_B') as number;
     expect(graph.transfersFrom(b)).toEqual([
-      { toIndex: u, walkingDurationSec: 90 },
+      { toIndex: u, walkingDurationSec: 90, isEstimated: false },
     ]);
     expect(graph.edgesFrom(u)).toHaveLength(0);
+  });
+
+  it('carries the estimated flag of a transfer', () => {
+    const estimated = new SubwayGraph({
+      ...data,
+      transfers: [
+        {
+          fromStationId: 'T_B',
+          toStationId: 'U_B',
+          walkingDurationSec: 60,
+          isEstimated: true,
+        },
+      ],
+    });
+    const b = estimated.indexOf('T_B') as number;
+    expect(estimated.transfersFrom(b)[0].isEstimated).toBe(true);
   });
 
   it('is immutable', () => {
