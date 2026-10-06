@@ -35,12 +35,14 @@ export interface RouteSegment {
   stationCount: number;
   durationSec: number;
   distanceKm: number;
+  isEstimated?: boolean;
 }
 
 export interface RouteTransfer {
   fromStationId: string;
   toStationId: string;
   walkingDurationSec: number;
+  isEstimated?: boolean;
 }
 
 export interface RouteResult {

@@ -1,8 +1,10 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { HealthModule } from './application/health/health.module';
+import { RouteModule } from './application/route/route.module';
 import { SubwayModule } from './domain/subway/subway.module';
 import { PrismaModule } from './infra/prisma/prisma.module';
+import { RoutingModule } from './infra/routing/routing.module';
 
 @Module({
   imports: [
@@ -10,6 +12,8 @@ import { PrismaModule } from './infra/prisma/prisma.module';
     PrismaModule,
     HealthModule,
     SubwayModule,
+    RoutingModule,
+    RouteModule,
   ],
 })
 export class AppModule {}

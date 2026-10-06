@@ -396,11 +396,15 @@ export abstract class MultiCriteriaRouteEngine implements ISubwayRouteEngine {
       if (step.isTransfer) {
         const transfer = graph.transfersFrom(step.from)[step.link];
         const toId = graph.station(transfer.toIndex).id;
-        transfers.push({
+        const transferEntry: RouteTransfer = {
           fromStationId: fromId,
           toStationId: toId,
           walkingDurationSec: transfer.walkingDurationSec,
-        });
+        };
+        if (transfer.isEstimated) {
+          transferEntry.isEstimated = true;
+        }
+        transfers.push(transferEntry);
         totalDurationSec += transfer.walkingDurationSec;
         stationIds.push(toId);
         open = undefined;
@@ -424,6 +428,7 @@ export abstract class MultiCriteriaRouteEngine implements ISubwayRouteEngine {
         open.stationCount += 1;
         open.durationSec += edge.durationSec;
         open.distanceKm = round(open.distanceKm + edge.distanceKm);
+        if (edge.isEstimated) open.isEstimated = true;
       } else {
         open = {
           lineId: edge.lineId,
@@ -435,6 +440,7 @@ export abstract class MultiCriteriaRouteEngine implements ISubwayRouteEngine {
           durationSec: edge.durationSec,
           distanceKm: edge.distanceKm,
         };
+        if (edge.isEstimated) open.isEstimated = true;
         segments.push(open);
       }
     }
