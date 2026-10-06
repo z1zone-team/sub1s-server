@@ -18,6 +18,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
+    "test:benchmark": "node --expose-gc node_modules/jest/bin/jest.js --config ./test/jest-benchmark.json --runInBand",
     "fetch:seoul-raw": "ts-node src/scripts/fetch-seoul-raw.ts",
     "refine:stations": "ts-node src/scripts/refine-stations.ts",
     "refine:segments": "ts-node src/scripts/refine-segments.ts",
@@ -29,6 +30,7 @@
     "graph:measure": "node --expose-gc -r ts-node/register src/scripts/measure-graph.ts",
     "build:topology": "ts-node src/scripts/build-topology.ts",
     "build:edges": "ts-node src/scripts/build-edges.ts",
+    "refine:congestion": "ts-node src/scripts/refine-congestion.ts",
     "verify:stations-kakao": "ts-node src/scripts/verify-stations-kakao.ts",
     "verify:routes-odsay": "ts-node src/scripts/verify-routes-odsay.ts"
   },
@@ -54,6 +56,7 @@
     "eslint": "^8.0.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.0",
+    "exceljs": "^4.4.0",
     "jest": "^29.5.0",
     "prettier": "^3.0.0",
     "prisma": "^5.22.0",
@@ -73,6 +76,10 @@
     ],
     "rootDir": "src",
     "testRegex": ".*\\.spec\\.ts$",
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "benchmark-routing[.]spec[.]ts$"
+    ],
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
     },

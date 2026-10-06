@@ -1,115 +1,16 @@
-import { FareRule } from '../../domain/subway/fare/fare-calculator';
 import {
   InvalidRouteQueryError,
   RouteNotFoundError,
   UnknownStationError,
 } from '../../domain/subway/models/route';
-import {
-  GraphData,
-  RouteEdgeRecord,
-  StationRecord,
-  SubwayGraph,
-  TransferEdgeRecord,
-} from '../../domain/subway/models/subway-graph';
+import { SubwayGraph } from '../../domain/subway/models/subway-graph';
 import {
   ICongestionProvider,
   NoCongestionProvider,
 } from '../../domain/subway/ports/ICongestionProvider';
 import { DijkstraRouteEngine } from './dijkstra-route.engine';
 
-const FARE_RULE: FareRule = {
-  effectiveFrom: '2026-01-01',
-  baseFare: 1550,
-  baseDistanceKm: 10,
-  tiers: [
-    { fromKm: 10, toKm: 50, stepKm: 5, stepFare: 100 },
-    { fromKm: 50, stepKm: 8, stepFare: 100 },
-  ],
-  lineSurcharges: [{ type: 'flat', lineId: 'X', fare: 500 }],
-};
-
-// small fixture builder: every ride link is added in both directions unless oneWay is set
-class GraphBuilder {
-  private readonly stations: StationRecord[] = [];
-  private readonly edges: RouteEdgeRecord[] = [];
-  private readonly transfers: TransferEdgeRecord[] = [];
-
-  station(id: string, lineId: string): this {
-    this.stations.push({
-      id,
-      lineId,
-      stationName: id,
-      lat: 37,
-      lng: 127,
-      lineSeq: this.stations.length + 1,
-    });
-    return this;
-  }
-
-  ride(
-    from: string,
-    to: string,
-    lineId: string,
-    durationSec: number,
-    distanceKm = 1,
-    options: { oneWay?: boolean; forward?: string; backward?: string } = {},
-  ): this {
-    const forward = options.forward ?? 'DOWN';
-    const backward = options.backward ?? 'UP';
-    this.edges.push(
-      this.edge(from, to, lineId, durationSec, distanceKm, forward),
-    );
-    if (!options.oneWay) {
-      this.edges.push(
-        this.edge(to, from, lineId, durationSec, distanceKm, backward),
-      );
-    }
-    return this;
-  }
-
-  transfer(a: string, b: string, walkingDurationSec: number): this {
-    this.transfers.push({
-      fromStationId: a,
-      toStationId: b,
-      walkingDurationSec,
-    });
-    this.transfers.push({
-      fromStationId: b,
-      toStationId: a,
-      walkingDurationSec,
-    });
-    return this;
-  }
-
-  build(): SubwayGraph {
-    const data: GraphData = {
-      stations: this.stations,
-      edges: this.edges,
-      transfers: this.transfers,
-    };
-    return new SubwayGraph(data);
-  }
-
-  private edge(
-    from: string,
-    to: string,
-    lineId: string,
-    durationSec: number,
-    distanceKm: number,
-    direction: string,
-  ): RouteEdgeRecord {
-    return {
-      fromStationId: from,
-      toStationId: to,
-      lineId,
-      direction,
-      isExpress: false,
-      distanceKm,
-      durationSec,
-      isEstimated: false,
-    };
-  }
-}
+import { FARE_RULE, GraphBuilder } from './test-support/graph-builder';
 
 function engineFor(
   graph: SubwayGraph,
@@ -422,6 +323,98 @@ describe('DijkstraRouteEngine', () => {
       const after = await engine.findRoute({ ...base, mode: 'OPTIMAL' });
 
       expect(after).toEqual(before);
+    });
+  });
+
+  describe('congestion at the time of riding', () => {
+    const chain = new GraphBuilder()
+      .station('O_1', 'O')
+      .station('O_2', 'O')
+      .station('O_3', 'O')
+      .ride('O_1', 'O_2', 'O', 100)
+      .ride('O_2', 'O_3', 'O', 200)
+      .build();
+
+    it('asks for the congestion at the departure time plus the time already spent', async () => {
+      const calls: { from: string; direction: string; at: number }[] = [];
+      const provider: ICongestionProvider = {
+        getCongestion: (_line, from, _to, direction, at) => {
+          calls.push({ from, direction, at });
+          return 0;
+        },
+      };
+      const departureAt = new Date('2026-10-05T08:00:00+09:00');
+
+      await engineFor(chain, provider).findRoute({
+        originStationId: 'O_1',
+        destinationStationId: 'O_3',
+        mode: 'COMFORTABLE',
+        departureAt,
+      });
+
+      const down = calls.filter((c) => c.direction === 'DOWN');
+      expect(down.find((c) => c.from === 'O_1')?.at).toBe(
+        departureAt.getTime(),
+      );
+      expect(down.find((c) => c.from === 'O_2')?.at).toBe(
+        departureAt.getTime() + 100_000,
+      );
+    });
+
+    it('uses the current time when no departure time is given', async () => {
+      const seen: number[] = [];
+      const provider: ICongestionProvider = {
+        getCongestion: (_l, _f, _t, _d, at) => {
+          seen.push(at);
+          return 0;
+        },
+      };
+      const before = Date.now();
+
+      await engineFor(chain, provider).findRoute({
+        originStationId: 'O_1',
+        destinationStationId: 'O_3',
+        mode: 'COMFORTABLE',
+      });
+
+      expect(seen.length).toBeGreaterThan(0);
+      expect(Math.min(...seen)).toBeGreaterThanOrEqual(before);
+      expect(Math.min(...seen)).toBeLessThanOrEqual(Date.now());
+    });
+
+    it('chooses a different route depending on the departure time', async () => {
+      const graph = new GraphBuilder()
+        .station('X_O', 'X')
+        .station('X_D', 'X')
+        .station('Y_O', 'Y')
+        .station('Y_D', 'Y')
+        .ride('X_O', 'X_D', 'X', 600, 5)
+        .ride('Y_O', 'Y_D', 'Y', 640, 6)
+        .transfer('X_O', 'Y_O', 60)
+        .transfer('X_D', 'Y_D', 60)
+        .build();
+      const noon = new Date('2026-10-05T12:00:00+09:00').getTime();
+      const crowdedInTheMorning: ICongestionProvider = {
+        getCongestion: (lineId, _f, _t, _d, at) =>
+          lineId === 'X' && at < noon ? 0.9 : 0,
+      };
+      const query = {
+        originStationId: 'X_O',
+        destinationStationId: 'X_D',
+        mode: 'COMFORTABLE' as const,
+      };
+
+      const morning = await engineFor(graph, crowdedInTheMorning).findRoute({
+        ...query,
+        departureAt: new Date('2026-10-05T08:00:00+09:00'),
+      });
+      const afternoon = await engineFor(graph, crowdedInTheMorning).findRoute({
+        ...query,
+        departureAt: new Date('2026-10-05T14:00:00+09:00'),
+      });
+
+      expect(morning.stationIds).toEqual(['X_O', 'Y_O', 'Y_D', 'X_D']);
+      expect(afternoon.stationIds).toEqual(['X_O', 'X_D']);
     });
   });
 
