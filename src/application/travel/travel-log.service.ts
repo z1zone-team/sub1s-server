@@ -18,10 +18,16 @@ import { SubwayEventsGateway } from '../../infra/websocket/subway-events.gateway
 import { RouteService } from '../route/route.service';
 import {
   CreateTravelLogDto,
+  LineMapQueryDto,
+  LineMapResponseDto,
+  LineMapStationDto,
   TimelineQueryDto,
   TimelineResponseDto,
   TravelLogResponseDto,
+  TravelStatsQueryDto,
+  TravelStatsResponseDto,
 } from './dto';
+import { getLineMetadata } from './constants/subway-lines.constant';
 
 @Injectable()
 export class TravelLogService {
@@ -238,5 +244,221 @@ export class TravelLogService {
         traveledAt: l.createdAt.toISOString(),
       })),
     };
+  }
+
+  async getTravelStats(
+    currentUserId: string,
+    query: TravelStatsQueryDto,
+  ): Promise<TravelStatsResponseDto> {
+    const targetUserId = query.userId ?? currentUserId;
+    const startDate = this.calculateStartDate(query.period);
+
+    const logs = await this.prisma.travelLog.findMany({
+      where: {
+        userId: targetUserId,
+        ...(startDate ? { createdAt: { gte: startDate } } : {}),
+      },
+      include: {
+        originStation: true,
+        destStation: true,
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    const totalDistanceRaw = logs.reduce((sum, l) => sum + l.totalDistanceKm, 0);
+    const totalDistanceKm = Math.round(totalDistanceRaw * 10) / 10;
+    const totalTravelCount = logs.length;
+    const transferCount = logs.reduce((sum, l) => sum + l.transferCount, 0);
+
+    let totalRideDurationSec = 0;
+    const stationMap = new Map<
+      string,
+      { stationId: string; stationName: string; visitCount: number }
+    >();
+    const lineCountMap = new Map<string, number>();
+
+    for (const l of logs) {
+      // 1. 소요시간 계산 (복호화 또는 거리 비례 1km당 110초)
+      let durationSec = 0;
+      if (l.encryptedRoutePayload && l.iv && l.authTag && l.wrappedDek) {
+        try {
+          const decrypted = this.cryptoService.decrypt({
+            ciphertext: l.encryptedRoutePayload,
+            iv: l.iv,
+            tag: l.authTag,
+            wrappedDek: l.wrappedDek,
+          });
+          const parsed = JSON.parse(decrypted);
+          if (typeof parsed.durationSec === 'number') {
+            durationSec = parsed.durationSec;
+          }
+        } catch {
+          // fallback
+        }
+      }
+      if (durationSec === 0) {
+        durationSec = Math.round(l.totalDistanceKm * 110);
+      }
+      totalRideDurationSec += durationSec;
+
+      // 2. 방문 역 카운트
+      const originName = l.originStation
+        ? l.originStation.stationName
+        : l.originStationId;
+      const destName = l.destStation
+        ? l.destStation.stationName
+        : l.destStationId;
+
+      const o = stationMap.get(l.originStationId) ?? {
+        stationId: l.originStationId,
+        stationName: originName,
+        visitCount: 0,
+      };
+      o.visitCount += 1;
+      stationMap.set(l.originStationId, o);
+
+      const d = stationMap.get(l.destStationId) ?? {
+        stationId: l.destStationId,
+        stationName: destName,
+        visitCount: 0,
+      };
+      d.visitCount += 1;
+      stationMap.set(l.destStationId, d);
+
+      // 3. 최다 이용 호선 카운트
+      const originLineId =
+        l.originStation?.lineId ?? l.originStationId.split('_')[0];
+      const destLineId =
+        l.destStation?.lineId ?? l.destStationId.split('_')[0];
+      if (originLineId) {
+        lineCountMap.set(
+          originLineId,
+          (lineCountMap.get(originLineId) ?? 0) + 1,
+        );
+      }
+      if (destLineId) {
+        lineCountMap.set(destLineId, (lineCountMap.get(destLineId) ?? 0) + 1);
+      }
+    }
+
+    const mostVisitedStations = Array.from(stationMap.values())
+      .sort((a, b) => b.visitCount - a.visitCount)
+      .slice(0, 3);
+
+    let mostUsedLineId: string | undefined = undefined;
+    let maxLineCount = 0;
+    for (const [lineId, count] of lineCountMap.entries()) {
+      if (count > maxLineCount) {
+        maxLineCount = count;
+        mostUsedLineId = lineId;
+      }
+    }
+
+    return {
+      userId: targetUserId,
+      period: query.period,
+      totalDistanceKm,
+      totalTravelCount,
+      transferCount,
+      totalRideDurationSec,
+      mostVisitedStations,
+      mostUsedLineId,
+    };
+  }
+
+  async getLineMap(
+    currentUserId: string,
+    query: LineMapQueryDto,
+  ): Promise<LineMapResponseDto> {
+    const targetUserId = query.userId ?? currentUserId;
+    const startDate = this.calculateStartDate(query.period);
+
+    const logs = await this.prisma.travelLog.findMany({
+      where: {
+        userId: targetUserId,
+        ...(startDate ? { createdAt: { gte: startDate } } : {}),
+      },
+      select: {
+        originStationId: true,
+        destStationId: true,
+        encryptedRoutePayload: true,
+        iv: true,
+        authTag: true,
+        wrappedDek: true,
+      },
+    });
+
+    const visitedSet = new Set<string>();
+    for (const l of logs) {
+      visitedSet.add(l.originStationId);
+      visitedSet.add(l.destStationId);
+
+      if (l.encryptedRoutePayload && l.iv && l.authTag && l.wrappedDek) {
+        try {
+          const decrypted = this.cryptoService.decrypt({
+            ciphertext: l.encryptedRoutePayload,
+            iv: l.iv,
+            tag: l.authTag,
+            wrappedDek: l.wrappedDek,
+          });
+          const parsed = JSON.parse(decrypted);
+          if (Array.isArray(parsed.stationIds)) {
+            for (const sId of parsed.stationIds) {
+              visitedSet.add(sId);
+            }
+          }
+        } catch {
+          // skip
+        }
+      }
+    }
+
+    const graph = this.graphService.getGraph();
+    const linesMap = new Map<string, LineMapStationDto[]>();
+
+    for (let i = 0; i < graph.stationCount; i++) {
+      const s = graph.station(i);
+      let lineStations = linesMap.get(s.lineId);
+      if (!lineStations) {
+        lineStations = [];
+        linesMap.set(s.lineId, lineStations);
+      }
+      lineStations.push({
+        stationId: s.id,
+        stationName: s.stationName,
+        lineSeq: s.lineSeq ?? lineStations.length + 1,
+        visited: visitedSet.has(s.id),
+      });
+    }
+
+    const lines = Array.from(linesMap.entries()).map(([lineId, stations]) => {
+      const meta = getLineMetadata(lineId);
+      return {
+        lineId,
+        lineName: meta.lineName,
+        colorHex: meta.colorHex,
+        stations: stations.sort((a, b) => a.lineSeq - b.lineSeq),
+      };
+    });
+
+    return {
+      userId: targetUserId,
+      period: query.period,
+      lines,
+    };
+  }
+
+  private calculateStartDate(period: 'WEEK' | 'MONTH' | 'YEAR' | 'ALL'): Date | undefined {
+    const now = new Date();
+    if (period === 'WEEK') {
+      return new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    }
+    if (period === 'MONTH') {
+      return new Date(now.getFullYear(), now.getMonth(), 1);
+    }
+    if (period === 'YEAR') {
+      return new Date(now.getFullYear(), 0, 1);
+    }
+    return undefined;
   }
 }

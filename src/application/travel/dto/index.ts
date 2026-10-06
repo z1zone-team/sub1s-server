@@ -2,3 +2,7 @@ export * from './create-travel-log.dto';
 export * from './travel-log-response.dto';
 export * from './timeline-query.dto';
 export * from './timeline-response.dto';
+export * from './travel-stats-query.dto';
+export * from './travel-stats-response.dto';
+export * from './line-map-query.dto';
+export * from './line-map-response.dto';

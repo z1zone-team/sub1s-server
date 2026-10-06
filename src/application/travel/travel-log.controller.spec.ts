@@ -8,6 +8,8 @@ describe('TravelLogController', () => {
   let mockService: {
     createLog: jest.Mock;
     getTimeline: jest.Mock;
+    getTravelStats?: jest.Mock;
+    getLineMap?: jest.Mock;
   };
 
   const mockUser: AuthUser = {
@@ -70,6 +72,42 @@ describe('TravelLogController', () => {
     expect(mockService.getTimeline).toHaveBeenCalledWith('user-1', {
       year: 2026,
       month: 10,
+    });
+  });
+
+  it('GET stats calls service.getTravelStats and returns ApiResponse', async () => {
+    mockService.getTravelStats = jest.fn().mockResolvedValue({
+      userId: 'user-1',
+      period: 'WEEK',
+      totalDistanceKm: 5.5,
+      totalTravelCount: 3,
+      transferCount: 1,
+      totalRideDurationSec: 600,
+      mostVisitedStations: [],
+    });
+
+    const res = await controller.getStats(mockUser, { period: 'WEEK' });
+
+    expect(res.success).toBe(true);
+    expect(res.data.totalDistanceKm).toBe(5.5);
+    expect(mockService.getTravelStats).toHaveBeenCalledWith('user-1', {
+      period: 'WEEK',
+    });
+  });
+
+  it('GET line-map calls service.getLineMap and returns ApiResponse', async () => {
+    mockService.getLineMap = jest.fn().mockResolvedValue({
+      userId: 'user-1',
+      period: 'MONTH',
+      lines: [],
+    });
+
+    const res = await controller.getLineMap(mockUser, { period: 'MONTH' });
+
+    expect(res.success).toBe(true);
+    expect(res.data.period).toBe('MONTH');
+    expect(mockService.getLineMap).toHaveBeenCalledWith('user-1', {
+      period: 'MONTH',
     });
   });
 });
