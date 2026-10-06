@@ -6,6 +6,7 @@ import { RouteModule } from './application/route/route.module';
 import { SubwayModule } from './domain/subway/subway.module';
 import { PrismaModule } from './infra/prisma/prisma.module';
 import { RoutingModule } from './infra/routing/routing.module';
+import { WebsocketModule } from './infra/websocket/websocket.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { RoutingModule } from './infra/routing/routing.module';
     RoutingModule,
     RouteModule,
     CongestionModule,
+    WebsocketModule,
   ],
 })
 export class AppModule {}
