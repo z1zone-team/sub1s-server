@@ -6,6 +6,7 @@ import { RankingModule } from './application/ranking/ranking.module';
 import { RouteModule } from './application/route/route.module';
 import { TrackingModule } from './application/tracking/tracking.module';
 import { TravelModule } from './application/travel/travel.module';
+import { VoiceModule } from './application/voice/voice.module';
 import { SubwayModule } from './domain/subway/subway.module';
 import { AuthModule } from './infra/auth/auth.module';
 import { PrismaModule } from './infra/prisma/prisma.module';
@@ -28,6 +29,7 @@ import { WebsocketModule } from './infra/websocket/websocket.module';
     TrackingModule,
     TravelModule,
     RankingModule,
+    VoiceModule,
   ],
 })
 export class AppModule {}
