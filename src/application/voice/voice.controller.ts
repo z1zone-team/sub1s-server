@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AuthUser, CurrentUser } from '../../infra/auth/current-user.decorator';
-import { MockAuthGuard } from '../../infra/auth/mock-auth.guard';
+import { ClerkAuthGuard } from '../../infra/auth/clerk-auth.guard';
 import {
   VoiceRouteRecommendRequestDto,
   VoiceRouteRecommendResponseDto,
@@ -20,7 +20,7 @@ export class VoiceController {
   constructor(private readonly voiceService: VoiceService) {}
 
   @Post('route-recommend')
-  @UseGuards(MockAuthGuard)
+  @UseGuards(ClerkAuthGuard)
   @UseInterceptors(
     FileInterceptor('file', {
       limits: {
