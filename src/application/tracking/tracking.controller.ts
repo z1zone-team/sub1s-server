@@ -1,4 +1,5 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { ApiOperation, ApiResponse as SwaggerResponse, ApiTags } from '@nestjs/swagger';
 import { ApiResponse } from '../../common/interfaces/api-response.interface';
 import {
   DeviateCheckRequestDto,
@@ -9,11 +10,17 @@ import {
 } from './dto';
 import { TrackingService } from './tracking.service';
 
+@ApiTags('Tracking')
 @Controller('v1/routes/track')
 export class TrackingController {
   constructor(private readonly trackingService: TrackingService) {}
 
   @Post('start')
+  @ApiOperation({
+    summary: '실시간 주행 추적 세션 시작',
+    description: '선택한 추천 경로를 기반으로 실시간 지하철 탑승 추적 세션을 시작합니다.',
+  })
+  @SwaggerResponse({ status: 201, description: '주행 세션 생성 성공' })
   async startTracking(
     @Body() dto: StartTrackingRequestDto,
   ): Promise<ApiResponse<TrackingSessionDto>> {
@@ -26,6 +33,12 @@ export class TrackingController {
   }
 
   @Post('deviate')
+  @ApiOperation({
+    summary: '오탑승 및 경로 이탈 체크 (REST Fallback)',
+    description:
+      '현재 감지된 역이 계획된 경로와 일치하는지 확인하고, 반대방향/환승누락 감지 시 즉시 맞은편 회차 경로를 반환합니다.',
+  })
+  @SwaggerResponse({ status: 200, description: '정상 주행 또는 회차 경로 안내 반환' })
   async checkDeviate(
     @Body() dto: DeviateCheckRequestDto,
   ): Promise<ApiResponse<OffRouteAlertDto | TrackingSessionDto>> {
@@ -38,6 +51,11 @@ export class TrackingController {
   }
 
   @Post('location')
+  @ApiOperation({
+    summary: '현재 위치 보고 및 세션 갱신',
+    description: '지상 GPS 보정 또는 정차역 도착 시 위치를 보고하고 다음 정차역 ETA를 갱신합니다.',
+  })
+  @SwaggerResponse({ status: 200, description: '위치 갱신 성공' })
   async reportLocation(
     @Body() dto: ReportLocationRequestDto,
   ): Promise<ApiResponse<TrackingSessionDto>> {
@@ -53,6 +71,12 @@ export class TrackingController {
   }
 
   @Get(':sessionId')
+  @ApiOperation({
+    summary: '주행 세션 상태 조회',
+    description: '진행 중인 주행 추적 세션의 현재 상태 및 남은 소요 시간을 조회합니다.',
+  })
+  @SwaggerResponse({ status: 200, description: '세션 정보 반환' })
+  @SwaggerResponse({ status: 404, description: '세션을 찾을 수 없음' })
   async getSession(
     @Param('sessionId') sessionId: string,
   ): Promise<ApiResponse<TrackingSessionDto>> {
