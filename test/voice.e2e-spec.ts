@@ -10,6 +10,7 @@ import {
   ISubwayGraphRepository,
   SUBWAY_GRAPH_REPOSITORY,
 } from '../src/domain/subway/ports/ISubwayGraphRepository';
+import { ClerkAuthGuard } from '../src/infra/auth/clerk-auth.guard';
 import { PrismaService } from '../src/infra/prisma/prisma.service';
 
 describe('Voice Route Recommend (e2e)', () => {
@@ -41,6 +42,17 @@ describe('Voice Route Recommend (e2e)', () => {
     const moduleRef = await Test.createTestingModule({
       imports: [AppModule],
     })
+      .overrideGuard(ClerkAuthGuard)
+      .useValue({
+        canActivate: (context: any) => {
+          context.switchToHttp().getRequest().user = {
+            id: '00000000-0000-0000-0000-000000000001',
+            clerkId: 'user_mock_test_1',
+            nickname: '테스트유저',
+          };
+          return true;
+        },
+      })
       .overrideProvider(SUBWAY_GRAPH_REPOSITORY)
       .useValue(mockGraphRepository)
       .overrideProvider(PrismaService)
