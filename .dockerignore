@@ -1,0 +1,12 @@
+node_modules
+dist
+data-raw
+npm-debug.log
+yarn-error.log
+pnpm-debug.log
+.git
+.env
+.env.*
+!.env.example
+coverage
+test
