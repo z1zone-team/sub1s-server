@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { SubwayModule } from '../../domain/subway/subway.module';
 import { AuthModule } from '../../infra/auth/auth.module';
-import { PrismaModule } from '../../infra/prisma/prisma.module';
+import { DatabaseModule } from '../../infra/database/database.module';
 import { SecurityModule } from '../../infra/security/security.module';
 import { WebsocketModule } from '../../infra/websocket/websocket.module';
 import { RouteModule } from '../route/route.module';
@@ -12,7 +12,7 @@ import { TravelLogService } from './travel-log.service';
 
 @Module({
   imports: [
-    PrismaModule,
+    DatabaseModule,
     SubwayModule,
     RouteModule,
     SecurityModule,

@@ -1,25 +1,25 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../../infra/prisma/prisma.service';
+import { Inject, Injectable } from '@nestjs/common';
+import {
+  IRankScoreRepository,
+  RANK_SCORE_REPOSITORY,
+} from '../../domain/ranking/ports/IRankScoreRepository';
 import { LeaderboardItemDto, RankingQueryDto, RankingResponseDto } from './dto';
 
 @Injectable()
 export class RankingService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    @Inject(RANK_SCORE_REPOSITORY)
+    private readonly rankScoreRepo: IRankScoreRepository,
+  ) {}
 
   async getRanking(
     userId: string,
     query: RankingQueryDto,
   ): Promise<RankingResponseDto> {
-    const scores = await this.prisma.rankScore.findMany({
-      where: {
-        periodType: query.periodType,
-        periodKey: query.periodKey,
-      },
-      orderBy: [{ totalPoints: 'desc' }, { totalDistanceKm: 'desc' }],
-      include: {
-        user: true,
-      },
-    });
+    const scores = await this.rankScoreRepo.findLeaderboard(
+      query.periodType,
+      query.periodKey,
+    );
 
     let myRank = 0;
     let myPoints = 0;

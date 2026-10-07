@@ -1,21 +1,28 @@
 import {
   CanActivate,
   ExecutionContext,
+  Inject,
   Injectable,
   Optional,
   UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { verifyToken } from '@clerk/backend';
-import { PrismaService } from '../prisma/prisma.service';
+import {
+  IUserRepository,
+  USER_REPOSITORY,
+} from '../../domain/user/ports/IUserRepository';
 import { MOCK_USER } from './mock-auth.guard';
 import { AuthUser } from './current-user.decorator';
 
 @Injectable()
 export class ClerkAuthGuard implements CanActivate {
   constructor(
-    @Optional() private readonly prisma?: PrismaService,
-    @Optional() private readonly configService?: ConfigService,
+    @Inject(USER_REPOSITORY)
+    @Optional()
+    private readonly userRepo?: IUserRepository,
+    @Optional()
+    private readonly configService?: ConfigService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -67,20 +74,15 @@ export class ClerkAuthGuard implements CanActivate {
       throw new UnauthorizedException('토큰에서 유저 식별자를 찾을 수 없습니다.');
     }
 
-    // Prisma DB에서 유저 조회 또는 자동 최초 생성 (upsert)
-    if (this.prisma) {
-      let user = await this.prisma.user.findUnique({
-        where: { clerkId },
-      });
+    // Repository를 통한 유저 조회 또는 자동 최초 생성 (upsert)
+    if (this.userRepo) {
+      let user = await this.userRepo.findByClerkId(clerkId);
 
       if (!user) {
-        user = await this.prisma.user.create({
-          data: {
-            clerkId,
-            nickname: `탐험가_${clerkId.slice(-6)}`,
-            profileImageUrl: null,
-            isRankingPublic: true,
-          },
+        user = await this.userRepo.upsertByClerkId({
+          clerkId,
+          nickname: `탐험가_${clerkId.slice(-6)}`,
+          profileImageUrl: null,
         });
       }
 
