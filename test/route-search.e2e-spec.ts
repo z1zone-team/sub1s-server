@@ -128,4 +128,51 @@ describe('Route Search (e2e)', () => {
     expect(res.body.success).toBe(false);
     expect(res.body.error.code).toBe('INVALID_REQUEST_PAYLOAD');
   });
+
+  it('POST /api/v1/routes/search returns multimodal route with walking segments when coordinates provided', async () => {
+    const res = await request(app.getHttpServer())
+      .post('/api/v1/routes/search')
+      .send({
+        originLat: 37.4985,
+        originLng: 127.027,
+        originName: '강남역 11번 출구 앞 카페',
+        destinationStationId: '02_221', // 역삼역
+      })
+      .expect(200);
+
+    expect(res.body.success).toBe(true);
+    const options = res.body.data.options;
+    expect(options.length).toBeGreaterThanOrEqual(1);
+
+    const firstOpt = options[0];
+    expect(firstOpt.totalWalkDurationSec).toBeGreaterThan(0);
+    expect(firstOpt.totalWalkDistanceKm).toBeGreaterThan(0);
+    expect(firstOpt.totalCalories).toBeGreaterThan(0);
+    expect(firstOpt.totalSteps).toBeGreaterThan(0);
+
+    const walkSeg = firstOpt.segments.find((s: any) => s.lineId === 'WALK');
+    expect(walkSeg).toBeDefined();
+    expect(walkSeg.fromStationName).toBe('강남역 11번 출구 앞 카페');
+  });
+
+  it('POST /api/v1/routes/search returns ONLY_WALK when origin and destination coordinates are close (< 800m)', async () => {
+    const res = await request(app.getHttpServer())
+      .post('/api/v1/routes/search')
+      .send({
+        originLat: 37.4982,
+        originLng: 127.0275,
+        originName: '강남역 인근',
+        destinationLat: 37.4975,
+        destinationLng: 127.028,
+        destinationName: '강남대로 맞은편',
+      })
+      .expect(200);
+
+    expect(res.body.success).toBe(true);
+    const options = res.body.data.options;
+    expect(options.length).toBe(1);
+    expect(options[0].mode).toBe('ONLY_WALK');
+    expect(options[0].totalFare).toBe(0);
+    expect(options[0].segments[0].lineId).toBe('WALK');
+  });
 });

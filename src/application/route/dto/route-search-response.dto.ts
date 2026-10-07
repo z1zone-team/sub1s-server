@@ -1,35 +1,144 @@
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { RouteMode } from '../../../domain/subway/models/route';
 import { CongestionLevel } from '../../../domain/congestion/models/congestion';
 
-export interface PathSegmentDto {
-  lineId: string;
-  direction: 'UP' | 'DOWN' | 'INNER' | 'OUTER';
-  isExpress: boolean;
-  fromStationId: string;
-  fromStationName: string;
-  toStationId: string;
-  toStationName: string;
-  stationCount: number;
-  durationSec: number;
-  distanceKm: number;
-  recommendedCarNo: number;
-  isWeakAirConditioned: boolean;
-  congestionLevel: CongestionLevel;
-  congestionRate: number;
+export class PathSegmentDto {
+  @ApiProperty({ description: '노선 ID (지하철 호선 또는 WALK)', example: '02' })
+  lineId!: string;
+
+  @ApiProperty({
+    description: '행선 방향 (UP, DOWN, INNER, OUTER, NONE)',
+    example: 'INNER',
+  })
+  direction!: 'UP' | 'DOWN' | 'INNER' | 'OUTER' | 'NONE';
+
+  @ApiProperty({ description: '급행 여부', example: false })
+  isExpress!: boolean;
+
+  @ApiProperty({ description: '구간 출발역 ID', example: '0222' })
+  fromStationId!: string;
+
+  @ApiProperty({ description: '구간 출발역 명칭', example: '강남' })
+  fromStationName!: string;
+
+  @ApiProperty({ description: '구간 도착역 ID', example: '0234' })
+  toStationId!: string;
+
+  @ApiProperty({ description: '구간 도착역 명칭', example: '시청' })
+  toStationName!: string;
+
+  @ApiProperty({ description: '정차 역 수 (도보 구간은 0)', example: 12 })
+  stationCount!: number;
+
+  @ApiProperty({ description: '구간 소요 시간 (초)', example: 1440 })
+  durationSec!: number;
+
+  @ApiProperty({ description: '구간 이동 거리 (km)', example: 12.5 })
+  distanceKm!: number;
+
+  @ApiProperty({ description: '추천 탑승 칸 번호 (1~10, 도보 시 0)', example: 4 })
+  recommendedCarNo!: number;
+
+  @ApiProperty({ description: '약냉방칸 여부', example: false })
+  isWeakAirConditioned!: boolean;
+
+  @ApiProperty({
+    description: '혼잡도 수준 (여유, 보통, 혼잡)',
+    example: '보통',
+  })
+  congestionLevel!: CongestionLevel;
+
+  @ApiProperty({ description: '혼잡도 비율 (0~100%)', example: 52 })
+  congestionRate!: number;
+
+  @ApiPropertyOptional({ description: '추정치 여부', example: false })
   isEstimated?: boolean;
+
+  @ApiPropertyOptional({
+    description: '도보 구간 소모 칼로리 (kcal)',
+    example: 45,
+  })
+  walkCalories?: number;
+
+  @ApiPropertyOptional({
+    description: '도보 구간 걸음 수 (보)',
+    example: 850,
+  })
+  walkSteps?: number;
 }
 
-export interface SubwayRouteOptionDto {
-  mode: RouteMode;
-  totalDurationSec: number;
-  totalDistanceKm: number;
-  totalFare: number;
-  transferCount: number;
-  estimatedArrivalTimestamp: string; // ISO-8601
-  segments: PathSegmentDto[];
+export class SubwayRouteOptionDto {
+  @ApiProperty({
+    description: '경로 모드 (OPTIMAL, COMFORTABLE, PERSONAL, CHEAPEST, ONLY_WALK)',
+    example: 'OPTIMAL',
+  })
+  mode!: RouteMode;
+
+  @ApiProperty({
+    description: '총 소요 시간 (초, 도보 + 지하철 + 환승)',
+    example: 1800,
+  })
+  totalDurationSec!: number;
+
+  @ApiProperty({
+    description: '총 이동 거리 (km, 도보 + 지하철)',
+    example: 14.2,
+  })
+  totalDistanceKm!: number;
+
+  @ApiProperty({ description: '기본 요금 (원)', example: 1400 })
+  totalFare!: number;
+
+  @ApiProperty({ description: '환승 횟수', example: 1 })
+  transferCount!: number;
+
+  @ApiProperty({
+    description: '예상 도착 시각 (ISO-8601)',
+    example: '2026-10-07T15:10:00Z',
+  })
+  estimatedArrivalTimestamp!: string;
+
+  @ApiProperty({
+    description: '경로 세그먼트 목록 (도보 및 지하철)',
+    type: [PathSegmentDto],
+  })
+  segments!: PathSegmentDto[];
+
+  @ApiPropertyOptional({
+    description: '총 도보 소요 시간 (초)',
+    example: 360,
+  })
+  totalWalkDurationSec?: number;
+
+  @ApiPropertyOptional({
+    description: '총 도보 거리 (km)',
+    example: 0.8,
+  })
+  totalWalkDistanceKm?: number;
+
+  @ApiPropertyOptional({
+    description: '총 도보 소모 칼로리 (kcal)',
+    example: 52,
+  })
+  totalCalories?: number;
+
+  @ApiPropertyOptional({
+    description: '총 도보 걸음 수 (보)',
+    example: 1040,
+  })
+  totalSteps?: number;
 }
 
-export interface RouteSearchResultDto {
-  options: SubwayRouteOptionDto[];
+export class RouteSearchResultDto {
+  @ApiProperty({
+    description: '추천 경로 옵션 목록',
+    type: [SubwayRouteOptionDto],
+  })
+  options!: SubwayRouteOptionDto[];
+
+  @ApiPropertyOptional({
+    description: 'AI 브리핑 가이드 텍스트',
+    example: '강남역까지 도보 5분 이동 후 2호선을 탑승하세요.',
+  })
   aiBriefingText?: string;
 }

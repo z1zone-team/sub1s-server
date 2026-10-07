@@ -72,6 +72,7 @@ export class AiServiceAdapter {
       COMFORTABLE: '여유 좌석',
       PERSONAL: '개인 맞춤',
       CHEAPEST: '최소 비용',
+      ONLY_WALK: '도보 전용',
     };
     const modeLabel = modeLabelMap[intent.preferredMode] ?? '추천';
 

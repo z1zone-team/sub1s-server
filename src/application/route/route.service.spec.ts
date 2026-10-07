@@ -8,6 +8,7 @@ import {
   SUBWAY_ROUTE_ENGINE,
 } from '../../domain/subway/ports/ISubwayRouteEngine';
 import { SubwayGraphService } from '../../domain/subway/services/subway-graph.service';
+import { WalkingService } from '../../domain/subway/services/walking.service';
 import { StatisticalCongestionProvider } from '../../infra/congestion/statistical-congestion.provider';
 import { RouteService } from './route.service';
 
@@ -110,6 +111,7 @@ describe('RouteService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         RouteService,
+        WalkingService,
         { provide: SUBWAY_ROUTE_ENGINE, useValue: mockEngine },
         { provide: SubwayGraphService, useValue: mockGraphService },
         {
@@ -206,6 +208,62 @@ describe('RouteService', () => {
     ).rejects.toMatchObject({
       errorCode: 'STATION_NOT_FOUND',
       status: HttpStatus.NOT_FOUND,
+    });
+  });
+
+  describe('Walking & Coordinate-based Routes', () => {
+    it('computes multimodal route with first-mile and last-mile walking when coordinates are provided', async () => {
+      // 강남역 부근 (37.4985, 127.0270) -> 양재역 부근 (37.4840, 127.0340)
+      const result = await service.search({
+        originLat: 37.4985,
+        originLng: 127.027,
+        originName: '출발지 핀',
+        destinationLat: 37.484,
+        destinationLng: 127.034,
+        destinationName: '목적지 빌딩',
+      });
+
+      expect(result.options.length).toBeGreaterThanOrEqual(1);
+      const opt = result.options[0];
+      expect(opt.totalWalkDurationSec).toBeGreaterThan(0);
+      expect(opt.totalWalkDistanceKm).toBeGreaterThan(0);
+      expect(opt.totalCalories).toBeGreaterThan(0);
+      expect(opt.totalSteps).toBeGreaterThan(0);
+
+      // 세그먼트에 WALK 가 포함되어 있는지 검증
+      const walkSegments = opt.segments.filter((s) => s.lineId === 'WALK');
+      expect(walkSegments.length).toBe(2); // First-mile + Last-mile
+      expect(walkSegments[0].fromStationName).toBe('출발지 핀');
+      expect(walkSegments[1].toStationName).toBe('목적지 빌딩');
+    });
+
+    it('returns ONLY_WALK option when origin and destination coordinates are close (< 800m)', async () => {
+      // 강남역 11번 출구 (37.4982, 127.0275) -> 강남역 1번 출구 (37.4975, 127.0280) 약 100m
+      const result = await service.search({
+        originLat: 37.4982,
+        originLng: 127.0275,
+        destinationLat: 37.4975,
+        destinationLng: 127.028,
+      });
+
+      expect(result.options).toHaveLength(1);
+      expect(result.options[0].mode).toBe('ONLY_WALK');
+      expect(result.options[0].totalFare).toBe(0);
+      expect(result.options[0].segments[0].lineId).toBe('WALK');
+    });
+
+    it('throws BusinessException when coordinates are too far from any subway station (> 2.5km)', async () => {
+      // 제주도 한라산 좌표
+      await expect(
+        service.search({
+          originLat: 33.3617,
+          originLng: 126.5292,
+          destinationStationId: '02_221',
+        }),
+      ).rejects.toMatchObject({
+        errorCode: 'STATION_NOT_FOUND',
+        status: HttpStatus.NOT_FOUND,
+      });
     });
   });
 });

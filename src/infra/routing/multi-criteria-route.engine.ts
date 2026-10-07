@@ -169,7 +169,7 @@ export abstract class MultiCriteriaRouteEngine implements ISubwayRouteEngine {
       }
       return weights;
     }
-    if (query.mode === 'CHEAPEST') {
+    if (query.mode === 'CHEAPEST' || query.mode === 'ONLY_WALK') {
       return ROUTE_MODE_WEIGHTS.OPTIMAL;
     }
     return ROUTE_MODE_WEIGHTS[query.mode];
