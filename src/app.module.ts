@@ -8,7 +8,8 @@ import { TrackingModule } from './application/tracking/tracking.module';
 import { TravelModule } from './application/travel/travel.module';
 import { VoiceModule } from './application/voice/voice.module';
 import { SubwayModule } from './domain/subway/subway.module';
-import { AuthModule } from './infra/auth/auth.module';
+import { AuthModule as InfraAuthModule } from './infra/auth/auth.module';
+import { AuthModule as AuthAppModule } from './application/auth/auth.module';
 import { PrismaModule } from './infra/prisma/prisma.module';
 import { RoutingModule } from './infra/routing/routing.module';
 import { SecurityModule } from './infra/security/security.module';
@@ -19,7 +20,8 @@ import { WebsocketModule } from './infra/websocket/websocket.module';
     ConfigModule.forRoot({ isGlobal: true }),
     PrismaModule,
     SecurityModule,
-    AuthModule,
+    InfraAuthModule,
+    AuthAppModule,
     HealthModule,
     SubwayModule,
     RoutingModule,

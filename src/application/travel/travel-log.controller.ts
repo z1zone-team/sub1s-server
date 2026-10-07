@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
 import { ApiResponse } from '../../common/interfaces/api-response.interface';
 import { AuthUser, CurrentUser } from '../../infra/auth/current-user.decorator';
-import { MockAuthGuard } from '../../infra/auth/mock-auth.guard';
+import { ClerkAuthGuard } from '../../infra/auth/clerk-auth.guard';
 import {
   CreateTravelLogDto,
   LineMapQueryDto,
@@ -15,7 +15,7 @@ import {
 import { TravelLogService } from './travel-log.service';
 
 @Controller('v1/travel')
-@UseGuards(MockAuthGuard)
+@UseGuards(ClerkAuthGuard)
 export class TravelLogController {
   constructor(private readonly travelLogService: TravelLogService) {}
 
