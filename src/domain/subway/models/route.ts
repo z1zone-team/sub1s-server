@@ -1,4 +1,9 @@
-export type RouteMode = 'OPTIMAL' | 'COMFORTABLE' | 'PERSONAL' | 'CHEAPEST';
+export type RouteMode =
+  | 'OPTIMAL'
+  | 'COMFORTABLE'
+  | 'PERSONAL'
+  | 'CHEAPEST'
+  | 'ONLY_WALK';
 
 export interface RouteWeights {
   // congestion avoidance weight (wc)
@@ -79,7 +84,7 @@ export class UnknownStationError extends Error {
 }
 
 export const ROUTE_MODE_WEIGHTS: Record<
-  Exclude<RouteMode, 'PERSONAL' | 'CHEAPEST'>,
+  Exclude<RouteMode, 'PERSONAL' | 'CHEAPEST' | 'ONLY_WALK'>,
   RouteWeights
 > = {
   OPTIMAL: { congestion: 0, transferSec: 180 },
