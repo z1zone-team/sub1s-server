@@ -1,43 +1,41 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { PrismaService } from '../../infra/prisma/prisma.service';
+import { RANK_SCORE_REPOSITORY } from '../../domain/ranking/ports/IRankScoreRepository';
 import { RankingService } from './ranking.service';
 
 describe('RankingService', () => {
   let service: RankingService;
-  let mockPrisma: {
-    rankScore: { findMany: jest.Mock };
+  let mockRankScoreRepo: {
+    findLeaderboard: jest.Mock;
   };
 
   beforeEach(async () => {
-    mockPrisma = {
-      rankScore: {
-        findMany: jest.fn().mockResolvedValue([
-          {
-            userId: 'user-top',
-            totalPoints: 500,
-            totalDistanceKm: 45.2,
-            user: { nickname: '1등유저', profileImageUrl: null },
-          },
-          {
-            userId: 'user-me',
-            totalPoints: 300,
-            totalDistanceKm: 28.0,
-            user: { nickname: '나', profileImageUrl: null },
-          },
-          {
-            userId: 'user-3rd',
-            totalPoints: 100,
-            totalDistanceKm: 9.5,
-            user: { nickname: '3등유저', profileImageUrl: null },
-          },
-        ]),
-      },
+    mockRankScoreRepo = {
+      findLeaderboard: jest.fn().mockResolvedValue([
+        {
+          userId: 'user-top',
+          totalPoints: 500,
+          totalDistanceKm: 45.2,
+          user: { nickname: '1등유저', profileImageUrl: null },
+        },
+        {
+          userId: 'user-me',
+          totalPoints: 300,
+          totalDistanceKm: 28.0,
+          user: { nickname: '나', profileImageUrl: null },
+        },
+        {
+          userId: 'user-3rd',
+          totalPoints: 100,
+          totalDistanceKm: 9.5,
+          user: { nickname: '3등유저', profileImageUrl: null },
+        },
+      ]),
     };
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         RankingService,
-        { provide: PrismaService, useValue: mockPrisma },
+        { provide: RANK_SCORE_REPOSITORY, useValue: mockRankScoreRepo },
       ],
     }).compile();
 

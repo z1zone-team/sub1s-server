@@ -1,5 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '../../infra/prisma/prisma.service';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  IUserRepository,
+  USER_REPOSITORY,
+} from '../../domain/user/ports/IUserRepository';
 import { AuthUser } from '../../infra/auth/current-user.decorator';
 import { AuthSyncRequestDto } from './dto/auth-sync-request.dto';
 import { AuthSyncResponseDto } from './dto/auth-sync-response.dto';
@@ -7,39 +10,30 @@ import { UserProfileResponseDto } from './dto/user-profile-response.dto';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    @Inject(USER_REPOSITORY)
+    private readonly userRepo: IUserRepository,
+  ) {}
 
   async syncUser(
     authUser: AuthUser,
     dto?: AuthSyncRequestDto,
   ): Promise<AuthSyncResponseDto> {
-    const updateData: { nickname?: string; profileImageUrl?: string } = {};
-
-    if (dto?.nickname) {
-      updateData.nickname = dto.nickname;
-    }
-    if (dto?.profileImageUrl) {
-      updateData.profileImageUrl = dto.profileImageUrl;
-    }
-
-    let user = await this.prisma.user.findUnique({
-      where: { id: authUser.id },
-    });
+    let user = await this.userRepo.findById(authUser.id);
 
     if (!user) {
-      user = await this.prisma.user.create({
-        data: {
-          id: authUser.id,
-          clerkId: authUser.clerkId,
-          nickname: dto?.nickname || authUser.nickname,
-          profileImageUrl: dto?.profileImageUrl || authUser.profileImageUrl || null,
-        },
+      user = await this.userRepo.upsertByClerkId({
+        clerkId: authUser.clerkId,
+        nickname: dto?.nickname || authUser.nickname,
+        profileImageUrl: dto?.profileImageUrl || authUser.profileImageUrl || null,
       });
-    } else if (Object.keys(updateData).length > 0) {
-      user = await this.prisma.user.update({
-        where: { id: user.id },
-        data: updateData,
-      });
+    } else {
+      const updateData: { nickname?: string; profileImageUrl?: string } = {};
+      if (dto?.nickname) updateData.nickname = dto.nickname;
+      if (dto?.profileImageUrl) updateData.profileImageUrl = dto.profileImageUrl;
+      if (Object.keys(updateData).length > 0) {
+        user = await this.userRepo.updateUser(user.id, updateData);
+      }
     }
 
     return {
@@ -52,15 +46,7 @@ export class AuthService {
   }
 
   async getMe(authUser: AuthUser): Promise<UserProfileResponseDto> {
-    const user = await this.prisma.user.findUnique({
-      where: { id: authUser.id },
-      include: {
-        rankScores: {
-          orderBy: { updatedAt: 'desc' },
-          take: 1,
-        },
-      },
-    });
+    const user = await this.userRepo.findByIdWithLatestRank(authUser.id);
 
     if (!user) {
       throw new NotFoundException('사용자를 찾을 수 없습니다.');

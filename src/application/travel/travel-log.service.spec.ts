@@ -3,7 +3,8 @@ import { BusinessException } from '../../common/exceptions/business.exception';
 import { SubwayGraph } from '../../domain/subway/models/subway-graph';
 import { SubwayGraphService } from '../../domain/subway/services/subway-graph.service';
 import { TRACKING_REPOSITORY } from '../../domain/tracking/ports/ITrackingRepository';
-import { PrismaService } from '../../infra/prisma/prisma.service';
+import { TRAVEL_LOG_REPOSITORY } from '../../domain/travel/ports/ITravelLogRepository';
+import { USER_REPOSITORY } from '../../domain/user/ports/IUserRepository';
 import { CryptoService } from '../../infra/security/crypto.service';
 import { SubwayEventsGateway } from '../../infra/websocket/subway-events.gateway';
 import { SubwayRouteOptionDto } from '../route/dto/route-search-response.dto';
@@ -12,11 +13,14 @@ import { TravelLogService } from './travel-log.service';
 
 describe('TravelLogService', () => {
   let service: TravelLogService;
-  let mockPrisma: {
-    user: { upsert: jest.Mock };
-    rankScore: { upsert: jest.Mock };
-    travelLog: { create: jest.Mock; findMany: jest.Mock };
-    $transaction: jest.Mock;
+  let mockTravelLogRepo: {
+    saveTravelWithScores: jest.Mock;
+    findTimelineLogs: jest.Mock;
+    findStatsLogs: jest.Mock;
+    findLineMapLogs: jest.Mock;
+  };
+  let mockUserRepo: {
+    upsertPlaceholder: jest.Mock;
   };
   let mockRouteService: { search: jest.Mock };
   let mockCryptoService: { encrypt: jest.Mock };
@@ -58,18 +62,19 @@ describe('TravelLogService', () => {
   };
 
   beforeEach(async () => {
-    mockPrisma = {
-      user: { upsert: jest.fn().mockResolvedValue({}) },
-      rankScore: {
-        upsert: jest.fn().mockResolvedValue({ totalPoints: 10 }),
-      },
-      travelLog: {
-        create: jest.fn().mockResolvedValue({ id: 'log-123' }),
-        findMany: jest.fn().mockResolvedValue([]),
-      },
-      $transaction: jest
-        .fn()
-        .mockImplementation((promises) => Promise.all(promises)),
+    mockTravelLogRepo = {
+      saveTravelWithScores: jest.fn().mockResolvedValue({
+        monthlyScore: { totalPoints: 10 },
+        allScore: { totalPoints: 10 },
+        createdLog: { id: 'log-123' },
+      }),
+      findTimelineLogs: jest.fn().mockResolvedValue([]),
+      findStatsLogs: jest.fn().mockResolvedValue([]),
+      findLineMapLogs: jest.fn().mockResolvedValue([]),
+    };
+
+    mockUserRepo = {
+      upsertPlaceholder: jest.fn().mockResolvedValue({}),
     };
 
     mockRouteService = {
@@ -100,7 +105,8 @@ describe('TravelLogService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         TravelLogService,
-        { provide: PrismaService, useValue: mockPrisma },
+        { provide: TRAVEL_LOG_REPOSITORY, useValue: mockTravelLogRepo },
+        { provide: USER_REPOSITORY, useValue: mockUserRepo },
         { provide: RouteService, useValue: mockRouteService },
         { provide: CryptoService, useValue: mockCryptoService },
         { provide: SubwayGraphService, useValue: mockGraphService },
@@ -123,7 +129,8 @@ describe('TravelLogService', () => {
       expect(res.totalDistanceKm).toBe(1.0);
       expect(res.earnedPoints).toBe(10); // 1.0 km * 10 = 10 pts
       expect(mockCryptoService.encrypt).toHaveBeenCalled();
-      expect(mockPrisma.$transaction).toHaveBeenCalled();
+      expect(mockTravelLogRepo.saveTravelWithScores).toHaveBeenCalled();
+      expect(mockUserRepo.upsertPlaceholder).toHaveBeenCalledWith('user-1');
       expect(mockGateway.broadcastRankingUpdate).toHaveBeenCalled();
     });
 
@@ -155,7 +162,7 @@ describe('TravelLogService', () => {
 
   describe('getTimeline', () => {
     it('queries logs for given year and month and returns summary', async () => {
-      mockPrisma.travelLog.findMany.mockResolvedValueOnce([
+      mockTravelLogRepo.findTimelineLogs.mockResolvedValueOnce([
         {
           id: 'log-1',
           originStationId: '02_222',
@@ -181,7 +188,7 @@ describe('TravelLogService', () => {
 
   describe('getTravelStats', () => {
     it('returns aggregated stats for user logs within period', async () => {
-      mockPrisma.travelLog.findMany.mockResolvedValueOnce([
+      mockTravelLogRepo.findStatsLogs.mockResolvedValueOnce([
         {
           id: 'log-1',
           originStationId: '02_222',
@@ -219,7 +226,7 @@ describe('TravelLogService', () => {
     });
 
     it('returns zero stats when user has no travel logs', async () => {
-      mockPrisma.travelLog.findMany.mockResolvedValueOnce([]);
+      mockTravelLogRepo.findStatsLogs.mockResolvedValueOnce([]);
 
       const stats = await service.getTravelStats('user-empty', { period: 'ALL' });
 
@@ -233,10 +240,14 @@ describe('TravelLogService', () => {
 
   describe('getLineMap', () => {
     it('returns subway lines with visited status for stations', async () => {
-      mockPrisma.travelLog.findMany.mockResolvedValueOnce([
+      mockTravelLogRepo.findLineMapLogs.mockResolvedValueOnce([
         {
           originStationId: '02_222',
           destStationId: '02_221',
+          encryptedRoutePayload: null,
+          iv: null,
+          authTag: null,
+          wrappedDek: null,
         },
       ]);
 

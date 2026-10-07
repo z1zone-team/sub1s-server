@@ -12,7 +12,14 @@ import {
   ITrackingRepository,
   TRACKING_REPOSITORY,
 } from '../../domain/tracking/ports/ITrackingRepository';
-import { PrismaService } from '../../infra/prisma/prisma.service';
+import {
+  ITravelLogRepository,
+  TRAVEL_LOG_REPOSITORY,
+} from '../../domain/travel/ports/ITravelLogRepository';
+import {
+  IUserRepository,
+  USER_REPOSITORY,
+} from '../../domain/user/ports/IUserRepository';
 import { CryptoService } from '../../infra/security/crypto.service';
 import { SubwayEventsGateway } from '../../infra/websocket/subway-events.gateway';
 import { RouteService } from '../route/route.service';
@@ -34,7 +41,10 @@ export class TravelLogService {
   private readonly logger = new Logger(TravelLogService.name);
 
   constructor(
-    private readonly prisma: PrismaService,
+    @Inject(TRAVEL_LOG_REPOSITORY)
+    private readonly travelLogRepo: ITravelLogRepository,
+    @Inject(USER_REPOSITORY)
+    private readonly userRepo: IUserRepository,
     private readonly routeService: RouteService,
     private readonly cryptoService: CryptoService,
     private readonly graphService: SubwayGraphService,
@@ -115,75 +125,20 @@ export class TravelLogService {
     const monthlyKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
 
     // Upsert User to maintain foreign key integrity
-    await this.prisma.user.upsert({
-      where: { id: userId },
-      update: {},
-      create: {
-        id: userId,
-        clerkId: `clerk_${userId}`,
-        nickname: '테스트유저',
-      },
-    });
+    await this.userRepo.upsertPlaceholder(userId);
 
     // Atomic increment of Monthly and All-time rank scores + log creation
-    const [monthlyScore, allScore, createdLog] = await this.prisma.$transaction(
-      [
-        this.prisma.rankScore.upsert({
-          where: {
-            userId_periodType_periodKey: {
-              userId,
-              periodType: 'MONTHLY',
-              periodKey: monthlyKey,
-            },
-          },
-          update: {
-            totalPoints: { increment: earnedPoints },
-            totalDistanceKm: { increment: totalDistanceKm },
-          },
-          create: {
-            userId,
-            periodType: 'MONTHLY',
-            periodKey: monthlyKey,
-            totalPoints: earnedPoints,
-            totalDistanceKm,
-          },
-        }),
-        this.prisma.rankScore.upsert({
-          where: {
-            userId_periodType_periodKey: {
-              userId,
-              periodType: 'ALL',
-              periodKey: 'ALL',
-            },
-          },
-          update: {
-            totalPoints: { increment: earnedPoints },
-            totalDistanceKm: { increment: totalDistanceKm },
-          },
-          create: {
-            userId,
-            periodType: 'ALL',
-            periodKey: 'ALL',
-            totalPoints: earnedPoints,
-            totalDistanceKm,
-          },
-        }),
-        this.prisma.travelLog.create({
-          data: {
-            userId,
-            originStationId: dto.originStationId,
-            destStationId: dto.destStationId,
-            totalDistanceKm,
-            transferCount,
-            earnedPoints,
-            encryptedRoutePayload: encrypted.ciphertext,
-            iv: encrypted.iv,
-            authTag: encrypted.tag,
-            wrappedDek: encrypted.wrappedDek,
-          },
-        }),
-      ],
-    );
+    const { monthlyScore, allScore, createdLog } =
+      await this.travelLogRepo.saveTravelWithScores({
+        userId,
+        originStationId: dto.originStationId,
+        destStationId: dto.destStationId,
+        totalDistanceKm,
+        transferCount,
+        earnedPoints,
+        monthlyKey,
+        encrypted,
+      });
 
     // Broadcast ranking update via WebSocket gateway
     try {
@@ -212,20 +167,11 @@ export class TravelLogService {
     const startOfMonth = new Date(query.year, query.month - 1, 1);
     const endOfMonth = new Date(query.year, query.month, 1);
 
-    const logs = await this.prisma.travelLog.findMany({
-      where: {
-        userId,
-        createdAt: {
-          gte: startOfMonth,
-          lt: endOfMonth,
-        },
-      },
-      orderBy: { createdAt: 'desc' },
-      include: {
-        originStation: true,
-        destStation: true,
-      },
-    });
+    const logs = await this.travelLogRepo.findTimelineLogs(
+      userId,
+      startOfMonth,
+      endOfMonth,
+    );
 
     const totalDistanceKm = logs.reduce((sum, l) => sum + l.totalDistanceKm, 0);
 
@@ -253,17 +199,7 @@ export class TravelLogService {
     const targetUserId = query.userId ?? currentUserId;
     const startDate = this.calculateStartDate(query.period);
 
-    const logs = await this.prisma.travelLog.findMany({
-      where: {
-        userId: targetUserId,
-        ...(startDate ? { createdAt: { gte: startDate } } : {}),
-      },
-      include: {
-        originStation: true,
-        destStation: true,
-      },
-      orderBy: { createdAt: 'desc' },
-    });
+    const logs = await this.travelLogRepo.findStatsLogs(targetUserId, startDate);
 
     const totalDistanceRaw = logs.reduce((sum, l) => sum + l.totalDistanceKm, 0);
     const totalDistanceKm = Math.round(totalDistanceRaw * 10) / 10;
@@ -373,20 +309,7 @@ export class TravelLogService {
     const targetUserId = query.userId ?? currentUserId;
     const startDate = this.calculateStartDate(query.period);
 
-    const logs = await this.prisma.travelLog.findMany({
-      where: {
-        userId: targetUserId,
-        ...(startDate ? { createdAt: { gte: startDate } } : {}),
-      },
-      select: {
-        originStationId: true,
-        destStationId: true,
-        encryptedRoutePayload: true,
-        iv: true,
-        authTag: true,
-        wrappedDek: true,
-      },
-    });
+    const logs = await this.travelLogRepo.findLineMapLogs(targetUserId, startDate);
 
     const visitedSet = new Set<string>();
     for (const l of logs) {

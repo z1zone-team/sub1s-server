@@ -1,7 +1,7 @@
 import { ExecutionContext, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ClerkAuthGuard } from './clerk-auth.guard';
-import { PrismaService } from '../prisma/prisma.service';
+import { IUserRepository } from '../../domain/user/ports/IUserRepository';
 import * as clerkBackend from '@clerk/backend';
 
 jest.mock('@clerk/backend', () => ({
@@ -10,22 +10,24 @@ jest.mock('@clerk/backend', () => ({
 
 describe('ClerkAuthGuard', () => {
   let guard: ClerkAuthGuard;
-  let prisma: jest.Mocked<PrismaService>;
+  let userRepo: jest.Mocked<IUserRepository>;
   let configService: jest.Mocked<ConfigService>;
 
   beforeEach(() => {
-    prisma = {
-      user: {
-        findUnique: jest.fn(),
-        create: jest.fn(),
-      },
-    } as unknown as jest.Mocked<PrismaService>;
+    userRepo = {
+      findById: jest.fn(),
+      findByIdWithLatestRank: jest.fn(),
+      findByClerkId: jest.fn(),
+      upsertByClerkId: jest.fn(),
+      updateUser: jest.fn(),
+      upsertPlaceholder: jest.fn(),
+    };
 
     configService = {
       get: jest.fn().mockReturnValue('sk_test_mock_secret'),
     } as unknown as jest.Mocked<ConfigService>;
 
-    guard = new ClerkAuthGuard(prisma, configService);
+    guard = new ClerkAuthGuard(userRepo, configService);
     jest.clearAllMocks();
   });
 
@@ -67,13 +69,15 @@ describe('ClerkAuthGuard', () => {
       sub: 'user_clerk_real_123',
     });
 
-    (prisma.user.findUnique as jest.Mock).mockResolvedValueOnce(null);
-    (prisma.user.create as jest.Mock).mockResolvedValueOnce({
+    userRepo.findByClerkId.mockResolvedValueOnce(null);
+    userRepo.upsertByClerkId.mockResolvedValueOnce({
       id: 'uuid-1234',
       clerkId: 'user_clerk_real_123',
       nickname: '탐험가_al_123',
       profileImageUrl: null,
       isRankingPublic: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
     });
 
     const { context, request } = createMockContext('Bearer real_clerk_jwt_token');
@@ -83,7 +87,7 @@ describe('ClerkAuthGuard', () => {
     expect(clerkBackend.verifyToken).toHaveBeenCalledWith('real_clerk_jwt_token', {
       secretKey: 'sk_test_mock_secret',
     });
-    expect(prisma.user.create).toHaveBeenCalled();
+    expect(userRepo.upsertByClerkId).toHaveBeenCalled();
     expect(request.user.id).toBe('uuid-1234');
     expect(request.user.clerkId).toBe('user_clerk_real_123');
   });
