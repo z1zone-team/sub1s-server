@@ -3,7 +3,9 @@ FROM node:22-alpine AS builder
 
 WORKDIR /app
 
-RUN corepack enable && corepack prepare pnpm@9 --activate
+RUN apk add --no-cache openssl && \
+    corepack enable && \
+    corepack prepare pnpm@9 --activate
 
 # 패키지 매니저 및 Prisma 정의 파일 복사
 COPY package.json pnpm-lock.yaml ./
@@ -24,7 +26,9 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 
-RUN corepack enable && corepack prepare pnpm@9 --activate
+RUN apk add --no-cache openssl && \
+    corepack enable && \
+    corepack prepare pnpm@9 --activate
 
 # 프로덕션 실행에 필요한 설정 파일 복사
 COPY package.json pnpm-lock.yaml ./
