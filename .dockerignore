@@ -1,5 +1,4 @@
 node_modules
-dist
 data-raw
 npm-debug.log
 yarn-error.log
