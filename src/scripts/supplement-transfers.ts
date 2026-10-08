@@ -1,7 +1,8 @@
-import { writeFileSync } from 'fs';
+import { existsSync, writeFileSync } from 'fs';
 import { join } from 'path';
 import {
   OUT_DIR,
+  RAW_DIR,
   StationRecord,
   loadStations,
   readJson,
@@ -16,7 +17,16 @@ function main(): void {
   const stations = loadStations();
   const byId = new Map<string, StationRecord>(stations.map((s) => [s.id, s]));
 
-  const { transfers, added } = supplementTransfers(stations, existing);
+  const stairsPath = join(RAW_DIR, 'kric-stairs.json');
+  const stairsMap: Record<string, { doors?: string[] }> = existsSync(stairsPath)
+    ? readJson(stairsPath)
+    : {};
+
+  const { transfers, added } = supplementTransfers(
+    stations,
+    existing,
+    stairsMap,
+  );
   writeFileSync(path, JSON.stringify(transfers, null, 2) + '\n');
 
   const estimated = transfers.filter((t) => t.isEstimated).length;

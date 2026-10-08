@@ -1,9 +1,5 @@
 export type RouteMode =
-  | 'OPTIMAL'
-  | 'COMFORTABLE'
-  | 'PERSONAL'
-  | 'CHEAPEST'
-  | 'ONLY_WALK';
+  'OPTIMAL' | 'COMFORTABLE' | 'PERSONAL' | 'CHEAPEST' | 'ONLY_WALK';
 
 export interface RouteWeights {
   // congestion avoidance weight (wc)
@@ -48,6 +44,7 @@ export interface RouteTransfer {
   toStationId: string;
   walkingDurationSec: number;
   isEstimated?: boolean;
+  recommendedDoors?: readonly string[];
 }
 
 export interface RouteResult {

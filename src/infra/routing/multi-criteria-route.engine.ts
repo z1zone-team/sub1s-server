@@ -404,6 +404,9 @@ export abstract class MultiCriteriaRouteEngine implements ISubwayRouteEngine {
         if (transfer.isEstimated) {
           transferEntry.isEstimated = true;
         }
+        if (transfer.recommendedDoors && transfer.recommendedDoors.length > 0) {
+          transferEntry.recommendedDoors = transfer.recommendedDoors;
+        }
         transfers.push(transferEntry);
         totalDurationSec += transfer.walkingDurationSec;
         stationIds.push(toId);

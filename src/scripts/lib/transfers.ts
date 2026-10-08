@@ -5,6 +5,9 @@ export interface TransferRow {
   toStationId: string;
   walkingDurationSec: number;
   isEstimated?: boolean;
+  recommendedDoors?: string[];
+  hasStairs?: boolean;
+  hasEscalator?: boolean;
 }
 
 export interface TransferNode {
@@ -86,10 +89,14 @@ function clusters(nodes: TransferNode[]): TransferNode[][] {
 export function supplementTransfers(
   nodes: TransferNode[],
   existing: TransferRow[],
+  stairsMap?: Record<string, { doors?: string[] }>,
 ): { transfers: TransferRow[]; added: AddedTransfer[] } {
   const rows = existing.map((row) => ({
     ...row,
     isEstimated: row.isEstimated ?? false,
+    ...(stairsMap && row.recommendedDoors === undefined
+      ? { recommendedDoors: stairsMap[row.fromStationId]?.doors ?? [] }
+      : {}),
   }));
   const linked = new Set(
     rows.map((row) => `${row.fromStationId}>${row.toStationId}`),
@@ -107,18 +114,22 @@ export function supplementTransfers(
         }
         const distanceM = distanceKm(a.lat, a.lng, b.lat, b.lng) * 1000;
         const walkingDurationSec = estimateWalkingSec(distanceM);
+        const aDoors = stairsMap?.[a.id]?.doors;
+        const bDoors = stairsMap?.[b.id]?.doors;
         rows.push(
           {
             fromStationId: a.id,
             toStationId: b.id,
             walkingDurationSec,
             isEstimated: true,
+            ...(stairsMap ? { recommendedDoors: aDoors ?? [] } : {}),
           },
           {
             fromStationId: b.id,
             toStationId: a.id,
             walkingDurationSec,
             isEstimated: true,
+            ...(stairsMap ? { recommendedDoors: bDoors ?? [] } : {}),
           },
         );
         added.push({

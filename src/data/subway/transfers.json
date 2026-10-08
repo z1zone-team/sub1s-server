@@ -3,2166 +3,3759 @@
     "fromStationId": "01_111",
     "toStationId": "UJ_U111",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "3-3",
+      "8-2"
+    ]
   },
   {
     "fromStationId": "01_113",
     "toStationId": "07_710",
     "walkingDurationSec": 37,
+    "recommendedDoors": [
+      "1-3",
+      "10-2"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "01_116",
     "toStationId": "04_412",
     "walkingDurationSec": 70,
+    "recommendedDoors": [],
     "isEstimated": false
   },
   {
     "fromStationId": "01_119",
     "toStationId": "GC_P116",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "1-3",
+      "10-3",
+      "10-4"
+    ]
   },
   {
     "fromStationId": "01_120",
     "toStationId": "06_644",
     "walkingDurationSec": 104,
+    "recommendedDoors": [
+      "4-1",
+      "7-1"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "01_123",
     "toStationId": "GC_P118",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "7-2"
+    ]
   },
   {
     "fromStationId": "01_123",
     "toStationId": "GJ_K118",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "7-2"
+    ]
   },
   {
     "fromStationId": "01_124",
     "toStationId": "GC_P117",
     "walkingDurationSec": 169,
+    "recommendedDoors": [
+      "1-1",
+      "4-1",
+      "6-1",
+      "8-1",
+      "10-4"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "01_124",
     "toStationId": "GJ_K117",
     "walkingDurationSec": 138,
+    "recommendedDoors": [
+      "1-1",
+      "4-1",
+      "6-1",
+      "8-1",
+      "10-4"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "01_124",
     "toStationId": "SD_K209",
     "walkingDurationSec": 150,
+    "recommendedDoors": [
+      "1-1",
+      "4-1",
+      "6-1",
+      "8-1",
+      "10-4"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "01_126",
     "toStationId": "02_211-4",
     "walkingDurationSec": 133,
+    "recommendedDoors": [
+      "2-1",
+      "3-1",
+      "4-4",
+      "7-1",
+      "8-4",
+      "9-4"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "01_126",
     "toStationId": "UI_953",
     "walkingDurationSec": 108,
+    "recommendedDoors": [
+      "2-1",
+      "3-1",
+      "4-4",
+      "7-1",
+      "8-4",
+      "9-4"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "01_127",
     "toStationId": "06_636",
     "walkingDurationSec": 80,
+    "recommendedDoors": [
+      "2-3",
+      "5-4",
+      "6-1",
+      "9-1"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "01_128",
     "toStationId": "04_421",
     "walkingDurationSec": 162,
+    "recommendedDoors": [
+      "1-3",
+      "2-3",
+      "2-4",
+      "3-4",
+      "4-1",
+      "5-2",
+      "6-3",
+      "7-4",
+      "8-1",
+      "9-1",
+      "9-2",
+      "9-4"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "01_130",
     "toStationId": "03_329",
     "walkingDurationSec": 98,
+    "recommendedDoors": [
+      "2-2",
+      "4-2",
+      "7-3",
+      "9-3"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "01_130",
     "toStationId": "05_534",
     "walkingDurationSec": 260,
+    "recommendedDoors": [
+      "2-2",
+      "4-2",
+      "7-3",
+      "9-3"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "01_132",
     "toStationId": "02_201",
     "walkingDurationSec": 84,
+    "recommendedDoors": [
+      "2-2",
+      "4-1",
+      "5-4",
+      "6-1",
+      "7-4",
+      "9-3"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "01_133",
     "toStationId": "04_426",
     "walkingDurationSec": 133,
+    "recommendedDoors": [
+      "1-2",
+      "1-3",
+      "3-3",
+      "4-2",
+      "7-4",
+      "8-2",
+      "10-3",
+      "10-4"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "01_133",
     "toStationId": "AR_A01",
     "walkingDurationSec": 258,
+    "recommendedDoors": [
+      "1-2",
+      "1-3",
+      "3-3",
+      "4-2",
+      "7-4",
+      "8-2",
+      "10-3",
+      "10-4"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "01_133",
     "toStationId": "GA_X106",
     "walkingDurationSec": 78,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "1-2",
+      "1-3",
+      "3-3",
+      "4-2",
+      "7-4",
+      "8-2",
+      "10-3",
+      "10-4"
+    ]
   },
   {
     "fromStationId": "01_133",
     "toStationId": "GJ_P313",
     "walkingDurationSec": 137,
+    "recommendedDoors": [
+      "1-2",
+      "1-3",
+      "3-3",
+      "4-2",
+      "7-4",
+      "8-2",
+      "10-3",
+      "10-4"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "01_135",
     "toStationId": "GJ_K110",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "1-1",
+      "2-1",
+      "2-4",
+      "3-1",
+      "4-4",
+      "6-1",
+      "6-3",
+      "9-1",
+      "9-2",
+      "9-4",
+      "10-2"
+    ]
   },
   {
     "fromStationId": "01_136",
     "toStationId": "09_917",
     "walkingDurationSec": 138,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "1-4",
+      "10-4"
+    ]
   },
   {
     "fromStationId": "01_137",
     "toStationId": "SL_S402",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "4-3",
+      "5-1",
+      "6-4",
+      "7-2"
+    ]
   },
   {
     "fromStationId": "01_138",
     "toStationId": "05_525",
     "walkingDurationSec": 202,
+    "recommendedDoors": [
+      "1-1",
+      "10-4"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "01_140",
     "toStationId": "02_234",
     "walkingDurationSec": 68,
+    "recommendedDoors": [],
     "isEstimated": false
   },
   {
     "fromStationId": "01_145",
     "toStationId": "07_750",
     "walkingDurationSec": 85,
+    "recommendedDoors": [
+      "2-1",
+      "3-3",
+      "7-4",
+      "9-2"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "01_147",
     "toStationId": "SH_S16",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "3-1"
+    ]
   },
   {
     "fromStationId": "01_152",
     "toStationId": "I1_I120",
     "walkingDurationSec": 127,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "4-2"
+    ]
   },
   {
     "fromStationId": "01_156",
     "toStationId": "I2_I218",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "3-3",
+      "5-1",
+      "6-4",
+      "8-2"
+    ]
   },
   {
     "fromStationId": "01_161",
     "toStationId": "SD_K272",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "1-1"
+    ]
   },
   {
     "fromStationId": "01_P142",
     "toStationId": "07_746",
     "walkingDurationSec": 92,
+    "recommendedDoors": [
+      "4-4",
+      "10-1"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "01_P149",
     "toStationId": "04_443",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "2-1",
+      "2-3",
+      "4-2",
+      "4-4",
+      "7-1",
+      "7-3",
+      "9-2",
+      "9-4"
+    ]
   },
   {
     "fromStationId": "01_P155",
     "toStationId": "SD_K245",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "1-4",
+      "2-4",
+      "8-2",
+      "9-4"
+    ]
   },
   {
     "fromStationId": "02_201",
     "toStationId": "01_132",
     "walkingDurationSec": 84,
+    "recommendedDoors": [
+      "1-1",
+      "2-1",
+      "2-2",
+      "4-1",
+      "4-2",
+      "4-4",
+      "7-1",
+      "7-3",
+      "7-4",
+      "9-3",
+      "9-4",
+      "10-4"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "02_203",
     "toStationId": "03_330",
     "walkingDurationSec": 124,
+    "recommendedDoors": [
+      "2-2",
+      "4-2",
+      "7-2",
+      "7-3",
+      "9-3"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "02_204",
     "toStationId": "05_535",
     "walkingDurationSec": 64,
+    "recommendedDoors": [
+      "2-3",
+      "2-4",
+      "4-1",
+      "7-4",
+      "9-1",
+      "9-2"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "02_205",
     "toStationId": "04_422",
     "walkingDurationSec": 38,
+    "recommendedDoors": [
+      "2-2",
+      "3-3",
+      "4-2",
+      "5-3",
+      "6-2",
+      "7-3",
+      "8-2",
+      "9-3"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "02_205",
     "toStationId": "05_536",
     "walkingDurationSec": 195,
+    "recommendedDoors": [
+      "2-2",
+      "3-3",
+      "4-2",
+      "5-3",
+      "6-2",
+      "7-3",
+      "8-2",
+      "9-3"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "02_206",
     "toStationId": "06_635",
     "walkingDurationSec": 202,
+    "recommendedDoors": [
+      "2-4",
+      "3-1",
+      "4-2",
+      "4-3",
+      "7-2",
+      "7-3",
+      "8-4",
+      "9-1"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "02_208",
     "toStationId": "05_540",
     "walkingDurationSec": 72,
+    "recommendedDoors": [
+      "2-2",
+      "3-1",
+      "4-1",
+      "4-4",
+      "8-4"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "02_208",
     "toStationId": "GJ_K116",
     "walkingDurationSec": 42,
+    "recommendedDoors": [
+      "2-2",
+      "3-1",
+      "4-1",
+      "4-4",
+      "8-4"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "02_208",
     "toStationId": "SD_K210",
     "walkingDurationSec": 83,
+    "recommendedDoors": [
+      "2-2",
+      "3-1",
+      "4-1",
+      "4-4",
+      "8-4"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "02_211-4",
     "toStationId": "01_126",
     "walkingDurationSec": 133,
+    "recommendedDoors": [],
     "isEstimated": false
   },
   {
     "fromStationId": "02_211-4",
     "toStationId": "UI_953",
     "walkingDurationSec": 228,
+    "recommendedDoors": [],
     "isEstimated": false
   },
   {
     "fromStationId": "02_211",
     "toStationId": "02_211",
     "walkingDurationSec": 19,
+    "recommendedDoors": [
+      "1-1",
+      "10-4"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "02_212",
     "toStationId": "07_727",
     "walkingDurationSec": 64,
+    "recommendedDoors": [
+      "3-2",
+      "4-3",
+      "5-2",
+      "6-3",
+      "8-3"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "02_216",
     "toStationId": "08_814",
     "walkingDurationSec": 158,
+    "recommendedDoors": [
+      "2-2",
+      "4-1",
+      "5-4",
+      "7-2",
+      "7-3",
+      "9-1"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "02_218",
     "toStationId": "09_930",
     "walkingDurationSec": 78,
+    "recommendedDoors": [
+      "2-1",
+      "3-4",
+      "4-1",
+      "5-4",
+      "6-1",
+      "7-3",
+      "8-1",
+      "9-3"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "02_220",
     "toStationId": "SD_K215",
     "walkingDurationSec": 68,
+    "recommendedDoors": [
+      "2-4",
+      "3-1",
+      "4-4",
+      "7-1",
+      "8-4",
+      "9-1"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "02_222",
     "toStationId": "SB_D7",
     "walkingDurationSec": 178,
+    "recommendedDoors": [
+      "2-4",
+      "4-2",
+      "4-3",
+      "7-3",
+      "9-1",
+      "9-2"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "02_223",
     "toStationId": "03_340",
     "walkingDurationSec": 63,
+    "recommendedDoors": [
+      "1-4",
+      "2-1",
+      "3-3",
+      "3-4",
+      "8-1",
+      "8-2",
+      "9-4",
+      "10-1"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "02_226",
     "toStationId": "04_433",
     "walkingDurationSec": 62,
+    "recommendedDoors": [
+      "3-3",
+      "8-1"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "02_230",
     "toStationId": "SL_S408",
     "walkingDurationSec": 73,
+    "recommendedDoors": [
+      "2-3",
+      "3-4",
+      "4-2",
+      "5-3",
+      "6-2",
+      "7-3",
+      "8-1",
+      "9-2"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "02_233",
     "toStationId": "07_744",
     "walkingDurationSec": 230,
+    "recommendedDoors": [
+      "2-1",
+      "4-2",
+      "7-3",
+      "9-4",
+      "10-1"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "02_234-4",
     "toStationId": "05_518",
     "walkingDurationSec": 14,
+    "recommendedDoors": [],
     "isEstimated": false
   },
   {
     "fromStationId": "02_234",
     "toStationId": "01_140",
     "walkingDurationSec": 68,
+    "recommendedDoors": [
+      "2-2",
+      "4-2",
+      "4-4",
+      "6-4",
+      "7-3",
+      "9-2",
+      "9-3"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "02_234",
     "toStationId": "02_234",
     "walkingDurationSec": 68,
+    "recommendedDoors": [
+      "2-2",
+      "4-2",
+      "4-4",
+      "6-4",
+      "7-3",
+      "9-2",
+      "9-3"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "02_236",
     "toStationId": "05_523",
     "walkingDurationSec": 92,
+    "recommendedDoors": [
+      "2-3",
+      "2-4",
+      "4-2",
+      "7-4",
+      "9-3"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "02_237",
     "toStationId": "09_913",
     "walkingDurationSec": 88,
+    "recommendedDoors": [
+      "3-1",
+      "4-4",
+      "7-1",
+      "8-4"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "02_238",
     "toStationId": "06_622",
     "walkingDurationSec": 68,
+    "recommendedDoors": [
+      "2-4",
+      "4-1",
+      "4-3",
+      "7-1",
+      "7-4",
+      "8-4"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "02_239",
     "toStationId": "AR_A03",
     "walkingDurationSec": 296,
+    "recommendedDoors": [
+      "2-2",
+      "3-2",
+      "5-1",
+      "6-2",
+      "8-2",
+      "9-2"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "02_239",
     "toStationId": "GJ_K314",
     "walkingDurationSec": 254,
+    "recommendedDoors": [
+      "2-2",
+      "3-2",
+      "5-1",
+      "6-2",
+      "8-2",
+      "9-2"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "02_243",
     "toStationId": "05_531",
     "walkingDurationSec": 177,
+    "recommendedDoors": [
+      "2-1",
+      "2-4",
+      "3-4",
+      "8-1",
+      "9-1",
+      "9-4"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "03_314",
     "toStationId": "GA_X103",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "2-4",
+      "4-3",
+      "7-1",
+      "8-4"
+    ]
   },
   {
     "fromStationId": "03_314",
     "toStationId": "GJ_K322",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "2-4",
+      "4-3",
+      "7-1",
+      "8-4"
+    ]
   },
   {
     "fromStationId": "03_314",
     "toStationId": "SH_S11",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "2-4",
+      "4-3",
+      "7-1",
+      "8-4"
+    ]
   },
   {
     "fromStationId": "03_321",
     "toStationId": "06_614",
     "walkingDurationSec": 151,
+    "recommendedDoors": [
+      "1-3",
+      "2-1",
+      "4-4",
+      "5-1",
+      "6-3",
+      "6-4",
+      "9-3",
+      "10-1"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "03_321",
     "toStationId": "GA_X105",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "1-3",
+      "2-1",
+      "4-4",
+      "5-1",
+      "6-3",
+      "6-4",
+      "9-3",
+      "10-1"
+    ]
   },
   {
     "fromStationId": "03_322",
     "toStationId": "06_612",
     "walkingDurationSec": 83,
+    "recommendedDoors": [
+      "2-3",
+      "2-4",
+      "4-3",
+      "4-4",
+      "7-1",
+      "7-2",
+      "9-1",
+      "9-2"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "03_329",
     "toStationId": "01_130",
     "walkingDurationSec": 98,
+    "recommendedDoors": [
+      "2-3",
+      "2-4",
+      "4-2",
+      "4-3",
+      "7-2",
+      "7-3",
+      "9-1",
+      "9-2"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "03_329",
     "toStationId": "05_534",
     "walkingDurationSec": 98,
+    "recommendedDoors": [
+      "2-3",
+      "2-4",
+      "4-2",
+      "4-3",
+      "7-2",
+      "7-3",
+      "9-1",
+      "9-2"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "03_330",
     "toStationId": "02_203",
     "walkingDurationSec": 124,
+    "recommendedDoors": [
+      "2-2",
+      "4-2",
+      "4-4",
+      "7-1",
+      "7-2",
+      "9-2"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "03_331",
     "toStationId": "04_423",
     "walkingDurationSec": 14,
+    "recommendedDoors": [
+      "4-4",
+      "5-3",
+      "6-3",
+      "8-4"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "03_333",
     "toStationId": "06_633",
     "walkingDurationSec": 108,
+    "recommendedDoors": [
+      "2-4",
+      "4-4",
+      "7-1",
+      "9-1"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "03_335",
     "toStationId": "GJ_K114",
     "walkingDurationSec": 129,
+    "recommendedDoors": [
+      "1-4",
+      "4-1",
+      "7-3",
+      "9-4",
+      "10-2"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "03_337",
     "toStationId": "SB_D4",
     "walkingDurationSec": 64,
+    "recommendedDoors": [
+      "2-2",
+      "2-3",
+      "4-2",
+      "7-2",
+      "7-3",
+      "9-2"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "03_339",
     "toStationId": "07_734",
     "walkingDurationSec": 141,
+    "recommendedDoors": [],
     "isEstimated": false
   },
   {
     "fromStationId": "03_339",
     "toStationId": "09_923",
     "walkingDurationSec": 129,
+    "recommendedDoors": [],
     "isEstimated": false
   },
   {
     "fromStationId": "03_340",
     "toStationId": "02_223",
     "walkingDurationSec": 63,
+    "recommendedDoors": [
+      "2-1",
+      "4-1",
+      "7-4",
+      "9-4"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "03_342",
     "toStationId": "SB_D8",
     "walkingDurationSec": 78,
+    "recommendedDoors": [
+      "1-4",
+      "2-1",
+      "3-3",
+      "3-4",
+      "7-4",
+      "8-1",
+      "9-3",
+      "9-4"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "03_344",
     "toStationId": "SD_K217",
     "walkingDurationSec": 65,
+    "recommendedDoors": [
+      "4-2",
+      "7-3"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "03_349",
     "toStationId": "GA_X108",
     "walkingDurationSec": 96,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "2-3",
+      "4-3",
+      "7-2",
+      "9-3"
+    ]
   },
   {
     "fromStationId": "03_349",
     "toStationId": "SD_K221",
     "walkingDurationSec": 77,
+    "recommendedDoors": [
+      "2-3",
+      "4-3",
+      "7-2",
+      "9-3"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "03_350",
     "toStationId": "08_817",
     "walkingDurationSec": 29,
+    "recommendedDoors": [
+      "1-4",
+      "10-1"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "03_352",
     "toStationId": "05_P552",
     "walkingDurationSec": 54,
+    "recommendedDoors": [
+      "4-4"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "04_411",
     "toStationId": "07_713",
     "walkingDurationSec": 232,
+    "recommendedDoors": [
+      "1-1",
+      "2-1",
+      "4-1",
+      "4-2",
+      "7-3",
+      "9-3",
+      "10-4"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "04_412",
     "toStationId": "01_116",
     "walkingDurationSec": 70,
+    "recommendedDoors": [
+      "2-2",
+      "3-4",
+      "4-2",
+      "7-3",
+      "8-1",
+      "9-3"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "04_418",
     "toStationId": "UI_951",
     "walkingDurationSec": 6,
+    "recommendedDoors": [
+      "2-4",
+      "4-4",
+      "7-1",
+      "8-4",
+      "9-1"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "04_421",
     "toStationId": "01_128",
     "walkingDurationSec": 162,
+    "recommendedDoors": [
+      "5-3",
+      "6-1"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "04_422",
     "toStationId": "02_205",
     "walkingDurationSec": 38,
+    "recommendedDoors": [
+      "1-2",
+      "10-3"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "04_422",
     "toStationId": "05_536",
     "walkingDurationSec": 89,
+    "recommendedDoors": [
+      "1-2",
+      "10-3"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "04_423",
     "toStationId": "03_331",
     "walkingDurationSec": 14,
+    "recommendedDoors": [
+      "1-4",
+      "2-3",
+      "9-1",
+      "9-4"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "04_426",
     "toStationId": "01_133",
     "walkingDurationSec": 133,
+    "recommendedDoors": [
+      "1-4",
+      "2-1",
+      "3-4",
+      "4-1",
+      "7-4",
+      "9-4",
+      "10-1"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "04_426",
     "toStationId": "AR_A01",
     "walkingDurationSec": 187,
+    "recommendedDoors": [
+      "1-4",
+      "2-1",
+      "3-4",
+      "4-1",
+      "7-4",
+      "9-4",
+      "10-1"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "04_426",
     "toStationId": "GA_X106",
     "walkingDurationSec": 269,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "1-4",
+      "2-1",
+      "3-4",
+      "4-1",
+      "7-4",
+      "9-4",
+      "10-1"
+    ]
   },
   {
     "fromStationId": "04_426",
     "toStationId": "GJ_P313",
     "walkingDurationSec": 269,
+    "recommendedDoors": [
+      "1-4",
+      "2-1",
+      "3-4",
+      "4-1",
+      "7-4",
+      "9-4",
+      "10-1"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "04_428",
     "toStationId": "06_628",
     "walkingDurationSec": 129,
+    "recommendedDoors": [
+      "2-1",
+      "2-3",
+      "4-2",
+      "4-3",
+      "7-2",
+      "7-3",
+      "9-2",
+      "9-3"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "04_430",
     "toStationId": "GJ_K111",
     "walkingDurationSec": 65,
+    "recommendedDoors": [
+      "2-3",
+      "2-4",
+      "4-3",
+      "4-4",
+      "7-1",
+      "7-2",
+      "9-1",
+      "9-2"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "04_431",
     "toStationId": "09_920",
     "walkingDurationSec": 204,
+    "recommendedDoors": [
+      "2-4",
+      "5-2",
+      "5-4",
+      "6-3",
+      "9-1"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "04_432",
     "toStationId": "07_736",
     "walkingDurationSec": 143,
+    "recommendedDoors": [
+      "2-2",
+      "2-3",
+      "4-1",
+      "4-2",
+      "7-3",
+      "7-4",
+      "9-2"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "04_433",
     "toStationId": "02_226",
     "walkingDurationSec": 62,
+    "recommendedDoors": [
+      "1-1",
+      "4-2",
+      "5-2",
+      "6-3",
+      "7-3",
+      "10-4"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "04_443",
     "toStationId": "01_P149",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "2-1",
+      "2-3",
+      "4-2",
+      "4-4",
+      "7-1",
+      "7-3",
+      "9-2",
+      "9-4"
+    ]
   },
   {
     "fromStationId": "04_449",
     "toStationId": "SD_K251",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "4-1",
+      "7-4"
+    ]
   },
   {
     "fromStationId": "04_450",
     "toStationId": "SD_K252",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "4-4",
+      "7-1"
+    ]
   },
   {
     "fromStationId": "04_451",
     "toStationId": "SD_K253",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "4-2",
+      "7-3"
+    ]
   },
   {
     "fromStationId": "04_452",
     "toStationId": "SD_K254",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "5-3",
+      "6-2",
+      "6-4",
+      "7-3"
+    ]
   },
   {
     "fromStationId": "04_452",
     "toStationId": "SH_S26",
     "walkingDurationSec": 190,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "5-3",
+      "6-2",
+      "6-4",
+      "7-3"
+    ]
   },
   {
     "fromStationId": "04_453",
     "toStationId": "SD_K255",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "4-3",
+      "7-2"
+    ]
   },
   {
     "fromStationId": "04_454",
     "toStationId": "SD_K256",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "4-1",
+      "4-4",
+      "7-4",
+      "8-1"
+    ]
   },
   {
     "fromStationId": "04_455",
     "toStationId": "SD_K257",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "3-4",
+      "5-1",
+      "6-4",
+      "8-1"
+    ]
   },
   {
     "fromStationId": "04_456",
     "toStationId": "SD_K258",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "2-4",
+      "5-4",
+      "6-1",
+      "8-1",
+      "9-1"
+    ]
   },
   {
     "fromStationId": "05_512",
     "toStationId": "09_902",
     "walkingDurationSec": 88,
+    "recommendedDoors": [
+      "3-4",
+      "6-1"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "05_512",
     "toStationId": "AR_A05",
     "walkingDurationSec": 102,
+    "recommendedDoors": [
+      "3-4",
+      "6-1"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "05_512",
     "toStationId": "GM_699",
     "walkingDurationSec": 167,
+    "recommendedDoors": [
+      "3-4",
+      "6-1"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "05_512",
     "toStationId": "SH_S13",
     "walkingDurationSec": 83,
+    "recommendedDoors": [
+      "3-4",
+      "6-1"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "05_518",
     "toStationId": "02_234-4",
     "walkingDurationSec": 14,
+    "recommendedDoors": [
+      "1-1",
+      "8-4"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "05_523",
     "toStationId": "02_236",
     "walkingDurationSec": 92,
+    "recommendedDoors": [
+      "2-3",
+      "2-4",
+      "4-4",
+      "5-1",
+      "7-1",
+      "7-2"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "05_525",
     "toStationId": "01_138",
     "walkingDurationSec": 202,
+    "recommendedDoors": [
+      "2-2",
+      "3-2",
+      "4-3",
+      "5-2",
+      "6-3",
+      "7-3"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "05_526",
     "toStationId": "09_915",
     "walkingDurationSec": 57,
+    "recommendedDoors": [
+      "2-1",
+      "3-4",
+      "6-1",
+      "7-4"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "05_529",
     "toStationId": "06_626",
     "walkingDurationSec": 61,
+    "recommendedDoors": [],
     "isEstimated": false
   },
   {
     "fromStationId": "05_529",
     "toStationId": "AR_A02",
     "walkingDurationSec": 229,
+    "recommendedDoors": [],
     "isEstimated": false
   },
   {
     "fromStationId": "05_529",
     "toStationId": "GJ_K312",
     "walkingDurationSec": 178,
+    "recommendedDoors": [],
     "isEstimated": false
   },
   {
     "fromStationId": "05_531",
     "toStationId": "02_243",
     "walkingDurationSec": 177,
+    "recommendedDoors": [
+      "4-1",
+      "5-3"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "05_534",
     "toStationId": "01_130",
     "walkingDurationSec": 260,
+    "recommendedDoors": [
+      "1-1",
+      "8-1"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "05_534",
     "toStationId": "03_329",
     "walkingDurationSec": 98,
+    "recommendedDoors": [
+      "1-1",
+      "8-1"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "05_535",
     "toStationId": "02_204",
     "walkingDurationSec": 64,
+    "recommendedDoors": [
+      "4-4",
+      "5-1"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "05_536",
     "toStationId": "02_205",
     "walkingDurationSec": 195,
+    "recommendedDoors": [
+      "1-1",
+      "8-4"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "05_536",
     "toStationId": "04_422",
     "walkingDurationSec": 89,
+    "recommendedDoors": [
+      "1-1",
+      "8-4"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "05_537",
     "toStationId": "06_634",
     "walkingDurationSec": 87,
+    "recommendedDoors": [
+      "2-3",
+      "4-1",
+      "5-3",
+      "6-1"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "05_540",
     "toStationId": "02_208",
     "walkingDurationSec": 72,
+    "recommendedDoors": [],
     "isEstimated": false
   },
   {
     "fromStationId": "05_540",
     "toStationId": "GJ_K116",
     "walkingDurationSec": 165,
+    "recommendedDoors": [],
     "isEstimated": false
   },
   {
     "fromStationId": "05_540",
     "toStationId": "SD_K210",
     "walkingDurationSec": 203,
+    "recommendedDoors": [],
     "isEstimated": false
   },
   {
     "fromStationId": "05_544",
     "toStationId": "07_725",
     "walkingDurationSec": 63,
+    "recommendedDoors": [
+      "1-8"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "05_547",
     "toStationId": "08_811",
     "walkingDurationSec": 29,
+    "recommendedDoors": [
+      "1-4",
+      "2-4"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "05_548",
     "toStationId": "05_548",
     "walkingDurationSec": 16,
+    "recommendedDoors": [
+      "1-1",
+      "8-4"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "05_P550",
     "toStationId": "09_936",
     "walkingDurationSec": 78,
+    "recommendedDoors": [
+      "4-4",
+      "5-5"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "05_P552",
     "toStationId": "03_352",
     "walkingDurationSec": 54,
+    "recommendedDoors": [],
     "isEstimated": false
   },
   {
     "fromStationId": "06_612",
     "toStationId": "03_322",
     "walkingDurationSec": 83,
+    "recommendedDoors": [
+      "2-1",
+      "7-2"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "06_614",
     "toStationId": "03_321",
     "walkingDurationSec": 151,
+    "recommendedDoors": [],
     "isEstimated": false
   },
   {
     "fromStationId": "06_614",
     "toStationId": "GA_X105",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": []
   },
   {
     "fromStationId": "06_618",
     "toStationId": "AR_A04",
     "walkingDurationSec": 155,
+    "recommendedDoors": [
+      "1-1",
+      "8-4"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "06_618",
     "toStationId": "GJ_K316",
     "walkingDurationSec": 46,
+    "recommendedDoors": [
+      "1-1",
+      "8-4"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "06_622",
     "toStationId": "02_238",
     "walkingDurationSec": 68,
+    "recommendedDoors": [
+      "3-3",
+      "4-2",
+      "5-3",
+      "6-2"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "06_626",
     "toStationId": "05_529",
     "walkingDurationSec": 61,
+    "recommendedDoors": [],
     "isEstimated": false
   },
   {
     "fromStationId": "06_626",
     "toStationId": "AR_A02",
     "walkingDurationSec": 221,
+    "recommendedDoors": [],
     "isEstimated": false
   },
   {
     "fromStationId": "06_626",
     "toStationId": "GJ_K312",
     "walkingDurationSec": 127,
+    "recommendedDoors": [],
     "isEstimated": false
   },
   {
     "fromStationId": "06_627",
     "toStationId": "GJ_K826",
     "walkingDurationSec": 92,
+    "recommendedDoors": [
+      "4-1",
+      "5-3"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "06_628",
     "toStationId": "04_428",
     "walkingDurationSec": 129,
+    "recommendedDoors": [
+      "1-1",
+      "8-4"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "06_633",
     "toStationId": "03_333",
     "walkingDurationSec": 108,
+    "recommendedDoors": [
+      "4-1",
+      "5-3",
+      "5-4"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "06_634",
     "toStationId": "05_537",
     "walkingDurationSec": 87,
+    "recommendedDoors": [
+      "6-1"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "06_635",
     "toStationId": "02_206",
     "walkingDurationSec": 202,
+    "recommendedDoors": [
+      "2-2",
+      "7-3"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "06_636",
     "toStationId": "01_127",
     "walkingDurationSec": 80,
+    "recommendedDoors": [
+      "4-3"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "06_638",
     "toStationId": "UI_952",
     "walkingDurationSec": 73,
+    "recommendedDoors": [
+      "3-4",
+      "5-4"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "06_644",
     "toStationId": "01_120",
     "walkingDurationSec": 104,
+    "recommendedDoors": [
+      "1-1",
+      "3-2",
+      "4-3",
+      "5-2",
+      "6-3",
+      "8-4"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "06_645",
     "toStationId": "07_717",
     "walkingDurationSec": 38,
+    "recommendedDoors": [
+      "3-2",
+      "4-2",
+      "5-2",
+      "6-2"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "06_648",
     "toStationId": "GC_P122",
     "walkingDurationSec": 42,
+    "recommendedDoors": [],
     "isEstimated": false
   },
   {
     "fromStationId": "07_710",
     "toStationId": "01_113",
     "walkingDurationSec": 37,
+    "recommendedDoors": [
+      "2-2",
+      "7-3"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "07_713",
     "toStationId": "04_411",
     "walkingDurationSec": 232,
+    "recommendedDoors": [
+      "3-3",
+      "6-2"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "07_717",
     "toStationId": "06_645",
     "walkingDurationSec": 38,
+    "recommendedDoors": [
+      "2-1",
+      "4-1",
+      "5-3",
+      "7-3"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "07_720",
     "toStationId": "GC_P120",
     "walkingDurationSec": 83,
+    "recommendedDoors": [
+      "3-4",
+      "6-1"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "07_720",
     "toStationId": "GJ_K120",
     "walkingDurationSec": 83,
+    "recommendedDoors": [
+      "3-4",
+      "6-1"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "07_725",
     "toStationId": "05_544",
     "walkingDurationSec": 63,
+    "recommendedDoors": [
+      "2-7"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "07_727",
     "toStationId": "02_212",
     "walkingDurationSec": 64,
+    "recommendedDoors": [
+      "1-1"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "07_730",
     "toStationId": "SD_K213",
     "walkingDurationSec": 104,
+    "recommendedDoors": [],
     "isEstimated": false
   },
   {
     "fromStationId": "07_732",
     "toStationId": "SB_D5",
     "walkingDurationSec": 67,
+    "recommendedDoors": [
+      "2-4",
+      "3-2",
+      "6-2",
+      "6-4"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "07_734",
     "toStationId": "03_339",
     "walkingDurationSec": 141,
+    "recommendedDoors": [
+      "4-4",
+      "5-1"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "07_734",
     "toStationId": "09_923",
     "walkingDurationSec": 262,
+    "recommendedDoors": [
+      "4-4",
+      "5-1"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "07_736",
     "toStationId": "04_432",
     "walkingDurationSec": 143,
+    "recommendedDoors": [
+      "2-2",
+      "4-2",
+      "5-3",
+      "7-2"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "07_742",
     "toStationId": "SL_S404",
     "walkingDurationSec": 59,
+    "recommendedDoors": [
+      "3-3",
+      "6-2"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "07_744",
     "toStationId": "02_233",
     "walkingDurationSec": 230,
+    "recommendedDoors": [
+      "3-4",
+      "6-1"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "07_746",
     "toStationId": "01_P142",
     "walkingDurationSec": 92,
+    "recommendedDoors": [
+      "3-1",
+      "4-3",
+      "5-1",
+      "6-4"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "07_750",
     "toStationId": "01_145",
     "walkingDurationSec": 85,
+    "recommendedDoors": [
+      "4-1",
+      "5-1"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "07_752",
     "toStationId": "SH_S15",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "3-2",
+      "6-3"
+    ]
   },
   {
     "fromStationId": "07_759",
     "toStationId": "I1_I118",
     "walkingDurationSec": 121,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "2-1",
+      "2-4",
+      "4-4",
+      "5-1",
+      "7-1",
+      "8-4"
+    ]
   },
   {
     "fromStationId": "07_761",
     "toStationId": "I2_I213",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "2-4",
+      "3-3",
+      "6-2",
+      "7-1"
+    ]
   },
   {
     "fromStationId": "08_804",
     "toStationId": "GC_P124",
     "walkingDurationSec": 62,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "1-1",
+      "2-1",
+      "4-4",
+      "6-1",
+      "6-4"
+    ]
   },
   {
     "fromStationId": "08_807",
     "toStationId": "GJ_K123",
     "walkingDurationSec": 243,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": []
   },
   {
     "fromStationId": "08_811",
     "toStationId": "05_547",
     "walkingDurationSec": 29,
+    "recommendedDoors": [
+      "2-4",
+      "5-4"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "08_814",
     "toStationId": "02_216",
     "walkingDurationSec": 158,
+    "recommendedDoors": [
+      "2-4",
+      "3-1",
+      "4-4",
+      "5-1"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "08_815",
     "toStationId": "09_933",
     "walkingDurationSec": 68,
+    "recommendedDoors": [
+      "2-4",
+      "3-1",
+      "4-4",
+      "5-1"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "08_817",
     "toStationId": "03_350",
     "walkingDurationSec": 29,
+    "recommendedDoors": [
+      "3-1",
+      "4-3",
+      "4-4"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "08_820",
     "toStationId": "SD_K222",
     "walkingDurationSec": 13,
+    "recommendedDoors": [
+      "2-3",
+      "2-4",
+      "4-4",
+      "5-2"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "08_827",
     "toStationId": "SD_K225",
     "walkingDurationSec": 83,
+    "recommendedDoors": [
+      "2-4",
+      "3-2",
+      "4-3",
+      "5-1"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "09_902",
     "toStationId": "05_512",
     "walkingDurationSec": 88,
+    "recommendedDoors": [],
     "isEstimated": false
   },
   {
     "fromStationId": "09_902",
     "toStationId": "AR_A05",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": []
   },
   {
     "fromStationId": "09_902",
     "toStationId": "GM_699",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": []
   },
   {
     "fromStationId": "09_902",
     "toStationId": "SH_S13",
     "walkingDurationSec": 144,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": []
   },
   {
     "fromStationId": "09_905",
     "toStationId": "AR_A042",
     "walkingDurationSec": 115,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": []
   },
   {
     "fromStationId": "09_913",
     "toStationId": "02_237",
     "walkingDurationSec": 88,
+    "recommendedDoors": [],
     "isEstimated": false
   },
   {
     "fromStationId": "09_915",
     "toStationId": "05_526",
     "walkingDurationSec": 57,
+    "recommendedDoors": [],
     "isEstimated": false
   },
   {
     "fromStationId": "09_916",
     "toStationId": "SL_S401",
     "walkingDurationSec": 74,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": []
   },
   {
     "fromStationId": "09_917",
     "toStationId": "01_136",
     "walkingDurationSec": 138,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": []
   },
   {
     "fromStationId": "09_920",
     "toStationId": "04_431",
     "walkingDurationSec": 204,
+    "recommendedDoors": [],
     "isEstimated": false
   },
   {
     "fromStationId": "09_923",
     "toStationId": "03_339",
     "walkingDurationSec": 129,
+    "recommendedDoors": [],
     "isEstimated": false
   },
   {
     "fromStationId": "09_923",
     "toStationId": "07_734",
     "walkingDurationSec": 262,
+    "recommendedDoors": [],
     "isEstimated": false
   },
   {
     "fromStationId": "09_925",
     "toStationId": "SB_D6",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": []
   },
   {
     "fromStationId": "09_927",
     "toStationId": "SD_K214",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "1-1",
+      "2-1",
+      "2-2",
+      "3-3",
+      "3-4",
+      "4-1",
+      "4-2",
+      "5-3",
+      "5-4",
+      "6-4"
+    ]
   },
   {
     "fromStationId": "09_930",
     "toStationId": "02_218",
     "walkingDurationSec": 78,
+    "recommendedDoors": [
+      "1-4",
+      "2-1",
+      "2-2",
+      "2-3",
+      "5-2",
+      "5-3",
+      "5-4",
+      "6-1"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "09_933",
     "toStationId": "08_815",
     "walkingDurationSec": 68,
+    "recommendedDoors": [
+      "1-1",
+      "2-1",
+      "6-1",
+      "6-4"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "09_936",
     "toStationId": "05_P550",
     "walkingDurationSec": 78,
+    "recommendedDoors": [
+      "1-4",
+      "2-1",
+      "2-4",
+      "3-1",
+      "4-4",
+      "5-1",
+      "5-4",
+      "6-1"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "AR_A01",
     "toStationId": "01_133",
     "walkingDurationSec": 258,
+    "recommendedDoors": [
+      "1-2",
+      "2-1",
+      "4-2",
+      "5-4"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "AR_A01",
     "toStationId": "04_426",
     "walkingDurationSec": 187,
+    "recommendedDoors": [
+      "1-2",
+      "2-1",
+      "4-2",
+      "5-4"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "AR_A01",
     "toStationId": "GA_X106",
     "walkingDurationSec": 326,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "1-2",
+      "2-1",
+      "4-2",
+      "5-4"
+    ]
   },
   {
     "fromStationId": "AR_A01",
     "toStationId": "GJ_P313",
     "walkingDurationSec": 381,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "1-2",
+      "2-1",
+      "4-2",
+      "5-4"
+    ]
   },
   {
     "fromStationId": "AR_A02",
     "toStationId": "05_529",
     "walkingDurationSec": 229,
+    "recommendedDoors": [
+      "1-3",
+      "1-4",
+      "6-1",
+      "6-2"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "AR_A02",
     "toStationId": "06_626",
     "walkingDurationSec": 221,
+    "recommendedDoors": [
+      "1-3",
+      "1-4",
+      "6-1",
+      "6-2"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "AR_A02",
     "toStationId": "GJ_K312",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "1-3",
+      "1-4",
+      "6-1",
+      "6-2"
+    ]
   },
   {
     "fromStationId": "AR_A03",
     "toStationId": "02_239",
     "walkingDurationSec": 296,
+    "recommendedDoors": [
+      "1-2",
+      "2-1",
+      "5-4",
+      "6-3"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "AR_A03",
     "toStationId": "GJ_K314",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "1-2",
+      "2-1",
+      "5-4",
+      "6-3"
+    ]
   },
   {
     "fromStationId": "AR_A04",
     "toStationId": "06_618",
     "walkingDurationSec": 155,
+    "recommendedDoors": [
+      "2-3",
+      "6-4"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "AR_A04",
     "toStationId": "GJ_K316",
     "walkingDurationSec": 144,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "2-3",
+      "6-4"
+    ]
   },
   {
     "fromStationId": "AR_A042",
     "toStationId": "09_905",
     "walkingDurationSec": 115,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": []
   },
   {
     "fromStationId": "AR_A05",
     "toStationId": "05_512",
     "walkingDurationSec": 102,
+    "recommendedDoors": [],
     "isEstimated": false
   },
   {
     "fromStationId": "AR_A05",
     "toStationId": "09_902",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": []
   },
   {
     "fromStationId": "AR_A05",
     "toStationId": "GM_699",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": []
   },
   {
     "fromStationId": "AR_A05",
     "toStationId": "SH_S13",
     "walkingDurationSec": 162,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": []
   },
   {
     "fromStationId": "AR_A06",
     "toStationId": "I1_I110",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "2-3",
+      "5-2"
+    ]
   },
   {
     "fromStationId": "AR_A07",
     "toStationId": "I2_I207",
     "walkingDurationSec": 130,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": []
   },
   {
     "fromStationId": "EV_Y110",
     "toStationId": "SD_K237",
     "walkingDurationSec": 66,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "1-1",
+      "1-2"
+    ]
   },
   {
     "fromStationId": "GA_X103",
     "toStationId": "03_314",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": []
   },
   {
     "fromStationId": "GA_X103",
     "toStationId": "GJ_K322",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": []
   },
   {
     "fromStationId": "GA_X103",
     "toStationId": "SH_S11",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": []
   },
   {
     "fromStationId": "GA_X105",
     "toStationId": "03_321",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": []
   },
   {
     "fromStationId": "GA_X105",
     "toStationId": "06_614",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": []
   },
   {
     "fromStationId": "GA_X106",
     "toStationId": "01_133",
     "walkingDurationSec": 78,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": []
   },
   {
     "fromStationId": "GA_X106",
     "toStationId": "04_426",
     "walkingDurationSec": 269,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": []
   },
   {
     "fromStationId": "GA_X106",
     "toStationId": "AR_A01",
     "walkingDurationSec": 326,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": []
   },
   {
     "fromStationId": "GA_X106",
     "toStationId": "GJ_P313",
     "walkingDurationSec": 201,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": []
   },
   {
     "fromStationId": "GA_X108",
     "toStationId": "03_349",
     "walkingDurationSec": 96,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": []
   },
   {
     "fromStationId": "GA_X108",
     "toStationId": "SD_K221",
     "walkingDurationSec": 103,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": []
   },
   {
     "fromStationId": "GA_X109",
     "toStationId": "GG_K410",
     "walkingDurationSec": 83,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "2-1",
+      "3-2",
+      "6-2",
+      "7-3"
+    ]
   },
   {
     "fromStationId": "GA_X110",
     "toStationId": "SD_K235",
     "walkingDurationSec": 132,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "4-3",
+      "5-1"
+    ]
   },
   {
     "fromStationId": "GC_P116",
     "toStationId": "01_119",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "1-3",
+      "10-3",
+      "10-4"
+    ]
   },
   {
     "fromStationId": "GC_P117",
     "toStationId": "01_124",
     "walkingDurationSec": 169,
+    "recommendedDoors": [
+      "2-1",
+      "7-4"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "GC_P117",
     "toStationId": "GJ_K117",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "2-1",
+      "7-4"
+    ]
   },
   {
     "fromStationId": "GC_P117",
     "toStationId": "SD_K209",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "2-1",
+      "7-4"
+    ]
   },
   {
     "fromStationId": "GC_P118",
     "toStationId": "01_123",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "6-2"
+    ]
   },
   {
     "fromStationId": "GC_P118",
     "toStationId": "GJ_K118",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "6-2"
+    ]
   },
   {
     "fromStationId": "GC_P119",
     "toStationId": "GJ_K119",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "4-2",
+      "5-1"
+    ]
   },
   {
     "fromStationId": "GC_P120",
     "toStationId": "07_720",
     "walkingDurationSec": 83,
+    "recommendedDoors": [
+      "3-3",
+      "6-3"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "GC_P120",
     "toStationId": "GJ_K120",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "3-3",
+      "6-3"
+    ]
   },
   {
     "fromStationId": "GC_P121",
     "toStationId": "GJ_K121",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "4-4",
+      "5-1"
+    ]
   },
   {
     "fromStationId": "GC_P122",
     "toStationId": "06_648",
     "walkingDurationSec": 42,
+    "recommendedDoors": [
+      "4-4"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "GC_P124",
     "toStationId": "08_804",
     "walkingDurationSec": 62,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "4-1",
+      "5-3"
+    ]
   },
   {
     "fromStationId": "GG_K409",
     "toStationId": "SB_D11",
     "walkingDurationSec": 74,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": []
   },
   {
     "fromStationId": "GG_K410",
     "toStationId": "GA_X109",
     "walkingDurationSec": 83,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": []
   },
   {
     "fromStationId": "GG_K411",
     "toStationId": "SD_K227",
     "walkingDurationSec": 73,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": []
   },
   {
     "fromStationId": "GJ_K110",
     "toStationId": "01_135",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "1-1",
+      "1-4",
+      "8-1",
+      "8-4"
+    ]
   },
   {
     "fromStationId": "GJ_K111",
     "toStationId": "04_430",
     "walkingDurationSec": 65,
+    "recommendedDoors": [
+      "3-4",
+      "6-1"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "GJ_K114",
     "toStationId": "03_335",
     "walkingDurationSec": 129,
+    "recommendedDoors": [
+      "5-1",
+      "7-1"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "GJ_K116",
     "toStationId": "02_208",
     "walkingDurationSec": 42,
+    "recommendedDoors": [
+      "1-1",
+      "8-4"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "GJ_K116",
     "toStationId": "05_540",
     "walkingDurationSec": 165,
+    "recommendedDoors": [
+      "1-1",
+      "8-4"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "GJ_K116",
     "toStationId": "SD_K210",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "1-1",
+      "8-4"
+    ]
   },
   {
     "fromStationId": "GJ_K117",
     "toStationId": "01_124",
     "walkingDurationSec": 138,
+    "recommendedDoors": [
+      "2-1",
+      "7-4"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "GJ_K117",
     "toStationId": "GC_P117",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "2-1",
+      "7-4"
+    ]
   },
   {
     "fromStationId": "GJ_K117",
     "toStationId": "SD_K209",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "2-1",
+      "7-4"
+    ]
   },
   {
     "fromStationId": "GJ_K118",
     "toStationId": "01_123",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "6-2"
+    ]
   },
   {
     "fromStationId": "GJ_K118",
     "toStationId": "GC_P118",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "6-2"
+    ]
   },
   {
     "fromStationId": "GJ_K119",
     "toStationId": "GC_P119",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "4-2",
+      "5-1"
+    ]
   },
   {
     "fromStationId": "GJ_K120",
     "toStationId": "07_720",
     "walkingDurationSec": 83,
+    "recommendedDoors": [
+      "4-4",
+      "8-3"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "GJ_K120",
     "toStationId": "GC_P120",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "4-4",
+      "8-3"
+    ]
   },
   {
     "fromStationId": "GJ_K121",
     "toStationId": "GC_P121",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "3-3",
+      "6-2"
+    ]
   },
   {
     "fromStationId": "GJ_K123",
     "toStationId": "08_807",
     "walkingDurationSec": 243,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "2-3",
+      "7-2"
+    ]
   },
   {
     "fromStationId": "GJ_K312",
     "toStationId": "05_529",
     "walkingDurationSec": 178,
+    "recommendedDoors": [
+      "4-1",
+      "5-1"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "GJ_K312",
     "toStationId": "06_626",
     "walkingDurationSec": 127,
+    "recommendedDoors": [
+      "4-1",
+      "5-1"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "GJ_K312",
     "toStationId": "AR_A02",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "4-1",
+      "5-1"
+    ]
   },
   {
     "fromStationId": "GJ_K314",
     "toStationId": "02_239",
     "walkingDurationSec": 254,
+    "recommendedDoors": [
+      "5-1",
+      "8-3"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "GJ_K314",
     "toStationId": "AR_A03",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "5-1",
+      "8-3"
+    ]
   },
   {
     "fromStationId": "GJ_K316",
     "toStationId": "06_618",
     "walkingDurationSec": 46,
+    "recommendedDoors": [
+      "2-3",
+      "4-3",
+      "7-2"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "GJ_K316",
     "toStationId": "AR_A04",
     "walkingDurationSec": 144,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "2-3",
+      "4-3",
+      "7-2"
+    ]
   },
   {
     "fromStationId": "GJ_K321",
     "toStationId": "SH_S12",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "2-4",
+      "6-4"
+    ]
   },
   {
     "fromStationId": "GJ_K322",
     "toStationId": "03_314",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": []
   },
   {
     "fromStationId": "GJ_K322",
     "toStationId": "GA_X103",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": []
   },
   {
     "fromStationId": "GJ_K322",
     "toStationId": "SH_S11",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": []
   },
   {
     "fromStationId": "GJ_K323",
     "toStationId": "SH_S10",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "4-4",
+      "5-2"
+    ]
   },
   {
     "fromStationId": "GJ_K324",
     "toStationId": "SH_S09",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "2-2",
+      "7-3"
+    ]
   },
   {
     "fromStationId": "GJ_K325",
     "toStationId": "SH_S08",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "4-3",
+      "5-2"
+    ]
   },
   {
     "fromStationId": "GJ_K326",
     "toStationId": "SH_S07",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": []
   },
   {
     "fromStationId": "GJ_K826",
     "toStationId": "06_627",
     "walkingDurationSec": 92,
+    "recommendedDoors": [],
     "isEstimated": false
   },
   {
     "fromStationId": "GJ_P313",
     "toStationId": "01_133",
     "walkingDurationSec": 137,
+    "recommendedDoors": [],
     "isEstimated": false
   },
   {
     "fromStationId": "GJ_P313",
     "toStationId": "04_426",
     "walkingDurationSec": 269,
+    "recommendedDoors": [],
     "isEstimated": false
   },
   {
     "fromStationId": "GJ_P313",
     "toStationId": "AR_A01",
     "walkingDurationSec": 381,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": []
   },
   {
     "fromStationId": "GJ_P313",
     "toStationId": "GA_X106",
     "walkingDurationSec": 201,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": []
   },
   {
     "fromStationId": "GM_699",
     "toStationId": "05_512",
     "walkingDurationSec": 167,
+    "recommendedDoors": [
+      "1-1",
+      "2-2"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "GM_699",
     "toStationId": "09_902",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "1-1",
+      "2-2"
+    ]
   },
   {
     "fromStationId": "GM_699",
     "toStationId": "AR_A05",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "1-1",
+      "2-2"
+    ]
   },
   {
     "fromStationId": "GM_699",
     "toStationId": "SH_S13",
     "walkingDurationSec": 175,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "1-1",
+      "2-2"
+    ]
   },
   {
     "fromStationId": "I1_I110",
     "toStationId": "AR_A06",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "3-1",
+      "6-4"
+    ]
   },
   {
     "fromStationId": "I1_I118",
     "toStationId": "07_759",
     "walkingDurationSec": 121,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "3-1",
+      "4-2",
+      "5-3",
+      "6-4"
+    ]
   },
   {
     "fromStationId": "I1_I120",
     "toStationId": "01_152",
     "walkingDurationSec": 127,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "2-1",
+      "3-3",
+      "4-4",
+      "5-1",
+      "6-2",
+      "7-4"
+    ]
   },
   {
     "fromStationId": "I1_I124",
     "toStationId": "I2_I221",
     "walkingDurationSec": 73,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "3-4",
+      "6-2"
+    ]
   },
   {
     "fromStationId": "I1_I130",
     "toStationId": "SD_K265",
     "walkingDurationSec": 112,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "2-3",
+      "7-2"
+    ]
   },
   {
     "fromStationId": "I2_I207",
     "toStationId": "AR_A07",
     "walkingDurationSec": 130,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "1-1",
+      "2-3"
+    ]
   },
   {
     "fromStationId": "I2_I213",
     "toStationId": "07_761",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "1-1",
+      "2-3"
+    ]
   },
   {
     "fromStationId": "I2_I218",
     "toStationId": "01_156",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "1-1",
+      "2-3"
+    ]
   },
   {
     "fromStationId": "I2_I221",
     "toStationId": "I1_I124",
     "walkingDurationSec": 73,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "1-1",
+      "2-3"
+    ]
   },
   {
     "fromStationId": "SB_D11",
     "toStationId": "GG_K409",
     "walkingDurationSec": 74,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "1-1",
+      "3-1",
+      "4-1",
+      "6-1"
+    ]
   },
   {
     "fromStationId": "SB_D12",
     "toStationId": "SD_K230",
     "walkingDurationSec": 105,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "1-1",
+      "2-1",
+      "5-1",
+      "6-1"
+    ]
   },
   {
     "fromStationId": "SB_D13",
     "toStationId": "SD_K231",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": []
   },
   {
     "fromStationId": "SB_D4",
     "toStationId": "03_337",
     "walkingDurationSec": 64,
+    "recommendedDoors": [],
     "isEstimated": false
   },
   {
     "fromStationId": "SB_D5",
     "toStationId": "07_732",
     "walkingDurationSec": 67,
+    "recommendedDoors": [
+      "1-4",
+      "2-1",
+      "5-4",
+      "6-1"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "SB_D6",
     "toStationId": "09_925",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "1-3",
+      "6-2"
+    ]
   },
   {
     "fromStationId": "SB_D7",
     "toStationId": "02_222",
     "walkingDurationSec": 178,
+    "recommendedDoors": [
+      "1-1",
+      "3-1",
+      "6-1"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "SB_D8",
     "toStationId": "03_342",
     "walkingDurationSec": 78,
+    "recommendedDoors": [
+      "1-1",
+      "3-1",
+      "4-1",
+      "6-1"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "SD_K209",
     "toStationId": "01_124",
     "walkingDurationSec": 150,
+    "recommendedDoors": [],
     "isEstimated": false
   },
   {
     "fromStationId": "SD_K209",
     "toStationId": "GC_P117",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": []
   },
   {
     "fromStationId": "SD_K209",
     "toStationId": "GJ_K117",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": []
   },
   {
     "fromStationId": "SD_K210",
     "toStationId": "02_208",
     "walkingDurationSec": 83,
+    "recommendedDoors": [
+      "1-1",
+      "6-4"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "SD_K210",
     "toStationId": "05_540",
     "walkingDurationSec": 203,
+    "recommendedDoors": [
+      "1-1",
+      "6-4"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "SD_K210",
     "toStationId": "GJ_K116",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "1-1",
+      "6-4"
+    ]
   },
   {
     "fromStationId": "SD_K213",
     "toStationId": "07_730",
     "walkingDurationSec": 104,
+    "recommendedDoors": [
+      "1-4",
+      "6-1"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "SD_K214",
     "toStationId": "09_927",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "4-4",
+      "5-1"
+    ]
   },
   {
     "fromStationId": "SD_K215",
     "toStationId": "02_220",
     "walkingDurationSec": 68,
+    "recommendedDoors": [
+      "2-4",
+      "5-1"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "SD_K217",
     "toStationId": "03_344",
     "walkingDurationSec": 65,
+    "recommendedDoors": [
+      "1-2",
+      "1-3",
+      "4-3",
+      "5-1",
+      "6-2",
+      "6-4"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "SD_K221",
     "toStationId": "03_349",
     "walkingDurationSec": 77,
+    "recommendedDoors": [
+      "1-1",
+      "1-4",
+      "3-3",
+      "5-3",
+      "6-4"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "SD_K221",
     "toStationId": "GA_X108",
     "walkingDurationSec": 103,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "1-1",
+      "1-4",
+      "3-3",
+      "5-3",
+      "6-4"
+    ]
   },
   {
     "fromStationId": "SD_K222",
     "toStationId": "08_820",
     "walkingDurationSec": 13,
+    "recommendedDoors": [
+      "4-4"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "SD_K225",
     "toStationId": "08_827",
     "walkingDurationSec": 83,
+    "recommendedDoors": [
+      "1-2",
+      "6-4"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "SD_K227",
     "toStationId": "GG_K411",
     "walkingDurationSec": 73,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "6-4"
+    ]
   },
   {
     "fromStationId": "SD_K230",
     "toStationId": "SB_D12",
     "walkingDurationSec": 105,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "2-1",
+      "6-4"
+    ]
   },
   {
     "fromStationId": "SD_K231",
     "toStationId": "SB_D13",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "3-2",
+      "4-3"
+    ]
   },
   {
     "fromStationId": "SD_K235",
     "toStationId": "GA_X110",
     "walkingDurationSec": 132,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "2-1",
+      "6-4"
+    ]
   },
   {
     "fromStationId": "SD_K237",
     "toStationId": "EV_Y110",
     "walkingDurationSec": 66,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "1-3",
+      "2-1"
+    ]
   },
   {
     "fromStationId": "SD_K245",
     "toStationId": "01_P155",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "2-2",
+      "5-2"
+    ]
   },
   {
     "fromStationId": "SD_K251",
     "toStationId": "04_449",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": []
   },
   {
     "fromStationId": "SD_K252",
     "toStationId": "04_450",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": []
   },
   {
     "fromStationId": "SD_K253",
     "toStationId": "04_451",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": []
   },
   {
     "fromStationId": "SD_K254",
     "toStationId": "04_452",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": []
   },
   {
     "fromStationId": "SD_K254",
     "toStationId": "SH_S26",
     "walkingDurationSec": 190,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": []
   },
   {
     "fromStationId": "SD_K255",
     "toStationId": "04_453",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": []
   },
   {
     "fromStationId": "SD_K256",
     "toStationId": "04_454",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": []
   },
   {
     "fromStationId": "SD_K257",
     "toStationId": "04_455",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": []
   },
   {
     "fromStationId": "SD_K258",
     "toStationId": "04_456",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "2-4",
+      "5-4",
+      "6-1",
+      "8-1",
+      "9-1"
+    ]
   },
   {
     "fromStationId": "SD_K265",
     "toStationId": "I1_I130",
     "walkingDurationSec": 112,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "1-4"
+    ]
   },
   {
     "fromStationId": "SD_K272",
     "toStationId": "01_161",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": []
   },
   {
     "fromStationId": "SH_S07",
     "toStationId": "GJ_K326",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": []
   },
   {
     "fromStationId": "SH_S08",
     "toStationId": "GJ_K325",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": []
   },
   {
     "fromStationId": "SH_S09",
     "toStationId": "GJ_K324",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": []
   },
   {
     "fromStationId": "SH_S10",
     "toStationId": "GJ_K323",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": []
   },
   {
     "fromStationId": "SH_S11",
     "toStationId": "03_314",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": []
   },
   {
     "fromStationId": "SH_S11",
     "toStationId": "GA_X103",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": []
   },
   {
     "fromStationId": "SH_S11",
     "toStationId": "GJ_K322",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": []
   },
   {
     "fromStationId": "SH_S12",
     "toStationId": "GJ_K321",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": []
   },
   {
     "fromStationId": "SH_S13",
     "toStationId": "05_512",
     "walkingDurationSec": 83,
+    "recommendedDoors": [],
     "isEstimated": false
   },
   {
     "fromStationId": "SH_S13",
     "toStationId": "09_902",
     "walkingDurationSec": 144,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": []
   },
   {
     "fromStationId": "SH_S13",
     "toStationId": "AR_A05",
     "walkingDurationSec": 162,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": []
   },
   {
     "fromStationId": "SH_S13",
     "toStationId": "GM_699",
     "walkingDurationSec": 175,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": []
   },
   {
     "fromStationId": "SH_S15",
     "toStationId": "07_752",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": []
   },
   {
     "fromStationId": "SH_S16",
     "toStationId": "01_147",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "1-2",
+      "2-3",
+      "4-4"
+    ]
   },
   {
     "fromStationId": "SH_S26",
     "toStationId": "04_452",
     "walkingDurationSec": 190,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "1-4",
+      "4-4"
+    ]
   },
   {
     "fromStationId": "SH_S26",
     "toStationId": "SD_K254",
     "walkingDurationSec": 190,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "1-4",
+      "4-4"
+    ]
   },
   {
     "fromStationId": "SL_S401",
     "toStationId": "09_916",
     "walkingDurationSec": 74,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "2-2"
+    ]
   },
   {
     "fromStationId": "SL_S402",
     "toStationId": "01_137",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "2-1",
+      "3-1"
+    ]
   },
   {
     "fromStationId": "SL_S404",
     "toStationId": "07_742",
     "walkingDurationSec": 59,
+    "recommendedDoors": [
+      "2-1",
+      "2-2"
+    ],
     "isEstimated": false
   },
   {
     "fromStationId": "SL_S408",
     "toStationId": "02_230",
     "walkingDurationSec": 73,
+    "recommendedDoors": [],
     "isEstimated": false
   },
   {
     "fromStationId": "UI_951",
     "toStationId": "04_418",
     "walkingDurationSec": 6,
+    "recommendedDoors": [],
     "isEstimated": false
   },
   {
     "fromStationId": "UI_952",
     "toStationId": "06_638",
     "walkingDurationSec": 73,
+    "recommendedDoors": [],
     "isEstimated": false
   },
   {
     "fromStationId": "UI_953",
     "toStationId": "01_126",
     "walkingDurationSec": 108,
+    "recommendedDoors": [],
     "isEstimated": false
   },
   {
     "fromStationId": "UI_953",
     "toStationId": "02_211-4",
     "walkingDurationSec": 228,
+    "recommendedDoors": [],
     "isEstimated": false
   },
   {
     "fromStationId": "UJ_U111",
     "toStationId": "01_111",
     "walkingDurationSec": 60,
-    "isEstimated": true
+    "isEstimated": true,
+    "recommendedDoors": [
+      "1-1",
+      "2-3"
+    ]
   }
 ]

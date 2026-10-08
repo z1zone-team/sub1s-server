@@ -1,6 +1,5 @@
 import { HttpStatus } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BusinessException } from '../../common/exceptions/business.exception';
 import { RouteResult } from '../../domain/subway/models/route';
 import { SubwayGraph } from '../../domain/subway/models/subway-graph';
 import {
@@ -133,7 +132,12 @@ describe('RouteService', () => {
     expect(result.options).toHaveLength(4);
     const modes = result.options.map((opt) => opt.mode);
     expect(modes).toEqual(
-      expect.arrayContaining(['OPTIMAL', 'COMFORTABLE', 'PERSONAL', 'CHEAPEST']),
+      expect.arrayContaining([
+        'OPTIMAL',
+        'COMFORTABLE',
+        'PERSONAL',
+        'CHEAPEST',
+      ]),
     );
 
     const firstOption = result.options[0];
@@ -173,6 +177,57 @@ describe('RouteService', () => {
     expect(result.options[0].estimatedArrivalTimestamp).toBe(
       '2026-10-06T09:02:00.000Z',
     );
+  });
+
+  it('populates recommendedDoors on segments when transferring', async () => {
+    const routeWithTransfer: RouteResult = {
+      mode: 'OPTIMAL',
+      stationIds: ['02_222', '02_221', '03_336'],
+      segments: [
+        {
+          lineId: '02',
+          direction: 'INNER',
+          isExpress: false,
+          fromStationId: '02_222',
+          toStationId: '02_221',
+          stationCount: 1,
+          durationSec: 120,
+          distanceKm: 0.8,
+        },
+        {
+          lineId: '03',
+          direction: 'DOWN',
+          isExpress: false,
+          fromStationId: '03_336',
+          toStationId: '03_336',
+          stationCount: 1,
+          durationSec: 150,
+          distanceKm: 1.0,
+        },
+      ],
+      transfers: [
+        {
+          fromStationId: '02_221',
+          toStationId: '03_336',
+          walkingDurationSec: 180,
+          recommendedDoors: ['2-1', '4-4'],
+        },
+      ],
+      totalDurationSec: 450,
+      totalDistanceKm: 1.8,
+      transferCount: 1,
+      totalFare: 1400,
+    };
+
+    mockEngine.findRoute.mockResolvedValue(routeWithTransfer);
+
+    const result = await service.search({
+      originStationId: '02_222',
+      destinationStationId: '03_336',
+    });
+
+    const opt = result.options[0];
+    expect(opt.segments[0].recommendedDoors).toEqual(['2-1', '4-4']);
   });
 
   it('throws BusinessException when origin and destination are the same', async () => {

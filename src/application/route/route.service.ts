@@ -74,10 +74,7 @@ export class RouteService {
         );
       }
       originStation = graph.station(idx);
-    } else if (
-      dto.originLat !== undefined &&
-      dto.originLng !== undefined
-    ) {
+    } else if (dto.originLat !== undefined && dto.originLng !== undefined) {
       const nearest = this.walkingService.findNearestStations(
         graph,
         dto.originLat,
@@ -301,14 +298,41 @@ export class RouteService {
       const seg = result.segments[i];
       const fromStation = graph.station(graph.indexOf(seg.fromStationId)!);
       const toStation = graph.station(graph.indexOf(seg.toStationId)!);
-      const segmentDepartureEpoch =
-        departureDate.getTime() + elapsedSec * 1000;
+      const segmentDepartureEpoch = departureDate.getTime() + elapsedSec * 1000;
+
+      let nextTransferDoors: string[] | undefined;
+      let nextTransferCars: number[] = [];
+      if (i < result.segments.length - 1) {
+        const nextSeg = result.segments[i + 1];
+        const transfer = result.transfers.find(
+          (t) =>
+            t.fromStationId === seg.toStationId &&
+            t.toStationId === nextSeg.fromStationId,
+        );
+        if (transfer) {
+          elapsedSec += transfer.walkingDurationSec;
+          if (
+            transfer.recommendedDoors &&
+            transfer.recommendedDoors.length > 0
+          ) {
+            nextTransferDoors = [...transfer.recommendedDoors];
+            nextTransferCars = [
+              ...new Set(
+                transfer.recommendedDoors
+                  .map((d) => parseInt(d.split('-')[0], 10))
+                  .filter((n) => !Number.isNaN(n)),
+              ),
+            ];
+          }
+        }
+      }
 
       const prediction = this.congestionProvider.predictCars(
         seg.lineId,
         seg.fromStationId,
         seg.direction,
         segmentDepartureEpoch,
+        nextTransferCars,
       );
 
       let bestCar = prediction.cars[0];
@@ -335,6 +359,7 @@ export class RouteService {
         durationSec: seg.durationSec,
         distanceKm: seg.distanceKm,
         recommendedCarNo,
+        recommendedDoors: nextTransferDoors,
         isWeakAirConditioned: weakAc,
         congestionLevel: level,
         congestionRate: rate,
@@ -342,18 +367,6 @@ export class RouteService {
       });
 
       elapsedSec += seg.durationSec;
-
-      if (i < result.segments.length - 1) {
-        const nextSeg = result.segments[i + 1];
-        const transfer = result.transfers.find(
-          (t) =>
-            t.fromStationId === seg.toStationId &&
-            t.toStationId === nextSeg.fromStationId,
-        );
-        if (transfer) {
-          elapsedSec += transfer.walkingDurationSec;
-        }
-      }
     }
 
     // 3. Last-Mile 도보 세그먼트 삽입
@@ -390,8 +403,7 @@ export class RouteService {
       ) / 100;
     const totalCalories =
       (firstMileWalk?.calories || 0) + (lastMileWalk?.calories || 0);
-    const totalSteps =
-      (firstMileWalk?.steps || 0) + (lastMileWalk?.steps || 0);
+    const totalSteps = (firstMileWalk?.steps || 0) + (lastMileWalk?.steps || 0);
 
     const totalDurationSec = result.totalDurationSec + totalWalkDurationSec;
     const totalDistanceKm =
@@ -421,7 +433,8 @@ export class RouteService {
     straightDistanceKm: number,
     departureDate: Date,
   ): SubwayRouteOptionDto {
-    const metrics = this.walkingService.calculateWalkMetrics(straightDistanceKm);
+    const metrics =
+      this.walkingService.calculateWalkMetrics(straightDistanceKm);
     const estimatedArrivalTimestamp = new Date(
       departureDate.getTime() + metrics.durationSec * 1000,
     ).toISOString();
