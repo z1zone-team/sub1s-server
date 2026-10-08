@@ -1,26 +1,4 @@
-# Stage 1: Build
-FROM node:22-alpine AS builder
-
-WORKDIR /app
-
-RUN apk add --no-cache openssl && \
-    corepack enable && \
-    corepack prepare pnpm@9 --activate
-
-# 패키지 매니저 및 Prisma 정의 파일 복사
-COPY package.json pnpm-lock.yaml ./
-COPY prisma ./prisma/
-
-# 빌드 의존성 설치 및 Prisma Client 생성
-RUN pnpm install --frozen-lockfile
-RUN pnpm prisma generate
-
-# 소스코드 복사 및 NestJS 빌드
-COPY . .
-RUN pnpm build
-
-# Stage 2: Production Runner
-FROM node:22-alpine AS runner
+FROM node:22-alpine
 
 WORKDIR /app
 
@@ -37,8 +15,8 @@ COPY prisma ./prisma/
 # 프로덕션 의존성만 설치 및 Prisma Client 자동 생성
 RUN pnpm install --prod --frozen-lockfile
 
-# 빌드 산출물 및 데이터 에셋 복사
-COPY --from=builder /app/dist ./dist
+# 사전 컴파일된 빌드 산출물 복사
+COPY dist ./dist
 
 # 보안을 위해 비루트(node) 사용자로 실행
 USER node
