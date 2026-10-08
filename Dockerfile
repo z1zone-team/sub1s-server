@@ -30,9 +30,8 @@ RUN corepack enable && corepack prepare pnpm@9 --activate
 COPY package.json pnpm-lock.yaml ./
 COPY prisma ./prisma/
 
-# 프로덕션 의존성만 설치 및 Prisma Client 생성
+# 프로덕션 의존성만 설치 및 Prisma Client 자동 생성
 RUN pnpm install --prod --frozen-lockfile
-RUN pnpm prisma generate
 
 # 빌드 산출물 및 데이터 에셋 복사
 COPY --from=builder /app/dist ./dist
