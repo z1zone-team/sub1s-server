@@ -22,10 +22,16 @@ function main(): void {
     ? readJson(stairsPath)
     : {};
 
+  const overridesPath = join(OUT_DIR, 'transfer-overrides.json');
+  const overrides: Record<string, number> = existsSync(overridesPath)
+    ? readJson(overridesPath)
+    : {};
+
   const { transfers, added } = supplementTransfers(
     stations,
     existing,
     stairsMap,
+    overrides,
   );
   writeFileSync(path, JSON.stringify(transfers, null, 2) + '\n');
 

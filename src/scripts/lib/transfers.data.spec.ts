@@ -50,13 +50,22 @@ describe('refined transfers.json', () => {
     expect(connected.length).toBeGreaterThanOrEqual(6);
   });
 
-  it('marks supplemented rows as estimated and keeps the Seoul Metro rows measured', () => {
-    expect(transfers.filter((t) => t.isEstimated).length).toBeGreaterThan(0);
+  it('calibrates supplemented rows with measured overrides and keeps Seoul Metro rows measured', () => {
+    expect(
+      transfers.every((t) => typeof t.walkingDurationSec === 'number'),
+    ).toBe(true);
     const dongjak = transfers.find(
       (t) => t.fromStationId === '04_431' && t.toStationId === '09_920',
     );
     expect(dongjak).toMatchObject({
       walkingDurationSec: 204,
+      isEstimated: false,
+    });
+    const seoulGtx = transfers.find(
+      (t) => t.fromStationId === '01_133' && t.toStationId === 'GA_X106',
+    );
+    expect(seoulGtx).toMatchObject({
+      walkingDurationSec: 360,
       isEstimated: false,
     });
   });

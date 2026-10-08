@@ -90,6 +90,7 @@ export function supplementTransfers(
   nodes: TransferNode[],
   existing: TransferRow[],
   stairsMap?: Record<string, { doors?: string[] }>,
+  overrides?: Record<string, number>,
 ): { transfers: TransferRow[]; added: AddedTransfer[] } {
   const rows = existing.map((row) => ({
     ...row,
@@ -113,7 +114,12 @@ export function supplementTransfers(
           continue;
         }
         const distanceM = distanceKm(a.lat, a.lng, b.lat, b.lng) * 1000;
-        const walkingDurationSec = estimateWalkingSec(distanceM);
+        const keyAB = `${a.id}>${b.id}`;
+        const keyBA = `${b.id}>${a.id}`;
+        const overrideSec = overrides?.[keyAB] ?? overrides?.[keyBA];
+        const isEstimated = overrideSec === undefined;
+        const walkingDurationSec = overrideSec ?? estimateWalkingSec(distanceM);
+
         const aDoors = stairsMap?.[a.id]?.doors;
         const bDoors = stairsMap?.[b.id]?.doors;
         rows.push(
@@ -121,14 +127,14 @@ export function supplementTransfers(
             fromStationId: a.id,
             toStationId: b.id,
             walkingDurationSec,
-            isEstimated: true,
+            isEstimated,
             ...(stairsMap ? { recommendedDoors: aDoors ?? [] } : {}),
           },
           {
             fromStationId: b.id,
             toStationId: a.id,
             walkingDurationSec,
-            isEstimated: true,
+            isEstimated,
             ...(stairsMap ? { recommendedDoors: bDoors ?? [] } : {}),
           },
         );
