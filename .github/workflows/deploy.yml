@@ -74,6 +74,10 @@ jobs:
             sudo docker compose pull server
             sudo docker compose up -d server
 
+            echo "지하철 그래프 DB 시딩 동기화..."
+            sudo docker compose exec -T server node dist/scripts/seed-subway-graph.js || true
+            sudo docker compose restart server
+
             for i in $(seq 1 20); do
               if sudo docker compose exec -T server node -e "fetch('http://localhost:3000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))" > /dev/null 2>&1; then
                 echo "✅ Sub1S 서버 헬스체크 성공"
