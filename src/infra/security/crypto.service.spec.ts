@@ -4,7 +4,14 @@ describe('CryptoService', () => {
   let service: CryptoService;
 
   beforeEach(() => {
+    delete process.env.MASTER_ENCRYPTION_KEY;
+    delete process.env.MASTER_3DES_KEY;
     service = new CryptoService();
+  });
+
+  afterEach(() => {
+    delete process.env.MASTER_ENCRYPTION_KEY;
+    delete process.env.MASTER_3DES_KEY;
   });
 
   it('encrypts plaintext into EncryptedDataBundle and decrypts back to original', () => {
@@ -28,6 +35,23 @@ describe('CryptoService', () => {
     expect(decrypted).toBe(sensitivePayload);
   });
 
+  it('works with 32-character UTF-8 master keys (e.g. Bitwarden generated)', () => {
+    process.env.MASTER_ENCRYPTION_KEY = 'aB3$eF5*hI7!kL9#mO1%qR3^tU5&wY7_';
+    const bitwardenService = new CryptoService();
+    const plaintext = 'confidential-subway-payload';
+    const bundle = bitwardenService.encrypt(plaintext);
+    expect(bitwardenService.decrypt(bundle)).toBe(plaintext);
+  });
+
+  it('works with 64-character hex master keys (e.g. openssl rand -hex 32)', () => {
+    process.env.MASTER_ENCRYPTION_KEY =
+      '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef';
+    const hexService = new CryptoService();
+    const plaintext = 'sensitive-location-data';
+    const bundle = hexService.encrypt(plaintext);
+    expect(hexService.decrypt(bundle)).toBe(plaintext);
+  });
+
   it('fails decryption if ciphertext or auth tag is tampered with', () => {
     const encrypted = service.encrypt('confidential-location-data');
 
@@ -40,5 +64,10 @@ describe('CryptoService', () => {
     // Tamper with auth tag
     const tamperedTag = Buffer.from('corrupted-tag---').toString('base64');
     expect(() => service.decrypt({ ...encrypted, tag: tamperedTag })).toThrow();
+  });
+
+  it('throws on invalid key length', () => {
+    process.env.MASTER_ENCRYPTION_KEY = 'too-short';
+    expect(() => new CryptoService()).toThrow();
   });
 });

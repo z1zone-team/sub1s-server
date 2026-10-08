@@ -5,30 +5,49 @@ export interface EncryptedDataBundle {
   ciphertext: string; // Base64 AES-256-GCM ciphertext (encrypted_route_payload)
   iv: string; // Base64 Nonce/IV (12 bytes)
   tag: string; // Base64 GCM Auth Tag (16 bytes - auth_tag)
-  wrappedDek: string; // Base64 3DES-CBC wrapped DEK (wrapped_dek)
+  wrappedDek: string; // Base64 AES-256-CBC wrapped DEK (wrapped_dek)
 }
 
 @Injectable()
 export class CryptoService {
-  // Tier 1/2: 3DES Master Key (24 bytes / 192-bit)
-  private readonly kek3Des: Buffer;
+  // Master Key (32 bytes / 256-bit AES)
+  private readonly masterKey: Buffer;
 
   constructor() {
     const keyStr =
-      process.env.MASTER_3DES_KEY || 'sub1s-master-key-24bytes';
-    if (Buffer.byteLength(keyStr, 'utf-8') !== 24) {
-      throw new Error(
-        'MASTER_3DES_KEY must be exactly 24 bytes (192-bit) in UTF-8 format.',
-      );
+      process.env.MASTER_ENCRYPTION_KEY ||
+      process.env.MASTER_3DES_KEY ||
+      '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef';
+
+    this.masterKey = this.parseMasterKey(keyStr);
+  }
+
+  private parseMasterKey(keyStr: string): Buffer {
+    // 1. 64-char Hex string (32 bytes, e.g., openssl rand -hex 32)
+    if (/^[0-9a-fA-F]{64}$/.test(keyStr)) {
+      return Buffer.from(keyStr, 'hex');
     }
-    this.kek3Des = Buffer.from(keyStr, 'utf-8');
+
+    // 2. 32-character UTF-8 string (32 bytes, e.g., Bitwarden 32 chars)
+    if (Buffer.byteLength(keyStr, 'utf-8') === 32) {
+      return Buffer.from(keyStr, 'utf-8');
+    }
+
+    // 3. Fallback for legacy 24-byte string during migration (SHA-256 stretched to 32 bytes)
+    if (Buffer.byteLength(keyStr, 'utf-8') === 24) {
+      return crypto.createHash('sha256').update(keyStr, 'utf-8').digest();
+    }
+
+    throw new Error(
+      'MASTER_ENCRYPTION_KEY must be a 64-character HEX string (256-bit) or a 32-character UTF-8 string.',
+    );
   }
 
   /**
    * 3-Tier Hybrid Encryption:
    * 1. Generates ephemeral 256-bit DEK & 96-bit (12 bytes) GCM Nonce
    * 2. Encrypts payload with AES-256-GCM (confidentiality + 128-bit auth tag)
-   * 3. Wraps DEK with 3DES-EDE3-CBC (key wrapping)
+   * 3. Wraps DEK with AES-256-CBC using 256-bit Master Key
    */
   encrypt(plaintext: string): EncryptedDataBundle {
     const dek = crypto.randomBytes(32);
@@ -39,16 +58,16 @@ export class CryptoService {
     ciphertext += cipher.final('base64');
     const tag = cipher.getAuthTag();
 
-    const desIv = crypto.randomBytes(8);
-    const desCipher = crypto.createCipheriv(
-      'des-ede3-cbc',
-      this.kek3Des,
-      desIv,
+    const kekIv = crypto.randomBytes(16);
+    const kekCipher = crypto.createCipheriv(
+      'aes-256-cbc',
+      this.masterKey,
+      kekIv,
     );
     const wrappedDek = Buffer.concat([
-      desIv,
-      desCipher.update(dek),
-      desCipher.final(),
+      kekIv,
+      kekCipher.update(dek),
+      kekCipher.final(),
     ]).toString('base64');
 
     return {
@@ -61,22 +80,22 @@ export class CryptoService {
 
   /**
    * Decryption & Integrity Verification:
-   * 1. Unwraps DEK via 3DES-EDE3-CBC
+   * 1. Unwraps DEK via AES-256-CBC
    * 2. Decrypts AES-256-GCM and verifies 128-bit Auth Tag (throws on tamper)
    */
   decrypt(bundle: EncryptedDataBundle): string {
     const wrappedDekBuffer = Buffer.from(bundle.wrappedDek, 'base64');
-    const desIv = wrappedDekBuffer.subarray(0, 8);
-    const encryptedDek = wrappedDekBuffer.subarray(8);
+    const kekIv = wrappedDekBuffer.subarray(0, 16);
+    const encryptedDek = wrappedDekBuffer.subarray(16);
 
-    const desDecipher = crypto.createDecipheriv(
-      'des-ede3-cbc',
-      this.kek3Des,
-      desIv,
+    const kekDecipher = crypto.createDecipheriv(
+      'aes-256-cbc',
+      this.masterKey,
+      kekIv,
     );
     const dek = Buffer.concat([
-      desDecipher.update(encryptedDek),
-      desDecipher.final(),
+      kekDecipher.update(encryptedDek),
+      kekDecipher.final(),
     ]);
 
     const decipher = crypto.createDecipheriv(
