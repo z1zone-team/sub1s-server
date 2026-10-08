@@ -50,7 +50,9 @@ function loadOptional<T>(file: string): T[] {
 }
 
 async function main(): Promise<void> {
-  process.loadEnvFile?.('.env');
+  if (existsSync('.env')) {
+    process.loadEnvFile?.('.env');
+  }
   const prisma = new PrismaClient();
   try {
     const lines = readJson<LineJson[]>(join(OUT_DIR, 'lines.json'));
