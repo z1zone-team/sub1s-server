@@ -35,7 +35,8 @@
     "build:edges": "ts-node src/scripts/build-edges.ts",
     "refine:congestion": "ts-node src/scripts/refine-congestion.ts",
     "verify:stations-kakao": "ts-node src/scripts/verify-stations-kakao.ts",
-    "verify:routes-odsay": "ts-node src/scripts/verify-routes-odsay.ts"
+    "verify:routes-odsay": "ts-node src/scripts/verify-routes-odsay.ts",
+    "batch:data-check": "ts-node src/scripts/batch-data-check.ts"
   },
   "dependencies": {
     "@clerk/backend": "^3.23.0",

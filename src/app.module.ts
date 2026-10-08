@@ -15,6 +15,7 @@ import { PrismaModule } from './infra/prisma/prisma.module';
 import { RoutingModule } from './infra/routing/routing.module';
 import { SecurityModule } from './infra/security/security.module';
 import { WebsocketModule } from './infra/websocket/websocket.module';
+import { DataUpdateBatchModule } from './infra/batch/data-update-batch.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { WebsocketModule } from './infra/websocket/websocket.module';
     TravelModule,
     RankingModule,
     VoiceModule,
+    DataUpdateBatchModule,
   ],
 })
 export class AppModule {}

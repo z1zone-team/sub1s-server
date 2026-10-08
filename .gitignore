@@ -19,3 +19,4 @@ Thumbs.db
 
 # Raw public data (local only, never committed)
 /data-raw/
+/data-snapshots/
