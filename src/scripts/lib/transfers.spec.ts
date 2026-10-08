@@ -136,4 +136,21 @@ describe('supplementTransfers', () => {
     expect(ab?.recommendedDoors).toEqual(['2-1', '4-4']);
     expect(ac?.recommendedDoors).toEqual(['2-1', '4-4']);
   });
+
+  it('applies calibrated walking duration and marks as not estimated when overrides are provided', () => {
+    const overrides = {
+      'A_1>C_1': 180,
+    };
+    const { transfers } = supplementTransfers(nodes, known, {}, overrides);
+    const ac = transfers.find(
+      (t) => t.fromStationId === 'A_1' && t.toStationId === 'C_1',
+    );
+    const ca = transfers.find(
+      (t) => t.fromStationId === 'C_1' && t.toStationId === 'A_1',
+    );
+    expect(ac?.walkingDurationSec).toBe(180);
+    expect(ac?.isEstimated).toBe(false);
+    expect(ca?.walkingDurationSec).toBe(180);
+    expect(ca?.isEstimated).toBe(false);
+  });
 });
