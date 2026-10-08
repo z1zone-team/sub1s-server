@@ -26,6 +26,8 @@
     "supplement:transfers": "ts-node src/scripts/supplement-transfers.ts",
     "fetch:kric-raw": "ts-node src/scripts/fetch-kric-raw.ts",
     "fetch:kric-convenience": "ts-node src/scripts/fetch-kric-convenience.ts",
+    "fetch:kric-timetables": "ts-node src/scripts/fetch-kric-timetables.ts",
+    "refine:edges": "ts-node src/scripts/refine-edges-timetable.ts",
     "seed:subway": "ts-node src/scripts/seed-subway-graph.ts",
     "verify:subway-data": "ts-node src/scripts/verify-subway-data.ts",
     "graph:measure": "node --expose-gc -r ts-node/register src/scripts/measure-graph.ts",
