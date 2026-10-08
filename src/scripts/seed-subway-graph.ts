@@ -42,6 +42,9 @@ interface TransferJson {
   toStationId: string;
   walkingDurationSec: number;
   isEstimated?: boolean;
+  recommendedDoors?: string[];
+  hasStairs?: boolean;
+  hasEscalator?: boolean;
 }
 
 function loadOptional<T>(file: string): T[] {

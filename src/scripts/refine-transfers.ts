@@ -1,4 +1,4 @@
-import { mkdirSync, writeFileSync } from 'fs';
+import { existsSync, mkdirSync, writeFileSync } from 'fs';
 import { join } from 'path';
 import {
   LINE_META,
@@ -26,6 +26,7 @@ interface TransferOut {
   fromStationId: string;
   toStationId: string;
   walkingDurationSec: number;
+  recommendedDoors?: string[];
 }
 
 // transfer destination route names in the dataset -> candidate line keys in the station list
@@ -59,6 +60,11 @@ function main(): void {
   const byKey = new Map<string, StationRecord>(
     stations.map((s) => [`${s.lineId}|${normalize(s.stationName)}`, s]),
   );
+
+  const stairsPath = join(RAW_DIR, 'kric-stairs.json');
+  const stairsMap: Record<string, { doors?: string[] }> = existsSync(stairsPath)
+    ? readJson(stairsPath)
+    : {};
 
   const directed = new Map<string, TransferOut>();
   const unresolved: string[] = [];
@@ -100,6 +106,7 @@ function main(): void {
       fromStationId: from.id,
       toStationId: to.id,
       walkingDurationSec: toSeconds(row.TRAS_REQ_HR),
+      recommendedDoors: stairsMap[from.id]?.doors ?? [],
     };
     const key = `${entry.fromStationId}>${entry.toStationId}`;
     const existing = directed.get(key);
@@ -119,6 +126,7 @@ function main(): void {
         fromStationId: entry.toStationId,
         toStationId: entry.fromStationId,
         walkingDurationSec: entry.walkingDurationSec,
+        recommendedDoors: stairsMap[entry.toStationId]?.doors ?? [],
       });
     }
   }

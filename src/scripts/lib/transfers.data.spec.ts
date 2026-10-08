@@ -60,4 +60,17 @@ describe('refined transfers.json', () => {
       isEstimated: false,
     });
   });
+
+  it('populates recommendedDoors from KRIC stairs data on transfer edges', () => {
+    const withDoors = transfers.filter(
+      (t) => t.recommendedDoors && t.recommendedDoors.length > 0,
+    );
+    expect(withDoors.length).toBeGreaterThanOrEqual(200);
+
+    const cityHall = transfers.find(
+      (t) => t.fromStationId === '02_201' && t.toStationId === '01_132',
+    );
+    expect(cityHall?.recommendedDoors).toBeDefined();
+    expect(cityHall?.recommendedDoors).toContain('2-1');
+  });
 });

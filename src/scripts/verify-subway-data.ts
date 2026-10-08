@@ -40,6 +40,11 @@ async function main(): Promise<void> {
       );
     }
     if (failed) process.exitCode = 1;
+
+    const withDoorsInDb = await prisma.transferEdge.count({
+      where: { recommendedDoors: { isEmpty: false } },
+    });
+    console.log(`INFO transfers with recommendedDoors: db=${withDoorsInDb}`);
   } finally {
     await prisma.$disconnect();
   }

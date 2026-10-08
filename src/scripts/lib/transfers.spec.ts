@@ -119,4 +119,21 @@ describe('supplementTransfers', () => {
     expect(second.added).toEqual([]);
     expect(second.transfers).toEqual(first.transfers);
   });
+
+  it('populates recommendedDoors from stairsMap when provided', () => {
+    const stairsMap = {
+      A_1: { doors: ['2-1', '4-4'] },
+      B_1: { doors: ['1-1'] },
+      C_1: { doors: ['3-2'] },
+    };
+    const { transfers } = supplementTransfers(nodes, known, stairsMap);
+    const ab = transfers.find(
+      (t) => t.fromStationId === 'A_1' && t.toStationId === 'B_1',
+    );
+    const ac = transfers.find(
+      (t) => t.fromStationId === 'A_1' && t.toStationId === 'C_1',
+    );
+    expect(ab?.recommendedDoors).toEqual(['2-1', '4-4']);
+    expect(ac?.recommendedDoors).toEqual(['2-1', '4-4']);
+  });
 });

@@ -3,7 +3,10 @@ import { RouteMode } from '../../../domain/subway/models/route';
 import { CongestionLevel } from '../../../domain/congestion/models/congestion';
 
 export class PathSegmentDto {
-  @ApiProperty({ description: '노선 ID (지하철 호선 또는 WALK)', example: '02' })
+  @ApiProperty({
+    description: '노선 ID (지하철 호선 또는 WALK)',
+    example: '02',
+  })
   lineId!: string;
 
   @ApiProperty({
@@ -36,8 +39,17 @@ export class PathSegmentDto {
   @ApiProperty({ description: '구간 이동 거리 (km)', example: 12.5 })
   distanceKm!: number;
 
-  @ApiProperty({ description: '추천 탑승 칸 번호 (1~10, 도보 시 0)', example: 4 })
+  @ApiProperty({
+    description: '추천 탑승 칸 번호 (1~10, 도보 시 0)',
+    example: 4,
+  })
   recommendedCarNo!: number;
+
+  @ApiPropertyOptional({
+    description: '환승/하차 추천 도어 번호 목록 (예: ["2-1", "4-4"])',
+    example: ['2-1', '4-4'],
+  })
+  recommendedDoors?: string[];
 
   @ApiProperty({ description: '약냉방칸 여부', example: false })
   isWeakAirConditioned!: boolean;
@@ -69,7 +81,8 @@ export class PathSegmentDto {
 
 export class SubwayRouteOptionDto {
   @ApiProperty({
-    description: '경로 모드 (OPTIMAL, COMFORTABLE, PERSONAL, CHEAPEST, ONLY_WALK)',
+    description:
+      '경로 모드 (OPTIMAL, COMFORTABLE, PERSONAL, CHEAPEST, ONLY_WALK)',
     example: 'OPTIMAL',
   })
   mode!: RouteMode;

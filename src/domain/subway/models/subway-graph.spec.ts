@@ -102,6 +102,25 @@ describe('SubwayGraph', () => {
     expect(estimated.transfersFrom(b)[0].isEstimated).toBe(true);
   });
 
+  it('carries recommendedDoors on a transfer when provided', () => {
+    const withDoors = new SubwayGraph({
+      ...data,
+      transfers: [
+        {
+          fromStationId: 'T_B',
+          toStationId: 'U_B',
+          walkingDurationSec: 60,
+          recommendedDoors: ['2-1', '4-4'],
+        },
+      ],
+    });
+    const b = withDoors.indexOf('T_B') as number;
+    expect(withDoors.transfersFrom(b)[0].recommendedDoors).toEqual([
+      '2-1',
+      '4-4',
+    ]);
+  });
+
   it('is immutable', () => {
     const a = graph.indexOf('T_A') as number;
     expect(Object.isFrozen(graph.edgesFrom(a))).toBe(true);
