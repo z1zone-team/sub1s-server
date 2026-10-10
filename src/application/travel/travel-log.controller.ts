@@ -19,6 +19,7 @@ import {
   TravelStatsResponseDto,
 } from './dto';
 import { TravelLogService } from './travel-log.service';
+import { kstNowIso } from '../../common/utils/kst';
 
 @ApiTags('Travel')
 @ApiBearerAuth('clerk-auth')
@@ -43,7 +44,7 @@ export class TravelLogController {
     return {
       success: true,
       data,
-      timestamp: new Date().toISOString(),
+      timestamp: kstNowIso(),
     };
   }
 
@@ -61,7 +62,7 @@ export class TravelLogController {
     return {
       success: true,
       data,
-      timestamp: new Date().toISOString(),
+      timestamp: kstNowIso(),
     };
   }
 
@@ -79,7 +80,7 @@ export class TravelLogController {
     return {
       success: true,
       data,
-      timestamp: new Date().toISOString(),
+      timestamp: kstNowIso(),
     };
   }
 
@@ -97,7 +98,7 @@ export class TravelLogController {
     return {
       success: true,
       data,
-      timestamp: new Date().toISOString(),
+      timestamp: kstNowIso(),
     };
   }
 }

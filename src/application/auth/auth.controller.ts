@@ -12,6 +12,7 @@ import { AuthService } from './auth.service';
 import { AuthSyncRequestDto } from './dto/auth-sync-request.dto';
 import { AuthSyncResponseDto } from './dto/auth-sync-response.dto';
 import { UserProfileResponseDto } from './dto/user-profile-response.dto';
+import { kstNowIso } from '../../common/utils/kst';
 
 @ApiTags('Auth')
 @ApiBearerAuth('clerk-auth')
@@ -35,7 +36,7 @@ export class AuthController {
     return {
       success: true,
       data,
-      timestamp: new Date().toISOString(),
+      timestamp: kstNowIso(),
     };
   }
 
@@ -53,7 +54,7 @@ export class AuthController {
     return {
       success: true,
       data,
-      timestamp: new Date().toISOString(),
+      timestamp: kstNowIso(),
     };
   }
 }

@@ -4,6 +4,7 @@ import { ApiResponse } from '../../common/interfaces/api-response.interface';
 import { CongestionService } from './congestion.service';
 import { TrainCongestionQueryDto } from './dto/train-congestion-query.dto';
 import { TrainCongestionResponseDto } from './dto/train-congestion-response.dto';
+import { kstNowIso } from '../../common/utils/kst';
 
 @ApiTags('Congestion')
 @Controller('v1/congestion')
@@ -25,7 +26,7 @@ export class CongestionController {
     return {
       success: true,
       data,
-      timestamp: new Date().toISOString(),
+      timestamp: kstNowIso(),
     };
   }
 }

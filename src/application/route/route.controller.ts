@@ -4,6 +4,7 @@ import { ApiResponse } from '../../common/interfaces/api-response.interface';
 import { RouteSearchRequestDto } from './dto/route-search-request.dto';
 import { RouteSearchResultDto } from './dto/route-search-response.dto';
 import { RouteService } from './route.service';
+import { kstNowIso } from '../../common/utils/kst';
 
 @ApiTags('Routes')
 @Controller('v1/routes')
@@ -27,7 +28,7 @@ export class RouteController {
     return {
       success: true,
       data,
-      timestamp: new Date().toISOString(),
+      timestamp: kstNowIso(),
     };
   }
 }

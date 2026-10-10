@@ -189,9 +189,22 @@ describe('RouteService', () => {
       departureAt: departureIso,
     });
 
-    // 120 seconds duration -> 09:02:00
+    // 120 seconds duration -> 09:02:00 UTC, returned in KST (+09:00) as 18:02:00
+    const arrival = result.options[0].estimatedArrivalTimestamp;
+    expect(arrival).toBe('2026-10-06T18:02:00.000+09:00');
+    expect(new Date(arrival).toISOString()).toBe('2026-10-06T09:02:00.000Z');
+  });
+
+  it('reads a departureAt without an offset as KST, not as the server time zone', async () => {
+    const result = await service.search({
+      originStationId: '02_222',
+      destinationStationId: '02_221',
+      departureAt: '2026-10-06T18:00:00',
+    });
+
+    // 18:00 KST + 120 seconds
     expect(result.options[0].estimatedArrivalTimestamp).toBe(
-      '2026-10-06T09:02:00.000Z',
+      '2026-10-06T18:02:00.000+09:00',
     );
   });
 

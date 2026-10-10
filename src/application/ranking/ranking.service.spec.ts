@@ -72,4 +72,63 @@ describe('RankingService', () => {
     expect(res.leaderboard).toHaveLength(1); // 3 total items, page 2 with limit 2 -> item 3
     expect(res.leaderboard[0].rank).toBe(3);
   });
+
+  describe('totalUsers and myPercentile', () => {
+    const rankOf = (count: number) =>
+      Array.from({ length: count }, (_, i) => ({
+        userId: `user-${i + 1}`,
+        totalPoints: 1000 - i,
+        totalDistanceKm: 10,
+        user: { nickname: `u${i + 1}`, profileImageUrl: null },
+      }));
+    const query = { periodType: 'MONTHLY' as const, periodKey: '2026-10' };
+
+    it('counts the users with a score in the period and rounds the percentile up', async () => {
+      // user-me is 2nd of 3: 2/3 = 66.7% -> top 67%
+      const res = await service.getRanking('user-me', query);
+
+      expect(res.totalUsers).toBe(3);
+      expect(res.myPercentile).toBe(67);
+    });
+
+    it('does not let floating point push an exact percentile up', async () => {
+      mockRankScoreRepo.findLeaderboard.mockResolvedValueOnce(rankOf(100));
+
+      const res = await service.getRanking('user-12', query);
+
+      expect(res.myRank).toBe(12);
+      expect(res.myPercentile).toBe(12);
+    });
+
+    it('is top 100% for the last place and top 1% for first of many', async () => {
+      mockRankScoreRepo.findLeaderboard.mockResolvedValue(rankOf(2481));
+
+      expect((await service.getRanking('user-2481', query)).myPercentile).toBe(100);
+      expect((await service.getRanking('user-1', query)).myPercentile).toBe(1);
+    });
+
+    it('omits the percentile when the user has no score in the period', async () => {
+      const res = await service.getRanking('user-without-score', query);
+
+      expect(res.myRank).toBe(0);
+      expect(res.totalUsers).toBe(3);
+      expect(res.myPercentile).toBeUndefined();
+    });
+
+    it('reports zero users for an empty period without dividing by zero', async () => {
+      mockRankScoreRepo.findLeaderboard.mockResolvedValueOnce([]);
+
+      const res = await service.getRanking('user-me', query);
+
+      expect(res.totalUsers).toBe(0);
+      expect(res.myPercentile).toBeUndefined();
+    });
+
+    it('counts all users even when the page shows only some of them', async () => {
+      const res = await service.getRanking('user-me', { ...query, page: 1, limit: 1 });
+
+      expect(res.leaderboard).toHaveLength(1);
+      expect(res.totalUsers).toBe(3);
+    });
+  });
 });

@@ -8,6 +8,7 @@ import { ApiResponse } from '../../common/interfaces/api-response.interface';
 import { StationLookupResultDto } from './dto/place-search-response.dto';
 import { StationLookupQueryDto } from './dto/station-lookup-query.dto';
 import { PlaceService } from './place.service';
+import { kstNowIso } from '../../common/utils/kst';
 
 @ApiTags('Stations')
 @Controller('v1/stations')
@@ -32,6 +33,6 @@ export class StationController {
     @Query() query: StationLookupQueryDto,
   ): Promise<ApiResponse<StationLookupResultDto>> {
     const data = await this.placeService.findStations(query.ids);
-    return { success: true, data, timestamp: new Date().toISOString() };
+    return { success: true, data, timestamp: kstNowIso() };
   }
 }

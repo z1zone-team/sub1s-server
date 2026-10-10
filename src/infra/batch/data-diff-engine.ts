@@ -18,6 +18,7 @@ import {
   KRIC_NAME_ALIASES,
   normalize,
 } from '../../scripts/lib/subway-common';
+import { kstNowIso } from '../../common/utils/kst';
 
 export class DataDiffEngine {
   private static readonly DEFAULT_SUBWAY_DIR = join(
@@ -88,7 +89,7 @@ export class DataDiffEngine {
     edges: EdgeSnapshotItem[],
     transfers: TransferSnapshotItem[],
     version = '1.0.0',
-    createdAt = new Date().toISOString(),
+    createdAt = kstNowIso(),
   ): SubwayDataSnapshot {
     const lines = new Set(stations.map((s) => s.lineId));
     const contentHash = this.computeSnapshotHash(stations, edges, transfers);
@@ -367,7 +368,7 @@ export class DataDiffEngine {
       hasChanges,
       baselineHash: baseline.contentHash,
       currentHash: current.contentHash,
-      checkedAt: new Date().toISOString(),
+      checkedAt: kstNowIso(),
       summary: {
         baselineStations: baseline.summary.stationCount,
         currentStations: current.summary.stationCount,

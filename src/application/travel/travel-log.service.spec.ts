@@ -23,7 +23,7 @@ describe('TravelLogService', () => {
     upsertPlaceholder: jest.Mock;
   };
   let mockRouteService: { search: jest.Mock };
-  let mockCryptoService: { encrypt: jest.Mock };
+  let mockCryptoService: { encrypt: jest.Mock; decrypt: jest.Mock };
   let mockGraphService: { getGraph: jest.Mock };
   let mockTrackingRepo: { findById: jest.Mock };
   let mockGateway: {
@@ -85,6 +85,7 @@ describe('TravelLogService', () => {
     };
 
     mockCryptoService = {
+      decrypt: jest.fn(),
       encrypt: jest.fn().mockReturnValue({
         ciphertext: 'enc-cipher',
         iv: 'iv-base64',
@@ -92,6 +93,13 @@ describe('TravelLogService', () => {
         wrappedDek: 'dek-wrapped',
       }),
     };
+
+    mockCryptoService.decrypt.mockImplementation(
+      ({ ciphertext }: { ciphertext: string }) => {
+        if (!(ciphertext in payloads)) throw new Error('cannot decrypt');
+        return JSON.stringify(payloads[ciphertext]);
+      },
+    );
 
     mockGraphService = {
       getGraph: jest.fn().mockReturnValue(testGraph),
@@ -120,6 +128,47 @@ describe('TravelLogService', () => {
     }).compile();
 
     service = module.get<TravelLogService>(TravelLogService);
+  });
+
+
+  // Saved route payloads, keyed by the fake ciphertext of each log.
+  const payloads: Record<string, unknown> = {};
+  const segment = (
+    lineId: string,
+    distanceKm: number,
+    durationSec: number,
+    isExpress = false,
+  ) => ({ lineId, distanceKm, durationSec, isExpress });
+  const savedLog = (
+    id: string,
+    createdAtIso: string,
+    totalDistanceKm: number,
+    payload?: unknown,
+    overrides: Record<string, unknown> = {},
+  ) => {
+    if (payload !== undefined) payloads[id] = payload;
+    return {
+      id,
+      originStationId: '09_907',
+      destStationId: '09_925',
+      totalDistanceKm,
+      transferCount: 0,
+      createdAt: new Date(createdAtIso),
+      originStation: { stationName: '가양', lineId: '09' },
+      destStation: { stationName: '신논현', lineId: '09' },
+      encryptedRoutePayload: payload === undefined ? null : id,
+      iv: payload === undefined ? null : 'iv',
+      authTag: payload === undefined ? null : 'tag',
+      wrappedDek: payload === undefined ? null : 'dek',
+      ...overrides,
+    };
+  };
+  const freezeNow = (iso: string) =>
+    jest.spyOn(Date, 'now').mockReturnValue(Date.parse(iso));
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+    for (const key of Object.keys(payloads)) delete payloads[key];
   });
 
   describe('createLog', () => {
@@ -244,6 +293,38 @@ describe('TravelLogService', () => {
       expect(res.earnedPoints).toBe(10);
     });
 
+
+    it('keys the ranking month by the KST calendar month, not the server month', async () => {
+      // 2026-11-01 00:30 KST is still 2026-10-31 in UTC
+      freezeNow('2026-10-31T15:30:00Z');
+
+      await service.createLog('user-1', {
+        originStationId: '02_222',
+        destStationId: '02_221',
+      });
+
+      expect(mockTravelLogRepo.saveTravelWithScores).toHaveBeenCalledWith(
+        expect.objectContaining({ monthlyKey: '2026-11' }),
+      );
+      expect(mockGateway.sendRankingUpdate).toHaveBeenCalledWith(
+        'user-1',
+        expect.objectContaining({ periodKey: '2026-11' }),
+      );
+    });
+
+    it('still keys the previous month one minute before KST midnight', async () => {
+      freezeNow('2026-10-31T14:59:00Z'); // 23:59 KST on Oct 31
+
+      await service.createLog('user-1', {
+        originStationId: '02_222',
+        destStationId: '02_221',
+      });
+
+      expect(mockTravelLogRepo.saveTravelWithScores).toHaveBeenCalledWith(
+        expect.objectContaining({ monthlyKey: '2026-10' }),
+      );
+    });
+
     it('throws NOT_FOUND when station id is unknown', async () => {
       await expect(
         service.createLog('user-1', {
@@ -277,6 +358,67 @@ describe('TravelLogService', () => {
       expect(timeline.totalDistanceKm).toBe(1.0);
       expect(timeline.logs[0].originStationName).toBe('강남');
       expect(timeline.logs[0].destStationName).toBe('역삼');
+    });
+
+    it('returns the lines, express flag and ride time from the saved route', async () => {
+      mockTravelLogRepo.findTimelineLogs.mockResolvedValueOnce([
+        savedLog('t1', '2026-10-06T10:00:00Z', 14.6, {
+          segments: [
+            segment('WALK', 0.3, 200),
+            segment('09', 14.6, 1440, true),
+            segment('03', 6.9, 900),
+            segment('09', 1.0, 100),
+          ],
+        }),
+      ]);
+
+      const { logs } = await service.getTimeline('user-1', { year: 2026, month: 10 });
+
+      expect(logs[0].lineIds).toEqual(['09', '03']);
+      expect(logs[0].isExpress).toBe(true);
+      expect(logs[0].durationSec).toBe(1440 + 900 + 100);
+    });
+
+    it('returns traveledAt in KST (+09:00)', async () => {
+      mockTravelLogRepo.findTimelineLogs.mockResolvedValueOnce([
+        savedLog('t2', '2026-10-06T10:00:00Z', 1),
+      ]);
+
+      const { logs } = await service.getTimeline('user-1', { year: 2026, month: 10 });
+
+      expect(logs[0].traveledAt).toBe('2026-10-06T19:00:00.000+09:00');
+    });
+
+    it('falls back to the origin line and an estimate when the route cannot be read', async () => {
+      mockTravelLogRepo.findTimelineLogs.mockResolvedValueOnce([
+        savedLog('no-payload', '2026-10-06T10:00:00Z', 10),
+        savedLog('broken', '2026-10-06T11:00:00Z', 20, undefined, {
+          encryptedRoutePayload: 'not-in-payloads',
+          iv: 'iv',
+          authTag: 'tag',
+          wrappedDek: 'dek',
+        }),
+        savedLog('walk-only', '2026-10-06T12:00:00Z', 2, { segments: [segment('WALK', 2, 1500)] }),
+      ]);
+
+      const { logs } = await service.getTimeline('user-1', { year: 2026, month: 10 });
+
+      for (const log of logs) {
+        expect(log.lineIds).toEqual(['09']);
+        expect(log.isExpress).toBe(false);
+      }
+      expect(logs.map((l) => l.durationSec)).toEqual([1100, 2200, 220]);
+    });
+
+    it('queries the KST calendar month, whatever the server time zone', async () => {
+      await service.getTimeline('user-1', { year: 2026, month: 10 });
+      await service.getTimeline('user-1', { year: 2026, month: 12 });
+
+      const calls = mockTravelLogRepo.findTimelineLogs.mock.calls as [string, Date, Date][];
+      expect(calls[0][1].toISOString()).toBe('2026-09-30T15:00:00.000Z');
+      expect(calls[0][2].toISOString()).toBe('2026-10-31T15:00:00.000Z');
+      expect(calls[1][1].toISOString()).toBe('2026-11-30T15:00:00.000Z');
+      expect(calls[1][2].toISOString()).toBe('2026-12-31T15:00:00.000Z');
     });
   });
 
@@ -329,6 +471,128 @@ describe('TravelLogService', () => {
       expect(stats.transferCount).toBe(0);
       expect(stats.mostVisitedStations).toEqual([]);
       expect(stats.mostUsedLineId).toBeUndefined();
+    });
+
+    it('sums the ride time and distance per line from the saved routes, longest first', async () => {
+      mockTravelLogRepo.findStatsLogs.mockResolvedValueOnce([
+        savedLog('s1', '2026-10-06T10:00:00Z', 14.6, {
+          segments: [segment('09', 14.6, 1440, true)],
+        }),
+        savedLog('s2', '2026-10-05T10:00:00Z', 6.9, {
+          segments: [segment('WALK', 0.2, 150), segment('03', 6.9, 900)],
+        }),
+        savedLog('s3', '2026-10-02T10:00:00Z', 14.6, {
+          segments: [segment('09', 14.6, 1500, true)],
+        }),
+        savedLog('unreadable', '2026-10-01T10:00:00Z', 5),
+      ]);
+
+      const stats = await service.getTravelStats('user-1', { period: 'MONTH' });
+
+      expect(stats.lineBreakdown).toEqual([
+        { lineId: '09', distanceKm: 29.2, rideDurationSec: 2940 },
+        { lineId: '03', distanceKm: 6.9, rideDurationSec: 900 },
+      ]);
+    });
+
+    it('uses the saved route time for the total ride time and estimates only where it is missing', async () => {
+      mockTravelLogRepo.findStatsLogs.mockResolvedValueOnce([
+        savedLog('r1', '2026-10-06T10:00:00Z', 14.6, { segments: [segment('09', 14.6, 1440)] }),
+        savedLog('r2', '2026-10-05T10:00:00Z', 10),
+      ]);
+
+      const stats = await service.getTravelStats('user-1', { period: 'MONTH' });
+
+      expect(stats.totalRideDurationSec).toBe(1440 + 1100);
+    });
+
+    it('builds 7 daily buckets for WEEK on KST days and starts the period at KST midnight', async () => {
+      freezeNow('2026-10-11T05:00:00Z'); // Sun 14:00 KST
+      mockTravelLogRepo.findStatsLogs.mockResolvedValueOnce([
+        // 2026-10-11 01:00 KST is still 10-10 in UTC; it belongs to the KST day 10-11
+        savedLog('w1', '2026-10-10T16:00:00Z', 5),
+        savedLog('w2', '2026-10-11T02:00:00Z', 2.5),
+        savedLog('w3', '2026-10-05T01:00:00Z', 1.2),
+      ]);
+
+      const stats = await service.getTravelStats('user-1', { period: 'WEEK' });
+
+      expect(stats.buckets.map((b) => b.key)).toEqual([
+        '2026-10-05',
+        '2026-10-06',
+        '2026-10-07',
+        '2026-10-08',
+        '2026-10-09',
+        '2026-10-10',
+        '2026-10-11',
+      ]);
+      expect(stats.buckets[0]).toEqual({ key: '2026-10-05', distanceKm: 1.2, rideCount: 1 });
+      expect(stats.buckets[5]).toEqual({ key: '2026-10-10', distanceKm: 0, rideCount: 0 });
+      expect(stats.buckets[6]).toEqual({ key: '2026-10-11', distanceKm: 7.5, rideCount: 2 });
+
+      const [, startDate] = mockTravelLogRepo.findStatsLogs.mock.calls[0] as [string, Date];
+      expect(startDate.toISOString()).toBe('2026-10-04T15:00:00.000Z'); // 10-05 00:00 KST
+    });
+
+    it('builds one bucket per KST day of the month for MONTH', async () => {
+      freezeNow('2026-10-11T05:00:00Z');
+      mockTravelLogRepo.findStatsLogs.mockResolvedValueOnce([
+        savedLog('m1', '2026-09-30T15:30:00Z', 3), // Oct 1 00:30 KST
+      ]);
+
+      const stats = await service.getTravelStats('user-1', { period: 'MONTH' });
+
+      expect(stats.buckets).toHaveLength(31);
+      expect(stats.buckets[0]).toEqual({ key: '2026-10-01', distanceKm: 3, rideCount: 1 });
+      expect(stats.buckets[30].key).toBe('2026-10-31');
+      const [, startDate] = mockTravelLogRepo.findStatsLogs.mock.calls[0] as [string, Date];
+      expect(startDate.toISOString()).toBe('2026-09-30T15:00:00.000Z');
+    });
+
+    it('builds 12 monthly buckets for YEAR and files a KST-new-year trip in January', async () => {
+      freezeNow('2026-10-11T05:00:00Z');
+      mockTravelLogRepo.findStatsLogs.mockResolvedValueOnce([
+        savedLog('y1', '2025-12-31T15:10:00Z', 4), // 2026-01-01 00:10 KST
+        savedLog('y2', '2026-10-06T10:00:00Z', 6),
+      ]);
+
+      const stats = await service.getTravelStats('user-1', { period: 'YEAR' });
+
+      expect(stats.buckets.map((b) => b.key)).toEqual([
+        '2026-01', '2026-02', '2026-03', '2026-04', '2026-05', '2026-06',
+        '2026-07', '2026-08', '2026-09', '2026-10', '2026-11', '2026-12',
+      ]);
+      expect(stats.buckets[0]).toEqual({ key: '2026-01', distanceKm: 4, rideCount: 1 });
+      expect(stats.buckets[9]).toEqual({ key: '2026-10', distanceKm: 6, rideCount: 1 });
+      const [, startDate] = mockTravelLogRepo.findStatsLogs.mock.calls[0] as [string, Date];
+      expect(startDate.toISOString()).toBe('2025-12-31T15:00:00.000Z');
+    });
+
+    it('builds yearly buckets from the first recorded KST year for ALL', async () => {
+      freezeNow('2026-10-11T05:00:00Z');
+      mockTravelLogRepo.findStatsLogs.mockResolvedValueOnce([
+        savedLog('a1', '2024-12-31T16:00:00Z', 2), // 2025-01-01 01:00 KST
+        savedLog('a2', '2026-05-01T00:00:00Z', 3),
+      ]);
+
+      const stats = await service.getTravelStats('user-1', { period: 'ALL' });
+
+      expect(stats.buckets).toEqual([
+        { key: '2025', distanceKm: 2, rideCount: 1 },
+        { key: '2026', distanceKm: 3, rideCount: 1 },
+      ]);
+      expect(mockTravelLogRepo.findStatsLogs).toHaveBeenCalledWith('user-1', undefined);
+    });
+
+    it('returns no buckets for ALL when there are no logs and zero-filled ones for the other periods', async () => {
+      freezeNow('2026-10-11T05:00:00Z');
+      mockTravelLogRepo.findStatsLogs.mockResolvedValue([]);
+
+      expect((await service.getTravelStats('user-1', { period: 'ALL' })).buckets).toEqual([]);
+      const week = await service.getTravelStats('user-1', { period: 'WEEK' });
+      expect(week.buckets).toHaveLength(7);
+      expect(week.buckets.every((b) => b.distanceKm === 0 && b.rideCount === 0)).toBe(true);
+      expect((await service.getTravelStats('user-1', { period: 'WEEK' })).lineBreakdown).toEqual([]);
     });
   });
 

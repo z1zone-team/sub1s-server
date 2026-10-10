@@ -9,6 +9,7 @@ import {
 import { Response } from 'express';
 import { ApiErrorResponse } from '../interfaces/api-response.interface';
 import { BusinessException } from '../exceptions/business.exception';
+import { kstNowIso } from '../utils/kst';
 
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
@@ -59,7 +60,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     const payload: ApiErrorResponse = {
       success: false,
       error: { code, message, details },
-      timestamp: new Date().toISOString(),
+      timestamp: kstNowIso(),
     };
 
     response.status(status).json(payload);

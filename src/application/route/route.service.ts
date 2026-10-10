@@ -28,6 +28,7 @@ import {
   RouteSearchResultDto,
   SubwayRouteOptionDto,
 } from './dto/route-search-response.dto';
+import { parseIsoAsKst, toKstIso } from '../../common/utils/kst';
 
 const ALL_ROUTE_MODES: RouteMode[] = [
   'OPTIMAL',
@@ -48,7 +49,7 @@ export class RouteService {
 
   async search(dto: RouteSearchRequestDto): Promise<RouteSearchResultDto> {
     const departureDate = dto.departureAt
-      ? new Date(dto.departureAt)
+      ? parseIsoAsKst(dto.departureAt)
       : new Date();
     if (Number.isNaN(departureDate.getTime())) {
       throw new BusinessException(
@@ -410,9 +411,9 @@ export class RouteService {
     const totalDistanceKm =
       Math.round((result.totalDistanceKm + totalWalkDistanceKm) * 100) / 100;
 
-    const estimatedArrivalTimestamp = new Date(
+    const estimatedArrivalTimestamp = toKstIso(
       departureDate.getTime() + totalDurationSec * 1000,
-    ).toISOString();
+    );
 
     return {
       mode: result.mode,
@@ -436,9 +437,9 @@ export class RouteService {
   ): SubwayRouteOptionDto {
     const metrics =
       this.walkingService.calculateWalkMetrics(straightDistanceKm);
-    const estimatedArrivalTimestamp = new Date(
+    const estimatedArrivalTimestamp = toKstIso(
       departureDate.getTime() + metrics.durationSec * 1000,
-    ).toISOString();
+    );
 
     return {
       mode: 'ONLY_WALK',

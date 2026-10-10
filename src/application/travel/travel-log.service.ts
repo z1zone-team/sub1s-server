@@ -15,6 +15,7 @@ import {
 import {
   ITravelLogRepository,
   TRAVEL_LOG_REPOSITORY,
+  TravelLogWithStations,
 } from '../../domain/travel/ports/ITravelLogRepository';
 import {
   IUserRepository,
@@ -28,6 +29,7 @@ import {
   LineMapQueryDto,
   LineMapResponseDto,
   LineMapStationDto,
+  StatsBucketDto,
   TimelineQueryDto,
   TimelineResponseDto,
   TravelLogResponseDto,
@@ -35,6 +37,24 @@ import {
   TravelStatsResponseDto,
 } from './dto';
 import { getLineMetadata } from './constants/subway-lines.constant';
+import {
+  RideSegment,
+  parsePayloadDurationSec,
+  parseRideSegments,
+} from './route-payload';
+import {
+  kstAddDays,
+  kstDayKey,
+  kstDaysInMonth,
+  kstMidnight,
+  kstMonthKey,
+  kstNowIso,
+  kstStartOfMonth,
+  kstStartOfYear,
+  kstYearKey,
+  toKstDate,
+  toKstIso,
+} from '../../common/utils/kst';
 
 @Injectable()
 export class TravelLogService {
@@ -120,12 +140,12 @@ export class TravelLogService {
       originStationId: dto.originStationId,
       destStationId: dto.destStationId,
       segments: route.segments,
-      completedAt: new Date().toISOString(),
+      completedAt: kstNowIso(),
     });
     const encrypted = this.cryptoService.encrypt(sensitivePayload);
 
-    const now = new Date();
-    const monthlyKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+    // The ranking month is a KST calendar month, whatever time zone the server runs in.
+    const monthlyKey = kstMonthKey(Date.now());
 
     // Upsert User to maintain foreign key integrity
     await this.userRepo.upsertPlaceholder(userId);
@@ -179,8 +199,9 @@ export class TravelLogService {
     userId: string,
     query: TimelineQueryDto,
   ): Promise<TimelineResponseDto> {
-    const startOfMonth = new Date(query.year, query.month - 1, 1);
-    const endOfMonth = new Date(query.year, query.month, 1);
+    // The month is a KST calendar month, whatever time zone the server runs in.
+    const startOfMonth = kstStartOfMonth(query.year, query.month);
+    const endOfMonth = kstStartOfMonth(query.year, query.month + 1);
 
     const logs = await this.travelLogRepo.findTimelineLogs(
       userId,
@@ -193,17 +214,23 @@ export class TravelLogService {
     return {
       totalDistanceKm: Math.round(totalDistanceKm * 10) / 10,
       totalLogsCount: logs.length,
-      logs: logs.map((l) => ({
-        id: l.id,
-        originStationName: l.originStation
-          ? l.originStation.stationName
-          : l.originStationId,
-        destStationName: l.destStation
-          ? l.destStation.stationName
-          : l.destStationId,
-        distanceKm: l.totalDistanceKm,
-        traveledAt: l.createdAt.toISOString(),
-      })),
+      logs: logs.map((l) => {
+        const route = this.describeRoute(l);
+        return {
+          id: l.id,
+          originStationName: l.originStation
+            ? l.originStation.stationName
+            : l.originStationId,
+          destStationName: l.destStation
+            ? l.destStation.stationName
+            : l.destStationId,
+          distanceKm: l.totalDistanceKm,
+          traveledAt: toKstIso(l.createdAt),
+          lineIds: route.lineIds,
+          isExpress: route.isExpress,
+          durationSec: route.durationSec,
+        };
+      }),
     };
   }
 
@@ -212,7 +239,8 @@ export class TravelLogService {
     query: TravelStatsQueryDto,
   ): Promise<TravelStatsResponseDto> {
     const targetUserId = query.userId ?? currentUserId;
-    const startDate = this.calculateStartDate(query.period);
+    const nowMs = Date.now();
+    const startDate = this.calculateStartDate(query.period, nowMs);
 
     const logs = await this.travelLogRepo.findStatsLogs(targetUserId, startDate);
 
@@ -227,30 +255,24 @@ export class TravelLogService {
       { stationId: string; stationName: string; visitCount: number }
     >();
     const lineCountMap = new Map<string, number>();
+    const lineTotals = new Map<
+      string,
+      { distanceKm: number; rideDurationSec: number }
+    >();
 
     for (const l of logs) {
-      // 1. 소요시간 계산 (복호화 또는 거리 비례 1km당 110초)
-      let durationSec = 0;
-      if (l.encryptedRoutePayload && l.iv && l.authTag && l.wrappedDek) {
-        try {
-          const decrypted = this.cryptoService.decrypt({
-            ciphertext: l.encryptedRoutePayload,
-            iv: l.iv,
-            tag: l.authTag,
-            wrappedDek: l.wrappedDek,
-          });
-          const parsed = JSON.parse(decrypted);
-          if (typeof parsed.durationSec === 'number') {
-            durationSec = parsed.durationSec;
-          }
-        } catch {
-          // fallback
-        }
+      // 1. 탑승 시간과 호선별 거리·시간 (저장된 경로 구간 기준)
+      const route = this.describeRoute(l);
+      totalRideDurationSec += route.durationSec;
+      for (const segment of route.segments ?? []) {
+        const total = lineTotals.get(segment.lineId) ?? {
+          distanceKm: 0,
+          rideDurationSec: 0,
+        };
+        total.distanceKm += segment.distanceKm;
+        total.rideDurationSec += segment.durationSec;
+        lineTotals.set(segment.lineId, total);
       }
-      if (durationSec === 0) {
-        durationSec = Math.round(l.totalDistanceKm * 110);
-      }
-      totalRideDurationSec += durationSec;
 
       // 2. 방문 역 카운트
       const originName = l.originStation
@@ -305,6 +327,14 @@ export class TravelLogService {
       }
     }
 
+    const lineBreakdown = Array.from(lineTotals.entries())
+      .map(([lineId, total]) => ({
+        lineId,
+        distanceKm: Math.round(total.distanceKm * 10) / 10,
+        rideDurationSec: Math.round(total.rideDurationSec),
+      }))
+      .sort((a, b) => b.distanceKm - a.distanceKm);
+
     return {
       userId: targetUserId,
       period: query.period,
@@ -314,6 +344,8 @@ export class TravelLogService {
       totalRideDurationSec,
       mostVisitedStations,
       mostUsedLineId,
+      buckets: this.buildBuckets(query.period, logs, nowMs),
+      lineBreakdown,
     };
   }
 
@@ -386,17 +418,135 @@ export class TravelLogService {
     };
   }
 
-  private calculateStartDate(period: 'WEEK' | 'MONTH' | 'YEAR' | 'ALL'): Date | undefined {
-    const now = new Date();
+  // Period boundaries are KST calendar boundaries, whatever time zone the server runs in.
+  // WEEK is the last 7 KST days including today.
+  private calculateStartDate(
+    period: 'WEEK' | 'MONTH' | 'YEAR' | 'ALL',
+    nowMs: number = Date.now(),
+  ): Date | undefined {
+    const today = toKstDate(nowMs);
     if (period === 'WEEK') {
-      return new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+      return kstAddDays(nowMs, -6);
     }
     if (period === 'MONTH') {
-      return new Date(now.getFullYear(), now.getMonth(), 1);
+      return kstStartOfMonth(today.year, today.month);
     }
     if (period === 'YEAR') {
-      return new Date(now.getFullYear(), 0, 1);
+      return kstStartOfYear(today.year);
     }
     return undefined;
+  }
+
+  // Every slot of the period is present, filled with 0 when nothing was travelled.
+  private buildBuckets(
+    period: 'WEEK' | 'MONTH' | 'YEAR' | 'ALL',
+    logs: TravelLogWithStations[],
+    nowMs: number,
+  ): StatsBucketDto[] {
+    const keyOf =
+      period === 'YEAR'
+        ? kstMonthKey
+        : period === 'ALL'
+          ? kstYearKey
+          : kstDayKey;
+
+    const buckets = new Map<string, { distanceKm: number; rideCount: number }>();
+    for (const key of this.bucketKeys(period, logs, nowMs)) {
+      buckets.set(key, { distanceKm: 0, rideCount: 0 });
+    }
+    for (const l of logs) {
+      const bucket = buckets.get(keyOf(l.createdAt));
+      if (bucket) {
+        bucket.distanceKm += l.totalDistanceKm;
+        bucket.rideCount += 1;
+      }
+    }
+
+    return Array.from(buckets.entries()).map(([key, bucket]) => ({
+      key,
+      distanceKm: Math.round(bucket.distanceKm * 10) / 10,
+      rideCount: bucket.rideCount,
+    }));
+  }
+
+  private bucketKeys(
+    period: 'WEEK' | 'MONTH' | 'YEAR' | 'ALL',
+    logs: TravelLogWithStations[],
+    nowMs: number,
+  ): string[] {
+    const today = toKstDate(nowMs);
+    if (period === 'WEEK') {
+      return Array.from({ length: 7 }, (_, i) =>
+        kstDayKey(kstAddDays(nowMs, i - 6)),
+      );
+    }
+    if (period === 'MONTH') {
+      const days = kstDaysInMonth(today.year, today.month);
+      return Array.from({ length: days }, (_, i) =>
+        kstDayKey(kstMidnight(today.year, today.month, i + 1)),
+      );
+    }
+    if (period === 'YEAR') {
+      return Array.from({ length: 12 }, (_, i) =>
+        kstMonthKey(kstMidnight(today.year, i + 1, 1)),
+      );
+    }
+    if (logs.length === 0) return [];
+    const firstYear = Math.min(...logs.map((l) => toKstDate(l.createdAt).year));
+    const count = Math.max(today.year - firstYear + 1, 1);
+    return Array.from({ length: count }, (_, i) => String(firstYear + i));
+  }
+
+  // What a log's saved route says about the ride. Falls back to the origin line and an estimate when the
+  // route cannot be read (missing or undecryptable payload).
+  private describeRoute(log: TravelLogWithStations): {
+    segments?: RideSegment[];
+    lineIds: string[];
+    isExpress: boolean;
+    durationSec: number;
+  } {
+    const payload = this.readRoutePayload(log);
+    const segments = parseRideSegments(payload);
+
+    const originLineId =
+      log.originStation?.lineId ?? log.originStationId.split('_')[0];
+    const lineIds =
+      segments && segments.length > 0
+        ? Array.from(new Set(segments.map((s) => s.lineId)))
+        : originLineId
+          ? [originLineId]
+          : [];
+
+    let durationSec = parsePayloadDurationSec(payload) ?? 0;
+    if (durationSec === 0 && segments && segments.length > 0) {
+      durationSec = segments.reduce((sum, s) => sum + s.durationSec, 0);
+    }
+    if (durationSec === 0) {
+      durationSec = Math.round(log.totalDistanceKm * 110);
+    }
+
+    return {
+      segments,
+      lineIds,
+      isExpress: segments?.some((s) => s.isExpress) ?? false,
+      durationSec: Math.round(durationSec),
+    };
+  }
+
+  private readRoutePayload(log: TravelLogWithStations): unknown {
+    if (!log.encryptedRoutePayload || !log.iv || !log.authTag || !log.wrappedDek) {
+      return undefined;
+    }
+    try {
+      const decrypted = this.cryptoService.decrypt({
+        ciphertext: log.encryptedRoutePayload,
+        iv: log.iv,
+        tag: log.authTag,
+        wrappedDek: log.wrappedDek,
+      });
+      return JSON.parse(decrypted) as unknown;
+    } catch {
+      return undefined;
+    }
   }
 }

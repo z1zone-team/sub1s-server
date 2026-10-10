@@ -10,6 +10,7 @@ import { AuthUser, CurrentUser } from '../../infra/auth/current-user.decorator';
 import { ClerkAuthGuard } from '../../infra/auth/clerk-auth.guard';
 import { LineMapQueryDto, LineMapResponseDto } from './dto';
 import { TravelLogService } from './travel-log.service';
+import { kstNowIso } from '../../common/utils/kst';
 
 @ApiTags('Line Map')
 @ApiBearerAuth('clerk-auth')
@@ -32,7 +33,7 @@ export class LineMapController {
     return {
       success: true,
       data,
-      timestamp: new Date().toISOString(),
+      timestamp: kstNowIso(),
     };
   }
 }

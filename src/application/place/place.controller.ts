@@ -8,6 +8,7 @@ import { ApiResponse } from '../../common/interfaces/api-response.interface';
 import { PlaceSearchQueryDto } from './dto/place-search-query.dto';
 import { PlaceSearchResultDto } from './dto/place-search-response.dto';
 import { PlaceService } from './place.service';
+import { kstNowIso } from '../../common/utils/kst';
 
 @ApiTags('Places')
 @Controller('v1/places')
@@ -29,6 +30,6 @@ export class PlaceController {
     @Query() query: PlaceSearchQueryDto,
   ): Promise<ApiResponse<PlaceSearchResultDto>> {
     const data = await this.placeService.search(query);
-    return { success: true, data, timestamp: new Date().toISOString() };
+    return { success: true, data, timestamp: kstNowIso() };
   }
 }
