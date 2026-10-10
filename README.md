@@ -58,6 +58,21 @@ $ pnpm run test:e2e
 $ pnpm run test:cov
 ```
 
+## DB 마이그레이션
+
+스키마 변경은 Prisma Migrate 마이그레이션으로만 반영한다. 운영 DB에 `prisma db push`를 쓰지 않는다.
+
+1. `prisma/schema.prisma`를 수정한다.
+2. 로컬 DB에서 `pnpm prisma:migrate --name 설명`(`prisma migrate dev`)을 실행해 `prisma/migrations/<타임스탬프>_설명/migration.sql`을 만들고 함께 커밋한다. 이 명령은 임시(shadow) DB를 만들 수 있는 DB 계정이 필요하다.
+   - 컬럼 삭제, NOT NULL 추가처럼 기존 데이터에 영향을 주는 변경은 `--create-only`로 SQL만 만든 뒤 데이터 이전 SQL을 직접 추가한다.
+3. 스키마로 표현할 수 없는 인덱스(소문자 기준 유니크 같은 표현식 인덱스, 부분 유니크 등)는 마이그레이션 SQL에 직접 쓰고 이유와 함께 `prisma/sql/`에 남긴다. Prisma가 표현할 수 있는 것은 반드시 `schema.prisma`에 둔다 (스키마에 없는 인덱스는 `migrate dev`가 정리 대상으로 보고 삭제 마이그레이션을 만들 수 있다).
+4. PR의 CI가 빈 DB에 `prisma migrate deploy`를 적용하고, 결과가 `schema.prisma`와 같은지 `prisma migrate diff --exit-code`로 검사한다. 스키마만 바꾸고 마이그레이션을 빠뜨리면 CI가 실패한다.
+5. `main`에 머지되면 배포가 **서버 컨테이너를 교체하기 전에** `prisma migrate deploy`를 실행한다. 실패하면 배포가 중단되고 기존 서버가 그대로 유지된다. 배포가 겹치지 않도록 `flock`으로 하나씩 실행한다.
+
+마이그레이션이 먼저 적용되는 동안 이전 버전 서버가 새 스키마로 잠시 동작하므로, **컬럼 추가는 한 번에, 삭제나 이름 변경은 두 번에 나눠서**(먼저 새 코드 배포, 다음 릴리스에서 삭제) 한다.
+
+기준선 `20261010210000_init`은 Prisma Migrate 도입 시점의 스키마다. 이미 테이블이 있는 운영 DB는 첫 배포에서 `schema.prisma`와 차이가 없음을 확인한 뒤 이 기준선을 적용 완료로 등록한다(SQL은 실행하지 않음). 차이가 있으면 배포가 실패하므로 운영 DB를 `schema.prisma`에 맞춘 뒤 다시 배포한다.
+
 ## Deployment
 
 When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
