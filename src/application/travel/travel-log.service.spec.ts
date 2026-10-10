@@ -167,6 +167,7 @@ describe('TravelLogService', () => {
     it('reports a positive arrival delta and no bonus when the ride ran late', async () => {
       mockTrackingRepo.findById.mockResolvedValueOnce({
         sessionId: 'sess-late',
+        userId: 'user-1',
         createdAt: new Date(Date.now() - 720 * 1000), // 720s ridden (planned 120s)
       });
 
