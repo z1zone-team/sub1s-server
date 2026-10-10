@@ -16,9 +16,9 @@ import {
 } from './kst';
 
 describe('kst', () => {
-  // 2026-11-01 00:30 KST is 2026-10-31 15:30 UTC: the case a UTC server gets wrong.
+  // 2026-11-01 00:30 KST = 2026-10-31 15:30 UTC. UTC 서버가 틀리기 쉬운 경우
   const justAfterKstMidnight = new Date('2026-10-31T15:30:00Z');
-  // 2026-10-31 23:59:59 KST is 2026-10-31 14:59:59 UTC.
+  // 2026-10-31 23:59:59 KST = 2026-10-31 14:59:59 UTC
   const justBeforeKstMidnight = new Date('2026-10-31T14:59:59Z');
 
   it('reads the calendar date in KST, not in UTC', () => {

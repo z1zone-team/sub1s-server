@@ -20,10 +20,9 @@ interface VWorldBody {
   result?: { items?: VWorldItem[] };
 }
 
-// The V-World docs list `status` and `result` at the top level while its JSON samples nest them under `response`.
+// V-World 문서는 status, result가 최상위라고 하지만 JSON 예시는 response 아래에 있어 둘 다 처리한다
 type VWorldResponse = VWorldBody & { response?: VWorldBody };
 
-// Relays V-World search results without storing them. Any failure degrades to an empty list so station results still show.
 @Injectable()
 export class VWorldPlaceProvider implements IPlaceSearchProvider {
   private readonly logger = new Logger(VWorldPlaceProvider.name);

@@ -235,7 +235,6 @@ describe('TrackingService', () => {
           destinationStationId: '02_220',
           routeMode: 'OPTIMAL',
         });
-        // the alert goes to the session owner, not to everyone
         expect(mockGateway.sendOffRouteAlert).toHaveBeenCalledWith(
           USER_ID,
           expect.any(Object),

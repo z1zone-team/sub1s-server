@@ -84,7 +84,6 @@ describe('RankingService', () => {
     const query = { periodType: 'MONTHLY' as const, periodKey: '2026-10' };
 
     it('counts the users with a score in the period and rounds the percentile up', async () => {
-      // user-me is 2nd of 3: 2/3 = 66.7% -> top 67%
       const res = await service.getRanking('user-me', query);
 
       expect(res.totalUsers).toBe(3);
