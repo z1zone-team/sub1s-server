@@ -3,10 +3,9 @@ name: CI
 on:
   pull_request:
     branches: [main]
-  # deploy.yml calls this workflow so a push to main is verified before it is built and deployed
   workflow_call:
 
-# New pushes to a PR cancel the older run. Runs started from deploy.yml are never cancelled.
+# PR에 새 push가 오면 이전 실행을 취소한다. deploy.yml에서 호출한 실행은 취소하지 않는다
 concurrency:
   group: ci-${{ github.event_name == 'pull_request' && github.ref || github.run_id }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
@@ -19,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
-    # health and clerk-auth e2e need a real database; the other e2e suites mock Prisma
+    # health, clerk-auth e2e는 실제 DB가 필요하다
     services:
       postgres:
         image: pgvector/pgvector:pg16
@@ -58,11 +57,10 @@ jobs:
       - name: Generate Prisma client
         run: pnpm prisma generate
 
-      # The baseline migration creates the pgvector extension, so a bare database is enough
       - name: Apply migrations
         run: pnpm exec prisma migrate deploy
 
-      # Fails when schema.prisma was changed without a migration (or a migration changes more than the schema)
+      # schema.prisma만 바꾸고 마이그레이션을 빠뜨리면 실패한다
       - name: Check migrations match schema.prisma
         run: pnpm exec prisma migrate diff --from-url "$DATABASE_URL" --to-schema-datamodel prisma/schema.prisma --exit-code
 

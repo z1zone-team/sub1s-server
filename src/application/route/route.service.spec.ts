@@ -189,7 +189,7 @@ describe('RouteService', () => {
       departureAt: departureIso,
     });
 
-    // 120 seconds duration -> 09:02:00 UTC, returned in KST (+09:00) as 18:02:00
+    // 120초 소요: UTC 09:02:00을 KST 18:02:00으로 반환
     const arrival = result.options[0].estimatedArrivalTimestamp;
     expect(arrival).toBe('2026-10-06T18:02:00.000+09:00');
     expect(new Date(arrival).toISOString()).toBe('2026-10-06T09:02:00.000Z');
@@ -202,7 +202,6 @@ describe('RouteService', () => {
       departureAt: '2026-10-06T18:00:00',
     });
 
-    // 18:00 KST + 120 seconds
     expect(result.options[0].estimatedArrivalTimestamp).toBe(
       '2026-10-06T18:02:00.000+09:00',
     );

@@ -116,7 +116,6 @@ export class TravelLogService {
     if (dto.sessionId && this.trackingRepo) {
       try {
         const session = await this.trackingRepo.findById(dto.sessionId);
-        // Another user's session cannot earn this user's on-time bonus.
         if (session && session.userId === userId) {
           const actualSec = (Date.now() - session.createdAt.getTime()) / 1000;
           const plannedSec = route.totalDurationSec;
@@ -144,7 +143,6 @@ export class TravelLogService {
     });
     const encrypted = this.cryptoService.encrypt(sensitivePayload);
 
-    // The ranking month is a KST calendar month, whatever time zone the server runs in.
     const monthlyKey = kstMonthKey(Date.now());
 
     // Upsert User to maintain foreign key integrity
@@ -163,7 +161,6 @@ export class TravelLogService {
         encrypted,
       });
 
-    // The user gets their own points; everyone else only gets an anonymous "refetch the ranking" signal.
     try {
       this.gateway?.sendRankingUpdate(userId, {
         periodKey: monthlyKey,
@@ -199,7 +196,6 @@ export class TravelLogService {
     userId: string,
     query: TimelineQueryDto,
   ): Promise<TimelineResponseDto> {
-    // The month is a KST calendar month, whatever time zone the server runs in.
     const startOfMonth = kstStartOfMonth(query.year, query.month);
     const endOfMonth = kstStartOfMonth(query.year, query.month + 1);
 
@@ -418,8 +414,7 @@ export class TravelLogService {
     };
   }
 
-  // Period boundaries are KST calendar boundaries, whatever time zone the server runs in.
-  // WEEK is the last 7 KST days including today.
+  // 기간 경계는 서버 시간대가 아닌 KST 기준이고, WEEK는 오늘을 포함한 최근 7일이다
   private calculateStartDate(
     period: 'WEEK' | 'MONTH' | 'YEAR' | 'ALL',
     nowMs: number = Date.now(),
@@ -437,7 +432,6 @@ export class TravelLogService {
     return undefined;
   }
 
-  // Every slot of the period is present, filled with 0 when nothing was travelled.
   private buildBuckets(
     period: 'WEEK' | 'MONTH' | 'YEAR' | 'ALL',
     logs: TravelLogWithStations[],
@@ -497,8 +491,7 @@ export class TravelLogService {
     return Array.from({ length: count }, (_, i) => String(firstYear + i));
   }
 
-  // What a log's saved route says about the ride. Falls back to the origin line and an estimate when the
-  // route cannot be read (missing or undecryptable payload).
+  // 저장된 경로를 읽지 못하면 출발역 호선과 거리 기반 추정으로 대체한다
   private describeRoute(log: TravelLogWithStations): {
     segments?: RideSegment[];
     lineIds: string[];

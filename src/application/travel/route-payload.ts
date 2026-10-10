@@ -1,4 +1,3 @@
-// Reads the route segments saved (encrypted) with a travel log. Walking segments are not rides.
 export interface RideSegment {
   lineId: string;
   distanceKm: number;
@@ -16,7 +15,7 @@ function isFiniteNumber(value: unknown): value is number {
   return typeof value === 'number' && Number.isFinite(value);
 }
 
-// undefined when the payload has no segment list at all; an empty array when it only had walking.
+// 구간 목록이 없으면 undefined, 도보만 있으면 빈 배열
 export function parseRideSegments(payload: unknown): RideSegment[] | undefined {
   if (!isRecord(payload) || !Array.isArray(payload.segments)) return undefined;
 
@@ -31,7 +30,6 @@ export function parseRideSegments(payload: unknown): RideSegment[] | undefined {
   return rides;
 }
 
-// A duration stored directly on the payload, if any.
 export function parsePayloadDurationSec(payload: unknown): number | undefined {
   if (isRecord(payload) && isFiniteNumber(payload.durationSec)) {
     return payload.durationSec;

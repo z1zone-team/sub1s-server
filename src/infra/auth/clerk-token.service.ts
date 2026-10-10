@@ -13,7 +13,6 @@ import {
 import { MOCK_USER } from './mock-auth.guard';
 import { AuthUser } from './current-user.decorator';
 
-// Verifies a Clerk session token and resolves the user. Shared by the HTTP guard and the WebSocket handshake.
 @Injectable()
 export class ClerkTokenService {
   constructor(

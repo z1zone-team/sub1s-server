@@ -196,7 +196,7 @@ export class TrackingService {
     return this.toSessionDto(session, graph);
   }
 
-  // Another user's session is reported as missing, so a session id never reveals that it exists.
+  // 다른 사용자의 세션은 없는 세션처럼 응답해 세션 ID의 존재 여부가 드러나지 않게 한다
   private async findOwnedSession(
     userId: string,
     sessionId: string,

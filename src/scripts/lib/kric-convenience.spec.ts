@@ -10,7 +10,7 @@ import {
 } from './kric-convenience';
 import { RAW_DIR, StationRecord } from './subway-common';
 
-// data-raw/ is git-ignored local data, so this check is skipped where the raw files are not present (CI).
+// data-raw/는 git에 없는 로컬 데이터라 없는 환경(CI)에서는 건너뛴다
 const hasRawData = existsSync(join(RAW_DIR, 'kric-route-2.json'));
 
 describe('kric-convenience', () => {

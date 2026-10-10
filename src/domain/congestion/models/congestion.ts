@@ -2,7 +2,7 @@ import { KST_OFFSET_MS } from '../../../common/utils/kst';
 
 export type DayType = 'WEEKDAY' | 'SATURDAY' | 'SUNDAY';
 export type CongestionLevel = '여유' | '보통' | '혼잡';
-// STATISTICS: Seoul Metro published statistics. MOCK: no published data for the station, estimated by a model.
+// STATISTICS는 서울교통공사 공표 통계, MOCK은 통계가 없는 역과 시간대의 추정값
 export type CongestionSource = 'STATISTICS' | 'MOCK';
 
 // 30-minute slots from 05:30 to 25:00, as published by Seoul Metro

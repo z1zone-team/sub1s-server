@@ -131,7 +131,6 @@ describe('TravelLogService', () => {
   });
 
 
-  // Saved route payloads, keyed by the fake ciphertext of each log.
   const payloads: Record<string, unknown> = {};
   const segment = (
     lineId: string,
@@ -185,13 +184,11 @@ describe('TravelLogService', () => {
       expect(res.onTimeBonus).toBe(0);
       expect(res.currentTotalPoints).toBe(10);
       expect(res.monthlyTotalPoints).toBe(10);
-      // without a verified session the real ride time is unknown
       expect(res.rideDurationSec).toBeUndefined();
       expect(res.arrivalDeltaSec).toBeUndefined();
       expect(mockCryptoService.encrypt).toHaveBeenCalled();
       expect(mockTravelLogRepo.saveTravelWithScores).toHaveBeenCalled();
       expect(mockUserRepo.upsertPlaceholder).toHaveBeenCalledWith('user-1');
-      // the user gets their own points; everyone else only gets an anonymous signal
       expect(mockGateway.sendRankingUpdate).toHaveBeenCalledWith('user-1', {
         periodKey: expect.stringMatching(/^\d{4}-\d{2}$/),
         currentPoints: 10,
@@ -220,7 +217,6 @@ describe('TravelLogService', () => {
       expect(res.earnedPoints).toBe(30);
       expect(res.distancePoints).toBe(10);
       expect(res.onTimeBonus).toBe(20);
-      // ~110s ridden against 120s planned: about 10s early
       expect(res.rideDurationSec).toBeGreaterThanOrEqual(110);
       expect(res.rideDurationSec).toBeLessThanOrEqual(112);
       expect(res.arrivalDeltaSec).toBeGreaterThanOrEqual(-10);
@@ -231,7 +227,7 @@ describe('TravelLogService', () => {
       mockTrackingRepo.findById.mockResolvedValueOnce({
         sessionId: 'sess-late',
         userId: 'user-1',
-        createdAt: new Date(Date.now() - 720 * 1000), // 720s ridden (planned 120s)
+        createdAt: new Date(Date.now() - 720 * 1000),
       });
 
       const res = await service.createLog('user-1', {
@@ -281,7 +277,7 @@ describe('TravelLogService', () => {
       mockTrackingRepo.findById.mockResolvedValueOnce({
         sessionId: 'sess-other',
         userId: 'user-2',
-        createdAt: new Date(Date.now() - 110 * 1000), // would be on time
+        createdAt: new Date(Date.now() - 110 * 1000),
       });
 
       const res = await service.createLog('user-1', {
@@ -295,7 +291,6 @@ describe('TravelLogService', () => {
 
 
     it('keys the ranking month by the KST calendar month, not the server month', async () => {
-      // 2026-11-01 00:30 KST is still 2026-10-31 in UTC
       freezeNow('2026-10-31T15:30:00Z');
 
       await service.createLog('user-1', {
@@ -313,7 +308,7 @@ describe('TravelLogService', () => {
     });
 
     it('still keys the previous month one minute before KST midnight', async () => {
-      freezeNow('2026-10-31T14:59:00Z'); // 23:59 KST on Oct 31
+      freezeNow('2026-10-31T14:59:00Z');
 
       await service.createLog('user-1', {
         originStationId: '02_222',
@@ -507,9 +502,8 @@ describe('TravelLogService', () => {
     });
 
     it('builds 7 daily buckets for WEEK on KST days and starts the period at KST midnight', async () => {
-      freezeNow('2026-10-11T05:00:00Z'); // Sun 14:00 KST
+      freezeNow('2026-10-11T05:00:00Z');
       mockTravelLogRepo.findStatsLogs.mockResolvedValueOnce([
-        // 2026-10-11 01:00 KST is still 10-10 in UTC; it belongs to the KST day 10-11
         savedLog('w1', '2026-10-10T16:00:00Z', 5),
         savedLog('w2', '2026-10-11T02:00:00Z', 2.5),
         savedLog('w3', '2026-10-05T01:00:00Z', 1.2),
@@ -531,13 +525,13 @@ describe('TravelLogService', () => {
       expect(stats.buckets[6]).toEqual({ key: '2026-10-11', distanceKm: 7.5, rideCount: 2 });
 
       const [, startDate] = mockTravelLogRepo.findStatsLogs.mock.calls[0] as [string, Date];
-      expect(startDate.toISOString()).toBe('2026-10-04T15:00:00.000Z'); // 10-05 00:00 KST
+      expect(startDate.toISOString()).toBe('2026-10-04T15:00:00.000Z');
     });
 
     it('builds one bucket per KST day of the month for MONTH', async () => {
       freezeNow('2026-10-11T05:00:00Z');
       mockTravelLogRepo.findStatsLogs.mockResolvedValueOnce([
-        savedLog('m1', '2026-09-30T15:30:00Z', 3), // Oct 1 00:30 KST
+        savedLog('m1', '2026-09-30T15:30:00Z', 3),
       ]);
 
       const stats = await service.getTravelStats('user-1', { period: 'MONTH' });
@@ -552,7 +546,7 @@ describe('TravelLogService', () => {
     it('builds 12 monthly buckets for YEAR and files a KST-new-year trip in January', async () => {
       freezeNow('2026-10-11T05:00:00Z');
       mockTravelLogRepo.findStatsLogs.mockResolvedValueOnce([
-        savedLog('y1', '2025-12-31T15:10:00Z', 4), // 2026-01-01 00:10 KST
+        savedLog('y1', '2025-12-31T15:10:00Z', 4),
         savedLog('y2', '2026-10-06T10:00:00Z', 6),
       ]);
 
@@ -571,7 +565,7 @@ describe('TravelLogService', () => {
     it('builds yearly buckets from the first recorded KST year for ALL', async () => {
       freezeNow('2026-10-11T05:00:00Z');
       mockTravelLogRepo.findStatsLogs.mockResolvedValueOnce([
-        savedLog('a1', '2024-12-31T16:00:00Z', 2), // 2025-01-01 01:00 KST
+        savedLog('a1', '2024-12-31T16:00:00Z', 2),
         savedLog('a2', '2026-05-01T00:00:00Z', 3),
       ]);
 

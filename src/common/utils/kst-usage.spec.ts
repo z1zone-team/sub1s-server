@@ -1,8 +1,8 @@
 import { readdirSync, readFileSync, statSync } from 'fs';
 import { join, relative } from 'path';
 
-// Guard: server time must go through common/utils/kst.ts. These calls depend on the server's time zone
-// (or are UTC-only), which is how a UTC server ends up with month keys and day boundaries off by nine hours.
+// 가드: 서버 시간은 common/utils/kst.ts를 거쳐야 한다. 아래 호출은 서버 시간대에 따라 달라지거나 UTC 전용이라
+// UTC 서버에서 월 키와 날짜 경계가 9시간 어긋난다
 const FORBIDDEN: { pattern: RegExp; use: string }[] = [
   { pattern: /\.toISOString\(/, use: 'toKstIso() / kstNowIso()' },
   { pattern: /\.(getFullYear|getMonth|getDate|getDay|getHours|getMinutes|getSeconds|getMilliseconds)\(/, use: 'toKstDate() / kstDayKey() / kstMonthKey()' },
@@ -11,7 +11,7 @@ const FORBIDDEN: { pattern: RegExp; use: string }[] = [
   { pattern: /new Date\(\s*[\w.$]+\s*,/, use: 'kstMidnight() / kstStartOfMonth() / kstStartOfYear() (new Date(y, m, d) is server-local)' },
 ];
 
-// kst.ts itself, specs (they assert on instants), and the offline CLI scripts are exempt.
+// kst.ts 자신, spec, 오프라인 CLI 스크립트는 제외한다
 const isExempt = (file: string): boolean =>
   file.endsWith('.spec.ts') ||
   file.endsWith('.e2e-spec.ts') ||

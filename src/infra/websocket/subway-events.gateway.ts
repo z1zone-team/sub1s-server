@@ -31,19 +31,17 @@ export interface SmartAlertPayload {
   audioUrl?: string;
 }
 
-// Sent only to the user who earned the points.
 export interface RankingUpdatePayload {
   periodKey: string;
   currentPoints: number;
 }
 
-// Anonymous "the ranking changed, fetch it again" signal for every authenticated socket. Carries no user data.
+// 사용자 정보가 없는 익명 갱신 신호
 export interface RankingChangedPayload {
   periodType: 'MONTHLY' | 'ALL';
   periodKey: string;
 }
 
-// Every authenticated socket joins this room.
 const AUTHENTICATED_ROOM = 'authenticated';
 
 export interface EtaTickPayload {
@@ -88,7 +86,6 @@ export class SubwayEventsGateway
     return `train:${lineId}:${trainId}`;
   }
 
-  // Personal events (off-route alert, eta, score) go to this room, which only the authenticated user's sockets join.
   static getUserRoomKey(userId: string): string {
     return `user:${userId}`;
   }
@@ -102,8 +99,7 @@ export class SubwayEventsGateway
   }
 
   afterInit(server: Server): void {
-    // A socket without a token may connect and use the public congestion rooms only.
-    // A token that is present but invalid is refused.
+    // 토큰이 없으면 공개 소켓(혼잡도 룸만), 토큰이 있는데 잘못되면 거부한다
     server.use((socket, next) => {
       void this.authenticateHandshake(socket).then(
         () => next(),

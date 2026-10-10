@@ -24,16 +24,13 @@ import {
   StationSearchItemDto,
 } from './dto/place-search-response.dto';
 
-// Same-named nodes closer than this are one physical station (line 5 and Gyeongui-Jungang Yangpyeong are not).
 const SAME_STATION_RADIUS_KM = 0.5;
-// Matches the nearest-station search radius of route search, so a listed place is always routable.
+// 경로 탐색의 최근접역 반경과 같아서 목록의 장소는 항상 경로 탐색이 된다
 const NEAREST_STATION_RADIUS_KM = 2.5;
 const MIN_PLACE_QUERY_LENGTH = 2;
-// V-World category path of subway and railway station POIs (e.g. '철도시설 > 철도/지하철 > 일반철도역').
 const RAILWAY_CATEGORY = '철도/지하철';
 const UNKNOWN_LINE_COLOR = '#9CA3AF';
-// The source data names the GTX-A node "서울" while every other line calls the same station "서울역". The source name stays
-// in the data (the daily public-data diff compares against it), so only the names shown by search and lookup are corrected.
+// 원본 데이터에서 GTX-A 노드만 '서울'이다. 변경 감지 배치가 원본 이름과 비교하므로 데이터는 두고 표시 이름만 보정한다
 const STATION_DISPLAY_NAMES: Readonly<Record<string, string>> = {
   GA_X106: '서울역',
 };
@@ -63,8 +60,7 @@ export class PlaceService {
     private readonly walkingService: WalkingService,
   ) {}
 
-  // Lines are read on first use instead of at startup so the app boots without touching the database for them.
-  // A failed read is not cached, so the next request retries.
+  // 앱 시작 시 DB를 읽지 않도록 첫 요청 때 불러오고, 실패하면 다음 요청에서 다시 시도한다
   private ensureLines(): Promise<void> {
     this.linesLoaded ??= this.lineRepository.findAll().then(
       (lines) => {
@@ -91,7 +87,6 @@ export class PlaceService {
     return { items: [...stations, ...places] };
   }
 
-  // Returns one item per requested id, in request order, so the client can match items to what it stored.
   async findStations(ids: string[]): Promise<StationLookupResultDto> {
     await this.ensureLines();
     const graph = this.graphService.getGraph();
@@ -119,7 +114,6 @@ export class PlaceService {
   ): StationSearchItemDto[] {
     const keyword = this.normalize(rawQuery);
     if (!keyword) return [];
-    // "강남역" names a station, so only the exact station matches; "강남" is still a prefix search.
     const exactOnly = rawQuery.replace(/\s+/g, '').endsWith('역');
 
     return this.clusterStations(graph)
@@ -210,7 +204,6 @@ export class PlaceService {
     return [...byName.values()].flat();
   }
 
-  // One row per line node, like a map app's "서울역 1호선"; `lines` lists every line of the physical station.
   private toStationItem(
     node: StationRecord,
     cluster: StationCluster,
@@ -249,7 +242,7 @@ export class PlaceService {
     );
   }
 
-  // 0 exact, 1 prefix, 2 contains.
+  // 0 정확 일치, 1 앞부분 일치, 2 포함
   private matchRank(stationName: string, keyword: string): number | undefined {
     const name = this.normalize(stationName);
     if (name === keyword) return 0;
@@ -269,8 +262,7 @@ export class PlaceService {
     );
   }
 
-  // The external search also returns the station itself ("강남역 2호선", or "논현" categorised as a railway station);
-  // the STATION result already covers it. `stationNames` holds normalized station names.
+  // 외부 검색이 역 자체도 돌려주므로("강남역 2호선", 철도역으로 분류된 "논현") STATION 결과와 겹치는 것을 거른다
   private isStationPoi(
     place: ExternalPlace,
     stationNames: Set<string>,
@@ -283,7 +275,6 @@ export class PlaceService {
     return stationNames.has(this.normalize(stripped));
   }
 
-  // V-World can return the same place twice under different categories.
   private withoutDuplicates(places: ExternalPlace[]): ExternalPlace[] {
     const seen = new Set<string>();
     return places.filter((place) => {
