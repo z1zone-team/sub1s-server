@@ -1,6 +1,8 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { ApiOperation, ApiResponse as SwaggerResponse, ApiTags } from '@nestjs/swagger';
 import { ApiResponse } from '../../common/interfaces/api-response.interface';
+import { ClerkAuthGuard } from '../../infra/auth/clerk-auth.guard';
+import { AuthUser, CurrentUser } from '../../infra/auth/current-user.decorator';
 import {
   DeviateCheckRequestDto,
   OffRouteAlertDto,
@@ -11,6 +13,7 @@ import {
 import { TrackingService } from './tracking.service';
 
 @ApiTags('Tracking')
+@UseGuards(ClerkAuthGuard)
 @Controller('v1/routes/track')
 export class TrackingController {
   constructor(private readonly trackingService: TrackingService) {}
@@ -22,9 +25,10 @@ export class TrackingController {
   })
   @SwaggerResponse({ status: 201, description: '주행 세션 생성 성공' })
   async startTracking(
+    @CurrentUser() user: AuthUser,
     @Body() dto: StartTrackingRequestDto,
   ): Promise<ApiResponse<TrackingSessionDto>> {
-    const data = await this.trackingService.startTracking(dto);
+    const data = await this.trackingService.startTracking(user.id, dto);
     return {
       success: true,
       data,
@@ -40,9 +44,10 @@ export class TrackingController {
   })
   @SwaggerResponse({ status: 200, description: '정상 주행 또는 회차 경로 안내 반환' })
   async checkDeviate(
+    @CurrentUser() user: AuthUser,
     @Body() dto: DeviateCheckRequestDto,
   ): Promise<ApiResponse<OffRouteAlertDto | TrackingSessionDto>> {
-    const data = await this.trackingService.checkDeviate(dto);
+    const data = await this.trackingService.checkDeviate(user.id, dto);
     return {
       success: true,
       data,
@@ -57,9 +62,11 @@ export class TrackingController {
   })
   @SwaggerResponse({ status: 200, description: '위치 갱신 성공' })
   async reportLocation(
+    @CurrentUser() user: AuthUser,
     @Body() dto: ReportLocationRequestDto,
   ): Promise<ApiResponse<TrackingSessionDto>> {
     const data = await this.trackingService.reportLocation(
+      user.id,
       dto.sessionId,
       dto.currentStationId,
     );
@@ -78,9 +85,10 @@ export class TrackingController {
   @SwaggerResponse({ status: 200, description: '세션 정보 반환' })
   @SwaggerResponse({ status: 404, description: '세션을 찾을 수 없음' })
   async getSession(
+    @CurrentUser() user: AuthUser,
     @Param('sessionId') sessionId: string,
   ): Promise<ApiResponse<TrackingSessionDto>> {
-    const data = await this.trackingService.getSession(sessionId);
+    const data = await this.trackingService.getSession(user.id, sessionId);
     return {
       success: true,
       data,

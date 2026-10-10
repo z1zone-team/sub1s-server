@@ -11,6 +11,9 @@ import { RouteService } from '../route/route.service';
 import { TrackingService } from './tracking.service';
 
 describe('TrackingService', () => {
+  const USER_ID = 'user-1';
+  const OTHER_USER_ID = 'user-2';
+
   let service: TrackingService;
   let mockRouteService: { search: jest.Mock };
   let mockGraphService: { getGraph: jest.Mock };
@@ -171,7 +174,7 @@ describe('TrackingService', () => {
 
   describe('startTracking', () => {
     it('creates tracking session and extracts all intermediate stations', async () => {
-      const session = await service.startTracking({
+      const session = await service.startTracking(USER_ID, {
         routeOption: mockRouteOption,
       });
 
@@ -186,7 +189,7 @@ describe('TrackingService', () => {
 
     it('throws BAD_REQUEST when routeOption segments are empty', async () => {
       await expect(
-        service.startTracking({
+        service.startTracking(USER_ID, {
           routeOption: { ...mockRouteOption, segments: [] },
         }),
       ).rejects.toThrow(BusinessException);
@@ -195,11 +198,11 @@ describe('TrackingService', () => {
 
   describe('checkDeviate', () => {
     it('returns updated session when passenger is advancing on route', async () => {
-      const session = await service.startTracking({
+      const session = await service.startTracking(USER_ID, {
         routeOption: mockRouteOption,
       });
 
-      const result = await service.checkDeviate({
+      const result = await service.checkDeviate(USER_ID, {
         sessionId: session.sessionId,
         detectedStationId: '02_221',
       });
@@ -212,11 +215,11 @@ describe('TrackingService', () => {
     });
 
     it('returns off-route alert and recalculates reroute option within SLA when off route', async () => {
-      const session = await service.startTracking({
+      const session = await service.startTracking(USER_ID, {
         routeOption: mockRouteOption,
       });
 
-      const result = await service.checkDeviate({
+      const result = await service.checkDeviate(USER_ID, {
         sessionId: session.sessionId,
         detectedStationId: '02_223', // 교대 (wrong direction)
       });
@@ -232,19 +235,20 @@ describe('TrackingService', () => {
           destinationStationId: '02_220',
           routeMode: 'OPTIMAL',
         });
+        // the alert goes to the session owner, not to everyone
         expect(mockGateway.sendOffRouteAlert).toHaveBeenCalledWith(
-          session.sessionId,
+          USER_ID,
           expect.any(Object),
         );
       }
     });
 
     it('triggers immediate reroute when isUserConfirmed is true', async () => {
-      const session = await service.startTracking({
+      const session = await service.startTracking(USER_ID, {
         routeOption: mockRouteOption,
       });
 
-      const result = await service.checkDeviate({
+      const result = await service.checkDeviate(USER_ID, {
         sessionId: session.sessionId,
         detectedStationId: '02_223',
         isUserConfirmed: true,
@@ -259,7 +263,7 @@ describe('TrackingService', () => {
 
     it('throws NOT_FOUND when session does not exist', async () => {
       await expect(
-        service.checkDeviate({
+        service.checkDeviate(USER_ID, {
           sessionId: 'non-existent-session',
           detectedStationId: '02_222',
         }),
@@ -267,12 +271,12 @@ describe('TrackingService', () => {
     });
 
     it('throws NOT_FOUND when detected station does not exist in graph', async () => {
-      const session = await service.startTracking({
+      const session = await service.startTracking(USER_ID, {
         routeOption: mockRouteOption,
       });
 
       await expect(
-        service.checkDeviate({
+        service.checkDeviate(USER_ID, {
           sessionId: session.sessionId,
           detectedStationId: 'invalid_station_id',
         }),
@@ -282,15 +286,60 @@ describe('TrackingService', () => {
 
   describe('reportLocation and getSession', () => {
     it('updates current location and advances route', async () => {
-      const session = await service.startTracking({
+      const session = await service.startTracking(USER_ID, {
         routeOption: mockRouteOption,
       });
 
-      const updated = await service.reportLocation(session.sessionId, '02_221');
+      const updated = await service.reportLocation(USER_ID, session.sessionId, '02_221');
       expect(updated.currentStationId).toBe('02_221');
 
-      const fetched = await service.getSession(session.sessionId);
+      const fetched = await service.getSession(USER_ID, session.sessionId);
       expect(fetched.currentStationId).toBe('02_221');
+    });
+  });
+
+  describe('session ownership', () => {
+    const start = () =>
+      service.startTracking(USER_ID, { routeOption: mockRouteOption });
+
+    it("reports another user's session as not found for every operation", async () => {
+      const session = await start();
+
+      await expect(
+        service.getSession(OTHER_USER_ID, session.sessionId),
+      ).rejects.toMatchObject({ errorCode: 'SESSION_NOT_FOUND' });
+      await expect(
+        service.reportLocation(OTHER_USER_ID, session.sessionId, '02_221'),
+      ).rejects.toMatchObject({ errorCode: 'SESSION_NOT_FOUND' });
+      await expect(
+        service.checkDeviate(OTHER_USER_ID, {
+          sessionId: session.sessionId,
+          detectedStationId: '02_223',
+        }),
+      ).rejects.toMatchObject({ errorCode: 'SESSION_NOT_FOUND' });
+    });
+
+    it("does not change or alert on another user's session", async () => {
+      const session = await start();
+
+      await service
+        .checkDeviate(OTHER_USER_ID, {
+          sessionId: session.sessionId,
+          detectedStationId: '02_223',
+        })
+        .catch(() => undefined);
+
+      expect(mockGateway.sendOffRouteAlert).not.toHaveBeenCalled();
+      const fetched = await service.getSession(USER_ID, session.sessionId);
+      expect(fetched.isOffRoute).toBe(false);
+    });
+
+    it('lets the owner read the session', async () => {
+      const session = await start();
+
+      await expect(
+        service.getSession(USER_ID, session.sessionId),
+      ).resolves.toMatchObject({ sessionId: session.sessionId });
     });
   });
 });

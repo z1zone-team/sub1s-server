@@ -13,6 +13,8 @@ import { Server, Socket } from 'socket.io';
 import { CongestionService } from '../../application/congestion/congestion.service';
 import { TrainCongestionResponseDto } from '../../application/congestion/dto/train-congestion-response.dto';
 import { SubwayGraphService } from '../../domain/subway/services/subway-graph.service';
+import { ClerkTokenService } from '../auth/clerk-token.service';
+import { AuthUser } from '../auth/current-user.decorator';
 import { JoinTrainDto, LeaveTrainDto, ReportLocationDto } from './dto';
 
 export interface ActiveTrainRoom {
@@ -28,6 +30,21 @@ export interface SmartAlertPayload {
   recommendedDoor: string;
   audioUrl?: string;
 }
+
+// Sent only to the user who earned the points.
+export interface RankingUpdatePayload {
+  periodKey: string;
+  currentPoints: number;
+}
+
+// Anonymous "the ranking changed, fetch it again" signal for every authenticated socket. Carries no user data.
+export interface RankingChangedPayload {
+  periodType: 'MONTHLY' | 'ALL';
+  periodKey: string;
+}
+
+// Every authenticated socket joins this room.
+const AUTHENTICATED_ROOM = 'authenticated';
 
 export interface EtaTickPayload {
   sessionId: string;
@@ -64,10 +81,16 @@ export class SubwayEventsGateway
   constructor(
     private readonly congestionService: CongestionService,
     private readonly graphService: SubwayGraphService,
+    private readonly tokenService: ClerkTokenService,
   ) {}
 
   static getTrainRoomKey(lineId: string, trainId: string): string {
     return `train:${lineId}:${trainId}`;
+  }
+
+  // Personal events (off-route alert, eta, score) go to this room, which only the authenticated user's sockets join.
+  static getUserRoomKey(userId: string): string {
+    return `user:${userId}`;
   }
 
   onModuleInit(): void {
@@ -78,12 +101,27 @@ export class SubwayEventsGateway
     this.stopBroadcastTimer();
   }
 
-  afterInit(): void {
+  afterInit(server: Server): void {
+    // A socket without a token may connect and use the public congestion rooms only.
+    // A token that is present but invalid is refused.
+    server.use((socket, next) => {
+      void this.authenticateHandshake(socket).then(
+        () => next(),
+        (error: Error) => next(error),
+      );
+    });
     this.logger.log('SubwayEventsGateway initialized on namespace /ws/subway');
   }
 
   handleConnection(client: Socket): void {
     this.logger.debug(`Client connected: ${client.id}`);
+    const user = client.data?.user as AuthUser | undefined;
+    if (user) {
+      void client.join([
+        SubwayEventsGateway.getUserRoomKey(user.id),
+        AUTHENTICATED_ROOM,
+      ]);
+    }
   }
 
   handleDisconnect(client: Socket): void {
@@ -264,27 +302,25 @@ export class SubwayEventsGateway
     }
   }
 
-  sendEtaTick(sessionId: string, payload: EtaTickPayload): void {
-    if (this.server) {
-      this.server.emit('eta_tick', payload);
-    }
+  sendEtaTick(userId: string, payload: EtaTickPayload): void {
+    this.emitToUser(userId, 'eta_tick', payload);
   }
 
-  sendSmartAlert(sessionId: string, payload: SmartAlertPayload): void {
-    if (this.server) {
-      this.server.emit('smart_alert', payload);
-    }
+  sendSmartAlert(userId: string, payload: SmartAlertPayload): void {
+    this.emitToUser(userId, 'smart_alert', payload);
   }
 
-  sendOffRouteAlert(sessionId: string, payload: unknown): void {
-    if (this.server) {
-      this.server.emit('offroute_alert', payload);
-    }
+  sendOffRouteAlert(userId: string, payload: unknown): void {
+    this.emitToUser(userId, 'offroute_alert', payload);
   }
 
-  broadcastRankingUpdate(payload: unknown): void {
+  sendRankingUpdate(userId: string, payload: RankingUpdatePayload): void {
+    this.emitToUser(userId, 'ranking_update', payload);
+  }
+
+  broadcastRankingChanged(payload: RankingChangedPayload): void {
     if (this.server) {
-      this.server.emit('ranking_update', payload);
+      this.server.to(AUTHENTICATED_ROOM).emit('ranking_changed', payload);
     }
   }
 
@@ -299,6 +335,35 @@ export class SubwayEventsGateway
   isClientInRoom(clientId: string, roomKey: string): boolean {
     const room = this.trainRooms.get(roomKey);
     return room ? room.clientIds.has(clientId) : false;
+  }
+
+  private emitToUser(userId: string, event: string, payload: unknown): void {
+    if (this.server) {
+      this.server
+        .to(SubwayEventsGateway.getUserRoomKey(userId))
+        .emit(event, payload);
+    }
+  }
+
+  private async authenticateHandshake(socket: Socket): Promise<void> {
+    const token = this.extractToken(socket);
+    if (!token) return;
+    try {
+      socket.data.user = await this.tokenService.authenticate(token);
+    } catch {
+      throw new Error('UNAUTHORIZED');
+    }
+  }
+
+  private extractToken(socket: Socket): string | undefined {
+    const authToken: unknown = socket.handshake.auth?.token;
+    if (typeof authToken === 'string' && authToken.trim()) {
+      return authToken.trim();
+    }
+    const header = socket.handshake.headers?.authorization;
+    const match =
+      typeof header === 'string' ? header.match(/^Bearer\s+(.+)$/i) : null;
+    return match?.[1]?.trim() || undefined;
   }
 
   private removeClientFromRoom(clientId: string, roomKey: string): void {
