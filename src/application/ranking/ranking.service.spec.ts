@@ -131,4 +131,98 @@ describe('RankingService', () => {
       expect(res.totalUsers).toBe(3);
     });
   });
+
+  describe('ranking visibility', () => {
+    const query = { periodType: 'MONTHLY' as const, periodKey: '2026-10' };
+    const entry = (
+      userId: string,
+      points: number,
+      rankingVisibility: 'PUBLIC' | 'ANONYMOUS' | 'PRIVATE',
+    ) => ({
+      userId,
+      totalPoints: points,
+      totalDistanceKm: points / 10,
+      user: { nickname: `nick-${userId}`, profileImageUrl: `https://img/${userId}`, rankingVisibility },
+    });
+
+    it('leaves private users out of the leaderboard and the user count', async () => {
+      mockRankScoreRepo.findLeaderboard.mockResolvedValueOnce([
+        entry('a', 500, 'PUBLIC'),
+        entry('hidden', 400, 'PRIVATE'),
+        entry('me', 300, 'PUBLIC'),
+      ]);
+
+      const res = await service.getRanking('me', query);
+
+      expect(res.leaderboard.map((item) => item.userId)).toEqual(['a', 'me']);
+      expect(res.totalUsers).toBe(2);
+      expect(res.myRank).toBe(2);
+      expect(res.myPercentile).toBe(100);
+    });
+
+    it('masks the nickname, image and id of anonymous users but keeps their rank and points', async () => {
+      mockRankScoreRepo.findLeaderboard.mockResolvedValueOnce([
+        entry('anon', 500, 'ANONYMOUS'),
+        entry('me', 300, 'PUBLIC'),
+      ]);
+
+      const res = await service.getRanking('me', query);
+
+      expect(res.leaderboard[0]).toEqual({
+        rank: 1,
+        nickname: '익명',
+        totalPoints: 500,
+        totalDistanceKm: 50,
+        isMe: false,
+        isAnonymous: true,
+      });
+      expect(res.leaderboard[0]).not.toHaveProperty('userId');
+      expect(res.leaderboard[0]).not.toHaveProperty('profileImageUrl');
+    });
+
+    it('shows public users with their identity', async () => {
+      mockRankScoreRepo.findLeaderboard.mockResolvedValueOnce([entry('a', 500, 'PUBLIC'), entry('me', 300, 'PUBLIC')]);
+
+      const res = await service.getRanking('me', query);
+
+      expect(res.leaderboard[0]).toMatchObject({
+        userId: 'a',
+        nickname: 'nick-a',
+        profileImageUrl: 'https://img/a',
+        isMe: false,
+        isAnonymous: false,
+      });
+      expect(res.leaderboard[1]).toMatchObject({ userId: 'me', isMe: true });
+    });
+
+    it('never masks the requesting user, even when anonymous', async () => {
+      mockRankScoreRepo.findLeaderboard.mockResolvedValueOnce([entry('me', 500, 'ANONYMOUS')]);
+
+      const res = await service.getRanking('me', query);
+
+      expect(res.leaderboard[0]).toMatchObject({ userId: 'me', nickname: 'nick-me', isMe: true, isAnonymous: false });
+    });
+
+    it('still ranks a private user for themselves, counted among the visible users', async () => {
+      mockRankScoreRepo.findLeaderboard.mockResolvedValueOnce([
+        entry('a', 500, 'PUBLIC'),
+        entry('me', 300, 'PRIVATE'),
+        entry('b', 100, 'PUBLIC'),
+      ]);
+
+      const res = await service.getRanking('me', query);
+
+      expect(res.myRank).toBe(2);
+      expect(res.myPoints).toBe(300);
+      expect(res.totalUsers).toBe(3);
+      expect(res.leaderboard.map((item) => item.rank)).toEqual([1, 2, 3]);
+    });
+
+    it('treats a user without a visibility value as public', async () => {
+      const res = await service.getRanking('user-me', { ...query, limit: 10 });
+
+      expect(res.leaderboard.every((item) => !item.isAnonymous)).toBe(true);
+      expect(res.totalUsers).toBe(3);
+    });
+  });
 });

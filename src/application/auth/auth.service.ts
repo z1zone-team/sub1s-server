@@ -8,6 +8,7 @@ import { AuthSyncRequestDto } from './dto/auth-sync-request.dto';
 import { AuthSyncResponseDto } from './dto/auth-sync-response.dto';
 import { UserProfileResponseDto } from './dto/user-profile-response.dto';
 import { toKstIso } from '../../common/utils/kst';
+import { isSameNickname } from '../../domain/user/models/nickname';
 
 @Injectable()
 export class AuthService {
@@ -29,20 +30,27 @@ export class AuthService {
         profileImageUrl: dto?.profileImageUrl || authUser.profileImageUrl || null,
       });
     } else {
-      const updateData: { nickname?: string; profileImageUrl?: string } = {};
-      if (dto?.nickname) updateData.nickname = dto.nickname;
-      if (dto?.profileImageUrl) updateData.profileImageUrl = dto.profileImageUrl;
-      if (Object.keys(updateData).length > 0) {
-        user = await this.userRepo.updateUser(user.id, updateData);
+      if (
+        dto?.nickname &&
+        !user.nicknameCustomized &&
+        !isSameNickname(dto.nickname, user.nickname)
+      ) {
+        user = await this.userRepo.syncNickname(user.id, dto.nickname);
+      }
+      if (dto?.profileImageUrl) {
+        user = await this.userRepo.updateUser(user.id, {
+          profileImageUrl: dto.profileImageUrl,
+        });
       }
     }
 
     return {
       userId: user.id,
       clerkId: user.clerkId,
+      name: user.name,
       nickname: user.nickname,
       profileImageUrl: user.profileImageUrl ?? undefined,
-      isRankingPublic: user.isRankingPublic,
+      rankingVisibility: user.rankingVisibility,
     };
   }
 
@@ -58,12 +66,13 @@ export class AuthService {
     return {
       id: user.id,
       clerkId: user.clerkId,
+      name: user.name,
       nickname: user.nickname,
       profileImageUrl: user.profileImageUrl,
       totalDistanceMeters: Math.round((latestRankScore?.totalDistanceKm ?? 0) * 1000),
       currentStreakDays: 0,
       rankScore: latestRankScore?.totalPoints ?? 0,
-      isRankingPublic: user.isRankingPublic,
+      rankingVisibility: user.rankingVisibility,
       createdAt: toKstIso(user.createdAt),
     };
   }

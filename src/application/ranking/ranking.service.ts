@@ -5,6 +5,8 @@ import {
 } from '../../domain/ranking/ports/IRankScoreRepository';
 import { LeaderboardItemDto, RankingQueryDto, RankingResponseDto } from './dto';
 
+const ANONYMOUS_NICKNAME = '익명';
+
 @Injectable()
 export class RankingService {
   constructor(
@@ -21,23 +23,38 @@ export class RankingService {
       query.periodKey,
     );
 
+    const visible = scores.filter(
+      (item) =>
+        item.userId === userId || item.user?.rankingVisibility !== 'PRIVATE',
+    );
+
     let myRank = 0;
     let myPoints = 0;
 
-    const allRanked: LeaderboardItemDto[] = scores.map((item, index) => {
+    const allRanked: LeaderboardItemDto[] = visible.map((item, index) => {
       const rank = index + 1;
-      if (item.userId === userId) {
+      const isMe = item.userId === userId;
+      if (isMe) {
         myRank = rank;
         myPoints = item.totalPoints;
       }
 
-      return {
+      const base = {
         rank,
+        totalPoints: item.totalPoints,
+        totalDistanceKm: Math.round(item.totalDistanceKm * 10) / 10,
+        isMe,
+      };
+
+      if (!isMe && item.user?.rankingVisibility === 'ANONYMOUS') {
+        return { ...base, nickname: ANONYMOUS_NICKNAME, isAnonymous: true };
+      }
+      return {
+        ...base,
         userId: item.userId,
         nickname: item.user?.nickname ?? '알 수 없음',
         profileImageUrl: item.user?.profileImageUrl ?? undefined,
-        totalPoints: item.totalPoints,
-        totalDistanceKm: Math.round(item.totalDistanceKm * 10) / 10,
+        isAnonymous: false,
       };
     });
 
@@ -46,7 +63,7 @@ export class RankingService {
     const startIndex = (page - 1) * limit;
     const leaderboard = allRanked.slice(startIndex, startIndex + limit);
 
-    // Integer math so 12 of 100 is exactly 12, not 12.000000000000002 rounded up to 13.
+    // 부동소수점 오차로 12%가 13%로 올림되지 않도록 정수로 계산
     const totalUsers = allRanked.length;
     const myPercentile =
       myRank > 0 ? Math.ceil((myRank * 100) / totalUsers) : undefined;

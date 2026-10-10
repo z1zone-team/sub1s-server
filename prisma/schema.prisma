@@ -10,12 +10,24 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum RankingVisibility {
+  PUBLIC
+  ANONYMOUS
+  PRIVATE
+
+  @@map("ranking_visibility")
+}
+
 // 1. 사용자 모델 (Clerk 소셜 인증 연동)
 model User {
   id              String          @id @default(uuid()) @db.Uuid
   clerkId         String          @unique @map("clerk_id") @db.VarChar(128)
+  name            String?         @db.VarChar(50)
   nickname        String          @db.VarChar(50)
+  nicknameCustomized Boolean      @default(false) @map("nickname_customized")
   profileImageUrl String?         @map("profile_image_url") @db.VarChar(255)
+  rankingVisibility RankingVisibility @default(PUBLIC) @map("ranking_visibility")
+  // 사용 중단, rankingVisibility 사용
   isRankingPublic Boolean         @default(true) @map("is_ranking_public")
   createdAt       DateTime        @default(now()) @map("created_at") @db.Timestamptz
   updatedAt       DateTime        @default(now()) @updatedAt @map("updated_at") @db.Timestamptz

@@ -21,6 +21,9 @@ describe('ClerkAuthGuard', () => {
       upsertByClerkId: jest.fn(),
       updateUser: jest.fn(),
       upsertPlaceholder: jest.fn(),
+      updateProfile: jest.fn(),
+      isNicknameTaken: jest.fn(),
+      syncNickname: jest.fn(),
     };
 
     configService = {
@@ -75,6 +78,9 @@ describe('ClerkAuthGuard', () => {
       clerkId: 'user_clerk_real_123',
       nickname: '탐험가_al_123',
       profileImageUrl: null,
+      name: null,
+      nicknameCustomized: false,
+      rankingVisibility: 'PUBLIC',
       isRankingPublic: true,
       createdAt: new Date(),
       updatedAt: new Date(),
