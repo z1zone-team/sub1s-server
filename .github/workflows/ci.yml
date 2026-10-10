@@ -70,7 +70,7 @@ jobs:
         run: pnpm build
 
       - name: Unit tests
-        run: pnpm test --ci
+        run: pnpm test
 
       - name: E2E tests
-        run: pnpm test:e2e --ci
+        run: pnpm test:e2e
