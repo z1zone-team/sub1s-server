@@ -43,7 +43,8 @@ describe('AuthController', () => {
       clerkId: 'user_clerk_123',
       nickname: '철도매니아',
       profileImageUrl: 'https://avatar.url',
-      isRankingPublic: true,
+      name: null,
+      rankingVisibility: 'PUBLIC' as const,
     };
     authService.syncUser.mockResolvedValueOnce(mockSyncResult);
 
@@ -63,7 +64,8 @@ describe('AuthController', () => {
       totalDistanceMeters: 15400,
       currentStreakDays: 5,
       rankScore: 1200,
-      isRankingPublic: true,
+      name: null,
+      rankingVisibility: 'PUBLIC' as const,
       createdAt: '2026-10-07T00:00:00.000Z',
     };
     authService.getMe.mockResolvedValueOnce(mockProfileResult);

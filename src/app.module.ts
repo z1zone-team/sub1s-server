@@ -7,6 +7,7 @@ import { RankingModule } from './application/ranking/ranking.module';
 import { RouteModule } from './application/route/route.module';
 import { TrackingModule } from './application/tracking/tracking.module';
 import { TravelModule } from './application/travel/travel.module';
+import { UserModule } from './application/user/user.module';
 import { VoiceModule } from './application/voice/voice.module';
 import { SubwayModule } from './domain/subway/subway.module';
 import { DatabaseModule } from './infra/database/database.module';
@@ -36,6 +37,7 @@ import { DataUpdateBatchModule } from './infra/batch/data-update-batch.module';
     TrackingModule,
     TravelModule,
     RankingModule,
+    UserModule,
     VoiceModule,
     DataUpdateBatchModule,
   ],
