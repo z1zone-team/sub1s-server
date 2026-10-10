@@ -1,3 +1,5 @@
+import { KST_OFFSET_MS } from '../../../common/utils/kst';
+
 export type DayType = 'WEEKDAY' | 'SATURDAY' | 'SUNDAY';
 export type CongestionLevel = '여유' | '보통' | '혼잡';
 // STATISTICS: Seoul Metro published statistics. MOCK: no published data for the station, estimated by a model.
@@ -8,7 +10,6 @@ export const SLOT_COUNT = 39;
 export const SLOT_MINUTES = 30;
 export const FIRST_SLOT_MINUTE = 5 * 60 + 30;
 
-const KST_OFFSET_MS = 9 * 60 * 60 * 1000;
 const MINUTES_PER_DAY = 24 * 60;
 const MS_PER_DAY = MINUTES_PER_DAY * 60 * 1000;
 

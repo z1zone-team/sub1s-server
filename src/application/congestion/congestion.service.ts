@@ -8,6 +8,7 @@ import {
   CarCongestionDto,
   TrainCongestionResponseDto,
 } from './dto/train-congestion-response.dto';
+import { toKstIso } from '../../common/utils/kst';
 
 @Injectable()
 export class CongestionService {
@@ -73,7 +74,7 @@ export class CongestionService {
       averageRate,
       source: prediction.source,
       cars,
-      updatedAt: new Date(nowEpochMs).toISOString(),
+      updatedAt: toKstIso(nowEpochMs),
     };
   }
 }

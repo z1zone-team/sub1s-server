@@ -11,6 +11,7 @@ import {
   TrackingSessionDto,
 } from './dto';
 import { TrackingService } from './tracking.service';
+import { kstNowIso } from '../../common/utils/kst';
 
 @ApiTags('Tracking')
 @UseGuards(ClerkAuthGuard)
@@ -32,7 +33,7 @@ export class TrackingController {
     return {
       success: true,
       data,
-      timestamp: new Date().toISOString(),
+      timestamp: kstNowIso(),
     };
   }
 
@@ -51,7 +52,7 @@ export class TrackingController {
     return {
       success: true,
       data,
-      timestamp: new Date().toISOString(),
+      timestamp: kstNowIso(),
     };
   }
 
@@ -73,7 +74,7 @@ export class TrackingController {
     return {
       success: true,
       data,
-      timestamp: new Date().toISOString(),
+      timestamp: kstNowIso(),
     };
   }
 
@@ -92,7 +93,7 @@ export class TrackingController {
     return {
       success: true,
       data,
-      timestamp: new Date().toISOString(),
+      timestamp: kstNowIso(),
     };
   }
 }

@@ -10,6 +10,7 @@ import { AuthUser, CurrentUser } from '../../infra/auth/current-user.decorator';
 import { ClerkAuthGuard } from '../../infra/auth/clerk-auth.guard';
 import { RankingQueryDto, RankingResponseDto } from './dto';
 import { RankingService } from './ranking.service';
+import { kstNowIso } from '../../common/utils/kst';
 
 @ApiTags('Ranking')
 @ApiBearerAuth('clerk-auth')
@@ -34,7 +35,7 @@ export class RankingController {
     return {
       success: true,
       data,
-      timestamp: new Date().toISOString(),
+      timestamp: kstNowIso(),
     };
   }
 }

@@ -189,10 +189,10 @@ describe('RouteService', () => {
       departureAt: departureIso,
     });
 
-    // 120 seconds duration -> 09:02:00
-    expect(result.options[0].estimatedArrivalTimestamp).toBe(
-      '2026-10-06T09:02:00.000Z',
-    );
+    // 120 seconds duration -> 09:02:00 UTC, returned in KST (+09:00) as 18:02:00
+    const arrival = result.options[0].estimatedArrivalTimestamp;
+    expect(arrival).toBe('2026-10-06T18:02:00.000+09:00');
+    expect(new Date(arrival).toISOString()).toBe('2026-10-06T09:02:00.000Z');
   });
 
   it('populates recommendedDoors on segments when transferring', async () => {

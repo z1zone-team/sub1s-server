@@ -7,6 +7,7 @@ import { AuthUser } from '../../infra/auth/current-user.decorator';
 import { AuthSyncRequestDto } from './dto/auth-sync-request.dto';
 import { AuthSyncResponseDto } from './dto/auth-sync-response.dto';
 import { UserProfileResponseDto } from './dto/user-profile-response.dto';
+import { toKstIso } from '../../common/utils/kst';
 
 @Injectable()
 export class AuthService {
@@ -63,7 +64,7 @@ export class AuthService {
       currentStreakDays: 0,
       rankScore: latestRankScore?.totalPoints ?? 0,
       isRankingPublic: user.isRankingPublic,
-      createdAt: user.createdAt.toISOString(),
+      createdAt: toKstIso(user.createdAt),
     };
   }
 }
