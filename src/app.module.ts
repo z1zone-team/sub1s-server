@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { CongestionModule } from './application/congestion/congestion.module';
 import { HealthModule } from './application/health/health.module';
+import { PlaceModule } from './application/place/place.module';
 import { RankingModule } from './application/ranking/ranking.module';
 import { RouteModule } from './application/route/route.module';
 import { TrackingModule } from './application/tracking/tracking.module';
@@ -29,6 +30,7 @@ import { DataUpdateBatchModule } from './infra/batch/data-update-batch.module';
     SubwayModule,
     RoutingModule,
     RouteModule,
+    PlaceModule,
     CongestionModule,
     WebsocketModule,
     TrackingModule,
