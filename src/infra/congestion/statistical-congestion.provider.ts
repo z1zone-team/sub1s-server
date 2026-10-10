@@ -1,4 +1,5 @@
 import {
+  CongestionSource,
   DayType,
   clampPercent,
   serviceTime,
@@ -23,7 +24,7 @@ export interface CongestionData {
   records: readonly CongestionRecordData[];
 }
 
-export type RateSource = 'STATISTICS' | 'MOCK';
+export type RateSource = CongestionSource;
 
 export interface StationRate {
   ratePercent: number;

@@ -152,7 +152,23 @@ describe('RouteService', () => {
     expect(segment.recommendedCarNo).toBe(1);
     expect(segment.congestionLevel).toBe('보통');
     expect(segment.congestionRate).toBe(42);
+    expect(segment.congestionSource).toBe('STATISTICS');
     expect(segment.isWeakAirConditioned).toBe(false); // 2호선 약냉방 없음
+  });
+
+  it('marks segments predicted without published statistics as MOCK', async () => {
+    mockCongestionProvider.predictCars.mockReturnValue({
+      ratePercent: 30,
+      source: 'MOCK',
+      cars: [{ carNo: 1, rate: 30, level: '여유' }],
+    });
+
+    const result = await service.search({
+      originStationId: '02_222',
+      destinationStationId: '02_221',
+    });
+
+    expect(result.options[0].segments[0].congestionSource).toBe('MOCK');
   });
 
   it('orders requested routeMode at the top of options', async () => {
@@ -290,6 +306,9 @@ describe('RouteService', () => {
       expect(walkSegments.length).toBe(2); // First-mile + Last-mile
       expect(walkSegments[0].fromStationName).toBe('출발지 핀');
       expect(walkSegments[1].toStationName).toBe('목적지 빌딩');
+      expect(walkSegments.every((s) => s.congestionSource === undefined)).toBe(
+        true,
+      );
     });
 
     it('returns ONLY_WALK option when origin and destination coordinates are close (< 800m)', async () => {

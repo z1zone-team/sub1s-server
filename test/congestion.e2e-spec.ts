@@ -78,6 +78,7 @@ describe('Congestion (e2e)', () => {
     expect(res.body.data.trainId).toBe('2145');
     expect(res.body.data.stationId).toBe('02_222');
     expect(res.body.data.averageRate).toBeGreaterThanOrEqual(0);
+    expect(['STATISTICS', 'MOCK']).toContain(res.body.data.source);
     expect(res.body.data.cars).toHaveLength(10);
 
     const firstCar = res.body.data.cars[0];

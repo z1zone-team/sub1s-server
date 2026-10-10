@@ -33,6 +33,7 @@ describe('SubwayEventsGateway', () => {
     trainId: '2145',
     stationId: '02_222',
     averageRate: 55,
+    source: 'STATISTICS',
     cars: [
       { carNo: 1, rate: 50, level: '보통', isWeakAirConditioned: false },
       { carNo: 2, rate: 60, level: '보통', isWeakAirConditioned: false },

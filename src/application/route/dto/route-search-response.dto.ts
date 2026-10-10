@@ -1,6 +1,9 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { RouteMode } from '../../../domain/subway/models/route';
-import { CongestionLevel } from '../../../domain/congestion/models/congestion';
+import {
+  CongestionLevel,
+  CongestionSource,
+} from '../../../domain/congestion/models/congestion';
 
 export class PathSegmentDto {
   @ApiProperty({
@@ -62,6 +65,14 @@ export class PathSegmentDto {
 
   @ApiProperty({ description: '혼잡도 비율 (0~100%)', example: 52 })
   congestionRate!: number;
+
+  @ApiPropertyOptional({
+    description:
+      '혼잡도 출처 (STATISTICS: 서울교통공사 공표 통계, MOCK: 통계가 없는 역의 추정값). 도보 구간에는 없음',
+    example: 'STATISTICS',
+    enum: ['STATISTICS', 'MOCK'],
+  })
+  congestionSource?: CongestionSource;
 
   @ApiPropertyOptional({ description: '추정치 여부', example: false })
   isEstimated?: boolean;

@@ -71,6 +71,7 @@ export class CongestionService {
       trainId: query.trainId,
       stationId: query.stationId,
       averageRate,
+      source: prediction.source,
       cars,
       updatedAt: new Date(nowEpochMs).toISOString(),
     };

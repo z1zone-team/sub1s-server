@@ -1,5 +1,7 @@
 export type DayType = 'WEEKDAY' | 'SATURDAY' | 'SUNDAY';
 export type CongestionLevel = '여유' | '보통' | '혼잡';
+// STATISTICS: Seoul Metro published statistics. MOCK: no published data for the station, estimated by a model.
+export type CongestionSource = 'STATISTICS' | 'MOCK';
 
 // 30-minute slots from 05:30 to 25:00, as published by Seoul Metro
 export const SLOT_COUNT = 39;
