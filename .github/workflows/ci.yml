@@ -58,10 +58,13 @@ jobs:
       - name: Generate Prisma client
         run: pnpm prisma generate
 
-      - name: Create database schema
-        run: |
-          PGPASSWORD=ci psql -h localhost -U ci -d sub1s_ci -c 'CREATE EXTENSION IF NOT EXISTS vector;'
-          pnpm prisma db push --skip-generate
+      # The baseline migration creates the pgvector extension, so a bare database is enough
+      - name: Apply migrations
+        run: pnpm exec prisma migrate deploy
+
+      # Fails when schema.prisma was changed without a migration (or a migration changes more than the schema)
+      - name: Check migrations match schema.prisma
+        run: pnpm exec prisma migrate diff --from-url "$DATABASE_URL" --to-schema-datamodel prisma/schema.prisma --exit-code
 
       - name: Type check
         run: pnpm exec tsc --noEmit

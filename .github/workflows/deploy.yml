@@ -73,9 +73,29 @@ jobs:
           port: ${{ secrets.SSH_PORT || 22 }}
           script: |
             set -e
+            # 배포가 겹치면 마이그레이션과 컨테이너 교체가 뒤섞이므로 하나씩 순서대로 실행한다
+            exec 9>/tmp/sub1s-deploy.lock
+            flock -w 540 9
             cd ~/sub1s-deploy
             ./fetch-env.sh
             sudo docker compose pull server
+
+            # 스키마 변경은 서버 컨테이너를 교체하기 전에 적용한다. 실패하면 여기서 중단되어 기존 서버가 그대로 유지된다
+            if MIGRATE_OUT=$(sudo docker compose run --rm -T server npx prisma migrate deploy 2>&1); then
+              echo "$MIGRATE_OUT"
+            else
+              echo "$MIGRATE_OUT"
+              # P3005: 테이블은 있는데 마이그레이션 이력이 없는 DB (Prisma Migrate 도입 전 운영 DB).
+              # schema.prisma와 차이가 없을 때만 기준선을 적용된 것으로 등록하고, 차이가 있으면 여기서 배포를 중단한다
+              if ! echo "$MIGRATE_OUT" | grep -q "P3005"; then
+                exit 1
+              fi
+              echo "마이그레이션 이력이 없는 기존 DB: 스키마 차이를 확인한 뒤 기준선으로 등록한다"
+              sudo docker compose run --rm -T server sh -c 'npx prisma migrate diff --from-url "$DATABASE_URL" --to-schema-datamodel prisma/schema.prisma --exit-code'
+              sudo docker compose run --rm -T server npx prisma migrate resolve --applied 20261010210000_init
+              sudo docker compose run --rm -T server npx prisma migrate deploy
+            fi
+
             sudo docker compose up -d server
 
             echo "지하철 그래프 DB 시딩 동기화..."
