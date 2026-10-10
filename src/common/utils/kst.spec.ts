@@ -10,6 +10,7 @@ import {
   kstStartOfYear,
   kstNowIso,
   kstYearKey,
+  parseIsoAsKst,
   toKstDate,
   toKstIso,
 } from './kst';
@@ -91,5 +92,28 @@ describe('kst', () => {
 
   it('exposes the KST offset as nine hours', () => {
     expect(KST_OFFSET_MS).toBe(9 * 60 * 60 * 1000);
+  });
+
+  describe('parseIsoAsKst', () => {
+    it('reads a value without an offset as KST', () => {
+      expect(parseIsoAsKst('2026-10-06T18:00:00').toISOString()).toBe('2026-10-06T09:00:00.000Z');
+      expect(parseIsoAsKst('2026-10-06T18:00:00.500').toISOString()).toBe('2026-10-06T09:00:00.500Z');
+    });
+
+    it('reads a date-only value as KST midnight', () => {
+      expect(parseIsoAsKst('2026-10-06').toISOString()).toBe('2026-10-05T15:00:00.000Z');
+    });
+
+    it('keeps an explicit offset as written', () => {
+      expect(parseIsoAsKst('2026-10-06T09:00:00Z').toISOString()).toBe('2026-10-06T09:00:00.000Z');
+      expect(parseIsoAsKst('2026-10-06T18:00:00+09:00').toISOString()).toBe('2026-10-06T09:00:00.000Z');
+      expect(parseIsoAsKst('2026-10-06T05:00:00-04:00').toISOString()).toBe('2026-10-06T09:00:00.000Z');
+      expect(parseIsoAsKst('2026-10-06T18:00:00+0900').toISOString()).toBe('2026-10-06T09:00:00.000Z');
+    });
+
+    it('trims surrounding whitespace and returns an Invalid Date for garbage', () => {
+      expect(parseIsoAsKst(' 2026-10-06T18:00:00 ').toISOString()).toBe('2026-10-06T09:00:00.000Z');
+      expect(Number.isNaN(parseIsoAsKst('not-a-date').getTime())).toBe(true);
+    });
   });
 });

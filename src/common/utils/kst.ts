@@ -75,3 +75,16 @@ export function toKstIso(at: Date | number): string {
 export function kstNowIso(): string {
   return toKstIso(Date.now());
 }
+
+// Parses a client-sent ISO-8601 string. A value with an offset ('Z', '+09:00') is taken as written; a value
+// without one ('2026-10-06T18:00:00', '2026-10-06') is read as KST, not as the server's local time.
+// Returns an Invalid Date for unparseable input, like new Date().
+export function parseIsoAsKst(value: string): Date {
+  const trimmed = value.trim();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) {
+    return new Date(`${trimmed}T00:00:00+09:00`);
+  }
+  const timePart = trimmed.split('T')[1] ?? '';
+  const hasOffset = /(Z|[+-]\d{2}(:?\d{2})?)$/i.test(timePart);
+  return new Date(hasOffset ? trimmed : `${trimmed}+09:00`);
+}

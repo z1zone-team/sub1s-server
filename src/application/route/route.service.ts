@@ -28,7 +28,7 @@ import {
   RouteSearchResultDto,
   SubwayRouteOptionDto,
 } from './dto/route-search-response.dto';
-import { toKstIso } from '../../common/utils/kst';
+import { parseIsoAsKst, toKstIso } from '../../common/utils/kst';
 
 const ALL_ROUTE_MODES: RouteMode[] = [
   'OPTIMAL',
@@ -49,7 +49,7 @@ export class RouteService {
 
   async search(dto: RouteSearchRequestDto): Promise<RouteSearchResultDto> {
     const departureDate = dto.departureAt
-      ? new Date(dto.departureAt)
+      ? parseIsoAsKst(dto.departureAt)
       : new Date();
     if (Number.isNaN(departureDate.getTime())) {
       throw new BusinessException(
