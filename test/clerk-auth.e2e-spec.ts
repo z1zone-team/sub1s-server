@@ -117,7 +117,7 @@ describe('Clerk Authentication Live Integration (e2e)', () => {
     expect(res.body.success).toBe(true);
     expect(res.body.data.clerkId).toBe(testUserId);
     expect(res.body.data.nickname).toBe('실시간탐험가');
-    expect(res.body.data.isRankingPublic).toBe(true);
+    expect(res.body.data.rankingVisibility).toBe('PUBLIC');
   });
 
   it('실제 토큰으로 POST /api/v1/travel/log 호출 시 정상 인가 및 이동 기록 저장', async () => {
