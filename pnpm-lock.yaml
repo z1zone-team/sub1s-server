@@ -41,6 +41,9 @@ importers:
       class-validator:
         specifier: ^0.15.1
         version: 0.15.1
+      prisma:
+        specifier: ^5.22.0
+        version: 5.22.0
       reflect-metadata:
         specifier: ^0.2.0
         version: 0.2.2
@@ -99,9 +102,6 @@ importers:
       prettier:
         specifier: ^3.0.0
         version: 3.9.9
-      prisma:
-        specifier: ^5.22.0
-        version: 5.22.0
       socket.io-client:
         specifier: 4.7.0
         version: 4.7.0
