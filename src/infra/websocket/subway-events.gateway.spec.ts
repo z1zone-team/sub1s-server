@@ -4,12 +4,14 @@ import { CongestionService } from '../../application/congestion/congestion.servi
 import { TrainCongestionResponseDto } from '../../application/congestion/dto/train-congestion-response.dto';
 import { SubwayGraph } from '../../domain/subway/models/subway-graph';
 import { SubwayGraphService } from '../../domain/subway/services/subway-graph.service';
+import { ClerkTokenService } from '../auth/clerk-token.service';
 import { SubwayEventsGateway } from './subway-events.gateway';
 
 describe('SubwayEventsGateway', () => {
   let gateway: SubwayEventsGateway;
   let mockCongestionService: { getTrainCongestion: jest.Mock };
   let mockGraphService: { getGraph: jest.Mock };
+  let mockTokenService: { authenticate: jest.Mock };
   let mockServer: { to: jest.Mock; emit: jest.Mock };
   let mockEmitToRoom: jest.Mock;
 
@@ -68,6 +70,8 @@ describe('SubwayEventsGateway', () => {
       getGraph: jest.fn().mockReturnValue(testGraph),
     };
 
+    mockTokenService = { authenticate: jest.fn() };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         SubwayEventsGateway,
@@ -78,6 +82,10 @@ describe('SubwayEventsGateway', () => {
         {
           provide: SubwayGraphService,
           useValue: mockGraphService,
+        },
+        {
+          provide: ClerkTokenService,
+          useValue: mockTokenService,
         },
       ],
     }).compile();
@@ -313,38 +321,134 @@ describe('SubwayEventsGateway', () => {
       // Should not throw or leak handles
     });
 
-    it('sends eta_tick, smart_alert, offroute_alert, and ranking_update', () => {
-      gateway.sendEtaTick('sess-1', {
+    it('sends personal events only to the owner user room, never to everyone', () => {
+      gateway.sendEtaTick('user-1', {
         sessionId: 'sess-1',
         etaTimestamp: '2026-10-06T15:00:00Z',
         remainingSec: 180,
       });
-      expect(mockServer.emit).toHaveBeenCalledWith(
-        'eta_tick',
-        expect.any(Object),
-      );
-
-      gateway.sendSmartAlert('sess-1', {
+      gateway.sendSmartAlert('user-1', {
         type: 'TRANSFER_PREPARE',
         message: '잠시 후 환승역입니다.',
         recommendedDoor: '4-2',
       });
-      expect(mockServer.emit).toHaveBeenCalledWith(
+      gateway.sendOffRouteAlert('user-1', { offroute: true });
+      gateway.sendRankingUpdate('user-1', {
+        periodKey: '2026-10',
+        currentPoints: 2480,
+      });
+
+      expect(mockServer.to).toHaveBeenCalledTimes(4);
+      expect(mockServer.to).toHaveBeenCalledWith('user:user-1');
+      expect(mockServer.emit).not.toHaveBeenCalled();
+      expect(mockEmitToRoom.mock.calls.map(([event]) => event)).toEqual([
+        'eta_tick',
         'smart_alert',
-        expect.any(Object),
-      );
-
-      gateway.sendOffRouteAlert('sess-1', { offroute: true });
-      expect(mockServer.emit).toHaveBeenCalledWith(
         'offroute_alert',
-        expect.any(Object),
-      );
-
-      gateway.broadcastRankingUpdate({ userId: 'u1', rank: 1 });
-      expect(mockServer.emit).toHaveBeenCalledWith(
         'ranking_update',
-        expect.any(Object),
-      );
+      ]);
+    });
+
+    it('does not mix up the rooms of two users', () => {
+      gateway.sendOffRouteAlert('user-1', { a: 1 });
+      gateway.sendOffRouteAlert('user-2', { b: 2 });
+
+      expect(mockServer.to).toHaveBeenNthCalledWith(1, 'user:user-1');
+      expect(mockServer.to).toHaveBeenNthCalledWith(2, 'user:user-2');
+    });
+
+    it('sends the anonymous ranking_changed signal to authenticated sockets only, without user data', () => {
+      gateway.broadcastRankingChanged({ periodType: 'MONTHLY', periodKey: '2026-10' });
+
+      expect(mockServer.to).toHaveBeenCalledWith('authenticated');
+      expect(mockEmitToRoom).toHaveBeenCalledWith('ranking_changed', {
+        periodType: 'MONTHLY',
+        periodKey: '2026-10',
+      });
+      expect(mockServer.emit).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('Handshake authentication', () => {
+    type Middleware = (
+      socket: unknown,
+      next: (error?: Error) => void,
+    ) => void;
+
+    const setup = () => {
+      let middleware: Middleware | undefined;
+      gateway.afterInit({
+        use: (fn: Middleware) => {
+          middleware = fn;
+        },
+      } as unknown as Server);
+      return middleware as Middleware;
+    };
+
+    const handshake = (
+      auth: Record<string, unknown> = {},
+      headers: Record<string, string> = {},
+    ) => ({ handshake: { auth, headers }, data: {} as Record<string, unknown> });
+
+    const run = (middleware: Middleware, socket: unknown) =>
+      new Promise<Error | undefined>((resolve) => middleware(socket, resolve));
+
+    it('lets a socket without a token connect as a public socket', async () => {
+      const socket = handshake();
+
+      const error = await run(setup(), socket);
+
+      expect(error).toBeUndefined();
+      expect(socket.data.user).toBeUndefined();
+      expect(mockTokenService.authenticate).not.toHaveBeenCalled();
+    });
+
+    it('authenticates the token sent in handshake auth', async () => {
+      mockTokenService.authenticate.mockResolvedValue({ id: 'user-1' });
+      const socket = handshake({ token: 'abc' });
+
+      const error = await run(setup(), socket);
+
+      expect(error).toBeUndefined();
+      expect(mockTokenService.authenticate).toHaveBeenCalledWith('abc');
+      expect(socket.data.user).toEqual({ id: 'user-1' });
+    });
+
+    it('accepts a Bearer Authorization header as well', async () => {
+      mockTokenService.authenticate.mockResolvedValue({ id: 'user-1' });
+      const socket = handshake({}, { authorization: 'Bearer xyz' });
+
+      await run(setup(), socket);
+
+      expect(mockTokenService.authenticate).toHaveBeenCalledWith('xyz');
+    });
+
+    it('refuses a token that is present but invalid', async () => {
+      mockTokenService.authenticate.mockRejectedValue(new Error('expired'));
+      const socket = handshake({ token: 'bad' });
+
+      const error = await run(setup(), socket);
+
+      expect(error?.message).toBe('UNAUTHORIZED');
+      expect(socket.data.user).toBeUndefined();
+    });
+
+    it('puts an authenticated socket into its user room and the authenticated room', () => {
+      const client = createMockSocket('sock-1');
+      (client as unknown as { data: unknown }).data = { user: { id: 'user-1' } };
+
+      gateway.handleConnection(client as unknown as Socket);
+
+      expect(client.join).toHaveBeenCalledWith(['user:user-1', 'authenticated']);
+    });
+
+    it('does not put a public socket into any personal room', () => {
+      const client = createMockSocket('sock-2');
+      (client as unknown as { data: unknown }).data = {};
+
+      gateway.handleConnection(client as unknown as Socket);
+
+      expect(client.join).not.toHaveBeenCalled();
     });
   });
 });

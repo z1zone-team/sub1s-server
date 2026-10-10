@@ -10,6 +10,7 @@ import {
   SUBWAY_GRAPH_REPOSITORY,
 } from '../src/domain/subway/ports/ISubwayGraphRepository';
 import { PrismaService } from '../src/infra/prisma/prisma.service';
+import { MOCK_USER_ID } from '../src/infra/auth/mock-auth.guard';
 import { SubwayEventsGateway } from '../src/infra/websocket/subway-events.gateway';
 
 describe('WebSocket SubwayEventsGateway (e2e)', () => {
@@ -134,5 +135,84 @@ describe('WebSocket SubwayEventsGateway (e2e)', () => {
         done(err);
       }
     }, 100);
+  });
+
+  describe('handshake authentication and personal events', () => {
+    const url = () => `http://localhost:${port}/ws/subway`;
+    const open = (auth?: Record<string, string>): Promise<Socket> =>
+      new Promise((resolve, reject) => {
+        const socket = io(url(), { transports: ['websocket'], auth });
+        socket.once('connect', () => resolve(socket));
+        socket.once('connect_error', (error) => {
+          socket.close();
+          reject(error);
+        });
+      });
+    const nextEvent = (socket: Socket, event: string, waitMs: number) =>
+      new Promise<unknown>((resolve) => {
+        const timer = setTimeout(() => resolve(undefined), waitMs);
+        socket.once(event, (payload: unknown) => {
+          clearTimeout(timer);
+          resolve(payload);
+        });
+      });
+
+    it('refuses a socket whose token is present but invalid', async () => {
+      await expect(open({ token: 'not-a-valid-token' })).rejects.toMatchObject({
+        message: 'UNAUTHORIZED',
+      });
+    });
+
+    it('delivers a personal alert only to the owner, not to a public socket', async () => {
+      const owner = await open({ token: 'mock_jwt_token' });
+      const publicSocket = await open();
+      try {
+        const ownerGot = nextEvent(owner, 'offroute_alert', 1500);
+        const publicGot = nextEvent(publicSocket, 'offroute_alert', 500);
+
+        gateway.sendOffRouteAlert(MOCK_USER_ID, { sessionId: 's1', secret: 'x' });
+
+        expect(await ownerGot).toMatchObject({ sessionId: 's1' });
+        expect(await publicGot).toBeUndefined();
+      } finally {
+        owner.close();
+        publicSocket.close();
+      }
+    });
+
+    it('sends ranking_changed to authenticated sockets only, and ranking_update to the owner', async () => {
+      const owner = await open({ token: 'mock_jwt_token' });
+      const publicSocket = await open();
+      try {
+        const changed = nextEvent(owner, 'ranking_changed', 1500);
+        const update = nextEvent(owner, 'ranking_update', 1500);
+        const publicChanged = nextEvent(publicSocket, 'ranking_changed', 500);
+
+        gateway.broadcastRankingChanged({ periodType: 'MONTHLY', periodKey: '2026-10' });
+        gateway.sendRankingUpdate(MOCK_USER_ID, {
+          periodKey: '2026-10',
+          currentPoints: 30,
+        });
+
+        expect(await changed).toEqual({ periodType: 'MONTHLY', periodKey: '2026-10' });
+        expect(await update).toEqual({ periodKey: '2026-10', currentPoints: 30 });
+        expect(await publicChanged).toBeUndefined();
+      } finally {
+        owner.close();
+        publicSocket.close();
+      }
+    });
+
+    it('still lets a public socket join a train room', async () => {
+      const publicSocket = await open();
+      try {
+        const tick = nextEvent(publicSocket, 'congestion_tick', 3000);
+        publicSocket.emit('join_train', { lineId: '02', trainId: '9999', stationId: '02_222' });
+
+        expect(await tick).toMatchObject({ lineId: '02', trainId: '9999' });
+      } finally {
+        publicSocket.close();
+      }
+    });
   });
 });

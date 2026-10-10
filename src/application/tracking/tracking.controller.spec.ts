@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TrackingController } from './tracking.controller';
 import { TrackingService } from './tracking.service';
 import { TrackingSessionDto, OffRouteAlertDto } from './dto';
+import { AuthUser } from '../../infra/auth/current-user.decorator';
 
 describe('TrackingController', () => {
   let controller: TrackingController;
@@ -10,6 +11,12 @@ describe('TrackingController', () => {
     checkDeviate: jest.Mock;
     reportLocation: jest.Mock;
     getSession: jest.Mock;
+  };
+
+  const user: AuthUser = {
+    id: 'user-1',
+    clerkId: 'clerk-1',
+    nickname: '테스트유저',
   };
 
   const mockSession: TrackingSessionDto = {
@@ -65,41 +72,48 @@ describe('TrackingController', () => {
   });
 
   it('POST start returns wrapped session response', async () => {
-    const res = await controller.startTracking({
-      routeOption: mockAlert.rerouteOption,
-    });
+    const dto = { routeOption: mockAlert.rerouteOption };
+    const res = await controller.startTracking(user, dto);
     expect(res.success).toBe(true);
     expect(res.data).toEqual(mockSession);
-    expect(mockTrackingService.startTracking).toHaveBeenCalled();
+    expect(mockTrackingService.startTracking).toHaveBeenCalledWith(
+      'user-1',
+      dto,
+    );
   });
 
   it('POST deviate returns wrapped deviate alert response', async () => {
-    const res = await controller.checkDeviate({
-      sessionId: 'sess-123',
-      detectedStationId: '02_223',
-    });
+    const dto = { sessionId: 'sess-123', detectedStationId: '02_223' };
+    const res = await controller.checkDeviate(user, dto);
     expect(res.success).toBe(true);
     expect(res.data).toEqual(mockAlert);
-    expect(mockTrackingService.checkDeviate).toHaveBeenCalled();
+    expect(mockTrackingService.checkDeviate).toHaveBeenCalledWith(
+      'user-1',
+      dto,
+    );
   });
 
   it('POST location updates location', async () => {
-    const res = await controller.reportLocation({
+    const res = await controller.reportLocation(user, {
       sessionId: 'sess-123',
       currentStationId: '02_221',
     });
     expect(res.success).toBe(true);
     expect(res.data).toEqual(mockSession);
     expect(mockTrackingService.reportLocation).toHaveBeenCalledWith(
+      'user-1',
       'sess-123',
       '02_221',
     );
   });
 
   it('GET :sessionId returns session', async () => {
-    const res = await controller.getSession('sess-123');
+    const res = await controller.getSession(user, 'sess-123');
     expect(res.success).toBe(true);
     expect(res.data).toEqual(mockSession);
-    expect(mockTrackingService.getSession).toHaveBeenCalledWith('sess-123');
+    expect(mockTrackingService.getSession).toHaveBeenCalledWith(
+      'user-1',
+      'sess-123',
+    );
   });
 });

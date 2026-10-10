@@ -43,6 +43,7 @@ export class TrackingService {
   ) {}
 
   async startTracking(
+    userId: string,
     dto: StartTrackingRequestDto,
   ): Promise<TrackingSessionDto> {
     if (
@@ -71,6 +72,7 @@ export class TrackingService {
     const now = new Date();
     const session: TrackingSession = {
       sessionId: randomUUID(),
+      userId,
       routeOption: dto.routeOption,
       allStationIds,
       originStationId,
@@ -93,16 +95,10 @@ export class TrackingService {
   }
 
   async checkDeviate(
+    userId: string,
     dto: DeviateCheckRequestDto,
   ): Promise<OffRouteAlertDto | TrackingSessionDto> {
-    const session = await this.trackingRepository.findById(dto.sessionId);
-    if (!session) {
-      throw new BusinessException(
-        'SESSION_NOT_FOUND',
-        `tracking session not found: ${dto.sessionId}`,
-        HttpStatus.NOT_FOUND,
-      );
-    }
+    const session = await this.findOwnedSession(userId, dto.sessionId);
 
     const graph = this.graphService.getGraph();
     const detectedIndex = graph.indexOf(dto.detectedStationId);
@@ -161,7 +157,7 @@ export class TrackingService {
 
     // Broadcast alert via WebSocket gateway if available
     try {
-      this.subwayEventsGateway?.sendOffRouteAlert(session.sessionId, alertDto);
+      this.subwayEventsGateway?.sendOffRouteAlert(session.userId, alertDto);
     } catch (err) {
       this.logger.warn(`Failed to emit offroute alert to websocket: ${err}`);
     }
@@ -170,17 +166,11 @@ export class TrackingService {
   }
 
   async reportLocation(
+    userId: string,
     sessionId: string,
     currentStationId: string,
   ): Promise<TrackingSessionDto> {
-    const session = await this.trackingRepository.findById(sessionId);
-    if (!session) {
-      throw new BusinessException(
-        'SESSION_NOT_FOUND',
-        `tracking session not found: ${sessionId}`,
-        HttpStatus.NOT_FOUND,
-      );
-    }
+    const session = await this.findOwnedSession(userId, sessionId);
 
     const graph = this.graphService.getGraph();
     const stIndex = graph.indexOf(currentStationId);
@@ -197,17 +187,29 @@ export class TrackingService {
     return this.toSessionDto(session, graph);
   }
 
-  async getSession(sessionId: string): Promise<TrackingSessionDto> {
+  async getSession(
+    userId: string,
+    sessionId: string,
+  ): Promise<TrackingSessionDto> {
+    const session = await this.findOwnedSession(userId, sessionId);
+    const graph = this.graphService.getGraph();
+    return this.toSessionDto(session, graph);
+  }
+
+  // Another user's session is reported as missing, so a session id never reveals that it exists.
+  private async findOwnedSession(
+    userId: string,
+    sessionId: string,
+  ): Promise<TrackingSession> {
     const session = await this.trackingRepository.findById(sessionId);
-    if (!session) {
+    if (!session || session.userId !== userId) {
       throw new BusinessException(
         'SESSION_NOT_FOUND',
         `tracking session not found: ${sessionId}`,
         HttpStatus.NOT_FOUND,
       );
     }
-    const graph = this.graphService.getGraph();
-    return this.toSessionDto(session, graph);
+    return session;
   }
 
   private advanceOnRoute(

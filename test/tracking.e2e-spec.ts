@@ -11,6 +11,8 @@ import {
 } from '../src/domain/subway/ports/ISubwayGraphRepository';
 import { PrismaService } from '../src/infra/prisma/prisma.service';
 
+const AUTH = { Authorization: 'Bearer mock_jwt_token' };
+
 describe('Tracking (e2e)', () => {
   let app: INestApplication;
 
@@ -80,6 +82,7 @@ describe('Tracking (e2e)', () => {
     // 2. Start tracking session
     const startRes = await request(app.getHttpServer())
       .post('/api/v1/routes/track/start')
+      .set(AUTH)
       .send({
         routeOption: optimalRoute,
       })
@@ -94,6 +97,7 @@ describe('Tracking (e2e)', () => {
     // 3. Report on-route station (역삼 02_221)
     const onRouteRes = await request(app.getHttpServer())
       .post('/api/v1/routes/track/deviate')
+      .set(AUTH)
       .send({
         sessionId: session.sessionId,
         detectedStationId: '02_221',
@@ -107,6 +111,7 @@ describe('Tracking (e2e)', () => {
     const startTime = Date.now();
     const deviateRes = await request(app.getHttpServer())
       .post('/api/v1/routes/track/deviate')
+      .set(AUTH)
       .send({
         sessionId: session.sessionId,
         detectedStationId: '02_223',
@@ -128,6 +133,7 @@ describe('Tracking (e2e)', () => {
   it('rejects deviate request for non-existent session with 404', async () => {
     const res = await request(app.getHttpServer())
       .post('/api/v1/routes/track/deviate')
+      .set(AUTH)
       .send({
         sessionId: '00000000-0000-0000-0000-000000000000',
         detectedStationId: '02_222',
@@ -136,5 +142,21 @@ describe('Tracking (e2e)', () => {
 
     expect(res.body.success).toBe(false);
     expect(res.body.error.code).toBe('SESSION_NOT_FOUND');
+  });
+
+  it('requires authentication on every tracking endpoint', async () => {
+    const server = app.getHttpServer();
+    const session = '00000000-0000-0000-0000-000000000000';
+
+    await request(server).post('/api/v1/routes/track/start').send({}).expect(401);
+    await request(server)
+      .post('/api/v1/routes/track/deviate')
+      .send({ sessionId: session, detectedStationId: '02_222' })
+      .expect(401);
+    await request(server)
+      .post('/api/v1/routes/track/location')
+      .send({ sessionId: session, currentStationId: '02_222' })
+      .expect(401);
+    await request(server).get(`/api/v1/routes/track/${session}`).expect(401);
   });
 });

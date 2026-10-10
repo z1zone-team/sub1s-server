@@ -26,7 +26,10 @@ describe('TravelLogService', () => {
   let mockCryptoService: { encrypt: jest.Mock };
   let mockGraphService: { getGraph: jest.Mock };
   let mockTrackingRepo: { findById: jest.Mock };
-  let mockGateway: { broadcastRankingUpdate: jest.Mock };
+  let mockGateway: {
+    sendRankingUpdate: jest.Mock;
+    broadcastRankingChanged: jest.Mock;
+  };
 
   const testGraph = new SubwayGraph({
     stations: [
@@ -99,7 +102,8 @@ describe('TravelLogService', () => {
     };
 
     mockGateway = {
-      broadcastRankingUpdate: jest.fn(),
+      sendRankingUpdate: jest.fn(),
+      broadcastRankingChanged: jest.fn(),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -131,12 +135,22 @@ describe('TravelLogService', () => {
       expect(mockCryptoService.encrypt).toHaveBeenCalled();
       expect(mockTravelLogRepo.saveTravelWithScores).toHaveBeenCalled();
       expect(mockUserRepo.upsertPlaceholder).toHaveBeenCalledWith('user-1');
-      expect(mockGateway.broadcastRankingUpdate).toHaveBeenCalled();
+      // the user gets their own points; everyone else only gets an anonymous signal
+      expect(mockGateway.sendRankingUpdate).toHaveBeenCalledWith('user-1', {
+        periodKey: expect.stringMatching(/^\d{4}-\d{2}$/),
+        currentPoints: 10,
+      });
+      expect(mockGateway.broadcastRankingChanged).toHaveBeenCalledTimes(2);
+      expect(mockGateway.broadcastRankingChanged).toHaveBeenCalledWith({
+        periodType: 'ALL',
+        periodKey: 'ALL',
+      });
     });
 
     it('awards 20 points bonus when sessionId is verified on-time', async () => {
       mockTrackingRepo.findById.mockResolvedValueOnce({
         sessionId: 'sess-abc',
+        userId: 'user-1',
         createdAt: new Date(Date.now() - 110 * 1000), // ~110 seconds ago (planned 120s)
       });
 
@@ -148,6 +162,22 @@ describe('TravelLogService', () => {
 
       // 10 distance points + 20 on-time bonus = 30 pts
       expect(res.earnedPoints).toBe(30);
+    });
+
+    it("does not award the on-time bonus from another user's session", async () => {
+      mockTrackingRepo.findById.mockResolvedValueOnce({
+        sessionId: 'sess-other',
+        userId: 'user-2',
+        createdAt: new Date(Date.now() - 110 * 1000), // would be on time
+      });
+
+      const res = await service.createLog('user-1', {
+        originStationId: '02_222',
+        destStationId: '02_221',
+        sessionId: 'sess-other',
+      });
+
+      expect(res.earnedPoints).toBe(10);
     });
 
     it('throws NOT_FOUND when station id is unknown', async () => {

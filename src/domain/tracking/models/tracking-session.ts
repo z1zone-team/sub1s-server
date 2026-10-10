@@ -13,6 +13,7 @@ export interface DeviationResult {
 
 export interface TrackingSession {
   sessionId: string;
+  userId: string;
   routeOption: SubwayRouteOptionDto;
   allStationIds: string[];
   originStationId: string;

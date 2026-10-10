@@ -94,7 +94,8 @@ export class TravelLogService {
     if (dto.sessionId && this.trackingRepo) {
       try {
         const session = await this.trackingRepo.findById(dto.sessionId);
-        if (session) {
+        // Another user's session cannot earn this user's on-time bonus.
+        if (session && session.userId === userId) {
           const actualSec = (Date.now() - session.createdAt.getTime()) / 1000;
           const plannedSec = route.totalDurationSec;
           // Within +-5 minutes (+-300 seconds)
@@ -140,12 +141,19 @@ export class TravelLogService {
         encrypted,
       });
 
-    // Broadcast ranking update via WebSocket gateway
+    // The user gets their own points; everyone else only gets an anonymous "refetch the ranking" signal.
     try {
-      this.gateway?.broadcastRankingUpdate({
-        userId,
+      this.gateway?.sendRankingUpdate(userId, {
         periodKey: monthlyKey,
         currentPoints: monthlyScore.totalPoints,
+      });
+      this.gateway?.broadcastRankingChanged({
+        periodType: 'MONTHLY',
+        periodKey: monthlyKey,
+      });
+      this.gateway?.broadcastRankingChanged({
+        periodType: 'ALL',
+        periodKey: 'ALL',
       });
     } catch (err) {
       this.logger.warn(`Failed to broadcast ranking update: ${err}`);
