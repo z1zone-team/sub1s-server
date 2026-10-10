@@ -1,10 +1,13 @@
 export interface LeaderboardItemDto {
   rank: number;
-  userId: string;
+  /** 익명 사용자는 없음 */
+  userId?: string;
   nickname: string;
   profileImageUrl?: string;
   totalPoints: number;
   totalDistanceKm: number;
+  isMe: boolean;
+  isAnonymous: boolean;
 }
 
 export interface RankingResponseDto {
