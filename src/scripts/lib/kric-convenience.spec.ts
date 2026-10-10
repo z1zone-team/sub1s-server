@@ -1,3 +1,5 @@
+import { existsSync } from 'fs';
+import { join } from 'path';
 import {
   aggregateDoors,
   buildKricStationMap,
@@ -6,7 +8,10 @@ import {
   parseCarNumberRows,
   sortDoors,
 } from './kric-convenience';
-import { StationRecord } from './subway-common';
+import { RAW_DIR, StationRecord } from './subway-common';
+
+// data-raw/ is git-ignored local data, so this check is skipped where the raw files are not present (CI).
+const hasRawData = existsSync(join(RAW_DIR, 'kric-route-2.json'));
 
 describe('kric-convenience', () => {
   describe('formatDoor', () => {
@@ -126,7 +131,7 @@ describe('kric-convenience', () => {
   });
 
   describe('buildKricStationMap', () => {
-    it('maps stations using real data-raw route files', () => {
+    (hasRawData ? it : it.skip)('maps stations using real data-raw route files', () => {
       const stations: StationRecord[] = [
         {
           id: '02_201',
