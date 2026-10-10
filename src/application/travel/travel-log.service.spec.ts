@@ -128,6 +128,13 @@ describe('TravelLogService', () => {
       expect(res.logId).toBe('log-123');
       expect(res.totalDistanceKm).toBe(1.0);
       expect(res.earnedPoints).toBe(10); // 1.0 km * 10 = 10 pts
+      expect(res.distancePoints).toBe(10);
+      expect(res.onTimeBonus).toBe(0);
+      expect(res.currentTotalPoints).toBe(10);
+      expect(res.monthlyTotalPoints).toBe(10);
+      // without a verified session the real ride time is unknown
+      expect(res.rideDurationSec).toBeUndefined();
+      expect(res.arrivalDeltaSec).toBeUndefined();
       expect(mockCryptoService.encrypt).toHaveBeenCalled();
       expect(mockTravelLogRepo.saveTravelWithScores).toHaveBeenCalled();
       expect(mockUserRepo.upsertPlaceholder).toHaveBeenCalledWith('user-1');
@@ -148,6 +155,62 @@ describe('TravelLogService', () => {
 
       // 10 distance points + 20 on-time bonus = 30 pts
       expect(res.earnedPoints).toBe(30);
+      expect(res.distancePoints).toBe(10);
+      expect(res.onTimeBonus).toBe(20);
+      // ~110s ridden against 120s planned: about 10s early
+      expect(res.rideDurationSec).toBeGreaterThanOrEqual(110);
+      expect(res.rideDurationSec).toBeLessThanOrEqual(112);
+      expect(res.arrivalDeltaSec).toBeGreaterThanOrEqual(-10);
+      expect(res.arrivalDeltaSec).toBeLessThanOrEqual(-8);
+    });
+
+    it('reports a positive arrival delta and no bonus when the ride ran late', async () => {
+      mockTrackingRepo.findById.mockResolvedValueOnce({
+        sessionId: 'sess-late',
+        createdAt: new Date(Date.now() - 720 * 1000), // 720s ridden (planned 120s)
+      });
+
+      const res = await service.createLog('user-1', {
+        originStationId: '02_222',
+        destStationId: '02_221',
+        sessionId: 'sess-late',
+      });
+
+      expect(res.onTimeBonus).toBe(0);
+      expect(res.earnedPoints).toBe(10);
+      expect(res.rideDurationSec).toBeGreaterThanOrEqual(720);
+      expect(res.arrivalDeltaSec).toBeGreaterThanOrEqual(600);
+      expect(res.arrivalDeltaSec).toBeLessThanOrEqual(602);
+    });
+
+    it('omits ride timing when the session cannot be found', async () => {
+      mockTrackingRepo.findById.mockResolvedValueOnce(null);
+
+      const res = await service.createLog('user-1', {
+        originStationId: '02_222',
+        destStationId: '02_221',
+        sessionId: 'sess-missing',
+      });
+
+      expect(res.rideDurationSec).toBeUndefined();
+      expect(res.arrivalDeltaSec).toBeUndefined();
+      expect(res.onTimeBonus).toBe(0);
+    });
+
+    it('returns the monthly and all-time totals after the trip', async () => {
+      mockTravelLogRepo.saveTravelWithScores.mockResolvedValueOnce({
+        monthlyScore: { totalPoints: 2480 },
+        allScore: { totalPoints: 9120 },
+        createdLog: { id: 'log-456' },
+      });
+
+      const res = await service.createLog('user-1', {
+        originStationId: '02_222',
+        destStationId: '02_221',
+      });
+
+      expect(res.monthlyTotalPoints).toBe(2480);
+      expect(res.currentTotalPoints).toBe(9120);
     });
 
     it('throws NOT_FOUND when station id is unknown', async () => {
