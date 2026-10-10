@@ -46,12 +46,19 @@ export class RankingService {
     const startIndex = (page - 1) * limit;
     const leaderboard = allRanked.slice(startIndex, startIndex + limit);
 
+    // Integer math so 12 of 100 is exactly 12, not 12.000000000000002 rounded up to 13.
+    const totalUsers = allRanked.length;
+    const myPercentile =
+      myRank > 0 ? Math.ceil((myRank * 100) / totalUsers) : undefined;
+
     return {
       periodType: query.periodType,
       periodKey: query.periodKey,
       friendsOnly: query.friendsOnly ?? false,
       myRank,
       myPoints,
+      totalUsers,
+      myPercentile,
       leaderboard,
     };
   }
