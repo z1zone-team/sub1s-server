@@ -12,6 +12,7 @@ describe('CongestionController', () => {
     trainId: '2145',
     stationId: '02_222',
     averageRate: 45,
+    source: 'STATISTICS',
     cars: [
       {
         carNo: 1,

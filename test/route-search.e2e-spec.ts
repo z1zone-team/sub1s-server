@@ -89,6 +89,7 @@ describe('Route Search (e2e)', () => {
     expect(segment.recommendedCarNo).toBeGreaterThanOrEqual(1);
     expect(segment.recommendedCarNo).toBeLessThanOrEqual(10);
     expect(['여유', '보통', '혼잡']).toContain(segment.congestionLevel);
+    expect(['STATISTICS', 'MOCK']).toContain(segment.congestionSource);
   });
 
   it('POST /api/v1/routes/search validates bad request (same origin/dest)', async () => {

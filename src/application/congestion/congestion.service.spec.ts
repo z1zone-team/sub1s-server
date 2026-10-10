@@ -106,6 +106,24 @@ describe('CongestionService', () => {
     expect(car2?.isWeakAirConditioned).toBe(false);
   });
 
+  it.each(['STATISTICS', 'MOCK'])(
+    'reports %s as the congestion source of the prediction',
+    async (source) => {
+      mockCongestionProvider.predictCars.mockReturnValue({
+        ...mockCongestionProvider.predictCars(),
+        source,
+      });
+
+      const result = await service.getTrainCongestion({
+        lineId: '01',
+        trainId: '1004',
+        stationId: '01_133',
+      });
+
+      expect(result.source).toBe(source);
+    },
+  );
+
   it('throws BusinessException when station is unknown', async () => {
     await expect(
       service.getTrainCongestion({

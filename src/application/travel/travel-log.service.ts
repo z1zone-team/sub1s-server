@@ -91,12 +91,16 @@ export class TravelLogService {
 
     // Check on-time completion bonus if sessionId is provided
     let isOnTime = false;
+    let rideDurationSec: number | undefined;
+    let arrivalDeltaSec: number | undefined;
     if (dto.sessionId && this.trackingRepo) {
       try {
         const session = await this.trackingRepo.findById(dto.sessionId);
         if (session) {
           const actualSec = (Date.now() - session.createdAt.getTime()) / 1000;
           const plannedSec = route.totalDurationSec;
+          rideDurationSec = Math.round(actualSec);
+          arrivalDeltaSec = Math.round(actualSec - plannedSec);
           // Within +-5 minutes (+-300 seconds)
           if (Math.abs(actualSec - plannedSec) <= 300) {
             isOnTime = true;
@@ -107,10 +111,8 @@ export class TravelLogService {
       }
     }
 
-    const earnedPoints = ScorePolicy.calculateEarnedPoints(
-      totalDistanceKm,
-      isOnTime,
-    );
+    const { distancePoints, onTimeBonus, earnedPoints } =
+      ScorePolicy.calculateBreakdown(totalDistanceKm, isOnTime);
 
     // 3-Tier Hybrid Encryption of detailed route trajectory
     const sensitivePayload = JSON.stringify({
@@ -156,7 +158,12 @@ export class TravelLogService {
       totalDistanceKm,
       transferCount,
       earnedPoints,
+      distancePoints,
+      onTimeBonus,
       currentTotalPoints: allScore.totalPoints,
+      monthlyTotalPoints: monthlyScore.totalPoints,
+      rideDurationSec,
+      arrivalDeltaSec,
     };
   }
 

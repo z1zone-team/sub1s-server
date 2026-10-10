@@ -363,6 +363,7 @@ export class RouteService {
         isWeakAirConditioned: weakAc,
         congestionLevel: level,
         congestionRate: rate,
+        congestionSource: prediction.source,
         isEstimated: seg.isEstimated,
       });
 

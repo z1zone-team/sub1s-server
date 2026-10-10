@@ -155,6 +155,10 @@ describe('Travel and Ranking (e2e)', () => {
     expect(res.body.data.logId).toBe('log-e2e-1');
     expect(res.body.data.totalDistanceKm).toBeGreaterThan(0);
     expect(res.body.data.earnedPoints).toBeGreaterThan(0);
+    expect(res.body.data.distancePoints + res.body.data.onTimeBonus).toBe(
+      res.body.data.earnedPoints,
+    );
+    expect(typeof res.body.data.monthlyTotalPoints).toBe('number');
   });
 
   it('GET /api/v1/travel/timeline returns timeline logs', async () => {
