@@ -23,6 +23,8 @@ export interface TrackingSession {
   expectedRemainingStationIds: string[];
   remainingDurationSec: number;
   isOffRoute: boolean;
+  /** 경로에 없는 역이 연달아 감지된 횟수. 경로 위의 역이 감지되면 0으로 돌아간다 */
+  offRouteMisses?: number;
   createdAt: Date;
   updatedAt: Date;
 }

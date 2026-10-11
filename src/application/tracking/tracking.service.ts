@@ -9,6 +9,7 @@ import {
 import { BusinessException } from '../../common/exceptions/business.exception';
 import { SubwayGraph } from '../../domain/subway/models/subway-graph';
 import { SubwayGraphService } from '../../domain/subway/services/subway-graph.service';
+import { WalkingService } from '../../domain/subway/services/walking.service';
 import {
   OffRouteAlertReason,
   TrackingSession,
@@ -24,9 +25,16 @@ import { RouteService } from '../route/route.service';
 import {
   DeviateCheckRequestDto,
   OffRouteAlertDto,
+  ReportPositionRequestDto,
   StartTrackingRequestDto,
   TrackingSessionDto,
 } from './dto';
+
+/** 좌표가 이 거리 안의 역 근처일 때만 위치를 판단한다 */
+const POSITION_RADIUS_KM = 0.3;
+
+/** 경로에 없는 역이 이만큼 연달아 감지되면 이탈로 본다. 한 번은 승강장 이동이나 지상 보행일 수 있다 */
+const OFF_ROUTE_MISS_LIMIT = 2;
 
 @Injectable()
 export class TrackingService {
@@ -38,6 +46,7 @@ export class TrackingService {
     private readonly offRouteDetector: OffRouteDetector,
     private readonly graphService: SubwayGraphService,
     private readonly routeService: RouteService,
+    private readonly walkingService: WalkingService,
     @Optional()
     private readonly subwayEventsGateway?: SubwayEventsGateway,
   ) {}
@@ -124,45 +133,49 @@ export class TrackingService {
       return this.toSessionDto(session, graph);
     }
 
-    // Case 2: Deviation / Off-route detected -> emergency reroute within SLA (< 3 seconds)
-    const detectedStation = graph.station(detectedIndex);
-    const reason = this.determineDeviationReason(
+    return this.buildOffRouteAlert(session, graph, dto.detectedStationId);
+  }
+
+  async reportPosition(
+    userId: string,
+    dto: ReportPositionRequestDto,
+  ): Promise<OffRouteAlertDto | TrackingSessionDto> {
+    const session = await this.findOwnedSession(userId, dto.sessionId);
+    const graph = this.graphService.getGraph();
+
+    const nearest = this.walkingService.findNearestStations(
+      graph,
+      dto.lat,
+      dto.lng,
+      POSITION_RADIUS_KM,
+      1,
+    )[0];
+    if (!nearest) return this.toSessionDto(session, graph);
+
+    const routeStationId = this.findRouteStationByName(
       session,
-      detectedStation.lineId,
+      graph,
+      nearest.station.stationName,
     );
-
-    // Calculate reroute option from detected station to original destination
-    const rerouteResult = await this.routeService.search({
-      originStationId: dto.detectedStationId,
-      destinationStationId: session.destStationId,
-      routeMode: 'OPTIMAL',
-    });
-
-    const rerouteOption = rerouteResult.options[0];
-    session.isOffRoute = true;
-    session.currentStationId = dto.detectedStationId;
-    session.updatedAt = new Date();
-    await this.trackingRepository.save(session);
-
-    const alertDto: OffRouteAlertDto = {
-      sessionId: session.sessionId,
-      detectedStationId: dto.detectedStationId,
-      detectedStationName: detectedStation.stationName,
-      reason,
-      message:
-        '경로를 이탈했습니다. 다음 역에서 즉시 하차하여 맞은편 승강장으로 이동하세요.',
-      rerouteOption,
-      isOffRoute: true,
-    };
-
-    // Broadcast alert via WebSocket gateway if available
-    try {
-      this.subwayEventsGateway?.sendOffRouteAlert(session.userId, alertDto);
-    } catch (err) {
-      this.logger.warn(`Failed to emit offroute alert to websocket: ${err}`);
+    if (routeStationId) {
+      session.offRouteMisses = 0;
+      if (
+        routeStationId === session.currentStationId ||
+        session.expectedRemainingStationIds.includes(routeStationId)
+      ) {
+        this.advanceOnRoute(session, routeStationId);
+      }
+      await this.trackingRepository.save(session);
+      return this.toSessionDto(session, graph);
     }
 
-    return alertDto;
+    session.offRouteMisses = (session.offRouteMisses ?? 0) + 1;
+    if (session.offRouteMisses < OFF_ROUTE_MISS_LIMIT) {
+      await this.trackingRepository.save(session);
+      return this.toSessionDto(session, graph);
+    }
+
+    return this.buildOffRouteAlert(session, graph, nearest.station.id);
   }
 
   async reportLocation(
@@ -210,6 +223,59 @@ export class TrackingService {
       );
     }
     return session;
+  }
+
+  private async buildOffRouteAlert(
+    session: TrackingSession,
+    graph: SubwayGraph,
+    detectedStationId: string,
+  ): Promise<OffRouteAlertDto> {
+    const detectedIndex = graph.indexOf(detectedStationId)!;
+    const detectedStation = graph.station(detectedIndex);
+    const reason = this.determineDeviationReason(session, detectedStation.lineId);
+
+    const rerouteResult = await this.routeService.search({
+      originStationId: detectedStationId,
+      destinationStationId: session.destStationId,
+      routeMode: 'OPTIMAL',
+    });
+
+    const rerouteOption = rerouteResult.options[0];
+    session.isOffRoute = true;
+    session.currentStationId = detectedStationId;
+    session.updatedAt = new Date();
+    await this.trackingRepository.save(session);
+
+    const alertDto: OffRouteAlertDto = {
+      sessionId: session.sessionId,
+      detectedStationId,
+      detectedStationName: detectedStation.stationName,
+      reason,
+      message:
+        '경로를 이탈했습니다. 다음 역에서 즉시 하차하여 맞은편 승강장으로 이동하세요.',
+      rerouteOption,
+      isOffRoute: true,
+    };
+
+    try {
+      this.subwayEventsGateway?.sendOffRouteAlert(session.userId, alertDto);
+    } catch (err) {
+      this.logger.warn(`Failed to emit offroute alert to websocket: ${err}`);
+    }
+
+    return alertDto;
+  }
+
+  // 환승역은 호선마다 역 ID가 달라서 이름으로 비교하고, 경로가 쓰는 역 ID를 돌려준다
+  private findRouteStationByName(
+    session: TrackingSession,
+    graph: SubwayGraph,
+    stationName: string,
+  ): string | undefined {
+    return session.allStationIds.find((id) => {
+      const index = graph.indexOf(id);
+      return index !== undefined && graph.station(index).stationName === stationName;
+    });
   }
 
   private advanceOnRoute(
