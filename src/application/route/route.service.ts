@@ -384,6 +384,12 @@ export class RouteService {
         congestionLevel: level,
         congestionRate: rate,
         congestionSource: prediction.source,
+        cars: prediction.cars.map((car) => ({
+          carNo: car.carNo,
+          rate: Math.round(car.rate),
+          level: car.level,
+          isWeakAirConditioned: isWeakAirConditioned(seg.lineId, car.carNo),
+        })),
         isEstimated: seg.isEstimated,
       });
 

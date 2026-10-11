@@ -21,6 +21,20 @@ export class OperationNoticeDto {
 const OPERATION_STATUS_DESCRIPTION =
   'NORMAL 서울교통공사가 공지한 이상 상황이 없음, DISRUPTED 지연·무정차 등 진행 중인 공지가 이 구간에 걸림, UNKNOWN 공지로 알 수 없음(도보, 공지가 빠짐없이 오지 않는 노선, 공지를 가져오지 못함)';
 
+export class SegmentCarDto {
+  @ApiProperty({ description: '칸 번호 (1~10)', example: 3 })
+  carNo!: number;
+
+  @ApiProperty({ description: '혼잡도 % (0~100)', example: 42 })
+  rate!: number;
+
+  @ApiProperty({ description: '혼잡도 단계', enum: ['여유', '보통', '혼잡'] })
+  level!: CongestionLevel;
+
+  @ApiProperty({ description: '약냉방칸 여부' })
+  isWeakAirConditioned!: boolean;
+}
+
 export class PathSegmentDto {
   @ApiProperty({
     description: '노선 ID (지하철 호선 또는 WALK)',
@@ -101,6 +115,13 @@ export class PathSegmentDto {
     enum: ['STATISTICS', 'MOCK'],
   })
   congestionSource?: CongestionSource;
+
+  @ApiPropertyOptional({
+    description:
+      '이 구간 출발역의 1~10번 칸별 예측 혼잡도. 추천 칸은 이 중 가장 한산한 칸이다. 도보 구간에는 없음',
+    type: [SegmentCarDto],
+  })
+  cars?: SegmentCarDto[];
 
   @ApiPropertyOptional({ description: '추정치 여부', example: false })
   isEstimated?: boolean;

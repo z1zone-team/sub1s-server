@@ -109,6 +109,31 @@ describe('Route highlights (e2e)', () => {
     for (const option of options) expect(option.highlights).toEqual(['NO_TRANSFER']);
   });
 
+  it('lists ten cars on every ride segment and recommends the least crowded one', async () => {
+    const res = await request(app.getHttpServer())
+      .post('/api/v1/routes/search')
+      .send(diverging)
+      .expect(200);
+
+    for (const option of res.body.data.options) {
+      for (const segment of option.segments) {
+        if (segment.lineId === 'WALK') {
+          expect(segment.cars).toBeUndefined();
+          continue;
+        }
+        expect(segment.cars.map((car: { carNo: number }) => car.carNo)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+        for (const car of segment.cars) {
+          expect(car.rate).toBeGreaterThanOrEqual(0);
+          expect(car.rate).toBeLessThanOrEqual(100);
+          expect(['여유', '보통', '혼잡']).toContain(car.level);
+        }
+        const lowest = Math.min(...segment.cars.map((car: { rate: number }) => car.rate));
+        const recommended = segment.cars.find((car: { carNo: number }) => car.carNo === segment.recommendedCarNo);
+        expect(recommended.rate).toBeLessThanOrEqual(lowest + 1);
+      }
+    }
+  });
+
   it('gives the direct walk option an empty array', async () => {
     const options = await search({
       originLat: 37.4979,

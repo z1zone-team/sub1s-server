@@ -247,6 +247,82 @@ describe('RouteService', () => {
     });
   });
 
+  describe('cars', () => {
+    const search = () =>
+      service.search({ originStationId: '02_222', destinationStationId: '02_221' });
+
+    it('lists the predicted congestion of every car on a ride segment, with the rate rounded', async () => {
+      mockCongestionProvider.predictCars.mockReturnValue({
+        ratePercent: 42,
+        source: 'STATISTICS',
+        cars: [
+          { carNo: 1, rate: 35.4, level: '보통' },
+          { carNo: 2, rate: 20.6, level: '여유' },
+          { carNo: 3, rate: 80, level: '혼잡' },
+        ],
+      });
+
+      const { options } = await search();
+
+      expect(options[0].segments[0].cars).toEqual([
+        { carNo: 1, rate: 35, level: '보통', isWeakAirConditioned: false },
+        { carNo: 2, rate: 21, level: '여유', isWeakAirConditioned: false },
+        { carNo: 3, rate: 80, level: '혼잡', isWeakAirConditioned: false },
+      ]);
+    });
+
+    it('recommends the car with the lowest rate among the listed cars', async () => {
+      mockCongestionProvider.predictCars.mockReturnValue({
+        ratePercent: 50,
+        source: 'STATISTICS',
+        cars: [
+          { carNo: 1, rate: 50, level: '보통' },
+          { carNo: 2, rate: 30, level: '여유' },
+          { carNo: 3, rate: 30, level: '여유' },
+        ],
+      });
+
+      const [segment] = (await search()).options[0].segments;
+
+      expect(segment.recommendedCarNo).toBe(2);
+      const lowest = Math.min(...(segment.cars ?? []).map((car) => car.rate));
+      expect(segment.cars?.find((car) => car.carNo === segment.recommendedCarNo)?.rate).toBe(lowest);
+    });
+
+    it('marks the weak air-conditioned cars of lines that have them', async () => {
+      mockEngine.findRoute.mockImplementation(async (query) => ({
+        ...sampleRouteResult,
+        mode: query.mode,
+        segments: [{ ...sampleRouteResult.segments[0], lineId: '03' }],
+      }));
+      mockCongestionProvider.predictCars.mockReturnValue({
+        ratePercent: 40,
+        source: 'STATISTICS',
+        cars: [4, 5, 7].map((carNo) => ({ carNo, rate: 40, level: '보통' })),
+      });
+
+      const [segment] = (await search()).options[0].segments;
+
+      expect(segment.cars?.map((car) => [car.carNo, car.isWeakAirConditioned])).toEqual([
+        [4, true],
+        [5, false],
+        [7, true],
+      ]);
+    });
+
+    it('gives no cars to a walking segment', async () => {
+      const { options } = await service.search({
+        originLat: 37.4979,
+        originLng: 127.0276,
+        destinationStationId: '02_221',
+      });
+
+      const walk = options.flatMap((option) => option.segments).find((s) => s.lineId === 'WALK');
+      expect(walk).toBeDefined();
+      expect(walk?.cars).toBeUndefined();
+    });
+  });
+
   it('marks segments predicted without published statistics as MOCK', async () => {
     mockCongestionProvider.predictCars.mockReturnValue({
       ratePercent: 30,
