@@ -57,7 +57,8 @@ describe('VoiceService', () => {
               transcript: '강남역에서 을지로입구역까지 최적 경로로 안내해줘',
             }),
             generateBriefing: jest.fn().mockResolvedValue({
-              briefingText: '강남역에서 을지로입구역까지 최적 경로로 안내합니다.',
+              briefingText:
+                '강남역에서 을지로입구역까지 최적 경로로 안내합니다.',
               audioTtsUrl: '/api/v1/voice/tts/stream?text=test',
             }),
           },
@@ -103,7 +104,9 @@ describe('VoiceService', () => {
     });
 
     expect(result).toBeDefined();
-    expect(result.transcript).toBe('강남역에서 을지로입구역까지 최적 경로로 안내해줘');
+    expect(result.transcript).toBe(
+      '강남역에서 을지로입구역까지 최적 경로로 안내해줘',
+    );
     expect(result.interpretedIntent.originStationName).toBe('강남');
     expect(result.interpretedIntent.destStationName).toBe('을지로입구');
     expect(result.recommendedRoute.mode).toBe('OPTIMAL');
@@ -165,5 +168,44 @@ describe('VoiceService', () => {
     await expect(
       service.recommendRouteByVoice('user-6', sampleFile),
     ).rejects.toThrow(NotFoundException);
+  });
+
+  it('searches from the current location when only a destination is spoken', async () => {
+    const parser = (
+      service as unknown as { intentParserService: { parseIntent: jest.Mock } }
+    ).intentParserService;
+    parser.parseIntent.mockReturnValueOnce({
+      originStationName: '현재 위치',
+      destStationName: '강남',
+      preferredMode: 'OPTIMAL',
+      reason: '최적 경로 추천',
+    });
+
+    await service.recommendRouteByVoice('user-loc', sampleFile, {
+      lat: 37.5,
+      lng: 127.03,
+    });
+
+    expect(routeService.search).toHaveBeenCalledWith(
+      expect.objectContaining({ originLat: 37.5, originLng: 127.03 }),
+    );
+  });
+
+  it('asks for the origin when it is not spoken and no location is sent', async () => {
+    const parser = (
+      service as unknown as { intentParserService: { parseIntent: jest.Mock } }
+    ).intentParserService;
+    parser.parseIntent.mockReturnValueOnce({
+      originStationName: '현재 위치',
+      destStationName: '강남',
+      preferredMode: 'OPTIMAL',
+      reason: '최적 경로 추천',
+    });
+
+    await expect(
+      service.recommendRouteByVoice('user-noloc', sampleFile),
+    ).rejects.toMatchObject({
+      errorCode: 'VOICE_ORIGIN_REQUIRED',
+    });
   });
 });

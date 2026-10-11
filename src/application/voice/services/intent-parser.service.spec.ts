@@ -37,26 +37,39 @@ describe('IntentParserService', () => {
   });
 
   it('should detect COMFORTABLE mode from keywords', () => {
-    const intent = service.parseIntent('강남에서 을지로입구로 여유롭고 편하게 갈래');
+    const intent = service.parseIntent(
+      '강남에서 을지로입구로 여유롭고 편하게 갈래',
+    );
     expect(intent.originStationName).toBe('강남');
     expect(intent.destStationName).toBe('을지로입구');
     expect(intent.preferredMode).toBe('COMFORTABLE');
   });
 
   it('should detect CHEAPEST mode from keywords', () => {
-    const intent = service.parseIntent('강남역부터 을지로입구역까지 최소 비용으로 안내해줘');
+    const intent = service.parseIntent(
+      '강남역부터 을지로입구역까지 최소 비용으로 안내해줘',
+    );
     expect(intent.preferredMode).toBe('CHEAPEST');
   });
 
   it('should prioritize overrideMode if provided', () => {
-    const intent = service.parseIntent('강남에서 을지로입구 최단으로', 'COMFORTABLE');
+    const intent = service.parseIntent(
+      '강남에서 을지로입구 최단으로',
+      'COMFORTABLE',
+    );
     expect(intent.preferredMode).toBe('COMFORTABLE');
     expect(intent.reason).toContain('COMFORTABLE');
   });
 
-  it('should fallback to default stations when text does not match patterns', () => {
-    const intent = service.parseIntent('지하철 경로 알려주세요');
-    expect(intent.originStationName).toBe('강남');
-    expect(intent.destStationName).toBe('을지로입구');
+  it('uses the current location as origin when only a destination is spoken', () => {
+    const intent = service.parseIntent('강남역 가는 길 알려줘');
+    expect(intent.originStationName).toBe('현재 위치');
+    expect(intent.destStationName).toBe('강남');
+  });
+
+  it('rejects text with no station instead of returning fixed stations', () => {
+    expect(() => service.parseIntent('지하철 경로 알려주세요')).toThrow(
+      expect.objectContaining({ errorCode: 'VOICE_INTENT_NOT_UNDERSTOOD' }),
+    );
   });
 });
