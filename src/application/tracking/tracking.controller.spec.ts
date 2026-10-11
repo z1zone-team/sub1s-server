@@ -10,6 +10,7 @@ describe('TrackingController', () => {
     startTracking: jest.Mock;
     checkDeviate: jest.Mock;
     reportLocation: jest.Mock;
+    reportPosition: jest.Mock;
     getSession: jest.Mock;
   };
 
@@ -57,6 +58,7 @@ describe('TrackingController', () => {
       startTracking: jest.fn().mockResolvedValue(mockSession),
       checkDeviate: jest.fn().mockResolvedValue(mockAlert),
       reportLocation: jest.fn().mockResolvedValue(mockSession),
+      reportPosition: jest.fn().mockResolvedValue(mockAlert),
       getSession: jest.fn().mockResolvedValue(mockSession),
     };
 
@@ -107,6 +109,16 @@ describe('TrackingController', () => {
       'sess-123',
       '02_221',
     );
+  });
+
+  it('POST position passes the coordinates to the service', async () => {
+    const dto = { sessionId: 'sess-123', lat: 37.5, lng: 127.03 };
+
+    const res = await controller.reportPosition(user, dto);
+
+    expect(res.success).toBe(true);
+    expect(res.data).toEqual(mockAlert);
+    expect(mockTrackingService.reportPosition).toHaveBeenCalledWith('user-1', dto);
   });
 
   it('GET :sessionId returns session', async () => {

@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { BusinessException } from '../../common/exceptions/business.exception';
 import { SubwayGraph } from '../../domain/subway/models/subway-graph';
 import { SubwayGraphService } from '../../domain/subway/services/subway-graph.service';
+import { WalkingService } from '../../domain/subway/services/walking.service';
 import { TRACKING_REPOSITORY } from '../../domain/tracking/ports/ITrackingRepository';
 import { OffRouteDetector } from '../../domain/tracking/services/offroute-detector.service';
 import { InMemoryTrackingRepository } from '../../infra/database/repositories/in-memory-tracking.repository';
@@ -156,6 +157,7 @@ describe('TrackingService', () => {
       providers: [
         TrackingService,
         OffRouteDetector,
+        WalkingService,
         {
           provide: TRACKING_REPOSITORY,
           useClass: InMemoryTrackingRepository,
@@ -345,6 +347,108 @@ describe('TrackingService', () => {
       await expect(
         service.getSession(USER_ID, session.sessionId),
       ).resolves.toMatchObject({ sessionId: session.sessionId });
+    });
+  });
+
+  describe('reportPosition', () => {
+    const NEAR_YEOKSAM = { lat: 37.5007, lng: 127.0364 };
+    const NEAR_GYODAE = { lat: 37.4935, lng: 127.0141 };
+    const FAR_FROM_ANY_STATION = { lat: 37.62, lng: 127.2 };
+
+    const start = () =>
+      service.startTracking(USER_ID, { routeOption: mockRouteOption });
+
+    it('advances the session when the nearest station is on the route', async () => {
+      const session = await start();
+
+      const result = await service.reportPosition(USER_ID, {
+        sessionId: session.sessionId,
+        ...NEAR_YEOKSAM,
+      });
+
+      expect(result).toMatchObject({
+        currentStationId: '02_221',
+        nextStationId: '02_220',
+        isOffRoute: false,
+      });
+    });
+
+    it('returns the session unchanged when no station is near', async () => {
+      const session = await start();
+
+      const result = await service.reportPosition(USER_ID, {
+        sessionId: session.sessionId,
+        ...FAR_FROM_ANY_STATION,
+      });
+
+      expect(result).toMatchObject({ currentStationId: '02_222', isOffRoute: false });
+      expect(mockRouteService.search).not.toHaveBeenCalled();
+    });
+
+    it('does not alert on the first off-route station', async () => {
+      const session = await start();
+
+      const result = await service.reportPosition(USER_ID, {
+        sessionId: session.sessionId,
+        ...NEAR_GYODAE,
+      });
+
+      expect(result).toMatchObject({ currentStationId: '02_222', isOffRoute: false });
+      expect(mockGateway.sendOffRouteAlert).not.toHaveBeenCalled();
+    });
+
+    it('alerts with a reroute when an off-route station is detected twice in a row', async () => {
+      const session = await start();
+      const request = { sessionId: session.sessionId, ...NEAR_GYODAE };
+
+      await service.reportPosition(USER_ID, request);
+      const result = await service.reportPosition(USER_ID, request);
+
+      expect(result).toMatchObject({
+        isOffRoute: true,
+        detectedStationId: '02_223',
+        detectedStationName: '교대',
+        rerouteOption: mockRerouteOption,
+      });
+      expect(mockRouteService.search).toHaveBeenCalledWith({
+        originStationId: '02_223',
+        destinationStationId: '02_220',
+        routeMode: 'OPTIMAL',
+      });
+      expect(mockGateway.sendOffRouteAlert).toHaveBeenCalledTimes(1);
+    });
+
+    it('resets the off-route count when a route station is detected between', async () => {
+      const session = await start();
+      const off = { sessionId: session.sessionId, ...NEAR_GYODAE };
+
+      await service.reportPosition(USER_ID, off);
+      await service.reportPosition(USER_ID, { sessionId: session.sessionId, ...NEAR_YEOKSAM });
+      const result = await service.reportPosition(USER_ID, off);
+
+      expect(result).toMatchObject({ isOffRoute: false });
+      expect(mockGateway.sendOffRouteAlert).not.toHaveBeenCalled();
+    });
+
+    it('treats an already passed route station as on route', async () => {
+      const session = await start();
+      await service.reportPosition(USER_ID, { sessionId: session.sessionId, ...NEAR_YEOKSAM });
+
+      const result = await service.reportPosition(USER_ID, {
+        sessionId: session.sessionId,
+        lat: 37.4979,
+        lng: 127.0276,
+      });
+
+      expect(result).toMatchObject({ currentStationId: '02_221', isOffRoute: false });
+    });
+
+    it('hides sessions of other users', async () => {
+      const session = await start();
+
+      await expect(
+        service.reportPosition(OTHER_USER_ID, { sessionId: session.sessionId, ...NEAR_YEOKSAM }),
+      ).rejects.toMatchObject({ errorCode: 'SESSION_NOT_FOUND' });
     });
   });
 });

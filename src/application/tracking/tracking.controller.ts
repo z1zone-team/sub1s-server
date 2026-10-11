@@ -7,6 +7,7 @@ import {
   DeviateCheckRequestDto,
   OffRouteAlertDto,
   ReportLocationRequestDto,
+  ReportPositionRequestDto,
   StartTrackingRequestDto,
   TrackingSessionDto,
 } from './dto';
@@ -71,6 +72,26 @@ export class TrackingController {
       dto.sessionId,
       dto.currentStationId,
     );
+    return {
+      success: true,
+      data,
+      timestamp: kstNowIso(),
+    };
+  }
+
+  @Post('position')
+  @ApiOperation({
+    summary: 'GPS 좌표로 위치 확인 및 경로 이탈 감지',
+    description:
+      '좌표에서 300m 안의 가장 가까운 역을 찾아 경로 위의 역이면 세션을 진행시키고, 경로에 없는 역이 연속 2번 감지되면 회차 경로(OffRouteAlertDto)를 반환합니다. 역 근처가 아니면 세션을 그대로 반환합니다.',
+  })
+  @SwaggerResponse({ status: 200, description: '세션 또는 회차 경로 반환' })
+  @SwaggerResponse({ status: 404, description: '세션을 찾을 수 없음' })
+  async reportPosition(
+    @CurrentUser() user: AuthUser,
+    @Body() dto: ReportPositionRequestDto,
+  ): Promise<ApiResponse<OffRouteAlertDto | TrackingSessionDto>> {
+    const data = await this.trackingService.reportPosition(user.id, dto);
     return {
       success: true,
       data,
