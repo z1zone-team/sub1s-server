@@ -22,6 +22,7 @@ export interface NextTrainSnapshot {
 }
 
 export interface NextTrainQuery {
+  stationId: string;
   lineId: string;
   stationName: string;
 }

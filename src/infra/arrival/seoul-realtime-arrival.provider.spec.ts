@@ -28,7 +28,7 @@ describe('SeoulRealtimeArrivalProvider', () => {
     ...over,
   });
 
-  const query = { lineId: '09', stationName: '신논현' };
+  const query = { stationId: '09_925', lineId: '09', stationName: '신논현' };
 
   beforeEach(() => {
     fetchMock = jest.fn();
@@ -75,7 +75,7 @@ describe('SeoulRealtimeArrivalProvider', () => {
       ],
     });
 
-    const snapshot = await provider().fetchNextTrains({ lineId: '02', stationName: '강남' });
+    const snapshot = await provider().fetchNextTrains({ stationId: 'x', lineId: '02', stationName: '강남' });
 
     expect(snapshot.trains.map((train) => train.direction)).toEqual(['INNER', 'OUTER']);
   });
@@ -142,7 +142,7 @@ describe('SeoulRealtimeArrivalProvider', () => {
   });
 
   it('does not call the API for a line the service does not cover', async () => {
-    const snapshot = await provider().fetchNextTrains({ lineId: 'I1', stationName: '계양' });
+    const snapshot = await provider().fetchNextTrains({ stationId: 'x', lineId: 'I1', stationName: '계양' });
 
     expect(snapshot.status).toBe('UNSUPPORTED_LINE');
     expect(fetchMock).not.toHaveBeenCalled();
@@ -163,7 +163,7 @@ describe('SeoulRealtimeArrivalProvider', () => {
 
       await target.fetchNextTrains(query);
       now.mockReturnValue(Date.parse('2026-10-11T03:00:29Z'));
-      await target.fetchNextTrains({ lineId: '09', stationName: '신논현' });
+      await target.fetchNextTrains({ stationId: 'x', lineId: '09', stationName: '신논현' });
       expect(fetchMock).toHaveBeenCalledTimes(1);
 
       now.mockReturnValue(Date.parse('2026-10-11T03:00:31Z'));
@@ -188,8 +188,8 @@ describe('SeoulRealtimeArrivalProvider', () => {
       respond({ realtimeArrivalList: [row(), row({ subwayId: '1077' })] });
       const target = provider();
 
-      await target.fetchNextTrains({ lineId: '09', stationName: '신논현' });
-      await target.fetchNextTrains({ lineId: 'SB', stationName: '신논현' });
+      await target.fetchNextTrains({ stationId: 'x', lineId: '09', stationName: '신논현' });
+      await target.fetchNextTrains({ stationId: 'x', lineId: 'SB', stationName: '신논현' });
 
       expect(fetchMock).toHaveBeenCalledTimes(1);
     });
@@ -199,14 +199,14 @@ describe('SeoulRealtimeArrivalProvider', () => {
       respond({ realtimeArrivalList: [row()] });
       const target = provider({ SEOUL_SUBWAY_REALTIME_API_KEY: 'k', SEOUL_REALTIME_DAILY_LIMIT: '2' });
 
-      await target.fetchNextTrains({ lineId: '09', stationName: 'A' });
-      await target.fetchNextTrains({ lineId: '09', stationName: 'B' });
-      const blocked = await target.fetchNextTrains({ lineId: '09', stationName: 'C' });
+      await target.fetchNextTrains({ stationId: 'x', lineId: '09', stationName: 'A' });
+      await target.fetchNextTrains({ stationId: 'x', lineId: '09', stationName: 'B' });
+      const blocked = await target.fetchNextTrains({ stationId: 'x', lineId: '09', stationName: 'C' });
       expect(blocked.status).toBe('UNAVAILABLE');
       expect(fetchMock).toHaveBeenCalledTimes(2);
 
       now.mockReturnValue(Date.parse('2026-10-11T15:30:00Z'));
-      const next = await target.fetchNextTrains({ lineId: '09', stationName: 'C' });
+      const next = await target.fetchNextTrains({ stationId: 'x', lineId: '09', stationName: 'C' });
       expect(next.status).toBe('OK');
       expect(fetchMock).toHaveBeenCalledTimes(3);
     });

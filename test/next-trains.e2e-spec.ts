@@ -97,6 +97,7 @@ describe('Next trains (e2e)', () => {
       'UP:개화',
     ]);
     expect(fetchNextTrains).toHaveBeenCalledWith({
+      stationId: '09_925',
       lineId: '09',
       stationName: res.body.data.stationName,
     });
