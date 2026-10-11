@@ -4,7 +4,14 @@ import { IUserRepository } from '../../domain/user/ports/IUserRepository';
 import { UserService } from './user.service';
 
 describe('UserService', () => {
-  let repo: jest.Mocked<Pick<IUserRepository, 'findById' | 'updateProfile' | 'isNicknameTaken'>>;
+  let repo: jest.Mocked<Pick<
+      IUserRepository,
+      | 'findById'
+      | 'updateProfile'
+      | 'isNicknameTaken'
+      | 'findPreferences'
+      | 'replacePreferences'
+    >>;
   let service: UserService;
 
   const user = {
@@ -24,6 +31,8 @@ describe('UserService', () => {
       findById: jest.fn().mockResolvedValue(user),
       updateProfile: jest.fn().mockResolvedValue(user),
       isNicknameTaken: jest.fn().mockResolvedValue(false),
+      findPreferences: jest.fn().mockResolvedValue({ purposes: [], routePrefs: [] }),
+      replacePreferences: jest.fn(),
     };
     service = new UserService(repo as unknown as IUserRepository);
   });
@@ -99,5 +108,34 @@ describe('UserService', () => {
     repo.updateProfile.mockRejectedValueOnce(new Error('db down'));
 
     await expect(service.updateProfile('user-1', { name: '이름' })).rejects.toThrow('db down');
+  });
+
+  describe('preferences', () => {
+    const saved = { purposes: ['COMMUTE' as const], routePrefs: ['FAST' as const] };
+
+    it('returns empty arrays before the survey', async () => {
+      expect(await service.getPreferences('user-1')).toEqual({ purposes: [], routePrefs: [] });
+    });
+
+    it('replaces the survey answers and returns what was stored', async () => {
+      repo.replacePreferences.mockResolvedValue(saved);
+
+      const result = await service.replacePreferences('user-1', saved);
+
+      expect(repo.replacePreferences).toHaveBeenCalledWith('user-1', saved);
+      expect(result).toEqual(saved);
+    });
+
+    it('rejects an unknown user for both reads and writes', async () => {
+      repo.findById.mockResolvedValue(null);
+
+      await expect(service.getPreferences('ghost')).rejects.toMatchObject({
+        errorCode: 'USER_NOT_FOUND',
+      });
+      await expect(service.replacePreferences('ghost', saved)).rejects.toMatchObject({
+        errorCode: 'USER_NOT_FOUND',
+      });
+      expect(repo.replacePreferences).not.toHaveBeenCalled();
+    });
   });
 });

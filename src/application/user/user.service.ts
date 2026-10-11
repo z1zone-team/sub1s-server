@@ -6,6 +6,10 @@ import {
   USER_REPOSITORY,
 } from '../../domain/user/ports/IUserRepository';
 import { MyProfileResponseDto } from './dto/my-profile-response.dto';
+import {
+  PreferencesResponseDto,
+  UpdatePreferencesRequestDto,
+} from './dto/preferences.dto';
 import { UpdateProfileRequestDto } from './dto/update-profile-request.dto';
 
 @Injectable()
@@ -31,13 +35,7 @@ export class UserService {
       );
     }
 
-    if (!(await this.userRepo.findById(userId))) {
-      throw new BusinessException(
-        'USER_NOT_FOUND',
-        'user not found',
-        HttpStatus.NOT_FOUND,
-      );
-    }
+    await this.requireUser(userId);
 
     if (
       dto.nickname !== undefined &&
@@ -60,6 +58,32 @@ export class UserService {
         throw this.nicknameTaken(error.nickname);
       }
       throw error;
+    }
+  }
+
+  async getPreferences(userId: string): Promise<PreferencesResponseDto> {
+    await this.requireUser(userId);
+    return this.userRepo.findPreferences(userId);
+  }
+
+  async replacePreferences(
+    userId: string,
+    dto: UpdatePreferencesRequestDto,
+  ): Promise<PreferencesResponseDto> {
+    await this.requireUser(userId);
+    return this.userRepo.replacePreferences(userId, {
+      purposes: dto.purposes,
+      routePrefs: dto.routePrefs,
+    });
+  }
+
+  private async requireUser(userId: string): Promise<void> {
+    if (!(await this.userRepo.findById(userId))) {
+      throw new BusinessException(
+        'USER_NOT_FOUND',
+        'user not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
   }
 

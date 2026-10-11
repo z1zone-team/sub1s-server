@@ -6,6 +6,7 @@ import {
   nicknameCandidate,
   normalizeNickname,
 } from '../../../domain/user/models/nickname';
+import { UserPreferences } from '../../../domain/user/models/preferences';
 import {
   IUserRepository,
   UpdateProfileData,
@@ -143,6 +144,29 @@ export class UserRepository implements IUserRepository {
         },
       }),
     );
+  }
+
+  async findPreferences(userId: string): Promise<UserPreferences> {
+    const row = await this.prisma.userPreference.findUnique({
+      where: { userId },
+      select: { purposes: true, routePrefs: true },
+    });
+    return {
+      purposes: (row?.purposes ?? []) as UserPreferences['purposes'],
+      routePrefs: (row?.routePrefs ?? []) as UserPreferences['routePrefs'],
+    };
+  }
+
+  async replacePreferences(
+    userId: string,
+    data: UserPreferences,
+  ): Promise<UserPreferences> {
+    await this.prisma.userPreference.upsert({
+      where: { userId },
+      update: { purposes: data.purposes, routePrefs: data.routePrefs },
+      create: { userId, purposes: data.purposes, routePrefs: data.routePrefs },
+    });
+    return this.findPreferences(userId);
   }
 
   // clerk_id 충돌은 동시에 온 요청이 먼저 만든 경우라 다음 시도에서 갱신으로 처리된다

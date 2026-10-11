@@ -1,4 +1,4 @@
-import { Body, Controller, Patch, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Put, UseGuards } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiOperation,
@@ -10,6 +10,10 @@ import { ApiResponse } from '../../common/interfaces/api-response.interface';
 import { ClerkAuthGuard } from '../../infra/auth/clerk-auth.guard';
 import { AuthUser, CurrentUser } from '../../infra/auth/current-user.decorator';
 import { MyProfileResponseDto } from './dto/my-profile-response.dto';
+import {
+  PreferencesResponseDto,
+  UpdatePreferencesRequestDto,
+} from './dto/preferences.dto';
 import { UpdateProfileRequestDto } from './dto/update-profile-request.dto';
 import { UserService } from './user.service';
 
@@ -34,6 +38,35 @@ export class UserController {
     @Body() dto: UpdateProfileRequestDto,
   ): Promise<ApiResponse<MyProfileResponseDto>> {
     const data = await this.userService.updateProfile(user.id, dto);
+    return { success: true, data, timestamp: kstNowIso() };
+  }
+
+  @Get('me/preferences')
+  @ApiOperation({
+    summary: '내 관심 설문 조회',
+    description: '설문 전이면 빈 배열을 돌려줍니다.',
+  })
+  @SwaggerResponse({ status: 200, description: '저장된 용무와 경로 취향' })
+  async getPreferences(
+    @CurrentUser() user: AuthUser,
+  ): Promise<ApiResponse<PreferencesResponseDto>> {
+    const data = await this.userService.getPreferences(user.id);
+    return { success: true, data, timestamp: kstNowIso() };
+  }
+
+  @Put('me/preferences')
+  @ApiOperation({
+    summary: '내 관심 설문 저장',
+    description:
+      '용무와 경로 취향을 통째로 교체합니다. 각각 1개 이상이어야 하고 중복은 제거됩니다. 설문을 건너뛰면 호출하지 않습니다.',
+  })
+  @SwaggerResponse({ status: 200, description: '저장된 용무와 경로 취향' })
+  @SwaggerResponse({ status: 400, description: '빈 배열 또는 허용되지 않는 값' })
+  async replacePreferences(
+    @CurrentUser() user: AuthUser,
+    @Body() dto: UpdatePreferencesRequestDto,
+  ): Promise<ApiResponse<PreferencesResponseDto>> {
+    const data = await this.userService.replacePreferences(user.id, dto);
     return { success: true, data, timestamp: kstNowIso() };
   }
 }

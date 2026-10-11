@@ -48,6 +48,8 @@ model UserPreference {
   preferenceVector Unsupported("vector(6)")? @map("preference_vector")
 
   preferredMode    String                     @default("OPTIMAL") @map("preferred_mode") @db.VarChar(20) // OPTIMAL, COMFORTABLE, PERSONAL
+  purposes         String[]                   @default([])
+  routePrefs       String[]                   @default([]) @map("route_prefs")
   updatedAt        DateTime                   @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
 
   @@map("user_preferences")

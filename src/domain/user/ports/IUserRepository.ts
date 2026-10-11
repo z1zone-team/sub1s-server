@@ -1,4 +1,5 @@
 import { RankScore, RankingVisibility, User } from '@prisma/client';
+import { UserPreferences } from '../models/preferences';
 
 export interface UpsertClerkUserData {
   clerkId: string;
@@ -31,6 +32,10 @@ export interface IUserRepository {
   syncNickname(id: string, nickname: string): Promise<User>;
   isNicknameTaken(nickname: string, exceptUserId?: string): Promise<boolean>;
   upsertPlaceholder(id: string, nickname?: string): Promise<User>;
+  /** 설문 전이면 빈 배열 */
+  findPreferences(userId: string): Promise<UserPreferences>;
+  /** 용무와 경로 취향을 통째로 교체한다 */
+  replacePreferences(userId: string, data: UserPreferences): Promise<UserPreferences>;
 }
 
 export const USER_REPOSITORY = Symbol('USER_REPOSITORY');
