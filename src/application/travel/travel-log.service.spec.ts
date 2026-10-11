@@ -62,6 +62,7 @@ describe('TravelLogService', () => {
     transferCount: 0,
     estimatedArrivalTimestamp: new Date().toISOString(),
     segments: [],
+    stationIds: ['02_222', '02_221'],
   };
 
   beforeEach(async () => {
@@ -171,6 +172,20 @@ describe('TravelLogService', () => {
   });
 
   describe('createLog', () => {
+    it('stores the stations the route passed in the encrypted payload', async () => {
+      mockRouteService.search.mockResolvedValueOnce({
+        options: [{ ...mockRouteOption, stationIds: ['02_222', '02_223', '02_221'] }],
+      });
+
+      await service.createLog('user-1', {
+        originStationId: '02_222',
+        destStationId: '02_221',
+      });
+
+      const saved = JSON.parse(mockCryptoService.encrypt.mock.calls[0][0]);
+      expect(saved.stationIds).toEqual(['02_222', '02_223', '02_221']);
+    });
+
     it('creates travel log, encrypts payload, and atomically updates rank scores', async () => {
       const res = await service.createLog('user-1', {
         originStationId: '02_222',
@@ -591,6 +606,25 @@ describe('TravelLogService', () => {
   });
 
   describe('getLineMap', () => {
+    it('marks the stations stored in the payload as visited, not only the endpoints', async () => {
+      payloads['log-1'] = { stationIds: ['02_222', '02_221'] };
+      mockTravelLogRepo.findLineMapLogs.mockResolvedValueOnce([
+        {
+          originStationId: '09_907',
+          destStationId: '09_925',
+          encryptedRoutePayload: 'log-1',
+          iv: 'iv',
+          authTag: 'tag',
+          wrappedDek: 'dek',
+        },
+      ]);
+
+      const res = await service.getLineMap('user-1', { period: 'ALL' });
+
+      const stations = res.lines.find((l) => l.lineId === '02')?.stations ?? [];
+      expect(stations.map((s) => s.visited)).toEqual([true, true]);
+    });
+
     it('returns subway lines with visited status for stations', async () => {
       mockTravelLogRepo.findLineMapLogs.mockResolvedValueOnce([
         {

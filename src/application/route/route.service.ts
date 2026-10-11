@@ -423,6 +423,7 @@ export class RouteService {
       transferCount: result.transferCount,
       estimatedArrivalTimestamp,
       segments,
+      stationIds: result.stationIds,
       totalWalkDurationSec,
       totalWalkDistanceKm,
       totalCalories,

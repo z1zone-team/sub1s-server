@@ -139,6 +139,7 @@ export class TravelLogService {
       originStationId: dto.originStationId,
       destStationId: dto.destStationId,
       segments: route.segments,
+      stationIds: route.stationIds,
       completedAt: kstNowIso(),
     });
     const encrypted = this.cryptoService.encrypt(sensitivePayload);

@@ -129,6 +129,14 @@ export class SubwayRouteOptionDto {
   segments!: PathSegmentDto[];
 
   @ApiPropertyOptional({
+    description:
+      '지나가는 지하철역 ID를 순서대로 (출발역, 중간 역, 환승역, 도착역). ONLY_WALK에는 없음',
+    type: [String],
+    example: ['02_222', '02_221'],
+  })
+  stationIds?: string[];
+
+  @ApiPropertyOptional({
     description: '총 도보 소요 시간 (초)',
     example: 360,
   })
