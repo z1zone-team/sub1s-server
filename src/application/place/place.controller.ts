@@ -1,4 +1,4 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 import {
   ApiOperation,
   ApiResponse as SwaggerResponse,
@@ -7,6 +7,7 @@ import {
 import { ApiResponse } from '../../common/interfaces/api-response.interface';
 import { PlaceSearchQueryDto } from './dto/place-search-query.dto';
 import { PlaceSearchResultDto } from './dto/place-search-response.dto';
+import { PlaceSearchRateLimitGuard } from './place-search-rate-limit.guard';
 import { PlaceService } from './place.service';
 import { kstNowIso } from '../../common/utils/kst';
 
@@ -16,6 +17,7 @@ export class PlaceController {
   constructor(private readonly placeService: PlaceService) {}
 
   @Get('search')
+  @UseGuards(PlaceSearchRateLimitGuard)
   @ApiOperation({
     summary: '역·장소 검색 (자동완성)',
     description:
@@ -26,6 +28,10 @@ export class PlaceController {
     description: '검색 성공 (결과가 없으면 빈 배열)',
   })
   @SwaggerResponse({ status: 400, description: '검색어 누락 또는 형식 오류' })
+  @SwaggerResponse({
+    status: 429,
+    description: 'IP당 분당 요청 한도 초과 (TOO_MANY_REQUESTS, Retry-After 헤더)',
+  })
   async search(
     @Query() query: PlaceSearchQueryDto,
   ): Promise<ApiResponse<PlaceSearchResultDto>> {
