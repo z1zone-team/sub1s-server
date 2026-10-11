@@ -47,7 +47,7 @@ export function buildExits(gates: KricGateRow[]): StationExit[] {
     }));
 }
 
-/** 출구 또는 엘리베이터 자료가 한 번이라도 수집된 역만 담는다 */
+/** 출구나 엘리베이터 문 중 하나라도 있는 역만 담는다. 둘 다 비어 있으면 자료가 없는 역으로 본다 */
 export function buildStationFacilities(
   gates: Record<string, GateSummary>,
   elevators: Record<string, ElevatorSummary>,
@@ -56,10 +56,10 @@ export function buildStationFacilities(
   const stationIds = [...new Set([...Object.keys(gates), ...Object.keys(elevators)])].sort();
 
   for (const stationId of stationIds) {
-    result[stationId] = {
-      exits: buildExits(gates[stationId]?.gates ?? []),
-      elevatorDoors: [...(elevators[stationId]?.doors ?? [])],
-    };
+    const exits = buildExits(gates[stationId]?.gates ?? []);
+    const elevatorDoors = [...(elevators[stationId]?.doors ?? [])];
+    if (exits.length === 0 && elevatorDoors.length === 0) continue;
+    result[stationId] = { exits, elevatorDoors };
   }
   return result;
 }
