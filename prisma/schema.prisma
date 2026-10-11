@@ -31,10 +31,13 @@ model User {
   isRankingPublic Boolean         @default(true) @map("is_ranking_public")
   createdAt       DateTime        @default(now()) @map("created_at") @db.Timestamptz
   updatedAt       DateTime        @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+  inviteToken     String?         @unique @map("invite_token") @db.VarChar(32)
 
   preference      UserPreference?
   travelLogs      TravelLog[]
   rankScores      RankScore[]
+  friendships     Friendship[]    @relation("FriendshipOwner")
+  friendOf        Friendship[]    @relation("FriendshipTarget")
 
   @@map("users")
 }
@@ -53,6 +56,20 @@ model UserPreference {
   updatedAt        DateTime                   @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
 
   @@map("user_preferences")
+}
+
+// 친구 관계는 양방향으로 두 행을 저장한다
+model Friendship {
+  userId    String   @map("user_id") @db.Uuid
+  friendId  String   @map("friend_id") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  user      User     @relation("FriendshipOwner", fields: [userId], references: [id], onDelete: Cascade)
+  friend    User     @relation("FriendshipTarget", fields: [friendId], references: [id], onDelete: Cascade)
+
+  @@id([userId, friendId])
+  @@index([friendId])
+  @@map("friendships")
 }
 
 // 3. 지하철 노선 모델

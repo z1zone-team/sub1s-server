@@ -1,4 +1,4 @@
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
   IsBoolean,
   IsIn,
@@ -19,7 +19,7 @@ export class RankingQueryDto {
 
   @IsOptional()
   @IsBoolean()
-  @Type(() => Boolean)
+  @Transform(({ value }) => (value === 'true' ? true : value === 'false' ? false : value))
   friendsOnly?: boolean = false;
 
   @IsOptional()

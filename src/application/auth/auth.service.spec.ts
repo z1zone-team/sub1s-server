@@ -57,6 +57,7 @@ describe('AuthService', () => {
         nicknameCustomized: false,
         rankingVisibility: 'PUBLIC' as const,
         isRankingPublic: true,
+        inviteToken: null,
         createdAt: new Date(),
         updatedAt: new Date(),
       });
@@ -77,6 +78,7 @@ describe('AuthService', () => {
       profileImageUrl: null,
       rankingVisibility: 'PUBLIC' as const,
       isRankingPublic: true,
+      inviteToken: null,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -149,6 +151,7 @@ describe('AuthService', () => {
         nicknameCustomized: false,
         rankingVisibility: 'PUBLIC' as const,
         isRankingPublic: true,
+        inviteToken: null,
         createdAt: new Date('2026-10-01T00:00:00Z'),
         updatedAt: new Date(),
         rankScores: [
