@@ -211,6 +211,23 @@ describe('Travel and Ranking (e2e)', () => {
     expect(line02.colorHex).toBe('#00A84D');
   });
 
+  it('GET /api/v1/line-map names and colors every line, with no gray fallback', async () => {
+    const res = await request(app.getHttpServer())
+      .get('/api/v1/line-map?period=ALL')
+      .expect(200);
+
+    const lines = res.body.data.lines as { lineId: string; lineName: string; colorHex: string }[];
+    const byId = new Map(lines.map((l) => [l.lineId, l]));
+
+    expect(lines.length).toBe(24);
+    expect(lines.filter((l) => l.colorHex === '#888888')).toEqual([]);
+    expect(byId.get('SD')).toMatchObject({ lineName: '수인분당선', colorHex: '#FABE00' });
+    expect(byId.get('GG')).toMatchObject({ lineName: '경강선' });
+    expect(byId.get('EV')).toMatchObject({ lineName: '에버라인' });
+    expect(byId.get('I1')).toMatchObject({ lineName: '인천1호선' });
+    expect(lines.every((l) => !l.lineName.endsWith('호선') || /^\d호선$|^인천\d호선$/.test(l.lineName))).toBe(true);
+  });
+
   it('GET /api/v1/travel/line-map also works via travel route prefix', async () => {
     const res = await request(app.getHttpServer())
       .get('/api/v1/travel/line-map?period=ALL')
