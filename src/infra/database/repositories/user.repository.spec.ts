@@ -133,14 +133,10 @@ describe('UserRepository', () => {
       expect(prisma.user.update.mock.calls[1][0].data).not.toHaveProperty('name');
     });
 
-    it.each([
-      ['PUBLIC', true],
-      ['ANONYMOUS', true],
-      ['PRIVATE', false],
-    ] as const)('keeps the deprecated isRankingPublic in sync for %s', async (rankingVisibility, isRankingPublic) => {
+    it.each(['PUBLIC', 'ANONYMOUS', 'PRIVATE'] as const)('stores the ranking visibility %s', async (rankingVisibility) => {
       await repo.updateProfile('u1', { rankingVisibility });
 
-      expect(prisma.user.update.mock.calls[0][0].data).toEqual({ rankingVisibility, isRankingPublic });
+      expect(prisma.user.update.mock.calls[0][0].data).toEqual({ rankingVisibility });
     });
 
     it('turns a nickname unique violation into NicknameTakenError', async () => {

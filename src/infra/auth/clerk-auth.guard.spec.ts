@@ -83,7 +83,6 @@ describe('ClerkAuthGuard', () => {
       name: null,
       nicknameCustomized: false,
       rankingVisibility: 'PUBLIC',
-      isRankingPublic: true,
       inviteToken: null,
       createdAt: new Date(),
       updatedAt: new Date(),
