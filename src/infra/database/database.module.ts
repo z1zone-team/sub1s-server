@@ -6,6 +6,7 @@ import {
   PUSH_TOKEN_REPOSITORY,
   SETTLEMENT_LOG_REPOSITORY,
 } from '../../domain/notification/ports/notification-ports';
+import { USER_PLACE_REPOSITORY } from '../../domain/user/ports/IUserPlaceRepository';
 import { FRIEND_REPOSITORY } from '../../domain/friend/ports/IFriendRepository';
 import { USER_REPOSITORY } from '../../domain/user/ports/IUserRepository';
 import { RANK_SCORE_REPOSITORY } from '../../domain/ranking/ports/IRankScoreRepository';
@@ -14,6 +15,7 @@ import { PrismaModule } from '../prisma/prisma.module';
 import { SubwayGraphRepository } from './repositories/subway-graph.repository';
 import { SubwayLineRepository } from './repositories/subway-line.repository';
 import { UserRepository } from './repositories/user.repository';
+import { UserPlaceRepository } from './repositories/user-place.repository';
 import { RankScoreRepository } from './repositories/rank-score.repository';
 import { FriendRepository } from './repositories/friend.repository';
 import { NotificationSettingsRepository } from './repositories/notification-settings.repository';
@@ -28,6 +30,7 @@ import { TravelLogRepository } from './repositories/travel-log.repository';
     { provide: SUBWAY_GRAPH_REPOSITORY, useClass: SubwayGraphRepository },
     { provide: SUBWAY_LINE_REPOSITORY, useClass: SubwayLineRepository },
     { provide: USER_REPOSITORY, useClass: UserRepository },
+    { provide: USER_PLACE_REPOSITORY, useClass: UserPlaceRepository },
     { provide: RANK_SCORE_REPOSITORY, useClass: RankScoreRepository },
     { provide: TRAVEL_LOG_REPOSITORY, useClass: TravelLogRepository },
     { provide: FRIEND_REPOSITORY, useClass: FriendRepository },
@@ -46,6 +49,7 @@ import { TravelLogRepository } from './repositories/travel-log.repository';
     SUBWAY_GRAPH_REPOSITORY,
     SUBWAY_LINE_REPOSITORY,
     USER_REPOSITORY,
+    USER_PLACE_REPOSITORY,
     RANK_SCORE_REPOSITORY,
     TRAVEL_LOG_REPOSITORY,
     FRIEND_REPOSITORY,
