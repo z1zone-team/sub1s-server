@@ -25,6 +25,13 @@ enum SettlementStatus {
   @@map("settlement_status")
 }
 
+enum PlaceKind {
+  HOME
+  SCHOOL
+
+  @@map("place_kind")
+}
+
 enum RankingVisibility {
   PUBLIC
   ANONYMOUS
@@ -54,6 +61,7 @@ model User {
   pushTokens      PushToken[]
   notificationSetting UserNotificationSetting?
   settlementNotifications SettlementNotification[]
+  places          UserPlace[]
 
   @@map("users")
 }
@@ -72,6 +80,22 @@ model UserPreference {
   updatedAt        DateTime                   @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
 
   @@map("user_preferences")
+}
+
+// 홈의 집, 학교 즐겨찾기. 역이면 stationId, 장소면 좌표를 가진다
+model UserPlace {
+  userId    String    @map("user_id") @db.Uuid
+  kind      PlaceKind
+  name      String    @db.VarChar(100)
+  stationId String?   @map("station_id") @db.VarChar(30)
+  lat       Float?
+  lng       Float?
+  updatedAt DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, kind])
+  @@map("user_places")
 }
 
 // 친구 관계는 양방향으로 두 행을 저장한다
