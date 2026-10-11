@@ -74,14 +74,26 @@ describe('station facilities', () => {
       expect(result['01_161']).toEqual({ exits: [], elevatorDoors: ['1-1'] });
     });
 
-    it('keeps a collected station even when it has no data, so it is not mistaken for uncollected', () => {
+    it('leaves out a station whose sources are both empty, so it is reported as having no data', () => {
       const result = buildStationFacilities({ '01_147': { gates: [] } }, { '01_147': { doors: [] } });
 
-      expect(result['01_147']).toEqual({ exits: [], elevatorDoors: [] });
+      expect(result).toEqual({});
+    });
+
+    it('keeps a station that has only one of the two kinds of data', () => {
+      const result = buildStationFacilities(
+        { '01_147': { gates: [] }, '01_161': { gates: [gate('1', '마당')] } },
+        { '01_147': { doors: ['1-1'] }, '01_161': { doors: [] } },
+      );
+
+      expect(Object.keys(result)).toEqual(['01_147', '01_161']);
     });
 
     it('orders the stations by id for stable diffs', () => {
-      const result = buildStationFacilities({ '09_925': { gates: [] }, '01_100': { gates: [] } }, {});
+      const result = buildStationFacilities(
+        { '09_925': { gates: [gate('1', 'a')] }, '01_100': { gates: [gate('1', 'b')] } },
+        {},
+      );
 
       expect(Object.keys(result)).toEqual(['01_100', '09_925']);
     });
