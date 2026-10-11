@@ -80,6 +80,7 @@ describe('TrackingService', () => {
   });
 
   const mockRouteOption: SubwayRouteOptionDto = {
+    operationStatus: 'UNKNOWN',
     highlights: [],
     mode: 'OPTIMAL',
     totalDurationSec: 250,
@@ -89,6 +90,7 @@ describe('TrackingService', () => {
     estimatedArrivalTimestamp: new Date().toISOString(),
     segments: [
       {
+        operationStatus: 'UNKNOWN',
         lineId: '02',
         direction: 'INNER',
         isExpress: false,
@@ -108,6 +110,7 @@ describe('TrackingService', () => {
   };
 
   const mockRerouteOption: SubwayRouteOptionDto = {
+    operationStatus: 'UNKNOWN',
     highlights: [],
     mode: 'OPTIMAL',
     totalDurationSec: 360,
@@ -117,6 +120,7 @@ describe('TrackingService', () => {
     estimatedArrivalTimestamp: new Date().toISOString(),
     segments: [
       {
+        operationStatus: 'UNKNOWN',
         lineId: '02',
         direction: 'INNER',
         isExpress: false,

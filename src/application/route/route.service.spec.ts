@@ -9,6 +9,7 @@ import {
 import { SubwayGraphService } from '../../domain/subway/services/subway-graph.service';
 import { WalkingService } from '../../domain/subway/services/walking.service';
 import { StatisticalCongestionProvider } from '../../infra/congestion/statistical-congestion.provider';
+import { OperationStatusService } from './operation-status.service';
 import { RouteService } from './route.service';
 
 describe('RouteService', () => {
@@ -112,6 +113,7 @@ describe('RouteService', () => {
         RouteService,
         WalkingService,
         { provide: SUBWAY_ROUTE_ENGINE, useValue: mockEngine },
+        { provide: OperationStatusService, useValue: { annotate: jest.fn().mockResolvedValue(undefined) } },
         { provide: SubwayGraphService, useValue: mockGraphService },
         {
           provide: StatisticalCongestionProvider,

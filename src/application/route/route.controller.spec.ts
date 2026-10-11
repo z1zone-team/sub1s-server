@@ -10,6 +10,7 @@ describe('RouteController', () => {
   const mockResult: RouteSearchResultDto = {
     options: [
       {
+        operationStatus: 'UNKNOWN',
         highlights: [],
         mode: 'OPTIMAL',
         totalDurationSec: 180,

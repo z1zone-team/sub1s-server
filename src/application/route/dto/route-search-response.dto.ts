@@ -4,10 +4,22 @@ import {
   CongestionLevel,
   CongestionSource,
 } from '../../../domain/congestion/models/congestion';
+import { OperationStatus } from '../../../domain/operation/models/operation-status';
 import {
   ROUTE_HIGHLIGHTS,
   RouteHighlight,
 } from '../../../domain/subway/models/route-highlight';
+
+export class OperationNoticeDto {
+  @ApiProperty({ description: '서울교통공사 공지 제목', example: '2호선 이대역 안전문장애로 열차 무정차 통과중' })
+  title!: string;
+
+  @ApiProperty({ description: '공지가 올라온 시각 (KST ISO)' })
+  occurredAt!: string;
+}
+
+const OPERATION_STATUS_DESCRIPTION =
+  'NORMAL 서울교통공사가 공지한 이상 상황이 없음, DISRUPTED 지연·무정차 등 진행 중인 공지가 이 구간에 걸림, UNKNOWN 공지로 알 수 없음(도보, 공지가 빠짐없이 오지 않는 노선, 공지를 가져오지 못함)';
 
 export class PathSegmentDto {
   @ApiProperty({
@@ -69,6 +81,18 @@ export class PathSegmentDto {
 
   @ApiProperty({ description: '혼잡도 비율 (0~100%)', example: 52 })
   congestionRate!: number;
+
+  @ApiProperty({
+    description: OPERATION_STATUS_DESCRIPTION,
+    enum: ['NORMAL', 'DISRUPTED', 'UNKNOWN'],
+  })
+  operationStatus!: OperationStatus;
+
+  @ApiPropertyOptional({
+    description: 'DISRUPTED일 때 근거가 된 공지',
+    type: OperationNoticeDto,
+  })
+  operationNotice?: OperationNoticeDto;
 
   @ApiPropertyOptional({
     description:
@@ -148,6 +172,19 @@ export class SubwayRouteOptionDto {
     example: ['FEWEST_TRANSFERS', 'WEAK_AC_CAR'],
   })
   highlights!: RouteHighlight[];
+
+  @ApiProperty({
+    description:
+      '경로 전체의 운행 상태. 하나라도 DISRUPTED면 DISRUPTED, 모든 탑승 구간이 NORMAL일 때만 NORMAL, 그 밖에는 UNKNOWN',
+    enum: ['NORMAL', 'DISRUPTED', 'UNKNOWN'],
+  })
+  operationStatus!: OperationStatus;
+
+  @ApiPropertyOptional({
+    description: 'DISRUPTED일 때 첫 번째 근거 공지',
+    type: OperationNoticeDto,
+  })
+  operationNotice?: OperationNoticeDto;
 
   @ApiPropertyOptional({
     description: '총 도보 소요 시간 (초)',
