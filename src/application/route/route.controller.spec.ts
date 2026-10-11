@@ -10,6 +10,7 @@ describe('RouteController', () => {
   const mockResult: RouteSearchResultDto = {
     options: [
       {
+        highlights: [],
         mode: 'OPTIMAL',
         totalDurationSec: 180,
         totalDistanceKm: 1.2,

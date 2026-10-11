@@ -16,6 +16,10 @@ import {
   ISubwayRouteEngine,
   SUBWAY_ROUTE_ENGINE,
 } from '../../domain/subway/ports/ISubwayRouteEngine';
+import {
+  HighlightInput,
+  computeRouteHighlights,
+} from '../../domain/subway/models/route-highlight';
 import { SubwayGraphService } from '../../domain/subway/services/subway-graph.service';
 import {
   WalkingService,
@@ -245,6 +249,8 @@ export class RouteService {
       );
     }
 
+    this.applyHighlights(validOptions);
+
     // 선호 모드가 지정된 경우 우선 배치
     if (dto.routeMode) {
       validOptions.sort((a, b) => {
@@ -255,6 +261,14 @@ export class RouteService {
     }
 
     return { options: validOptions };
+  }
+
+  private applyHighlights(options: SubwayRouteOptionDto[]): void {
+    const comparable = options.filter((option) => option.mode !== 'ONLY_WALK');
+    const tags = computeRouteHighlights(comparable.map(toHighlightInput));
+    comparable.forEach((option, index) => {
+      option.highlights = tags[index];
+    });
   }
 
   private mapToOptionDto(
@@ -424,6 +438,7 @@ export class RouteService {
       estimatedArrivalTimestamp,
       segments,
       stationIds: result.stationIds,
+      highlights: [],
       totalWalkDurationSec,
       totalWalkDistanceKm,
       totalCalories,
@@ -470,10 +485,45 @@ export class RouteService {
           walkSteps: metrics.steps,
         },
       ],
+      highlights: [],
       totalWalkDurationSec: metrics.durationSec,
       totalWalkDistanceKm: metrics.actualDistanceKm,
       totalCalories: metrics.calories,
       totalSteps: metrics.steps,
     };
   }
+}
+
+const CAR_NUMBERS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+function toHighlightInput(option: SubwayRouteOptionDto): HighlightInput {
+  const rides = option.segments.filter((segment) => segment.lineId !== 'WALK');
+  const rideSec = rides.reduce((sum, segment) => sum + segment.durationSec, 0);
+  const endpointWalkSec = option.totalWalkDurationSec ?? 0;
+  const transferWalkSec = Math.max(0, option.totalDurationSec - endpointWalkSec - rideSec);
+
+  return {
+    totalDurationSec: option.totalDurationSec,
+    transferCount: option.transferCount,
+    totalFare: option.totalFare,
+    averageCongestionRate:
+      rideSec > 0
+        ? rides.reduce((sum, segment) => sum + segment.congestionRate * segment.durationSec, 0) / rideSec
+        : null,
+    walkSec: endpointWalkSec + transferWalkSec,
+    hasWeakAcCar: mostlyOnWeakAcLines(rides, rideSec),
+  };
+}
+
+// 약냉방칸이 있는 노선에서 탑승 시간의 절반 이상을 보낼 때만 약냉방칸 선호에 맞는다고 본다
+function mostlyOnWeakAcLines(rides: PathSegmentDto[], rideSec: number): boolean {
+  if (rideSec <= 0) return false;
+  const weakAcSec = rides
+    .filter((segment) => lineHasWeakAcCars(segment.lineId))
+    .reduce((sum, segment) => sum + segment.durationSec, 0);
+  return weakAcSec * 2 >= rideSec;
+}
+
+function lineHasWeakAcCars(lineId: string): boolean {
+  return CAR_NUMBERS.some((carNo) => isWeakAirConditioned(lineId, carNo));
 }

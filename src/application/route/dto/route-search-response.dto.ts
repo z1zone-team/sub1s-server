@@ -4,6 +4,10 @@ import {
   CongestionLevel,
   CongestionSource,
 } from '../../../domain/congestion/models/congestion';
+import {
+  ROUTE_HIGHLIGHTS,
+  RouteHighlight,
+} from '../../../domain/subway/models/route-highlight';
 
 export class PathSegmentDto {
   @ApiProperty({
@@ -135,6 +139,15 @@ export class SubwayRouteOptionDto {
     example: ['02_222', '02_221'],
   })
   stationIds?: string[];
+
+  @ApiProperty({
+    description:
+      '이 옵션의 객관적 장점. 같은 응답의 다른 옵션과 비교해 정해진다. FASTEST 가장 빠름, FEWEST_TRANSFERS 환승 최소, NO_TRANSFER 환승 없음, LEAST_CROWDED 가장 한산함, LEAST_WALK 걷기 최소, CHEAPEST 최저 요금, WEAK_AC_CAR 약냉방칸이 있는 노선(1, 3~8호선)을 탑승 시간의 절반 이상 이용. 직접 도보 옵션은 빈 배열',
+    enum: ROUTE_HIGHLIGHTS,
+    isArray: true,
+    example: ['FEWEST_TRANSFERS', 'WEAK_AC_CAR'],
+  })
+  highlights!: RouteHighlight[];
 
   @ApiPropertyOptional({
     description: '총 도보 소요 시간 (초)',
