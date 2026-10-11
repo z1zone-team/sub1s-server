@@ -35,6 +35,7 @@
     "graph:measure": "node --expose-gc -r ts-node/register src/scripts/measure-graph.ts",
     "build:topology": "ts-node src/scripts/build-topology.ts",
     "build:edges": "ts-node src/scripts/build-edges.ts",
+    "build:next-train-schedule": "ts-node src/scripts/build-next-train-schedule.ts",
     "refine:congestion": "ts-node src/scripts/refine-congestion.ts",
     "verify:stations-kakao": "ts-node src/scripts/verify-stations-kakao.ts",
     "verify:routes-odsay": "ts-node src/scripts/verify-routes-odsay.ts",
