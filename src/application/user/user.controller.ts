@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Patch, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Put, UseGuards } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiOperation,
@@ -14,7 +14,15 @@ import {
   PreferencesResponseDto,
   UpdatePreferencesRequestDto,
 } from './dto/preferences.dto';
+import {
+  PlaceKindParamDto,
+  PlaceResponseDto,
+  PlacesResponseDto,
+  RemovePlaceResponseDto,
+  SavePlaceRequestDto,
+} from './dto/place.dto';
 import { UpdateProfileRequestDto } from './dto/update-profile-request.dto';
+import { UserPlaceService } from './user-place.service';
 import { UserService } from './user.service';
 
 @ApiTags('Users')
@@ -22,7 +30,10 @@ import { UserService } from './user.service';
 @Controller('v1/users')
 @UseGuards(ClerkAuthGuard)
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly userPlaceService: UserPlaceService,
+  ) {}
 
   @Patch('me')
   @ApiOperation({
@@ -67,6 +78,49 @@ export class UserController {
     @Body() dto: UpdatePreferencesRequestDto,
   ): Promise<ApiResponse<PreferencesResponseDto>> {
     const data = await this.userService.replacePreferences(user.id, dto);
+    return { success: true, data, timestamp: kstNowIso() };
+  }
+
+  @Get('me/places')
+  @ApiOperation({
+    summary: '집, 학교 즐겨찾기 조회',
+    description: '저장한 종류만 돌려줍니다. 하나도 없으면 빈 배열입니다.',
+  })
+  @SwaggerResponse({ status: 200, description: '저장된 즐겨찾기' })
+  async getPlaces(@CurrentUser() user: AuthUser): Promise<ApiResponse<PlacesResponseDto>> {
+    const data = await this.userPlaceService.list(user.id);
+    return { success: true, data, timestamp: kstNowIso() };
+  }
+
+  @Put('me/places/:kind')
+  @ApiOperation({
+    summary: '집, 학교 즐겨찾기 저장',
+    description:
+      'HOME 또는 SCHOOL을 저장하거나 교체합니다. 역이면 stationId, 장소면 lat과 lng를 보냅니다. 둘 다 보내면 역이 우선합니다.',
+  })
+  @SwaggerResponse({ status: 200, description: '저장된 즐겨찾기' })
+  @SwaggerResponse({ status: 400, description: '형식 오류 또는 역과 좌표 둘 다 없음' })
+  @SwaggerResponse({ status: 404, description: '없는 역 ID (STATION_NOT_FOUND)' })
+  async savePlace(
+    @CurrentUser() user: AuthUser,
+    @Param() params: PlaceKindParamDto,
+    @Body() dto: SavePlaceRequestDto,
+  ): Promise<ApiResponse<PlaceResponseDto>> {
+    const data = await this.userPlaceService.save(user.id, params.kind, dto);
+    return { success: true, data, timestamp: kstNowIso() };
+  }
+
+  @Delete('me/places/:kind')
+  @ApiOperation({
+    summary: '집, 학교 즐겨찾기 삭제',
+    description: '없어도 200이고 removed가 false입니다.',
+  })
+  @SwaggerResponse({ status: 200, description: '삭제 결과' })
+  async removePlace(
+    @CurrentUser() user: AuthUser,
+    @Param() params: PlaceKindParamDto,
+  ): Promise<ApiResponse<RemovePlaceResponseDto>> {
+    const data = await this.userPlaceService.remove(user.id, params.kind);
     return { success: true, data, timestamp: kstNowIso() };
   }
 }
