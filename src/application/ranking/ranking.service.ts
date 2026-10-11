@@ -1,5 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
 import {
+  FRIEND_REPOSITORY,
+  IFriendRepository,
+} from '../../domain/friend/ports/IFriendRepository';
+import {
   IRankScoreRepository,
   RANK_SCORE_REPOSITORY,
 } from '../../domain/ranking/ports/IRankScoreRepository';
@@ -12,6 +16,8 @@ export class RankingService {
   constructor(
     @Inject(RANK_SCORE_REPOSITORY)
     private readonly rankScoreRepo: IRankScoreRepository,
+    @Inject(FRIEND_REPOSITORY)
+    private readonly friendRepo: IFriendRepository,
   ) {}
 
   async getRanking(
@@ -23,9 +29,15 @@ export class RankingService {
       query.periodKey,
     );
 
+    const friendIds = query.friendsOnly
+      ? new Set(await this.friendRepo.findFriendIds(userId))
+      : undefined;
+
     const visible = scores.filter(
       (item) =>
-        item.userId === userId || item.user?.rankingVisibility !== 'PRIVATE',
+        item.userId === userId ||
+        (item.user?.rankingVisibility !== 'PRIVATE' &&
+          (!friendIds || friendIds.has(item.userId))),
     );
 
     let myRank = 0;
@@ -46,7 +58,8 @@ export class RankingService {
         isMe,
       };
 
-      if (!isMe && item.user?.rankingVisibility === 'ANONYMOUS') {
+      const isFriend = friendIds?.has(item.userId) ?? false;
+      if (!isMe && !isFriend && item.user?.rankingVisibility === 'ANONYMOUS') {
         return { ...base, nickname: ANONYMOUS_NICKNAME, isAnonymous: true };
       }
       return {

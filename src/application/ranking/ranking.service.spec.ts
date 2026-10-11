@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { FRIEND_REPOSITORY } from '../../domain/friend/ports/IFriendRepository';
 import { RANK_SCORE_REPOSITORY } from '../../domain/ranking/ports/IRankScoreRepository';
 import { RankingService } from './ranking.service';
 
@@ -36,6 +37,7 @@ describe('RankingService', () => {
       providers: [
         RankingService,
         { provide: RANK_SCORE_REPOSITORY, useValue: mockRankScoreRepo },
+        { provide: FRIEND_REPOSITORY, useValue: { findFriendIds: jest.fn().mockResolvedValue([]) } },
       ],
     }).compile();
 
