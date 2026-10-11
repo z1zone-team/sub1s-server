@@ -98,15 +98,6 @@ describe('Profile and ranking visibility (e2e)', () => {
 
     const stored = await prisma.user.findUniqueOrThrow({ where: { id: me.id } });
     expect(stored.rankingVisibility).toBe('ANONYMOUS');
-    expect(stored.isRankingPublic).toBe(true);
-  });
-
-  it('keeps the deprecated isRankingPublic flag in sync', async () => {
-    await patchMe({ rankingVisibility: 'PRIVATE' }).expect(200);
-    expect((await prisma.user.findUniqueOrThrow({ where: { id: me.id } })).isRankingPublic).toBe(false);
-
-    await patchMe({ rankingVisibility: 'PUBLIC' }).expect(200);
-    expect((await prisma.user.findUniqueOrThrow({ where: { id: me.id } })).isRankingPublic).toBe(true);
   });
 
   it('clears the name with null', async () => {

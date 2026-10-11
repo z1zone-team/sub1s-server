@@ -23,7 +23,6 @@ describe('Full User Journey (Mobile App ↔ Backend E2E)', () => {
     clerkId: 'user_journey_test_1',
     nickname: '통근러1호',
     profileImageUrl: 'https://example.com/profile.png',
-    isRankingPublic: true,
     createdAt: new Date(),
     updatedAt: new Date(),
   };

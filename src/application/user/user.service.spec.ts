@@ -21,7 +21,6 @@ describe('UserService', () => {
     nickname: '내출신은리',
     profileImageUrl: null,
     rankingVisibility: 'ANONYMOUS' as const,
-    isRankingPublic: true,
     createdAt: new Date(),
     updatedAt: new Date(),
   };

@@ -27,8 +27,6 @@ model User {
   nicknameCustomized Boolean      @default(false) @map("nickname_customized")
   profileImageUrl String?         @map("profile_image_url") @db.VarChar(255)
   rankingVisibility RankingVisibility @default(PUBLIC) @map("ranking_visibility")
-  // 사용 중단, rankingVisibility 사용
-  isRankingPublic Boolean         @default(true) @map("is_ranking_public")
   createdAt       DateTime        @default(now()) @map("created_at") @db.Timestamptz
   updatedAt       DateTime        @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
   inviteToken     String?         @unique @map("invite_token") @db.VarChar(32)

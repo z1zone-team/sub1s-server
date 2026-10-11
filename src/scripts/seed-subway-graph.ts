@@ -7,7 +7,6 @@ const MOCK_USER = {
   id: '00000000-0000-0000-0000-000000000001',
   clerkId: 'user_mock_test_1',
   nickname: '로컬테스트러너',
-  isRankingPublic: true,
 };
 
 interface LineJson {

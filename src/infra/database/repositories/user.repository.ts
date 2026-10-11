@@ -68,7 +68,6 @@ export class UserRepository implements IUserRepository {
           clerkId: data.clerkId,
           nickname,
           profileImageUrl: data.profileImageUrl ?? null,
-          isRankingPublic: true,
         },
       }),
     );
@@ -93,12 +92,8 @@ export class UserRepository implements IUserRepository {
           ...(data.nickname !== undefined
             ? { nickname: data.nickname, nicknameCustomized: true }
             : {}),
-          // 롤백해도 맞는 값을 읽도록 사용 중단된 isRankingPublic도 같이 갱신
           ...(data.rankingVisibility !== undefined
-            ? {
-                rankingVisibility: data.rankingVisibility,
-                isRankingPublic: data.rankingVisibility !== 'PRIVATE',
-              }
+            ? { rankingVisibility: data.rankingVisibility }
             : {}),
         },
       });
