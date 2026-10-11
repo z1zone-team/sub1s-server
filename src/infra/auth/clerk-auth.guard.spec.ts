@@ -24,6 +24,8 @@ describe('ClerkAuthGuard', () => {
       updateProfile: jest.fn(),
       isNicknameTaken: jest.fn(),
       syncNickname: jest.fn(),
+      findPreferences: jest.fn(),
+      replacePreferences: jest.fn(),
     };
 
     configService = {

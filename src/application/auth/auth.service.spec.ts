@@ -28,6 +28,8 @@ describe('AuthService', () => {
       updateProfile: jest.fn(),
       isNicknameTaken: jest.fn(),
       syncNickname: jest.fn(),
+      findPreferences: jest.fn(),
+      replacePreferences: jest.fn(),
     };
 
     const module: TestingModule = await Test.createTestingModule({
