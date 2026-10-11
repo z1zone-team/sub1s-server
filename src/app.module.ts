@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { ArrivalModule } from './application/arrival/arrival.module';
 import { CongestionModule } from './application/congestion/congestion.module';
 import { HealthModule } from './application/health/health.module';
 import { PlaceModule } from './application/place/place.module';
@@ -33,6 +34,7 @@ import { DataUpdateBatchModule } from './infra/batch/data-update-batch.module';
     RoutingModule,
     RouteModule,
     PlaceModule,
+    ArrivalModule,
     CongestionModule,
     WebsocketModule,
     TrackingModule,
