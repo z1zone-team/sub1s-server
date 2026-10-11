@@ -1,5 +1,6 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { BusinessException } from '../../../common/exceptions/business.exception';
 import { RouteMode } from '../../../domain/subway/models/route';
 import { SubwayRouteOptionDto } from '../../route/dto/route-search-response.dto';
 
@@ -17,7 +18,8 @@ export interface BriefingResult {
 export class AiServiceAdapter {
   private readonly logger = new Logger(AiServiceAdapter.name);
   private readonly aiServiceUrl?: string;
-  private readonly timeoutMs: number = 2000; // 2초 SLA
+  private readonly timeoutMs: number = 2000; // 브리핑 2초 SLA
+  private readonly sttTimeoutMs: number = 15000; // CPU 환경 Whisper 전사 시간 고려
 
   constructor(private readonly configService: ConfigService) {
     this.aiServiceUrl = this.configService.get<string>('AI_SERVICE_URL');
@@ -36,23 +38,28 @@ export class AiServiceAdapter {
       return { transcript: transcriptHint.trim(), confidence: 1.0 };
     }
 
-    // AI 워커 연동이 설정된 경우 HTTP 요청 시도
-    if (this.aiServiceUrl) {
-      try {
-        const result = await this.callAiWorkerStt(audioBuffer, filename);
-        if (result) return result;
-      } catch (err: unknown) {
-        const errorMsg = err instanceof Error ? err.message : String(err);
-        this.logger.warn(`AI Service STT failed, falling back to local extractor: ${errorMsg}`);
-      }
+    if (!this.aiServiceUrl) {
+      this.logger.warn(
+        'AI_SERVICE_URL is not set, voice transcription is unavailable',
+      );
+      throw this.sttUnavailable();
     }
+    try {
+      const result = await this.callAiWorkerStt(audioBuffer, filename);
+      if (result) return result;
+    } catch (err: unknown) {
+      const errorMsg = err instanceof Error ? err.message : String(err);
+      this.logger.warn(`AI Service STT failed: ${errorMsg}`);
+    }
+    throw this.sttUnavailable();
+  }
 
-    // Fallback: 파일명 힌트 또는 기본 전사 텍스트
-    const fallbackTranscript = this.generateFallbackTranscript(filename);
-    return {
-      transcript: fallbackTranscript,
-      confidence: 0.9,
-    };
+  private sttUnavailable(): BusinessException {
+    return new BusinessException(
+      'AI_SERVICE_UNAVAILABLE',
+      '음성 인식을 사용할 수 없어요. 잠시 후 다시 시도해 주세요.',
+      HttpStatus.SERVICE_UNAVAILABLE,
+    );
   }
 
   /**
@@ -86,7 +93,9 @@ export class AiServiceAdapter {
         if (aiBriefing) return aiBriefing;
       } catch (err: unknown) {
         const errorMsg = err instanceof Error ? err.message : String(err);
-        this.logger.warn(`AI Service Briefing failed, using rule-based briefing: ${errorMsg}`);
+        this.logger.warn(
+          `AI Service Briefing failed, using rule-based briefing: ${errorMsg}`,
+        );
       }
     }
 
@@ -101,19 +110,24 @@ export class AiServiceAdapter {
   }
 
   private async callAiWorkerStt(
-    _audioBuffer: Buffer,
-    _filename: string,
+    audioBuffer: Buffer,
+    filename: string,
   ): Promise<SttResult | null> {
-    // Phase 5에서 구현될 FastAPI 엔드포인트 호출용 스텁 / 어댑터
-    // fetch / abort controller with timeout
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), this.timeoutMs);
-    try {
-      // 추후 fetch(`${this.aiServiceUrl}/api/v1/ai/stt`, ...) 연동
-      return null;
-    } finally {
-      clearTimeout(timeout);
-    }
+    const form = new FormData();
+    form.append('file', new Blob([new Uint8Array(audioBuffer)]), filename);
+    const res = await fetch(`${this.aiServiceUrl}/api/v1/ai/stt?language=ko`, {
+      method: 'POST',
+      body: form,
+      signal: AbortSignal.timeout(this.sttTimeoutMs),
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const body = (await res.json()) as {
+      transcript?: string;
+      confidence?: number;
+    };
+    const transcript = body.transcript?.trim();
+    if (!transcript) return null;
+    return { transcript, confidence: body.confidence };
   }
 
   private async callAiWorkerBriefing(
@@ -125,14 +139,5 @@ export class AiServiceAdapter {
     _route: SubwayRouteOptionDto,
   ): Promise<BriefingResult | null> {
     return null;
-  }
-
-  private generateFallbackTranscript(filename: string): string {
-    // 파일명에 한글 또는 역명이 포함되어 있는 경우 추출 힌트로 활용
-    const decodedName = decodeURIComponent(filename);
-    if (decodedName.includes('에서') || decodedName.includes('까지')) {
-      return decodedName.replace(/\.[^/.]+$/, '');
-    }
-    return '강남역에서 을지로입구역까지 최적 경로로 안내해줘';
   }
 }

@@ -1,7 +1,11 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { HttpStatus, Injectable, Logger } from '@nestjs/common';
+import { BusinessException } from '../../../common/exceptions/business.exception';
 import { RouteMode } from '../../../domain/subway/models/route';
 import { SubwayGraphService } from '../../../domain/subway/services/subway-graph.service';
 import { InterpretedIntentDto } from '../dto/voice-route-recommend-response.dto';
+
+/** 출발지를 말하지 않았을 때 의도에 쓰는 표시 이름 */
+export const CURRENT_LOCATION = '현재 위치';
 
 @Injectable()
 export class IntentParserService {
@@ -26,7 +30,7 @@ export class IntentParserService {
     const stations = this.extractStations(cleaned);
 
     return {
-      originStationName: stations.originStationName,
+      originStationName: stations.originStationName ?? CURRENT_LOCATION,
       destStationName: stations.destStationName,
       preferredMode: finalMode,
       reason: overrideMode
@@ -39,7 +43,7 @@ export class IntentParserService {
    * 자연어 텍스트에서 출발역과 도착역을 정규식 및 역명 사전을 통해 추출합니다.
    */
   private extractStations(text: string): {
-    originStationName: string;
+    originStationName: string | null;
     destStationName: string;
   } {
     // 1. 역명 사전 기반 검색 (가장 긴 역명 우선 매칭)
@@ -51,6 +55,15 @@ export class IntentParserService {
       };
     }
 
+    // 도착지 하나만 말한 경우("강남역 가는 길")는 출발지를 현재 위치로 둔다
+    if (matchedStations.length === 1) {
+      const only = matchedStations[0];
+      const originOnly = new RegExp(`${only}역?\s*(?:에서|부터)`).test(text);
+      if (!originOnly) {
+        return { originStationName: null, destStationName: only };
+      }
+    }
+
     // 2. 패턴 매칭: [출발]역?에서/부터 [도착]역?까지/로/으로
     const regexFromTo =
       /([가-힣0-9a-zA-Z]+?)(?:역에서|역부터|에서|부터)\s+([가-힣0-9a-zA-Z]+?)(?:역까지|역으로|역로|까지|으로|로)/;
@@ -58,7 +71,11 @@ export class IntentParserService {
     if (matchFromTo) {
       const originCandidate = this.normalizeStationName(matchFromTo[1]);
       const destCandidate = this.normalizeStationName(matchFromTo[2]);
-      if (originCandidate && destCandidate && originCandidate !== destCandidate) {
+      if (
+        originCandidate &&
+        destCandidate &&
+        originCandidate !== destCandidate
+      ) {
         return {
           originStationName: originCandidate,
           destStationName: destCandidate,
@@ -67,11 +84,16 @@ export class IntentParserService {
     }
 
     // 3. 패턴 매칭: [출발] -> [도착] 또는 [출발] [도착]
-    const arrowMatch = /([가-힣0-9a-zA-Z]+?)(?:\s*(?:->|~)\s*)([가-힣0-9a-zA-Z]+)/.exec(text);
+    const arrowMatch =
+      /([가-힣0-9a-zA-Z]+?)(?:\s*(?:->|~)\s*)([가-힣0-9a-zA-Z]+)/.exec(text);
     if (arrowMatch) {
       const originCandidate = this.normalizeStationName(arrowMatch[1]);
       const destCandidate = this.normalizeStationName(arrowMatch[2]);
-      if (originCandidate && destCandidate && originCandidate !== destCandidate) {
+      if (
+        originCandidate &&
+        destCandidate &&
+        originCandidate !== destCandidate
+      ) {
         return {
           originStationName: originCandidate,
           destStationName: destCandidate,
@@ -79,12 +101,12 @@ export class IntentParserService {
       }
     }
 
-    // 기본 매칭 (알 수 없는 경우 대표 역 기본값)
-    this.logger.warn(`Could not reliably extract stations from: "${text}". Using fallback.`);
-    return {
-      originStationName: '강남',
-      destStationName: '을지로입구',
-    };
+    this.logger.warn(`Could not extract stations from: "${text}"`);
+    throw new BusinessException(
+      'VOICE_INTENT_NOT_UNDERSTOOD',
+      '어디로 갈지 알아듣지 못했어요. 역 이름을 말씀해 주세요.',
+      HttpStatus.UNPROCESSABLE_ENTITY,
+    );
   }
 
   /**
@@ -100,7 +122,8 @@ export class IntentParserService {
     if (/(최소\s*비용|저렴|제일\s*싼|가장\s*싼|알뜰|요금\s*절약)/.test(text)) {
       return {
         mode: 'CHEAPEST',
-        reason: '환승 및 요금 기준 가장 경제적인 최소 비용 경로를 감지했습니다.',
+        reason:
+          '환승 및 요금 기준 가장 경제적인 최소 비용 경로를 감지했습니다.',
       };
     }
     if (/(취향|맞춤|내\s*스타일|평소|자주\s*가던)/.test(text)) {
@@ -156,9 +179,7 @@ export class IntentParserService {
 
         const end = idx + name.length;
         // 이미 매칭된 구간과 겹치는지 검사
-        const overlaps = matches.some(
-          (m) => !(end <= m.start || idx >= m.end),
-        );
+        const overlaps = matches.some((m) => !(end <= m.start || idx >= m.end));
 
         if (!overlaps) {
           matches.push({ name, start: idx, end });

@@ -13,7 +13,10 @@ import {
   VoiceRouteRecommendResponseDto,
 } from './dto';
 import { AiServiceAdapter } from './services/ai-service.adapter';
-import { IntentParserService } from './services/intent-parser.service';
+import {
+  CURRENT_LOCATION,
+  IntentParserService,
+} from './services/intent-parser.service';
 import { VoiceLockService } from './services/voice-lock.service';
 
 export interface UploadedAudioFile {
@@ -83,10 +86,24 @@ export class VoiceService {
     );
 
     // 5. 역명 매핑 및 검증
-    const originStationId = this.findStationIdByName(intent.originStationName);
+    const originIsCurrentLocation =
+      intent.originStationName === CURRENT_LOCATION;
+    if (
+      originIsCurrentLocation &&
+      (dto?.lat === undefined || dto?.lng === undefined)
+    ) {
+      throw new BusinessException(
+        'VOICE_ORIGIN_REQUIRED',
+        '출발지를 말씀해 주시거나 현재 위치를 켜 주세요.',
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      );
+    }
+    const originStationId = originIsCurrentLocation
+      ? null
+      : this.findStationIdByName(intent.originStationName);
     const destStationId = this.findStationIdByName(intent.destStationName);
 
-    if (!originStationId) {
+    if (!originIsCurrentLocation && !originStationId) {
       throw new NotFoundException(
         `출발역 '${intent.originStationName}'을(를) 지하철 노선망에서 찾을 수 없습니다.`,
       );
@@ -96,7 +113,7 @@ export class VoiceService {
         `도착역 '${intent.destStationName}'을(를) 지하철 노선망에서 찾을 수 없습니다.`,
       );
     }
-    if (originStationId === destStationId) {
+    if (!originIsCurrentLocation && originStationId === destStationId) {
       throw new BusinessException(
         'INVALID_REQUEST_PAYLOAD',
         '출발역과 도착역이 동일합니다. 다른 역을 지정해주세요.',
@@ -106,7 +123,9 @@ export class VoiceService {
 
     // 6. 다익스트라 경로 탐색
     const searchResult = await this.routeService.search({
-      originStationId,
+      ...(originIsCurrentLocation
+        ? { originLat: dto!.lat, originLng: dto!.lng }
+        : { originStationId: originStationId! }),
       destinationStationId: destStationId,
       routeMode: intent.preferredMode,
     });
@@ -116,7 +135,9 @@ export class VoiceService {
       searchResult.options[0];
 
     if (!recommendedRoute) {
-      throw new NotFoundException('요청한 조건에 맞는 경로를 탐색할 수 없습니다.');
+      throw new NotFoundException(
+        '요청한 조건에 맞는 경로를 탐색할 수 없습니다.',
+      );
     }
 
     // 7. AI 자연어 브리핑 및 TTS 음성 URL 생성
@@ -140,7 +161,9 @@ export class VoiceService {
     }
 
     if (file.size > MAX_FILE_SIZE) {
-      throw new BadRequestException('오디오 파일 크기는 최대 5MB를 초과할 수 없습니다.');
+      throw new BadRequestException(
+        '오디오 파일 크기는 최대 5MB를 초과할 수 없습니다.',
+      );
     }
 
     const lowerName = file.originalname.toLowerCase();
@@ -161,7 +184,8 @@ export class VoiceService {
    * 역 이름으로 지하철 그래프 내 Station ID를 조회합니다.
    */
   findStationIdByName(name: string): string | null {
-    const normalizedTarget = this.intentParserService.normalizeStationName(name);
+    const normalizedTarget =
+      this.intentParserService.normalizeStationName(name);
     const graph = this.subwayGraphService.getGraph();
 
     for (let i = 0; i < graph.stationCount; i++) {
