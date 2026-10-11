@@ -27,6 +27,7 @@ import {
 } from '../../domain/subway/services/walking.service';
 import { StatisticalCongestionProvider } from '../../infra/congestion/statistical-congestion.provider';
 import { RouteSearchRequestDto } from './dto/route-search-request.dto';
+import { OperationStatusService } from './operation-status.service';
 import {
   PathSegmentDto,
   RouteSearchResultDto,
@@ -49,6 +50,7 @@ export class RouteService {
     private readonly graphService: SubwayGraphService,
     private readonly congestionProvider: StatisticalCongestionProvider,
     private readonly walkingService: WalkingService,
+    private readonly operationStatus: OperationStatusService,
   ) {}
 
   async search(dto: RouteSearchRequestDto): Promise<RouteSearchResultDto> {
@@ -250,6 +252,7 @@ export class RouteService {
     }
 
     this.applyHighlights(validOptions);
+    await this.operationStatus.annotate(validOptions, graph);
 
     // 선호 모드가 지정된 경우 우선 배치
     if (dto.routeMode) {
@@ -287,6 +290,7 @@ export class RouteService {
     // 1. First-Mile 도보 세그먼트 삽입
     if (firstMileWalk) {
       segments.push({
+        operationStatus: 'UNKNOWN',
         lineId: 'WALK',
         direction: 'NONE',
         isExpress: false,
@@ -363,6 +367,7 @@ export class RouteService {
       const level = congestionLevel(rate);
 
       segments.push({
+        operationStatus: 'UNKNOWN',
         lineId: seg.lineId,
         direction: seg.direction as 'UP' | 'DOWN' | 'INNER' | 'OUTER',
         isExpress: seg.isExpress,
@@ -388,6 +393,7 @@ export class RouteService {
     // 3. Last-Mile 도보 세그먼트 삽입
     if (lastMileWalk) {
       segments.push({
+        operationStatus: 'UNKNOWN',
         lineId: 'WALK',
         direction: 'NONE',
         isExpress: false,
@@ -439,6 +445,7 @@ export class RouteService {
       segments,
       stationIds: result.stationIds,
       highlights: [],
+      operationStatus: 'UNKNOWN',
       totalWalkDurationSec,
       totalWalkDistanceKm,
       totalCalories,
@@ -466,6 +473,7 @@ export class RouteService {
       estimatedArrivalTimestamp,
       segments: [
         {
+          operationStatus: 'UNKNOWN',
           lineId: 'WALK',
           direction: 'NONE',
           isExpress: false,
@@ -486,6 +494,7 @@ export class RouteService {
         },
       ],
       highlights: [],
+      operationStatus: 'UNKNOWN',
       totalWalkDurationSec: metrics.durationSec,
       totalWalkDistanceKm: metrics.actualDistanceKm,
       totalCalories: metrics.calories,
