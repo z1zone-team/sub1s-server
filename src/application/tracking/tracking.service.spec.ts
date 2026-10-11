@@ -80,6 +80,7 @@ describe('TrackingService', () => {
   });
 
   const mockRouteOption: SubwayRouteOptionDto = {
+    highlights: [],
     mode: 'OPTIMAL',
     totalDurationSec: 250,
     totalDistanceKm: 2.0,
@@ -107,6 +108,7 @@ describe('TrackingService', () => {
   };
 
   const mockRerouteOption: SubwayRouteOptionDto = {
+    highlights: [],
     mode: 'OPTIMAL',
     totalDurationSec: 360,
     totalDistanceKm: 3.0,

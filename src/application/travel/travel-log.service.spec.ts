@@ -55,6 +55,7 @@ describe('TravelLogService', () => {
   });
 
   const mockRouteOption: SubwayRouteOptionDto = {
+    highlights: [],
     mode: 'OPTIMAL',
     totalDurationSec: 120,
     totalDistanceKm: 1.0,

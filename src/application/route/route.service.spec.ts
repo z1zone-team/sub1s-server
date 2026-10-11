@@ -156,6 +156,95 @@ describe('RouteService', () => {
     expect(segment.isWeakAirConditioned).toBe(false); // 2호선 약냉방 없음
   });
 
+  describe('highlights', () => {
+    const ride = (lineId: string, durationSec: number, direction: 'UP' | 'DOWN' = 'UP') => ({
+      lineId,
+      direction,
+      isExpress: false,
+      fromStationId: '02_222',
+      toStationId: '02_221',
+      stationCount: 1,
+      durationSec,
+      distanceKm: 1,
+    });
+    const result = (mode: string, over: Partial<RouteResult>): RouteResult => ({
+      ...sampleRouteResult,
+      mode: mode as RouteResult['mode'],
+      ...over,
+    });
+    const search = () =>
+      service.search({ originStationId: '02_222', destinationStationId: '02_221' });
+    const byMode = (options: { mode: string; highlights: string[] }[], mode: string) =>
+      options.find((option) => option.mode === mode)?.highlights;
+
+    it('tags the options by comparing them with each other', async () => {
+      mockEngine.findRoute.mockImplementation(async (query) =>
+        query.mode === 'OPTIMAL'
+          ? result('OPTIMAL', { segments: [ride('02', 1200)], totalDurationSec: 1200, transferCount: 2, totalFare: 1600 })
+          : result(query.mode, { segments: [ride('02', 1800)], totalDurationSec: 1800, transferCount: 1, totalFare: 1600 }),
+      );
+
+      const { options } = await search();
+
+      expect(byMode(options, 'OPTIMAL')).toEqual(['FASTEST']);
+      expect(byMode(options, 'COMFORTABLE')).toEqual(['FEWEST_TRANSFERS']);
+    });
+
+    it('tags NO_TRANSFER on a route without transfers', async () => {
+      const { options } = await search();
+
+      for (const option of options) expect(option.highlights).toEqual(['NO_TRANSFER']);
+    });
+
+    it('counts the walk between lines as walking time', async () => {
+      mockEngine.findRoute.mockImplementation(async (query) =>
+        query.mode === 'OPTIMAL'
+          ? result('OPTIMAL', {
+              segments: [ride('02', 600)],
+              transfers: [],
+              totalDurationSec: 600,
+              transferCount: 1,
+            })
+          : result(query.mode, {
+              segments: [ride('02', 600)],
+              transfers: [],
+              totalDurationSec: 900,
+              transferCount: 1,
+            }),
+      );
+
+      const { options } = await search();
+
+      expect(byMode(options, 'OPTIMAL')).toEqual(['FASTEST', 'LEAST_WALK']);
+      expect(byMode(options, 'COMFORTABLE')).toEqual([]);
+    });
+
+    it('tags WEAK_AC_CAR when most of the ride is on lines with weak air-conditioned cars', async () => {
+      mockEngine.findRoute.mockImplementation(async (query) =>
+        query.mode === 'OPTIMAL'
+          ? result('OPTIMAL', { segments: [ride('03', 700), ride('02', 300)], transferCount: 1 })
+          : result(query.mode, { segments: [ride('02', 700), ride('03', 300)], transferCount: 1 }),
+      );
+
+      const { options } = await search();
+
+      expect(byMode(options, 'OPTIMAL')).toContain('WEAK_AC_CAR');
+      expect(byMode(options, 'COMFORTABLE')).not.toContain('WEAK_AC_CAR');
+    });
+
+    it('does not compare or tag the direct walk option', async () => {
+      const { options } = await service.search({
+        originLat: 37.4979,
+        originLng: 127.0276,
+        destinationLat: 37.4985,
+        destinationLng: 127.0281,
+      });
+
+      const walk = options.find((option) => option.mode === 'ONLY_WALK');
+      expect(walk?.highlights).toEqual([]);
+    });
+  });
+
   it('marks segments predicted without published statistics as MOCK', async () => {
     mockCongestionProvider.predictCars.mockReturnValue({
       ratePercent: 30,

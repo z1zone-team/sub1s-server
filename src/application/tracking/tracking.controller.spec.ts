@@ -39,6 +39,7 @@ describe('TrackingController', () => {
     reason: 'WRONG_DIRECTION',
     message: '경로를 이탈했습니다.',
     rerouteOption: {
+      highlights: [],
       mode: 'OPTIMAL',
       totalDurationSec: 360,
       totalDistanceKm: 3.0,
