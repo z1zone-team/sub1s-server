@@ -80,6 +80,7 @@ async function main(): Promise<void> {
   const args = process.argv.slice(2);
   const force = args.includes('--force');
   const allStations = args.includes('--all');
+  const missingOnly = args.includes('--missing-only');
 
   const selectedApiArg = args.find((a) => a.startsWith('--api='));
   const targetApis: ApiType[] = selectedApiArg
@@ -103,7 +104,7 @@ async function main(): Promise<void> {
   }
 
   console.log(
-    `[KRIC Convenience] Targeting ${targetStations.length} stations across APIs: ${targetApis.join(', ')} (force: ${force})`,
+    `[KRIC Convenience] Targeting ${targetStations.length} stations across APIs: ${targetApis.join(', ')} (force: ${force}, missingOnly: ${missingOnly})`,
   );
 
   const baseCacheDir = join(RAW_DIR, 'kric-convenience');
@@ -137,7 +138,7 @@ async function main(): Promise<void> {
 
       if (existsSync(cachePath) && !force) {
         const age = Date.now() - statSync(cachePath).mtimeMs;
-        if (age < MIN_INTERVAL_MS) {
+        if (age < MIN_INTERVAL_MS || missingOnly) {
           shouldFetch = false;
           try {
             json = JSON.parse(readFileSync(cachePath, 'utf8'));
