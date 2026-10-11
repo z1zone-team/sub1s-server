@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
+import { AiServiceAdapter } from '../src/application/voice/services/ai-service.adapter';
 import { VoiceLockService } from '../src/application/voice/services/voice-lock.service';
 import { GlobalExceptionFilter } from '../src/common/filters/global-exception.filter';
 import {
@@ -52,6 +53,16 @@ describe('Voice Route Recommend (e2e)', () => {
           };
           return true;
         },
+      })
+      .overrideProvider(AiServiceAdapter)
+      .useValue({
+        transcribeAudio: jest.fn().mockResolvedValue({
+          transcript: '강남역에서 을지로입구역까지 최적 경로로 안내해줘',
+        }),
+        generateBriefing: jest.fn().mockResolvedValue({
+          briefingText: '강남역에서 을지로입구역까지 안내해 드릴게요.',
+          audioTtsUrl: '/api/v1/voice/tts/stream?text=test',
+        }),
       })
       .overrideProvider(SUBWAY_GRAPH_REPOSITORY)
       .useValue(mockGraphRepository)
@@ -138,7 +149,9 @@ describe('Voice Route Recommend (e2e)', () => {
       });
 
     expect(secondRes.status).toBe(HttpStatus.TOO_MANY_REQUESTS);
-    expect(secondRes.body.error.message).toContain('이전 음성 요청을 처리 중입니다');
+    expect(secondRes.body.error.message).toContain(
+      '이전 음성 요청을 처리 중입니다',
+    );
   });
 
   it('POST /api/v1/voice/route-recommend - should return 400 when file is missing', async () => {
@@ -160,6 +173,8 @@ describe('Voice Route Recommend (e2e)', () => {
       });
 
     expect(res.status).toBe(HttpStatus.BAD_REQUEST);
-    expect(res.body.error.message).toContain('지원하지 않는 오디오 파일 형식입니다');
+    expect(res.body.error.message).toContain(
+      '지원하지 않는 오디오 파일 형식입니다',
+    );
   });
 });
