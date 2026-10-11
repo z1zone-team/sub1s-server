@@ -94,26 +94,27 @@ describe('Voice Route Recommend (e2e)', () => {
       .field('preferredMode', 'OPTIMAL');
 
     expect(res.status).toBe(HttpStatus.CREATED);
-    expect(res.body).toHaveProperty('transcript');
-    expect(res.body).toHaveProperty('interpretedIntent');
-    expect(res.body.interpretedIntent).toMatchObject({
+    expect(res.body.success).toBe(true);
+    expect(res.body.data).toHaveProperty('transcript');
+    expect(res.body.data).toHaveProperty('interpretedIntent');
+    expect(res.body.data.interpretedIntent).toMatchObject({
       originStationName: expect.any(String),
       destStationName: expect.any(String),
       preferredMode: 'OPTIMAL',
       reason: expect.any(String),
     });
-    expect(res.body).toHaveProperty('recommendedRoute');
-    expect(res.body.recommendedRoute).toMatchObject({
+    expect(res.body.data).toHaveProperty('recommendedRoute');
+    expect(res.body.data.recommendedRoute).toMatchObject({
       mode: 'OPTIMAL',
       totalDurationSec: expect.any(Number),
       totalDistanceKm: expect.any(Number),
       totalFare: expect.any(Number),
       transferCount: expect.any(Number),
     });
-    expect(res.body).toHaveProperty('briefingText');
-    expect(typeof res.body.briefingText).toBe('string');
-    expect(res.body.briefingText.length).toBeGreaterThan(0);
-    expect(res.body).toHaveProperty('audioTtsUrl');
+    expect(res.body.data).toHaveProperty('briefingText');
+    expect(typeof res.body.data.briefingText).toBe('string');
+    expect(res.body.data.briefingText.length).toBeGreaterThan(0);
+    expect(res.body.data).toHaveProperty('audioTtsUrl');
   });
 
   it('POST /api/v1/voice/route-recommend - should reject consecutive duplicate requests with 429 (Idempotency Lock)', async () => {

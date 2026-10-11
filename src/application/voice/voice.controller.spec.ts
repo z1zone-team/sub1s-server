@@ -67,7 +67,9 @@ describe('VoiceController', () => {
       { preferredMode: 'OPTIMAL' },
     );
 
-    expect(result).toBeDefined();
+    expect(result.success).toBe(true);
+    expect(result.data.transcript).toBe('강남역에서 을지로입구역까지');
+    expect(result.timestamp).toMatch(/\+09:00$/);
     expect(voiceService.recommendRouteByVoice).toHaveBeenCalledWith(
       mockUser.id,
       sampleFile,

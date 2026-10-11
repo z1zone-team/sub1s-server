@@ -15,6 +15,8 @@ import {
   ApiResponse as SwaggerResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { ApiResponse } from '../../common/interfaces/api-response.interface';
+import { kstNowIso } from '../../common/utils/kst';
 import { AuthUser, CurrentUser } from '../../infra/auth/current-user.decorator';
 import { ClerkAuthGuard } from '../../infra/auth/clerk-auth.guard';
 import {
@@ -55,7 +57,12 @@ export class VoiceController {
     @CurrentUser() user: AuthUser,
     @UploadedFile() file: UploadedAudioFile | undefined,
     @Body() dto: VoiceRouteRecommendRequestDto,
-  ): Promise<VoiceRouteRecommendResponseDto> {
-    return this.voiceService.recommendRouteByVoice(user.id, file, dto);
+  ): Promise<ApiResponse<VoiceRouteRecommendResponseDto>> {
+    const data = await this.voiceService.recommendRouteByVoice(user.id, file, dto);
+    return {
+      success: true,
+      data,
+      timestamp: kstNowIso(),
+    };
   }
 }
