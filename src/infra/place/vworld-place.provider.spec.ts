@@ -123,6 +123,47 @@ describe('VWorldPlaceProvider', () => {
     },
   );
 
+  describe('daily limit', () => {
+    const limited = (limit: string) =>
+      new VWorldPlaceProvider({
+        get: (name: string) => (name === 'VWORLD_DAILY_LIMIT' ? limit : 'k'),
+      } as unknown as ConfigService);
+
+    it('stops calling V-World once the limit is used and starts again the next KST day', async () => {
+      const now = jest.spyOn(Date, 'now').mockReturnValue(Date.parse('2026-10-11T03:00:00Z'));
+      respond({ status: 'OK', result: { items: [item] } });
+      const target = limited('2');
+
+      expect(await target.search('교보타워', 10)).toHaveLength(1);
+      expect(await target.search('교보타워', 10)).toHaveLength(1);
+      expect(await target.search('교보타워', 10)).toEqual([]);
+      expect(fetchMock).toHaveBeenCalledTimes(2);
+
+      now.mockReturnValue(Date.parse('2026-10-11T15:30:00Z'));
+      expect(await target.search('교보타워', 10)).toHaveLength(1);
+      expect(fetchMock).toHaveBeenCalledTimes(3);
+    });
+
+    it('does not spend the budget when the key is missing', async () => {
+      const target = new VWorldPlaceProvider({
+        get: (name: string) => (name === 'VWORLD_DAILY_LIMIT' ? '1' : undefined),
+      } as unknown as ConfigService);
+
+      await target.search('교보타워', 10);
+
+      expect(fetchMock).not.toHaveBeenCalled();
+    });
+
+    it('falls back to 10000 a day when the setting is missing or invalid', async () => {
+      respond({ status: 'OK', result: { items: [item] } });
+      const target = limited('abc');
+
+      for (let i = 0; i < 100; i += 1) await target.search('교보타워', 10);
+
+      expect(fetchMock).toHaveBeenCalledTimes(100);
+    });
+  });
+
   it('returns nothing on an HTTP error', async () => {
     respond({}, { ok: false, status: 500 });
 
