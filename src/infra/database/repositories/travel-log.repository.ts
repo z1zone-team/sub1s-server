@@ -1,3 +1,4 @@
+import { UserMonthlySummary } from '../../../domain/notification/ports/notification-ports';
 import { Injectable } from '@nestjs/common';
 import {
   ITravelLogRepository,
@@ -131,5 +132,19 @@ export class TravelLogRepository implements ITravelLogRepository {
         wrappedDek: true,
       },
     });
+  }
+
+  async summarizeByUser(start: Date, end: Date): Promise<UserMonthlySummary[]> {
+    const rows = await this.prisma.travelLog.groupBy({
+      by: ['userId'],
+      where: { createdAt: { gte: start, lt: end } },
+      _count: { _all: true },
+      _sum: { totalDistanceKm: true },
+    });
+    return rows.map((row) => ({
+      userId: row.userId,
+      tripCount: row._count._all,
+      distanceKm: row._sum.totalDistanceKm ?? 0,
+    }));
   }
 }

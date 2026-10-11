@@ -1,6 +1,11 @@
 import { Global, Module } from '@nestjs/common';
 import { SUBWAY_GRAPH_REPOSITORY } from '../../domain/subway/ports/ISubwayGraphRepository';
 import { SUBWAY_LINE_REPOSITORY } from '../../domain/place/ports/ISubwayLineRepository';
+import {
+  NOTIFICATION_SETTINGS_REPOSITORY,
+  PUSH_TOKEN_REPOSITORY,
+  SETTLEMENT_LOG_REPOSITORY,
+} from '../../domain/notification/ports/notification-ports';
 import { FRIEND_REPOSITORY } from '../../domain/friend/ports/IFriendRepository';
 import { USER_REPOSITORY } from '../../domain/user/ports/IUserRepository';
 import { RANK_SCORE_REPOSITORY } from '../../domain/ranking/ports/IRankScoreRepository';
@@ -11,6 +16,9 @@ import { SubwayLineRepository } from './repositories/subway-line.repository';
 import { UserRepository } from './repositories/user.repository';
 import { RankScoreRepository } from './repositories/rank-score.repository';
 import { FriendRepository } from './repositories/friend.repository';
+import { NotificationSettingsRepository } from './repositories/notification-settings.repository';
+import { PushTokenRepository } from './repositories/push-token.repository';
+import { SettlementLogRepository } from './repositories/settlement-log.repository';
 import { TravelLogRepository } from './repositories/travel-log.repository';
 
 @Global()
@@ -23,6 +31,12 @@ import { TravelLogRepository } from './repositories/travel-log.repository';
     { provide: RANK_SCORE_REPOSITORY, useClass: RankScoreRepository },
     { provide: TRAVEL_LOG_REPOSITORY, useClass: TravelLogRepository },
     { provide: FRIEND_REPOSITORY, useClass: FriendRepository },
+    { provide: PUSH_TOKEN_REPOSITORY, useClass: PushTokenRepository },
+    {
+      provide: NOTIFICATION_SETTINGS_REPOSITORY,
+      useClass: NotificationSettingsRepository,
+    },
+    { provide: SETTLEMENT_LOG_REPOSITORY, useClass: SettlementLogRepository },
     SubwayGraphRepository,
     UserRepository,
     RankScoreRepository,
@@ -35,6 +49,9 @@ import { TravelLogRepository } from './repositories/travel-log.repository';
     RANK_SCORE_REPOSITORY,
     TRAVEL_LOG_REPOSITORY,
     FRIEND_REPOSITORY,
+    PUSH_TOKEN_REPOSITORY,
+    NOTIFICATION_SETTINGS_REPOSITORY,
+    SETTLEMENT_LOG_REPOSITORY,
     SubwayGraphRepository,
     UserRepository,
     RankScoreRepository,

@@ -10,6 +10,21 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum PushProvider {
+  EXPO
+  FCM
+  APNS
+
+  @@map("push_provider")
+}
+
+enum SettlementStatus {
+  SENT
+  FAILED
+
+  @@map("settlement_status")
+}
+
 enum RankingVisibility {
   PUBLIC
   ANONYMOUS
@@ -36,6 +51,9 @@ model User {
   rankScores      RankScore[]
   friendships     Friendship[]    @relation("FriendshipOwner")
   friendOf        Friendship[]    @relation("FriendshipTarget")
+  pushTokens      PushToken[]
+  notificationSetting UserNotificationSetting?
+  settlementNotifications SettlementNotification[]
 
   @@map("users")
 }
@@ -68,6 +86,46 @@ model Friendship {
   @@id([userId, friendId])
   @@index([friendId])
   @@map("friendships")
+}
+
+// 푸시 토큰은 기기마다 하나씩 쌓이고 같은 토큰은 한 사용자에게만 연결된다
+model PushToken {
+  id        String       @id @default(uuid()) @db.Uuid
+  userId    String       @map("user_id") @db.Uuid
+  token     String       @unique @db.VarChar(255)
+  provider  PushProvider @default(EXPO)
+  platform  String?      @db.VarChar(10)
+  createdAt DateTime     @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime     @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("push_tokens")
+}
+
+// 행이 없으면 모든 알림이 기본값(켜짐)이다
+model UserNotificationSetting {
+  userId            String   @id @map("user_id") @db.Uuid
+  monthlySettlement Boolean  @default(true) @map("monthly_settlement")
+  updatedAt         DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_notification_settings")
+}
+
+// 월말정산은 사용자와 달마다 한 번만 보낸다
+model SettlementNotification {
+  userId    String           @map("user_id") @db.Uuid
+  periodKey String           @map("period_key") @db.VarChar(7)
+  status    SettlementStatus
+  createdAt DateTime         @default(now()) @map("created_at") @db.Timestamptz
+
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, periodKey])
+  @@map("settlement_notifications")
 }
 
 // 3. 지하철 노선 모델
