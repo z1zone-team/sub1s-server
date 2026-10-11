@@ -394,6 +394,8 @@ export class TravelLogService {
         stationId: s.id,
         stationName: s.stationName,
         lineSeq: s.lineSeq ?? lineStations.length + 1,
+        lat: s.lat,
+        lng: s.lng,
         visited: visitedSet.has(s.id),
       });
     }

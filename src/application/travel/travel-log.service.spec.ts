@@ -654,6 +654,7 @@ describe('TravelLogService', () => {
       const yeoksam = line02?.stations.find((s) => s.stationId === '02_221');
       expect(gangnam?.visited).toBe(true);
       expect(yeoksam?.visited).toBe(true);
+      expect(gangnam).toMatchObject({ lat: 37.4979, lng: 127.0276 });
     });
   });
 });

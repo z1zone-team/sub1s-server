@@ -2,6 +2,8 @@ export interface LineMapStationDto {
   stationId: string;
   stationName: string;
   lineSeq: number;
+  lat: number;
+  lng: number;
   visited: boolean;
 }
 
