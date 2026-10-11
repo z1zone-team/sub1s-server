@@ -37,6 +37,7 @@ export class ArrivalService {
     const station = graph.station(index);
 
     const snapshot = await this.provider.fetchNextTrains({
+      stationId,
       lineId: station.lineId,
       stationName: station.stationName,
     });

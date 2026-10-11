@@ -41,8 +41,12 @@ interface ApiResponse<T> {
   body?: T[];
 }
 
+const WEEKDAY_DAY_CD = '8';
+const HOLIDAY_DAY_CD = '9';
+
 async function fetchStationTimetable(
   key: string,
+  dayCd: string,
   opr: string,
   ln: string,
   stin: string,
@@ -50,7 +54,7 @@ async function fetchStationTimetable(
   const qs = new URLSearchParams({
     serviceKey: key,
     format: 'json',
-    dayCd: '8', // 평일
+    dayCd,
     railOprIsttCd: opr,
     lnCd: ln,
     stinCd: stin,
@@ -68,6 +72,12 @@ async function main(): Promise<void> {
   const args = process.argv.slice(2);
   const force = args.includes('--force');
   const allLines = args.includes('--all');
+
+  const dayArg = args.find((a) => a.startsWith('--day='));
+  const dayCd = dayArg ? dayArg.replace('--day=', '') : WEEKDAY_DAY_CD;
+  if (dayCd !== WEEKDAY_DAY_CD && dayCd !== HOLIDAY_DAY_CD) {
+    throw new Error(`--day must be ${WEEKDAY_DAY_CD} (weekday) or ${HOLIDAY_DAY_CD} (holiday)`);
+  }
 
   const linesFilterArg = args.find((a) => a.startsWith('--lines='));
   const specifiedLines = linesFilterArg
@@ -99,7 +109,10 @@ async function main(): Promise<void> {
     `[KRIC Timetable] Targeting ${targetStations.length} stations across lines (force: ${force})`,
   );
 
-  const cacheDir = join(RAW_DIR, 'kric-timetables');
+  const cacheDir = join(
+    RAW_DIR,
+    dayCd === WEEKDAY_DAY_CD ? 'kric-timetables' : `kric-timetables-${dayCd}`,
+  );
   mkdirSync(cacheDir, { recursive: true });
 
   const allRows: KricTimetableRow[] = [];
@@ -130,6 +143,7 @@ async function main(): Promise<void> {
       try {
         const raw = await fetchStationTimetable(
           key,
+          dayCd,
           kric.railOprIsttCd,
           kric.lnCd,
           kric.stinCd,
@@ -169,6 +183,11 @@ async function main(): Promise<void> {
   console.log(
     `[KRIC Timetable] Aggregation complete: ${allRows.length} timetable records collected.`,
   );
+
+  if (dayCd !== WEEKDAY_DAY_CD) {
+    console.log(`[KRIC Timetable] Saved raw day ${dayCd} files to ${cacheDir}`);
+    return;
+  }
 
   console.log(`[KRIC Timetable] Analyzing inter-station durations...`);
   const durations: InterStationDuration[] = analyzeTimetableDurations(allRows);

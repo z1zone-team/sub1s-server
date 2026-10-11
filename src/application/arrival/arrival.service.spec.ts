@@ -48,7 +48,11 @@ describe('ArrivalService', () => {
   it('asks the provider with the line and name of the station', async () => {
     await service.getNextTrains('09_925');
 
-    expect(provider.fetchNextTrains).toHaveBeenCalledWith({ lineId: '09', stationName: '신논현' });
+    expect(provider.fetchNextTrains).toHaveBeenCalledWith({
+      stationId: '09_925',
+      lineId: '09',
+      stationName: '신논현',
+    });
   });
 
   it('returns the station, source, KST update time and trains', async () => {
