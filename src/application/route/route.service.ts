@@ -1,8 +1,9 @@
-import { HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
 import { BusinessException } from '../../common/exceptions/business.exception';
 import { isWeakAirConditioned } from '../../common/utils/air-conditioning';
 import { congestionLevel } from '../../domain/congestion/models/congestion';
 import {
+  isRouteMode,
   RouteMode,
   RouteNotFoundError,
   RouteResult,
@@ -20,7 +21,19 @@ import {
   HighlightInput,
   computeRouteHighlights,
 } from '../../domain/subway/models/route-highlight';
+import {
+  Personalization,
+  personalize,
+} from '../../domain/subway/services/route-personalizer';
 import { SubwayGraphService } from '../../domain/subway/services/subway-graph.service';
+import {
+  ITravelLogRepository,
+  TRAVEL_LOG_REPOSITORY,
+} from '../../domain/travel/ports/ITravelLogRepository';
+import {
+  IUserRepository,
+  USER_REPOSITORY,
+} from '../../domain/user/ports/IUserRepository';
 import {
   WalkingService,
   WalkMetrics,
@@ -35,15 +48,21 @@ import {
 } from './dto/route-search-response.dto';
 import { parseIsoAsKst, toKstIso } from '../../common/utils/kst';
 
+/** 로그인하지 않은 사용자에게 주는 모드. 추천(PERSONAL)은 개인화 기능이라 로그인한 사용자에게만 준다 */
+const PUBLIC_ROUTE_MODES: RouteMode[] = ['OPTIMAL', 'COMFORTABLE', 'CHEAPEST'];
 const ALL_ROUTE_MODES: RouteMode[] = [
   'OPTIMAL',
   'COMFORTABLE',
   'PERSONAL',
   'CHEAPEST',
 ];
+/** 개인화에 쓰는 최근 선택 이력의 건수 */
+const HISTORY_LIMIT = 20;
 
 @Injectable()
 export class RouteService {
+  private readonly logger = new Logger(RouteService.name);
+
   constructor(
     @Inject(SUBWAY_ROUTE_ENGINE)
     private readonly routeEngine: ISubwayRouteEngine,
@@ -51,9 +70,52 @@ export class RouteService {
     private readonly congestionProvider: StatisticalCongestionProvider,
     private readonly walkingService: WalkingService,
     private readonly operationStatus: OperationStatusService,
+    @Inject(USER_REPOSITORY)
+    private readonly userRepo: IUserRepository,
+    @Inject(TRAVEL_LOG_REPOSITORY)
+    private readonly travelLogRepo: ITravelLogRepository,
   ) {}
 
-  async search(dto: RouteSearchRequestDto): Promise<RouteSearchResultDto> {
+  /**
+   * 사용자가 로그인했으면 설문, 이동 목적, 이전에 고른 모드와 출발 시각으로 추천(PERSONAL) 경로의 가중치를 만든다.
+   * 사용자 정보를 읽지 못해도 검색은 막지 않고 기본 가중치로 추천을 낸다
+   */
+  private async personalizationFor(
+    userId: string,
+    departureAt: Date,
+  ): Promise<Personalization> {
+    try {
+      const [preferences, history] = await Promise.all([
+        this.userRepo.findPreferences(userId),
+        this.travelLogRepo.findRecentRouteChoices(userId, HISTORY_LIMIT),
+      ]);
+      return personalize({
+        routePrefs: preferences.routePrefs,
+        purposes: preferences.purposes,
+        history: history.flatMap((record) =>
+          isRouteMode(record.routeMode)
+            ? [{ mode: record.routeMode, createdAt: record.createdAt }]
+            : [],
+        ),
+        departureAt,
+      });
+    } catch (error) {
+      this.logger.warn(
+        `Personalization failed for ${userId}, using the default weights: ${error}`,
+      );
+      return personalize({
+        routePrefs: [],
+        purposes: [],
+        history: [],
+        departureAt,
+      });
+    }
+  }
+
+  async search(
+    dto: RouteSearchRequestDto,
+    userId?: string,
+  ): Promise<RouteSearchResultDto> {
     const departureDate = dto.departureAt
       ? parseIsoAsKst(dto.departureAt)
       : new Date();
@@ -198,9 +260,13 @@ export class RouteService {
       );
     }
 
-    // 4. 지하철 4대 모드 다익스트라 탐색
+    // 4. 지하철 모드별 다익스트라 탐색. 추천(PERSONAL)은 로그인한 사용자의 개인화 가중치로만 계산한다
+    const personalization = userId
+      ? await this.personalizationFor(userId, departureDate)
+      : undefined;
+    const modes = userId ? ALL_ROUTE_MODES : PUBLIC_ROUTE_MODES;
     const optionResults = await Promise.all(
-      ALL_ROUTE_MODES.map(async (mode) => {
+      modes.map(async (mode) => {
         try {
           const result = await this.routeEngine.findRoute({
             originStationId: originStation.id,
@@ -208,9 +274,7 @@ export class RouteService {
             mode,
             departureAt: departureDate,
             weights:
-              mode === 'PERSONAL'
-                ? { congestion: 1.5, transferSec: 240 }
-                : undefined,
+              mode === 'PERSONAL' ? personalization?.weights : undefined,
           });
           return this.mapToOptionDto(
             result,
@@ -263,7 +327,20 @@ export class RouteService {
       });
     }
 
-    return { options: validOptions };
+    return {
+      options: validOptions,
+      ...(personalization
+        ? {
+            recommendation: {
+              context: personalization.context,
+              reasons: personalization.reasons,
+              usedHistory: personalization.usedHistory,
+              fareSensitive: personalization.fareSensitive,
+              weights: personalization.weights,
+            },
+          }
+        : {}),
+    };
   }
 
   private applyHighlights(options: SubwayRouteOptionDto[]): void {

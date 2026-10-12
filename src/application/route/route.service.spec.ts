@@ -7,6 +7,8 @@ import {
   SUBWAY_ROUTE_ENGINE,
 } from '../../domain/subway/ports/ISubwayRouteEngine';
 import { SubwayGraphService } from '../../domain/subway/services/subway-graph.service';
+import { TRAVEL_LOG_REPOSITORY } from '../../domain/travel/ports/ITravelLogRepository';
+import { USER_REPOSITORY } from '../../domain/user/ports/IUserRepository';
 import { WalkingService } from '../../domain/subway/services/walking.service';
 import { StatisticalCongestionProvider } from '../../infra/congestion/statistical-congestion.provider';
 import { OperationStatusService } from './operation-status.service';
@@ -17,6 +19,8 @@ describe('RouteService', () => {
   let mockEngine: jest.Mocked<ISubwayRouteEngine>;
   let mockGraphService: { getGraph: jest.Mock };
   let mockCongestionProvider: { predictCars: jest.Mock };
+  let mockUserRepo: { findPreferences: jest.Mock };
+  let mockTravelLogRepo: { findRecentRouteChoices: jest.Mock };
 
   const testGraph = new SubwayGraph({
     stations: [
@@ -108,6 +112,15 @@ describe('RouteService', () => {
       }),
     };
 
+    mockUserRepo = {
+      findPreferences: jest
+        .fn()
+        .mockResolvedValue({ purposes: [], routePrefs: [] }),
+    };
+    mockTravelLogRepo = {
+      findRecentRouteChoices: jest.fn().mockResolvedValue([]),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         RouteService,
@@ -115,6 +128,8 @@ describe('RouteService', () => {
         { provide: SUBWAY_ROUTE_ENGINE, useValue: mockEngine },
         { provide: OperationStatusService, useValue: { annotate: jest.fn().mockResolvedValue(undefined) } },
         { provide: SubwayGraphService, useValue: mockGraphService },
+        { provide: USER_REPOSITORY, useValue: mockUserRepo },
+        { provide: TRAVEL_LOG_REPOSITORY, useValue: mockTravelLogRepo },
         {
           provide: StatisticalCongestionProvider,
           useValue: mockCongestionProvider,
@@ -125,11 +140,14 @@ describe('RouteService', () => {
     service = module.get<RouteService>(RouteService);
   });
 
-  it('computes and returns all 4 route options', async () => {
-    const result = await service.search({
-      originStationId: '02_222',
-      destinationStationId: '02_221',
-    });
+  it('computes and returns all 4 route options for a signed-in user', async () => {
+    const result = await service.search(
+      {
+        originStationId: '02_222',
+        destinationStationId: '02_221',
+      },
+      'user-1',
+    );
 
     expect(result.options).toHaveLength(4);
     const modes = result.options.map((opt) => opt.mode);
@@ -517,6 +535,118 @@ describe('RouteService', () => {
         errorCode: 'STATION_NOT_FOUND',
         status: HttpStatus.NOT_FOUND,
       });
+    });
+  });
+
+  describe('personalized recommendation', () => {
+    const request = {
+      originStationId: '02_222',
+      destinationStationId: '02_221',
+      // 평일 낮 공강 시간(혼잡 시간대 가중이 붙지 않는다)
+      departureAt: '2026-10-12T13:00:00+09:00',
+    };
+    const personalCall = () =>
+      mockEngine.findRoute.mock.calls
+        .map(([query]) => query)
+        .find((query) => query.mode === 'PERSONAL');
+
+    it('does not offer the recommended route to a user who is not signed in', async () => {
+      const result = await service.search(request);
+
+      expect(result.options.map((option) => option.mode).sort()).toEqual(
+        ['CHEAPEST', 'COMFORTABLE', 'OPTIMAL'],
+      );
+      expect(result.recommendation).toBeUndefined();
+      expect(personalCall()).toBeUndefined();
+      expect(mockUserRepo.findPreferences).not.toHaveBeenCalled();
+    });
+
+    it('keeps the fixed weights when a signed-in user has no signals', async () => {
+      const result = await service.search(request, 'user-1');
+
+      expect(personalCall()?.weights).toEqual({
+        congestion: 1.5,
+        transferSec: 240,
+      });
+      expect(result.recommendation).toEqual({
+        context: 'WEEKDAY_MIDDAY',
+        reasons: [],
+        usedHistory: false,
+        fareSensitive: false,
+        weights: { congestion: 1.5, transferSec: 240 },
+      });
+    });
+
+    it("builds the weights from the user's survey answers", async () => {
+      mockUserRepo.findPreferences.mockResolvedValueOnce({
+        purposes: [],
+        routePrefs: ['UNCROWDED', 'FEW_TRANSFERS'],
+      });
+
+      const result = await service.search(request, 'user-1');
+
+      expect(personalCall()?.weights).toEqual({
+        congestion: 2.5,
+        transferSec: 420,
+      });
+      expect(result.recommendation?.reasons).toEqual([
+        'PREF_FEW_TRANSFERS',
+        'PREF_UNCROWDED',
+      ]);
+    });
+
+    it('leans on the departure time: a rush hour ride avoids crowds more', async () => {
+      await service.search(
+        { ...request, departureAt: '2026-10-12T08:00:00+09:00' },
+        'user-1',
+      );
+
+      expect(personalCall()?.weights).toEqual({
+        congestion: 2,
+        transferSec: 300,
+      });
+    });
+
+    it('uses the modes the user chose before', async () => {
+      const at = new Date('2026-10-05T04:10:00Z'); // 한국 월요일 13:10
+      mockTravelLogRepo.findRecentRouteChoices.mockResolvedValueOnce(
+        Array.from({ length: 3 }, () => ({
+          routeMode: 'COMFORTABLE',
+          createdAt: at,
+        })),
+      );
+
+      const result = await service.search(request, 'user-1');
+
+      expect(personalCall()?.weights?.congestion).toBe(2);
+      expect(result.recommendation?.usedHistory).toBe(true);
+      expect(result.recommendation?.reasons).toEqual(['HISTORY_COMFORT']);
+    });
+
+    it('ignores stored modes it does not know', async () => {
+      mockTravelLogRepo.findRecentRouteChoices.mockResolvedValueOnce(
+        Array.from({ length: 5 }, () => ({
+          routeMode: 'LEGACY',
+          createdAt: new Date('2026-10-05T04:10:00Z'),
+        })),
+      );
+
+      const result = await service.search(request, 'user-1');
+
+      expect(result.recommendation?.reasons).toEqual([]);
+    });
+
+    it('still searches with the default weights when the user data cannot be read', async () => {
+      mockUserRepo.findPreferences.mockRejectedValueOnce(new Error('db down'));
+
+      const result = await service.search(request, 'user-1');
+
+      expect(result.options).toHaveLength(4);
+      expect(personalCall()?.weights).toEqual({
+        congestion: 1.5,
+        transferSec: 240,
+      });
+      expect(result.recommendation?.reasons).toEqual([]);
     });
   });
 });

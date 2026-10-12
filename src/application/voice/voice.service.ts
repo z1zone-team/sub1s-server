@@ -122,13 +122,17 @@ export class VoiceService {
     }
 
     // 6. 다익스트라 경로 탐색
-    const searchResult = await this.routeService.search({
-      ...(originIsCurrentLocation
-        ? { originLat: dto!.lat, originLng: dto!.lng }
-        : { originStationId: originStationId! }),
-      destinationStationId: destStationId,
-      routeMode: intent.preferredMode,
-    });
+    // 로그인 사용자의 설문, 시간대, 이력으로 개인화한 추천(PERSONAL)을 받도록 사용자를 넘긴다
+    const searchResult = await this.routeService.search(
+      {
+        ...(originIsCurrentLocation
+          ? { originLat: dto!.lat, originLng: dto!.lng }
+          : { originStationId: originStationId! }),
+        destinationStationId: destStationId,
+        routeMode: intent.preferredMode,
+      },
+      userId,
+    );
 
     const recommendedRoute =
       searchResult.options.find((opt) => opt.mode === intent.preferredMode) ??
