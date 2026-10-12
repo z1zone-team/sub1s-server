@@ -42,42 +42,43 @@ enum RankingVisibility {
 
 // 1. 사용자 모델 (Clerk 소셜 인증 연동)
 model User {
-  id              String          @id @default(uuid()) @db.Uuid
-  clerkId         String          @unique @map("clerk_id") @db.VarChar(128)
-  name            String?         @db.VarChar(50)
-  nickname        String          @db.VarChar(50)
-  nicknameCustomized Boolean      @default(false) @map("nickname_customized")
-  profileImageUrl String?         @map("profile_image_url") @db.VarChar(255)
-  rankingVisibility RankingVisibility @default(PUBLIC) @map("ranking_visibility")
-  createdAt       DateTime        @default(now()) @map("created_at") @db.Timestamptz
-  updatedAt       DateTime        @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
-  inviteToken     String?         @unique @map("invite_token") @db.VarChar(32)
+  id                 String            @id @default(uuid()) @db.Uuid
+  clerkId            String            @unique @map("clerk_id") @db.VarChar(128)
+  name               String?           @db.VarChar(50)
+  nickname           String            @db.VarChar(50)
+  nicknameCustomized Boolean           @default(false) @map("nickname_customized")
+  profileImageUrl    String?           @map("profile_image_url") @db.VarChar(255)
+  rankingVisibility  RankingVisibility @default(PUBLIC) @map("ranking_visibility")
+  createdAt          DateTime          @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt          DateTime          @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+  inviteToken        String?           @unique @map("invite_token") @db.VarChar(32)
 
-  preference      UserPreference?
-  travelLogs      TravelLog[]
-  rankScores      RankScore[]
-  friendships     Friendship[]    @relation("FriendshipOwner")
-  friendOf        Friendship[]    @relation("FriendshipTarget")
-  pushTokens      PushToken[]
-  notificationSetting UserNotificationSetting?
+  preference              UserPreference?
+  travelLogs              TravelLog[]
+  rankScores              RankScore[]
+  friendships             Friendship[]             @relation("FriendshipOwner")
+  friendOf                Friendship[]             @relation("FriendshipTarget")
+  pushTokens              PushToken[]
+  notificationSetting     UserNotificationSetting?
   settlementNotifications SettlementNotification[]
-  places          UserPlace[]
+  places                  UserPlace[]
+  favoriteRoutes          UserFavoriteRoute[]
 
   @@map("users")
 }
 
 // 2. 사용자 취향 벡터 모델 (6차원 도메인 행동 피처 벡터)
 model UserPreference {
-  userId           String                     @id @map("user_id") @db.Uuid
-  user             User                       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @id @map("user_id") @db.Uuid
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   // 6차원 도메인 행동 피처: [v_time, v_transfer, v_crowd, v_walk, v_ac, v_regular]
   preferenceVector Unsupported("vector(6)")? @map("preference_vector")
 
-  preferredMode    String                     @default("OPTIMAL") @map("preferred_mode") @db.VarChar(20) // OPTIMAL, COMFORTABLE, PERSONAL
-  purposes         String[]                   @default([])
-  routePrefs       String[]                   @default([]) @map("route_prefs")
-  updatedAt        DateTime                   @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+  preferredMode String   @default("OPTIMAL") @map("preferred_mode") @db.VarChar(20) // OPTIMAL, COMFORTABLE, PERSONAL
+  purposes      String[] @default([])
+  routePrefs    String[] @default([]) @map("route_prefs")
+  updatedAt     DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
 
   @@map("user_preferences")
 }
@@ -92,10 +93,33 @@ model UserPlace {
   lng       Float?
   updatedAt DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
 
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, kind])
   @@map("user_places")
+}
+
+// 홈의 경로 즐겨찾기(출발 → 도착). 출발과 도착은 역(stationId) 또는 장소(좌표)다.
+// routeKey는 같은 경로를 두 번 저장하지 못하게 하는 값이다(역은 역 ID, 장소는 좌표 소수 넷째 자리 반올림)
+model UserFavoriteRoute {
+  id                   String   @id @default(uuid()) @db.Uuid
+  userId               String   @map("user_id") @db.Uuid
+  routeKey             String   @map("route_key") @db.VarChar(120)
+  originName           String   @map("origin_name") @db.VarChar(100)
+  originStationId      String?  @map("origin_station_id") @db.VarChar(30)
+  originLat            Float?   @map("origin_lat")
+  originLng            Float?   @map("origin_lng")
+  destinationName      String   @map("destination_name") @db.VarChar(100)
+  destinationStationId String?  @map("destination_station_id") @db.VarChar(30)
+  destinationLat       Float?   @map("destination_lat")
+  destinationLng       Float?   @map("destination_lng")
+  createdAt            DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, routeKey])
+  @@index([userId, createdAt(sort: Desc)], map: "idx_favorite_routes_user")
+  @@map("user_favorite_routes")
 }
 
 // 친구 관계는 양방향으로 두 행을 저장한다
@@ -104,8 +128,8 @@ model Friendship {
   friendId  String   @map("friend_id") @db.Uuid
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
 
-  user      User     @relation("FriendshipOwner", fields: [userId], references: [id], onDelete: Cascade)
-  friend    User     @relation("FriendshipTarget", fields: [friendId], references: [id], onDelete: Cascade)
+  user   User @relation("FriendshipOwner", fields: [userId], references: [id], onDelete: Cascade)
+  friend User @relation("FriendshipTarget", fields: [friendId], references: [id], onDelete: Cascade)
 
   @@id([userId, friendId])
   @@index([friendId])
@@ -122,7 +146,7 @@ model PushToken {
   createdAt DateTime     @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime     @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
 
-  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@map("push_tokens")
@@ -134,7 +158,7 @@ model UserNotificationSetting {
   monthlySettlement Boolean  @default(true) @map("monthly_settlement")
   updatedAt         DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
 
-  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("user_notification_settings")
 }
@@ -146,7 +170,7 @@ model SettlementNotification {
   status    SettlementStatus
   createdAt DateTime         @default(now()) @map("created_at") @db.Timestamptz
 
-  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, periodKey])
   @@map("settlement_notifications")
@@ -154,9 +178,9 @@ model SettlementNotification {
 
 // 3. 지하철 노선 모델
 model SubwayLine {
-  id         String      @id @db.VarChar(20) // '02', '03', 'SB'
-  lineName   String      @map("line_name") @db.VarChar(50)
-  colorHex   String      @map("color_hex") @db.VarChar(10) // '#3CB44A'
+  id       String @id @db.VarChar(20) // '02', '03', 'SB'
+  lineName String @map("line_name") @db.VarChar(50)
+  colorHex String @map("color_hex") @db.VarChar(10) // '#3CB44A'
 
   stations   Station[]
   routeEdges RouteEdge[]
@@ -166,18 +190,18 @@ model SubwayLine {
 
 // 4. 지하철 역 모델 (복합 자연키 호선_역코드)
 model Station {
-  id          String     @id @db.VarChar(30) // '02_222' (호선_역코드)
-  lineId      String     @map("line_id") @db.VarChar(20)
-  stationCode String     @map("station_code") @db.VarChar(10)
-  lineSeq     Int        @map("line_seq") // 호선 내 역 순서 (KRIC 구성 순서, 동순위는 역코드 순)
-  stationName String     @map("station_name") @db.VarChar(50)
+  id          String   @id @db.VarChar(30) // '02_222' (호선_역코드)
+  lineId      String   @map("line_id") @db.VarChar(20)
+  stationCode String   @map("station_code") @db.VarChar(10)
+  lineSeq     Int      @map("line_seq") // 호선 내 역 순서 (KRIC 구성 순서, 동순위는 역코드 순)
+  stationName String   @map("station_name") @db.VarChar(50)
   lat         Float
   lng         Float
-  hasRestroom Boolean    @default(true) @map("has_restroom")
-  hasElevator Boolean    @default(true) @map("has_elevator")
-  createdAt   DateTime   @default(now()) @map("created_at") @db.Timestamptz
+  hasRestroom Boolean  @default(true) @map("has_restroom")
+  hasElevator Boolean  @default(true) @map("has_elevator")
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz
 
-  line        SubwayLine @relation(fields: [lineId], references: [id])
+  line SubwayLine @relation(fields: [lineId], references: [id])
 
   originRouteEdges    RouteEdge[]    @relation("RouteFromStation")
   destRouteEdges      RouteEdge[]    @relation("RouteToStation")
@@ -192,19 +216,19 @@ model Station {
 
 // 5. 주행 간선 모델
 model RouteEdge {
-  id            String     @id @default(uuid()) @db.Uuid
-  fromStationId String     @map("from_station_id") @db.VarChar(30)
-  toStationId   String     @map("to_station_id") @db.VarChar(30)
-  lineId        String     @map("line_id") @db.VarChar(20)
-  direction     String     @db.VarChar(10) // 'UP', 'DOWN', 'INNER', 'OUTER'
-  distanceKm    Float      @map("distance_km")
-  durationSec   Int        @map("duration_sec")
-  isExpress     Boolean    @default(false) @map("is_express") // 급행 여부 (오탑승 감지 및 9호선/경의중앙선 분기)
-  isEstimated   Boolean    @default(false) @map("is_estimated") // 서울교통공사 실측이 없어 좌표로 추정한 구간 여부
+  id            String  @id @default(uuid()) @db.Uuid
+  fromStationId String  @map("from_station_id") @db.VarChar(30)
+  toStationId   String  @map("to_station_id") @db.VarChar(30)
+  lineId        String  @map("line_id") @db.VarChar(20)
+  direction     String  @db.VarChar(10) // 'UP', 'DOWN', 'INNER', 'OUTER'
+  distanceKm    Float   @map("distance_km")
+  durationSec   Int     @map("duration_sec")
+  isExpress     Boolean @default(false) @map("is_express") // 급행 여부 (오탑승 감지 및 9호선/경의중앙선 분기)
+  isEstimated   Boolean @default(false) @map("is_estimated") // 서울교통공사 실측이 없어 좌표로 추정한 구간 여부
 
-  fromStation   Station    @relation("RouteFromStation", fields: [fromStationId], references: [id])
-  toStation     Station    @relation("RouteToStation", fields: [toStationId], references: [id])
-  line          SubwayLine @relation(fields: [lineId], references: [id])
+  fromStation Station    @relation("RouteFromStation", fields: [fromStationId], references: [id])
+  toStation   Station    @relation("RouteToStation", fields: [toStationId], references: [id])
+  line        SubwayLine @relation(fields: [lineId], references: [id])
 
   @@index([fromStationId], map: "idx_route_edges_from")
   @@map("route_edges")
@@ -221,8 +245,8 @@ model TransferEdge {
   hasStairs          Boolean  @default(true) @map("has_stairs")
   hasEscalator       Boolean  @default(true) @map("has_escalator")
 
-  fromStation        Station  @relation("TransferFromStation", fields: [fromStationId], references: [id])
-  toStation          Station  @relation("TransferToStation", fields: [toStationId], references: [id])
+  fromStation Station @relation("TransferFromStation", fields: [fromStationId], references: [id])
+  toStation   Station @relation("TransferToStation", fields: [toStationId], references: [id])
 
   @@index([fromStationId], map: "idx_transfer_edges_from")
   @@map("transfer_edges")
@@ -230,28 +254,28 @@ model TransferEdge {
 
 // 7. 이동 완료 기록 모델 (민감 궤적 3DES+AES 암호화 필드 적용)
 model TravelLog {
-  id                    String   @id @default(uuid()) @db.Uuid
-  userId                String   @map("user_id") @db.Uuid
-  originStationId       String   @map("origin_station_id") @db.VarChar(30)
-  destStationId         String   @map("dest_station_id") @db.VarChar(30)
-  totalDistanceKm       Float    @map("total_distance_km")
-  transferCount         Int      @map("transfer_count")
-  earnedPoints          Int      @map("earned_points")
+  id              String @id @default(uuid()) @db.Uuid
+  userId          String @map("user_id") @db.Uuid
+  originStationId String @map("origin_station_id") @db.VarChar(30)
+  destStationId   String @map("dest_station_id") @db.VarChar(30)
+  totalDistanceKm Float  @map("total_distance_km")
+  transferCount   Int    @map("transfer_count")
+  earnedPoints    Int    @map("earned_points")
 
   // 사용자가 안내를 시작할 때 고른 경로 모드(OPTIMAL, COMFORTABLE, PERSONAL, CHEAPEST). 추천 개인화의 선택 이력. 세션을 못 읽으면 비어 있다
-  routeMode             String?  @map("route_mode") @db.VarChar(20)
+  routeMode String? @map("route_mode") @db.VarChar(20)
 
   // 개인 민감 위치정보 암호화 저장 (SECURITY.md 3-Tier 하이브리드 암호화 연동)
-  encryptedRoutePayload String?  @map("encrypted_route_payload") @db.Text // Base64 AES-256-GCM 암호문 (상세 이동 궤적/정차역 로그)
-  iv                    String?  @map("iv") @db.VarChar(32)              // Base64 Nonce/IV (12 bytes)
-  authTag               String?  @map("auth_tag") @db.VarChar(32)        // Base64 GCM Auth Tag (16 bytes)
-  wrappedDek            String?  @map("wrapped_dek") @db.VarChar(128)    // Base64 3DES-CBC로 래핑된 DEK
+  encryptedRoutePayload String? @map("encrypted_route_payload") @db.Text // Base64 AES-256-GCM 암호문 (상세 이동 궤적/정차역 로그)
+  iv                    String? @map("iv") @db.VarChar(32) // Base64 Nonce/IV (12 bytes)
+  authTag               String? @map("auth_tag") @db.VarChar(32) // Base64 GCM Auth Tag (16 bytes)
+  wrappedDek            String? @map("wrapped_dek") @db.VarChar(128) // Base64 3DES-CBC로 래핑된 DEK
 
-  createdAt             DateTime @default(now()) @map("created_at") @db.Timestamptz
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
 
-  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  originStation         Station  @relation("OriginTravelLogs", fields: [originStationId], references: [id])
-  destStation           Station  @relation("DestTravelLogs", fields: [destStationId], references: [id])
+  user          User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  originStation Station @relation("OriginTravelLogs", fields: [originStationId], references: [id])
+  destStation   Station @relation("DestTravelLogs", fields: [destStationId], references: [id])
 
   @@index([userId, createdAt(sort: Desc)], map: "idx_travel_logs_user")
   @@map("travel_logs")
@@ -262,13 +286,13 @@ model RankScore {
   id              String   @id @default(uuid()) @db.Uuid
   userId          String   @map("user_id") @db.Uuid
   periodType      String   @map("period_type") @db.VarChar(20) // 'WEEKLY', 'MONTHLY'
-  periodKey       String   @map("period_key") @db.VarChar(20)  // '2026-W40', '2026-10'
+  periodKey       String   @map("period_key") @db.VarChar(20) // '2026-W40', '2026-10'
   totalPoints     Int      @default(0) @map("total_points")
   totalDistanceKm Float    @default(0) @map("total_distance_km") // 리더보드 노출용 누적 이동 거리(km)
   rankPosition    Int?     @map("rank_position")
   updatedAt       DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
 
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, periodType, periodKey], map: "uq_user_period")
   @@index([periodType, periodKey, totalPoints(sort: Desc)], map: "idx_rank_scores_ranking")
