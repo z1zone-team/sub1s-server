@@ -1,3 +1,4 @@
 export * from './tts-stream-query.dto';
+export * from './voice-job.dto';
 export * from './voice-route-recommend-request.dto';
 export * from './voice-route-recommend-response.dto';

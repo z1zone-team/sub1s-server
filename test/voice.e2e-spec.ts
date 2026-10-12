@@ -89,8 +89,8 @@ describe('Voice Route Recommend (e2e)', () => {
     }
   });
 
-  beforeEach(() => {
-    voiceLockService.clear();
+  beforeEach(async () => {
+    await voiceLockService.clear();
   });
 
   it('POST /api/v1/voice/route-recommend - should return route recommendation from audio file', async () => {
