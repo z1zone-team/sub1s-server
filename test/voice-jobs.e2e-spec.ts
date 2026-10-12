@@ -16,6 +16,9 @@ import {
 import { ClerkAuthGuard } from '../src/infra/auth/clerk-auth.guard';
 import { MOCK_USER_ID } from '../src/infra/auth/mock-auth.guard';
 
+// 실제 Valkey와 WebSocket을 쓰는 통합 테스트라 느린 CI 머신에서는 첫 요청(큐와 이벤트 연결 초기화, 경로 탐색 첫 호출)이 Jest 기본 5초를 넘긴 적이 있다
+jest.setTimeout(30000);
+
 /**
  * 음성 경로 추천 큐 e2e. 실제 Valkey(VALKEY_HOST, 기본 127.0.0.1:6379)와 실제 WebSocket을 쓰고,
  * AI 서비스의 STT 워커만 같은 큐를 소비하는 가짜 BullMQ 워커로 대신한다.
