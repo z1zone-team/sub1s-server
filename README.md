@@ -27,14 +27,14 @@ src/
 
 ```bash
 pnpm install
-cp .env.example .env            # 값을 채운다 (키는 커밋하지 않는다)
+cp .env.example .env.local      # 값을 채운다 (키는 커밋하지 않는다)
 pnpm prisma generate
 pnpm prisma migrate deploy      # 빈 DB에 마이그레이션 적용
 pnpm seed:subway                # 지하철 그래프(역, 구간, 환승) 적재
 pnpm start:dev                  # http://localhost:3000, Swagger는 /api/docs
 ```
 
-주요 환경 변수는 `.env.example`에 설명이 있습니다. `NODE_ENV=production`에서는 개발용 모의 인증(`mock_` 토큰)이 막힙니다.
+환경 변수는 `.env.local`, `.env` 순서로 읽고(앞의 파일이 우선, 이미 설정된 프로세스 환경 변수가 파일보다 우선), `.env.prod`는 자동으로 읽지 않습니다. 단 `prisma` CLI와 `pnpm seed:subway`는 `.env`만 읽으므로 `.env.local`을 쓸 때는 `DATABASE_URL`을 환경 변수로 넘기세요. 주요 환경 변수는 `.env.example`에 설명이 있습니다. `NODE_ENV=production`에서는 개발용 모의 인증(`mock_` 토큰)이 막힙니다.
 
 ## 테스트
 
