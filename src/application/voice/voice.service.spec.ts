@@ -188,6 +188,16 @@ describe('VoiceService', () => {
 
     expect(routeService.search).toHaveBeenCalledWith(
       expect.objectContaining({ originLat: 37.5, originLng: 127.03 }),
+      'user-loc',
+    );
+  });
+
+  it('passes the signed-in user to the route search so the recommendation is personalized', async () => {
+    await service.recommendRouteByVoice('user-personal', sampleFile, {});
+
+    expect(routeService.search).toHaveBeenCalledWith(
+      expect.any(Object),
+      'user-personal',
     );
   });
 
