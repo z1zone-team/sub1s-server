@@ -10,7 +10,7 @@ import { SubwayGraphService } from '../../domain/subway/services/subway-graph.se
 import { TRAVEL_LOG_REPOSITORY } from '../../domain/travel/ports/ITravelLogRepository';
 import { USER_REPOSITORY } from '../../domain/user/ports/IUserRepository';
 import { WalkingService } from '../../domain/subway/services/walking.service';
-import { StatisticalCongestionProvider } from '../../infra/congestion/statistical-congestion.provider';
+import { CAR_CONGESTION_PREDICTOR } from '../../domain/congestion/ports/ICarCongestionPredictor';
 import { OperationStatusService } from './operation-status.service';
 import { RouteService } from './route.service';
 
@@ -131,7 +131,7 @@ describe('RouteService', () => {
         { provide: USER_REPOSITORY, useValue: mockUserRepo },
         { provide: TRAVEL_LOG_REPOSITORY, useValue: mockTravelLogRepo },
         {
-          provide: StatisticalCongestionProvider,
+          provide: CAR_CONGESTION_PREDICTOR,
           useValue: mockCongestionProvider,
         },
       ],

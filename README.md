@@ -1,62 +1,58 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Sub1S Server (`sub1s-server`)
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+수도권 지하철 경로 안내 서비스 Sub1S의 백엔드입니다. NestJS(Node.js) 위에 다익스트라 경로 엔진, 칸별 혼잡도,
+실시간 주행 추적, 이동 기록과 랭킹, 음성 경로 추천(BullMQ 큐), WebSocket 게이트웨이를 올렸습니다.
+설계와 현황은 [sub1s-docs](https://github.com/z1zone-team/sub1s-docs)의 `ARCHITECTURE_DESIGN.md`, API 계약은 `API_SPEC.md`에 있습니다.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## 구조
 
-## Description
+폴더 경계는 의존 방향을 뜻합니다. `application`과 `infra`는 `domain`의 포트(인터페이스)를 향하고, `domain`은 둘 다 import하지 않습니다
+(`src/common/architecture-boundaries.spec.ts`가 검사합니다).
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
-## Project setup
-
-```bash
-$ pnpm install
+```text
+src/
+├── domain/        순수 모델과 포트 (subway, congestion, tracking, ranking, user, voice ...)
+├── infra/         외부 기술 어댑터 (routing, database, queue, websocket, auth, place, arrival ...)
+├── application/   HTTP 컨트롤러, DTO, 유스케이스 서비스 (route, tracking, travel, ranking, user, voice ...)
+├── common/        공통 예외와 필터, 응답 봉투, KST 시간 유틸
+├── data/subway/   정제된 정적 공공데이터 (stations, edges, transfers ...)
+└── scripts/       시딩, 데이터 정제, 벤치마크
 ```
 
-## Compile and run the project
+`DatabaseModule`과 `PrismaModule`은 `@Global()`이라 기능 모듈이 따로 import하지 않고 저장소를 포트 토큰(`USER_REPOSITORY` 등)으로 주입받습니다.
+
+## 개발 환경
+
+필요한 것: Node.js 20 이상(CI와 배포 이미지는 22), pnpm, PostgreSQL 16(pgvector), Valkey 7.2(음성 큐, 없어도 서버는 뜹니다).
 
 ```bash
-# development
-$ pnpm run start
-
-# watch mode
-$ pnpm run start:dev
-
-# production mode
-$ pnpm run start:prod
+pnpm install
+cp .env.example .env            # 값을 채운다 (키는 커밋하지 않는다)
+pnpm prisma generate
+pnpm prisma migrate deploy      # 빈 DB에 마이그레이션 적용
+pnpm seed:subway                # 지하철 그래프(역, 구간, 환승) 적재
+pnpm start:dev                  # http://localhost:3000, Swagger는 /api/docs
 ```
 
-## Run tests
+주요 환경 변수는 `.env.example`에 설명이 있습니다. `NODE_ENV=production`에서는 개발용 모의 인증(`mock_` 토큰)이 막힙니다.
+
+## 테스트
 
 ```bash
-# unit tests
-$ pnpm run test
-
-# e2e tests
-$ pnpm run test:e2e
-
-# test coverage
-$ pnpm run test:cov
+pnpm test                                       # 단위 테스트 (DB 불필요)
+pnpm test:e2e --runInBand                       # e2e (아래 준비가 필요, 직렬로 실행)
+pnpm test:benchmark                             # 경로 엔진 벤치마크
 ```
+
+- e2e는 **실제 PostgreSQL**(마이그레이션과 `pnpm seed:subway` 적용)과 **Valkey**가 필요합니다. 음성 큐 e2e(`voice-jobs`)는 실제 Valkey와 WebSocket을 씁니다.
+- 병렬로 돌리면 타임아웃으로 일부가 실패하므로 `--runInBand`로 실행합니다.
+- `clerk-auth` e2e는 `CLERK_SECRET_KEY`가 있으면 실제 Clerk 세션으로 동작하고, 같은 사용자 이름이 DB에 남아 있으면 다시 돌릴 때 실패할 수 있습니다.
+- CI(`.github/workflows/ci.yml`)는 Postgres와 Valkey 서비스를 띄워 타입 검사, 빌드, 단위, e2e를 실행합니다.
+
+## 음성 경로 추천 큐
+
+`POST /api/v1/voice/jobs`가 오디오를 `voice-route` 큐(Valkey, BullMQ)에 넣고 `202`로 응답하면, 서버 워커가 AI 서비스의 `subway-voice` 큐에 STT 작업을 보내
+전사문을 받아 경로를 만들고 WebSocket(`voice_result`, `voice_failed`)으로 알립니다. 구조와 제한은 `ARCHITECTURE_DESIGN.md` 3.3절과 `API_SPEC.md` 2.6.2절을 보세요.
 
 ## DB 마이그레이션
 
@@ -73,42 +69,11 @@ $ pnpm run test:cov
 
 기준선 `20261010210000_init`은 Prisma Migrate 도입 시점의 스키마다. 이미 테이블이 있는 운영 DB는 첫 배포에서 `schema.prisma`와 차이가 없음을 확인한 뒤 이 기준선을 적용 완료로 등록한다(SQL은 실행하지 않음). 차이가 있으면 배포가 실패하므로 운영 DB를 `schema.prisma`에 맞춘 뒤 다시 배포한다.
 
-## Deployment
+## 배포
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+`main`에 머지되면 GitHub Actions가 이미지를 만들고 OCI에 배포합니다(`.github/workflows/deploy.yml`). 컨테이너 구성과 환경은
+[sub1s-deploy](https://github.com/z1zone-team/sub1s-deploy)에 있습니다.
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+## 팀 규칙
 
-```bash
-$ pnpm install -g mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+이슈, 브랜치, 커밋, PR 규칙은 sub1s-docs의 `github-workflow.md`를 따릅니다. 서버 시간은 반드시 `src/common/utils/kst.ts`를 거칩니다(`kst-usage.spec.ts`가 검사).

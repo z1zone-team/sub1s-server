@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs';
 import { FareRule } from '../../domain/subway/fare/fare-calculator';
 import { SubwayModule } from '../../domain/subway/subway.module';
 import { SubwayGraphService } from '../../domain/subway/services/subway-graph.service';
+import { CAR_CONGESTION_PREDICTOR } from '../../domain/congestion/ports/ICarCongestionPredictor';
 import {
   CONGESTION_PROVIDER,
   ICongestionProvider,
@@ -47,7 +48,8 @@ import { getSubwayDataPath } from '../../common/utils/subway-data-path';
       },
     },
     {
-      provide: StatisticalCongestionProvider,
+      // 칸별 혼잡도 예측도 같은 통계 모델이 맡는다. 서비스는 구체 클래스가 아니라 이 포트로 받는다
+      provide: CAR_CONGESTION_PREDICTOR,
       useExisting: CONGESTION_PROVIDER,
     },
     DijkstraRouteEngine,
@@ -68,7 +70,7 @@ import { getSubwayDataPath } from '../../common/utils/subway-data-path';
   exports: [
     SUBWAY_ROUTE_ENGINE,
     CONGESTION_PROVIDER,
-    StatisticalCongestionProvider,
+    CAR_CONGESTION_PREDICTOR,
     DijkstraRouteEngine,
     AStarRouteEngine,
     SUBWAY_GRAPH_SOURCE,

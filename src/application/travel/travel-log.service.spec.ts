@@ -5,8 +5,8 @@ import { SubwayGraphService } from '../../domain/subway/services/subway-graph.se
 import { TRACKING_REPOSITORY } from '../../domain/tracking/ports/ITrackingRepository';
 import { TRAVEL_LOG_REPOSITORY } from '../../domain/travel/ports/ITravelLogRepository';
 import { USER_REPOSITORY } from '../../domain/user/ports/IUserRepository';
-import { CryptoService } from '../../infra/security/crypto.service';
-import { SubwayEventsGateway } from '../../infra/websocket/subway-events.gateway';
+import { PAYLOAD_ENCRYPTOR } from '../../domain/travel/ports/IPayloadEncryptor';
+import { RankingNotifier } from './ranking.notifier';
 import { SubwayRouteOptionDto } from '../route/dto/route-search-response.dto';
 import { RouteService } from '../route/route.service';
 import { TravelLogService } from './travel-log.service';
@@ -28,8 +28,8 @@ describe('TravelLogService', () => {
   let mockGraphService: { getGraph: jest.Mock };
   let mockTrackingRepo: { findById: jest.Mock };
   let mockGateway: {
-    sendRankingUpdate: jest.Mock;
-    broadcastRankingChanged: jest.Mock;
+    sendScoreUpdate: jest.Mock;
+    broadcastChanged: jest.Mock;
   };
 
   const testGraph = new SubwayGraph({
@@ -115,8 +115,8 @@ describe('TravelLogService', () => {
     };
 
     mockGateway = {
-      sendRankingUpdate: jest.fn(),
-      broadcastRankingChanged: jest.fn(),
+      sendScoreUpdate: jest.fn(),
+      broadcastChanged: jest.fn(),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -125,10 +125,10 @@ describe('TravelLogService', () => {
         { provide: TRAVEL_LOG_REPOSITORY, useValue: mockTravelLogRepo },
         { provide: USER_REPOSITORY, useValue: mockUserRepo },
         { provide: RouteService, useValue: mockRouteService },
-        { provide: CryptoService, useValue: mockCryptoService },
+        { provide: PAYLOAD_ENCRYPTOR, useValue: mockCryptoService },
         { provide: SubwayGraphService, useValue: mockGraphService },
         { provide: TRACKING_REPOSITORY, useValue: mockTrackingRepo },
-        { provide: SubwayEventsGateway, useValue: mockGateway },
+        { provide: RankingNotifier, useValue: mockGateway },
       ],
     }).compile();
 
@@ -208,12 +208,12 @@ describe('TravelLogService', () => {
       expect(mockCryptoService.encrypt).toHaveBeenCalled();
       expect(mockTravelLogRepo.saveTravelWithScores).toHaveBeenCalled();
       expect(mockUserRepo.upsertPlaceholder).toHaveBeenCalledWith('user-1');
-      expect(mockGateway.sendRankingUpdate).toHaveBeenCalledWith('user-1', {
+      expect(mockGateway.sendScoreUpdate).toHaveBeenCalledWith('user-1', {
         periodKey: expect.stringMatching(/^\d{4}-\d{2}$/),
         currentPoints: 10,
       });
-      expect(mockGateway.broadcastRankingChanged).toHaveBeenCalledTimes(2);
-      expect(mockGateway.broadcastRankingChanged).toHaveBeenCalledWith({
+      expect(mockGateway.broadcastChanged).toHaveBeenCalledTimes(2);
+      expect(mockGateway.broadcastChanged).toHaveBeenCalledWith({
         periodType: 'ALL',
         periodKey: 'ALL',
       });
@@ -393,7 +393,7 @@ describe('TravelLogService', () => {
       expect(mockTravelLogRepo.saveTravelWithScores).toHaveBeenCalledWith(
         expect.objectContaining({ monthlyKey: '2026-11' }),
       );
-      expect(mockGateway.sendRankingUpdate).toHaveBeenCalledWith(
+      expect(mockGateway.sendScoreUpdate).toHaveBeenCalledWith(
         'user-1',
         expect.objectContaining({ periodKey: '2026-11' }),
       );

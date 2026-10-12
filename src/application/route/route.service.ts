@@ -38,7 +38,10 @@ import {
   WalkingService,
   WalkMetrics,
 } from '../../domain/subway/services/walking.service';
-import { StatisticalCongestionProvider } from '../../infra/congestion/statistical-congestion.provider';
+import {
+  CAR_CONGESTION_PREDICTOR,
+  ICarCongestionPredictor,
+} from '../../domain/congestion/ports/ICarCongestionPredictor';
 import { RouteSearchRequestDto } from './dto/route-search-request.dto';
 import { OperationStatusService } from './operation-status.service';
 import {
@@ -67,7 +70,8 @@ export class RouteService {
     @Inject(SUBWAY_ROUTE_ENGINE)
     private readonly routeEngine: ISubwayRouteEngine,
     private readonly graphService: SubwayGraphService,
-    private readonly congestionProvider: StatisticalCongestionProvider,
+    @Inject(CAR_CONGESTION_PREDICTOR)
+    private readonly congestionProvider: ICarCongestionPredictor,
     private readonly walkingService: WalkingService,
     private readonly operationStatus: OperationStatusService,
     @Inject(USER_REPOSITORY)

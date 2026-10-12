@@ -1,8 +1,11 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { BusinessException } from '../../common/exceptions/business.exception';
 import { isWeakAirConditioned } from '../../common/utils/air-conditioning';
 import { SubwayGraphService } from '../../domain/subway/services/subway-graph.service';
-import { StatisticalCongestionProvider } from '../../infra/congestion/statistical-congestion.provider';
+import {
+  CAR_CONGESTION_PREDICTOR,
+  ICarCongestionPredictor,
+} from '../../domain/congestion/ports/ICarCongestionPredictor';
 import { TrainCongestionQueryDto } from './dto/train-congestion-query.dto';
 import {
   CarCongestionDto,
@@ -14,7 +17,8 @@ import { toKstIso } from '../../common/utils/kst';
 export class CongestionService {
   constructor(
     private readonly graphService: SubwayGraphService,
-    private readonly congestionProvider: StatisticalCongestionProvider,
+    @Inject(CAR_CONGESTION_PREDICTOR)
+    private readonly congestionProvider: ICarCongestionPredictor,
   ) {}
 
   async getTrainCongestion(

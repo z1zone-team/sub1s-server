@@ -25,6 +25,11 @@ import { PushTokenRepository } from './repositories/push-token.repository';
 import { SettlementLogRepository } from './repositories/settlement-log.repository';
 import { TravelLogRepository } from './repositories/travel-log.repository';
 
+/**
+ * 전역 모듈 정책: `PrismaModule`과 `DatabaseModule`은 거의 모든 기능이 쓰는 기반이라 `@Global()`이다.
+ * 그래서 기능 모듈은 이 둘을 따로 import하지 않고 저장소를 포트 토큰(`USER_REPOSITORY` 등)으로 주입받는다.
+ * 구체 저장소 클래스는 export하지 않는다. 도메인 모듈(`domain/*`)은 이 모듈을 import하지 않는다
+ */
 @Global()
 @Module({
   imports: [PrismaModule],
@@ -43,10 +48,6 @@ import { TravelLogRepository } from './repositories/travel-log.repository';
       useClass: NotificationSettingsRepository,
     },
     { provide: SETTLEMENT_LOG_REPOSITORY, useClass: SettlementLogRepository },
-    SubwayGraphRepository,
-    UserRepository,
-    RankScoreRepository,
-    TravelLogRepository,
   ],
   exports: [
     SUBWAY_GRAPH_REPOSITORY,
@@ -60,10 +61,6 @@ import { TravelLogRepository } from './repositories/travel-log.repository';
     PUSH_TOKEN_REPOSITORY,
     NOTIFICATION_SETTINGS_REPOSITORY,
     SETTLEMENT_LOG_REPOSITORY,
-    SubwayGraphRepository,
-    UserRepository,
-    RankScoreRepository,
-    TravelLogRepository,
   ],
 })
 export class DatabaseModule {}
