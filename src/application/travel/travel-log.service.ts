@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { BusinessException } from '../../common/exceptions/business.exception';
 import { ScorePolicy } from '../../domain/ranking/models/score-policy';
+import { isRouteMode, RouteMode } from '../../domain/subway/models/route';
 import { SubwayGraphService } from '../../domain/subway/services/subway-graph.service';
 import {
   ITrackingRepository,
@@ -113,6 +114,7 @@ export class TravelLogService {
     let isOnTime = false;
     let rideDurationSec: number | undefined;
     let arrivalDeltaSec: number | undefined;
+    let routeMode: RouteMode | undefined;
     if (dto.sessionId && this.trackingRepo) {
       try {
         const session = await this.trackingRepo.findById(dto.sessionId);
@@ -120,6 +122,9 @@ export class TravelLogService {
           const actualSec = (Date.now() - session.createdAt.getTime()) / 1000;
           const plannedSec = route.totalDurationSec;
           rideDurationSec = Math.round(actualSec);
+          // 사용자가 고른 경로 모드를 이력으로 남긴다 (추천 개인화에 쓴다)
+          const chosenMode = session.routeOption?.mode;
+          if (isRouteMode(chosenMode)) routeMode = chosenMode;
           arrivalDeltaSec = Math.round(actualSec - plannedSec);
           // Within +-5 minutes (+-300 seconds)
           if (Math.abs(actualSec - plannedSec) <= 300) {
@@ -158,6 +163,7 @@ export class TravelLogService {
         totalDistanceKm,
         transferCount,
         earnedPoints,
+        routeMode,
         monthlyKey,
         encrypted,
       });
@@ -191,6 +197,22 @@ export class TravelLogService {
       rideDurationSec,
       arrivalDeltaSec,
     };
+  }
+
+  /**
+   * 사용자가 최근에 고른 경로 모드와 시각(최신순). 추천 개인화가 자주 고르는 모드를 알아내는 데 쓴다.
+   * 모드가 저장되지 않은 이전 기록은 포함하지 않는다
+   */
+  async getRecentRouteChoices(
+    userId: string,
+    limit = 20,
+  ): Promise<Array<{ mode: RouteMode; createdAt: Date }>> {
+    const rows = await this.travelLogRepo.findRecentRouteChoices(userId, limit);
+    return rows.flatMap((row) =>
+      isRouteMode(row.routeMode)
+        ? [{ mode: row.routeMode, createdAt: row.createdAt }]
+        : [],
+    );
   }
 
   async getTimeline(

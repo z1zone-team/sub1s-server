@@ -22,6 +22,8 @@ export interface SaveTravelLogParams {
   totalDistanceKm: number;
   transferCount: number;
   earnedPoints: number;
+  /** 사용자가 안내를 시작할 때 고른 경로 모드. 주행 세션을 못 읽으면 없다 */
+  routeMode?: string | null;
   monthlyKey: string;
   encrypted: {
     ciphertext: string;
@@ -29,6 +31,12 @@ export interface SaveTravelLogParams {
     tag: string;
     wrappedDek: string;
   };
+}
+
+/** 이전 이동에서 고른 경로 모드와 시각. 추천 개인화의 선택 이력 */
+export interface RouteChoiceRecord {
+  routeMode: string;
+  createdAt: Date;
 }
 
 export interface SaveTravelLogResult {
@@ -42,6 +50,8 @@ export interface ITravelLogRepository {
   findTimelineLogs(userId: string, startOfMonth: Date, endOfMonth: Date): Promise<TravelLogWithStations[]>;
   findStatsLogs(userId: string, startDate?: Date): Promise<TravelLogWithStations[]>;
   findLineMapLogs(userId: string, startDate?: Date): Promise<TravelLogLineMapItem[]>;
+  /** 모드가 저장된 최근 이동의 {모드, 시각}. 최신순이고 limit건까지 */
+  findRecentRouteChoices(userId: string, limit: number): Promise<RouteChoiceRecord[]>;
   /** [start, end) 기간에 이동 기록이 있는 사용자별 횟수와 거리 */
   summarizeByUser(start: Date, end: Date): Promise<UserMonthlySummary[]>;
 }

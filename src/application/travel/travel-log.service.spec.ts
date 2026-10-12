@@ -18,6 +18,7 @@ describe('TravelLogService', () => {
     findTimelineLogs: jest.Mock;
     findStatsLogs: jest.Mock;
     findLineMapLogs: jest.Mock;
+    findRecentRouteChoices: jest.Mock;
   };
   let mockUserRepo: {
     upsertPlaceholder: jest.Mock;
@@ -77,6 +78,7 @@ describe('TravelLogService', () => {
       findTimelineLogs: jest.fn().mockResolvedValue([]),
       findStatsLogs: jest.fn().mockResolvedValue([]),
       findLineMapLogs: jest.fn().mockResolvedValue([]),
+      findRecentRouteChoices: jest.fn().mockResolvedValue([]),
     };
 
     mockUserRepo = {
@@ -240,6 +242,79 @@ describe('TravelLogService', () => {
       expect(res.arrivalDeltaSec).toBeLessThanOrEqual(-8);
     });
 
+    describe('route mode history', () => {
+      const session = (overrides: Record<string, unknown> = {}) => ({
+        sessionId: 'sess-mode',
+        userId: 'user-1',
+        createdAt: new Date(Date.now() - 100 * 1000),
+        routeOption: { mode: 'COMFORTABLE' },
+        ...overrides,
+      });
+      const savedMode = () =>
+        mockTravelLogRepo.saveTravelWithScores.mock.calls[0][0].routeMode;
+
+      it('saves the route mode the user chose when starting the trip', async () => {
+        mockTrackingRepo.findById.mockResolvedValueOnce(session());
+
+        await service.createLog('user-1', {
+          originStationId: '02_222',
+          destStationId: '02_221',
+          sessionId: 'sess-mode',
+        });
+
+        expect(savedMode()).toBe('COMFORTABLE');
+      });
+
+      it('leaves the mode empty when there is no session id', async () => {
+        await service.createLog('user-1', {
+          originStationId: '02_222',
+          destStationId: '02_221',
+        });
+
+        expect(savedMode()).toBeUndefined();
+      });
+
+      it('leaves the mode empty when the session cannot be found', async () => {
+        mockTrackingRepo.findById.mockResolvedValueOnce(null);
+
+        await service.createLog('user-1', {
+          originStationId: '02_222',
+          destStationId: '02_221',
+          sessionId: 'sess-missing',
+        });
+
+        expect(savedMode()).toBeUndefined();
+      });
+
+      it("does not take the mode from another user's session", async () => {
+        mockTrackingRepo.findById.mockResolvedValueOnce(
+          session({ userId: 'someone-else' }),
+        );
+
+        await service.createLog('user-1', {
+          originStationId: '02_222',
+          destStationId: '02_221',
+          sessionId: 'sess-mode',
+        });
+
+        expect(savedMode()).toBeUndefined();
+      });
+
+      it('ignores a mode value the app does not know', async () => {
+        mockTrackingRepo.findById.mockResolvedValueOnce(
+          session({ routeOption: { mode: 'SOMETHING_ELSE' } }),
+        );
+
+        await service.createLog('user-1', {
+          originStationId: '02_222',
+          destStationId: '02_221',
+          sessionId: 'sess-mode',
+        });
+
+        expect(savedMode()).toBeUndefined();
+      });
+    });
+
     it('reports a positive arrival delta and no bonus when the ride ran late', async () => {
       mockTrackingRepo.findById.mockResolvedValueOnce({
         sessionId: 'sess-late',
@@ -344,6 +419,38 @@ describe('TravelLogService', () => {
           destStationId: '02_221',
         }),
       ).rejects.toThrow(BusinessException);
+    });
+  });
+
+  describe('getRecentRouteChoices', () => {
+    it('returns the recent modes newest first and drops unknown values', async () => {
+      const newer = new Date('2026-10-12T09:00:00Z');
+      const older = new Date('2026-10-11T09:00:00Z');
+      mockTravelLogRepo.findRecentRouteChoices.mockResolvedValueOnce([
+        { routeMode: 'COMFORTABLE', createdAt: newer },
+        { routeMode: 'LEGACY_MODE', createdAt: older },
+        { routeMode: 'OPTIMAL', createdAt: older },
+      ]);
+
+      const result = await service.getRecentRouteChoices('user-1');
+
+      expect(result).toEqual([
+        { mode: 'COMFORTABLE', createdAt: newer },
+        { mode: 'OPTIMAL', createdAt: older },
+      ]);
+      expect(mockTravelLogRepo.findRecentRouteChoices).toHaveBeenCalledWith(
+        'user-1',
+        20,
+      );
+    });
+
+    it('asks for the requested number of records', async () => {
+      await service.getRecentRouteChoices('user-1', 5);
+
+      expect(mockTravelLogRepo.findRecentRouteChoices).toHaveBeenCalledWith(
+        'user-1',
+        5,
+      );
     });
   });
 
