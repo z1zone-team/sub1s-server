@@ -232,6 +232,42 @@ export class SubwayRouteOptionDto {
   totalSteps?: number;
 }
 
+export class RecommendationMetaDto {
+  @ApiProperty({
+    description:
+      '출발 시각의 상황 (WEEKDAY_MORNING_RUSH 등교와 출근, WEEKDAY_MIDDAY 낮 공강, WEEKDAY_EVENING_RUSH 하교와 퇴근, WEEKDAY_NIGHT, LATE_NIGHT, EARLY_MORNING, WEEKEND_DAYTIME, WEEKEND_OTHER)',
+    example: 'WEEKDAY_MORNING_RUSH',
+  })
+  context!: string;
+
+  @ApiProperty({
+    description:
+      '추천 경로의 가중치를 만든 근거 코드 (PREF_*, PURPOSE_*, CONTEXT_*, HISTORY_*). 앱이 추천 이유 문구를 만든다',
+    example: ['PREF_UNCROWDED', 'CONTEXT_RUSH'],
+    type: [String],
+  })
+  reasons!: string[];
+
+  @ApiProperty({
+    description: '같은 시간대에 고른 모드 이력이 쓰였는지',
+    example: false,
+  })
+  usedHistory!: boolean;
+
+  @ApiProperty({
+    description:
+      '최소 비용을 자주 골랐는지. 서버 엔진은 요금을 가중치로 다루지 못해 앱이 후보를 고를 때 요금을 더 본다',
+    example: false,
+  })
+  fareSensitive!: boolean;
+
+  @ApiProperty({
+    description: '추천 경로에 적용한 가중치',
+    example: { congestion: 2, transferSec: 300 },
+  })
+  weights!: { congestion: number; transferSec: number };
+}
+
 export class RouteSearchResultDto {
   @ApiProperty({
     description: '추천 경로 옵션 목록',
@@ -244,4 +280,11 @@ export class RouteSearchResultDto {
     example: '강남역까지 도보 5분 이동 후 2호선을 탑승하세요.',
   })
   aiBriefingText?: string;
+
+  @ApiPropertyOptional({
+    description:
+      '로그인한 사용자에게만 포함되는 추천 근거. 비로그인이면 추천(PERSONAL) 후보와 이 필드가 모두 없다',
+    type: RecommendationMetaDto,
+  })
+  recommendation?: RecommendationMetaDto;
 }
