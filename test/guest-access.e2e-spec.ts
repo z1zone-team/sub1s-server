@@ -97,6 +97,7 @@ describe('Guest access scope (e2e)', () => {
     ['post', '/api/v1/friends/accept'],
     ['delete', '/api/v1/friends/00000000-0000-0000-0000-000000000000'],
     ['post', '/api/v1/voice/route-recommend'],
+    ['get', '/api/v1/voice/tts/stream'],
   ];
 
   describe('open to guests', () => {
