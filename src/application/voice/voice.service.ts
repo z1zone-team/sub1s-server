@@ -84,9 +84,21 @@ export class VoiceService {
       dto?.transcriptHint,
     );
 
+    return this.recommendFromTranscript(userId, sttResult.transcript, dto);
+  }
+
+  /**
+   * 전사문에서 의도 분석, 경로 탐색, 브리핑까지 처리합니다. 동기 요청(`recommendRouteByVoice`)과
+   * 큐 작업(서버 워커)이 STT 이후의 같은 단계를 공유합니다.
+   */
+  async recommendFromTranscript(
+    userId: string,
+    transcript: string,
+    dto?: Pick<VoiceRouteRecommendRequestDto, 'preferredMode' | 'lat' | 'lng'>,
+  ): Promise<VoiceRouteRecommendResponseDto> {
     // 4. 의도 분석 및 슬롯 필링
     const intent = this.intentParserService.parseIntent(
-      sttResult.transcript,
+      transcript,
       dto?.preferredMode,
     );
 
@@ -156,7 +168,7 @@ export class VoiceService {
     );
 
     return {
-      transcript: sttResult.transcript,
+      transcript,
       interpretedIntent: intent,
       recommendedRoute,
       briefingText: briefing.briefingText,
@@ -164,7 +176,8 @@ export class VoiceService {
     };
   }
 
-  private validateAudioFile(file?: UploadedAudioFile): void {
+  /** 오디오 파일의 존재, 크기(5MB), 형식을 검사합니다. 검증에 실패하면 400입니다. */
+  validateAudioFile(file?: UploadedAudioFile): void {
     if (!file || !file.buffer || file.buffer.length === 0) {
       throw new BadRequestException('오디오 파일(file)이 필요합니다.');
     }

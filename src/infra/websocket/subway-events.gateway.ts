@@ -42,6 +42,18 @@ export interface RankingChangedPayload {
   periodKey: string;
 }
 
+/** 음성 작업이 성공했을 때 요청한 사용자에게만 보내는 신호 */
+export interface VoiceResultPayload {
+  jobId: string;
+  result: unknown;
+}
+
+/** 음성 작업이 실패했을 때 요청한 사용자에게만 보내는 신호 (HTTP 오류 응답과 같은 코드와 메시지) */
+export interface VoiceFailedPayload {
+  jobId: string;
+  error: { code: string; message: string; status: number };
+}
+
 const AUTHENTICATED_ROOM = 'authenticated';
 
 export interface EtaTickPayload {
@@ -308,6 +320,14 @@ export class SubwayEventsGateway
 
   sendOffRouteAlert(userId: string, payload: unknown): void {
     this.emitToUser(userId, 'offroute_alert', payload);
+  }
+
+  sendVoiceResult(userId: string, payload: VoiceResultPayload): void {
+    this.emitToUser(userId, 'voice_result', payload);
+  }
+
+  sendVoiceFailed(userId: string, payload: VoiceFailedPayload): void {
+    this.emitToUser(userId, 'voice_failed', payload);
   }
 
   sendRankingUpdate(userId: string, payload: RankingUpdatePayload): void {
