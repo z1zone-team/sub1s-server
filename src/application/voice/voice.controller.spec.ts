@@ -34,6 +34,15 @@ describe('VoiceController', () => {
       briefingText: '강남역에서 을지로입구역까지 최적 경로입니다.',
       audioTtsUrl: '/api/v1/voice/tts/stream?text=test',
     }),
+    openTtsStream: jest.fn().mockResolvedValue({
+      body: new ReadableStream<Uint8Array>({
+        start(controller) {
+          controller.enqueue(new Uint8Array([1, 2, 3]));
+          controller.close();
+        },
+      }),
+      contentType: 'audio/mpeg',
+    }),
   };
 
   beforeEach(async () => {
@@ -75,5 +84,13 @@ describe('VoiceController', () => {
       sampleFile,
       { preferredMode: 'OPTIMAL' },
     );
+  });
+
+  it('streamTts는 AI 서비스의 오디오를 audio/mpeg 스트림으로 돌려준다', async () => {
+    const file = await controller.streamTts({ text: '안내합니다' });
+
+    expect(voiceService.openTtsStream).toHaveBeenCalledWith('안내합니다');
+    expect(file.getHeaders().type).toBe('audio/mpeg');
+    expect(file.getHeaders().disposition).toContain('inline');
   });
 });

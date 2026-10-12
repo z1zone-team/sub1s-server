@@ -12,7 +12,7 @@ import {
   VoiceRouteRecommendRequestDto,
   VoiceRouteRecommendResponseDto,
 } from './dto';
-import { AiServiceAdapter } from './services/ai-service.adapter';
+import { AiServiceAdapter, TtsStream } from './services/ai-service.adapter';
 import {
   CURRENT_LOCATION,
   IntentParserService,
@@ -56,6 +56,11 @@ export class VoiceService {
     private readonly subwayGraphService: SubwayGraphService,
     private readonly routeService: RouteService,
   ) {}
+
+  /** 브리핑 문장을 음성(MP3) 스트림으로 만든다 */
+  openTtsStream(text: string): Promise<TtsStream> {
+    return this.aiServiceAdapter.openTtsStream(text);
+  }
 
   /**
    * 음성 질의 파일을 수신받아 5초 멱등성 락 검증 후
