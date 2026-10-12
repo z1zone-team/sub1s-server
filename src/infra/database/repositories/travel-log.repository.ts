@@ -2,6 +2,7 @@ import { UserMonthlySummary } from '../../../domain/notification/ports/notificat
 import { Injectable } from '@nestjs/common';
 import {
   ITravelLogRepository,
+  RouteChoiceRecord,
   SaveTravelLogParams,
   SaveTravelLogResult,
   TravelLogLineMapItem,
@@ -65,6 +66,7 @@ export class TravelLogRepository implements ITravelLogRepository {
           totalDistanceKm: params.totalDistanceKm,
           transferCount: params.transferCount,
           earnedPoints: params.earnedPoints,
+          routeMode: params.routeMode ?? null,
           encryptedRoutePayload: params.encrypted.ciphertext,
           iv: params.encrypted.iv,
           authTag: params.encrypted.tag,
@@ -132,6 +134,21 @@ export class TravelLogRepository implements ITravelLogRepository {
         wrappedDek: true,
       },
     });
+  }
+
+  async findRecentRouteChoices(
+    userId: string,
+    limit: number,
+  ): Promise<RouteChoiceRecord[]> {
+    const rows = await this.prisma.travelLog.findMany({
+      where: { userId, routeMode: { not: null } },
+      orderBy: { createdAt: 'desc' },
+      take: limit,
+      select: { routeMode: true, createdAt: true },
+    });
+    return rows.flatMap((row) =>
+      row.routeMode ? [{ routeMode: row.routeMode, createdAt: row.createdAt }] : [],
+    );
   }
 
   async summarizeByUser(start: Date, end: Date): Promise<UserMonthlySummary[]> {

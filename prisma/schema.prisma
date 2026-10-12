@@ -238,6 +238,9 @@ model TravelLog {
   transferCount         Int      @map("transfer_count")
   earnedPoints          Int      @map("earned_points")
 
+  // 사용자가 안내를 시작할 때 고른 경로 모드(OPTIMAL, COMFORTABLE, PERSONAL, CHEAPEST). 추천 개인화의 선택 이력. 세션을 못 읽으면 비어 있다
+  routeMode             String?  @map("route_mode") @db.VarChar(20)
+
   // 개인 민감 위치정보 암호화 저장 (SECURITY.md 3-Tier 하이브리드 암호화 연동)
   encryptedRoutePayload String?  @map("encrypted_route_payload") @db.Text // Base64 AES-256-GCM 암호문 (상세 이동 궤적/정차역 로그)
   iv                    String?  @map("iv") @db.VarChar(32)              // Base64 Nonce/IV (12 bytes)

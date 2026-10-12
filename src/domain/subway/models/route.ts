@@ -1,6 +1,17 @@
 export type RouteMode =
   'OPTIMAL' | 'COMFORTABLE' | 'PERSONAL' | 'CHEAPEST' | 'ONLY_WALK';
 
+export const ROUTE_MODES: readonly RouteMode[] = [
+  'OPTIMAL',
+  'COMFORTABLE',
+  'PERSONAL',
+  'CHEAPEST',
+  'ONLY_WALK',
+];
+
+export const isRouteMode = (value: unknown): value is RouteMode =>
+  typeof value === 'string' && (ROUTE_MODES as readonly string[]).includes(value);
+
 export interface RouteWeights {
   // congestion avoidance weight (wc)
   congestion: number;
