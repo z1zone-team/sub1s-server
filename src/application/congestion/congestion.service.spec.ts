@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { BusinessException } from '../../common/exceptions/business.exception';
 import { SubwayGraph } from '../../domain/subway/models/subway-graph';
 import { SubwayGraphService } from '../../domain/subway/services/subway-graph.service';
-import { StatisticalCongestionProvider } from '../../infra/congestion/statistical-congestion.provider';
+import { CAR_CONGESTION_PREDICTOR } from '../../domain/congestion/ports/ICarCongestionPredictor';
 import { CongestionService } from './congestion.service';
 
 describe('CongestionService', () => {
@@ -74,7 +74,7 @@ describe('CongestionService', () => {
         CongestionService,
         { provide: SubwayGraphService, useValue: mockGraphService },
         {
-          provide: StatisticalCongestionProvider,
+          provide: CAR_CONGESTION_PREDICTOR,
           useValue: mockCongestionProvider,
         },
       ],

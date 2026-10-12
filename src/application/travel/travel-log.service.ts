@@ -22,8 +22,11 @@ import {
   IUserRepository,
   USER_REPOSITORY,
 } from '../../domain/user/ports/IUserRepository';
-import { CryptoService } from '../../infra/security/crypto.service';
-import { SubwayEventsGateway } from '../../infra/websocket/subway-events.gateway';
+import {
+  IPayloadEncryptor,
+  PAYLOAD_ENCRYPTOR,
+} from '../../domain/travel/ports/IPayloadEncryptor';
+import { RankingNotifier } from './ranking.notifier';
 import { RouteService } from '../route/route.service';
 import {
   CreateTravelLogDto,
@@ -67,13 +70,14 @@ export class TravelLogService {
     @Inject(USER_REPOSITORY)
     private readonly userRepo: IUserRepository,
     private readonly routeService: RouteService,
-    private readonly cryptoService: CryptoService,
+    @Inject(PAYLOAD_ENCRYPTOR)
+    private readonly cryptoService: IPayloadEncryptor,
     private readonly graphService: SubwayGraphService,
     @Inject(TRACKING_REPOSITORY)
     @Optional()
     private readonly trackingRepo?: ITrackingRepository,
     @Optional()
-    private readonly gateway?: SubwayEventsGateway,
+    private readonly rankingNotifier?: RankingNotifier,
   ) {}
 
   async createLog(
@@ -169,15 +173,15 @@ export class TravelLogService {
       });
 
     try {
-      this.gateway?.sendRankingUpdate(userId, {
+      this.rankingNotifier?.sendScoreUpdate(userId, {
         periodKey: monthlyKey,
         currentPoints: monthlyScore.totalPoints,
       });
-      this.gateway?.broadcastRankingChanged({
+      this.rankingNotifier?.broadcastChanged({
         periodType: 'MONTHLY',
         periodKey: monthlyKey,
       });
-      this.gateway?.broadcastRankingChanged({
+      this.rankingNotifier?.broadcastChanged({
         periodType: 'ALL',
         periodKey: 'ALL',
       });

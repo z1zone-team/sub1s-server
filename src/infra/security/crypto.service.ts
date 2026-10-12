@@ -1,15 +1,15 @@
 import * as crypto from 'crypto';
 import { Injectable } from '@nestjs/common';
+import {
+  EncryptedDataBundle,
+  IPayloadEncryptor,
+} from '../../domain/travel/ports/IPayloadEncryptor';
 
-export interface EncryptedDataBundle {
-  ciphertext: string; // Base64 AES-256-GCM ciphertext (encrypted_route_payload)
-  iv: string; // Base64 Nonce/IV (12 bytes)
-  tag: string; // Base64 GCM Auth Tag (16 bytes - auth_tag)
-  wrappedDek: string; // Base64 AES-256-CBC wrapped DEK (wrapped_dek)
-}
+// 예전에는 이 파일이 정의했다. 포트로 옮겼지만 import 경로가 바뀌지 않도록 다시 내보낸다
+export type { EncryptedDataBundle };
 
 @Injectable()
-export class CryptoService {
+export class CryptoService implements IPayloadEncryptor {
   // Master Key (32 bytes / 256-bit AES)
   private readonly masterKey: Buffer;
 

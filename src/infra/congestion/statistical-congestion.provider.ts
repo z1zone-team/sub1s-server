@@ -10,7 +10,16 @@ import {
   predictCars,
 } from '../../domain/congestion/services/car-congestion';
 import { mockStationRate } from '../../domain/congestion/services/mock-congestion.model';
+import {
+  CarPrediction,
+  ICarCongestionPredictor,
+  RateSource,
+  StationRate,
+} from '../../domain/congestion/ports/ICarCongestionPredictor';
 import { ICongestionProvider } from '../../domain/subway/ports/ICongestionProvider';
+
+// 예전에는 이 파일이 정의했다. 포트로 옮겼지만 import 경로가 바뀌지 않도록 다시 내보낸다
+export type { CarPrediction, RateSource, StationRate };
 
 export interface CongestionRecordData {
   stationId: string;
@@ -24,24 +33,15 @@ export interface CongestionData {
   records: readonly CongestionRecordData[];
 }
 
-export type RateSource = CongestionSource;
-
-export interface StationRate {
-  ratePercent: number;
-  source: RateSource;
-}
-
-export interface CarPrediction extends StationRate {
-  cars: CarCongestion[];
-}
-
 type RatesByDirection = Map<string, readonly number[]>;
 
 // Predicts how crowded a train is when it leaves a station at a given time. Seoul Metro statistics
 // (lines 1 to 8, 30-minute averages by day type and direction) are used where they exist; everything else
 // (other lines, other stations, hours without statistics) falls back to the ADR-005 model.
 // The result is deterministic: the same input always gives the same congestion.
-export class StatisticalCongestionProvider implements ICongestionProvider {
+export class StatisticalCongestionProvider
+  implements ICongestionProvider, ICarCongestionPredictor
+{
   private readonly index: Record<DayType, Map<string, RatesByDirection>> = {
     WEEKDAY: new Map(),
     SATURDAY: new Map(),
