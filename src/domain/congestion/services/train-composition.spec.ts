@@ -15,11 +15,14 @@ describe('trainCarCount', () => {
     ['09', 6],
     ['UI', 2],
     ['SL', 3],
+    ['AR', 6],
+    ['SB', 6],
+    ['GM', 2],
   ])('호선 %s는 %i칸이다', (lineId, expected) => {
     expect(trainCarCount(lineId)).toBe(expected);
   });
 
-  it.each(['AR', 'SB', 'GJ', 'SD', 'SH', 'UJ', 'GG', 'GM', 'EV', 'GC', 'GA', 'I1', 'I2', 'XX'])(
+  it.each(['GJ', 'SD', 'SH', 'UJ', 'GG', 'EV', 'GC', 'GA', 'I1', 'I2', 'XX'])(
     '공식 값을 확인하지 못한 노선 %s는 칸 수를 모른다(undefined)',
     (lineId) => {
       expect(trainCarCount(lineId)).toBeUndefined();
@@ -85,7 +88,7 @@ describe('trainCarCount', () => {
     ) as { id: string }[];
     const ids = new Set(lines.map((line) => line.id));
 
-    for (const lineId of ['01', '02', '03', '04', '05', '06', '07', '08', '09', 'UI', 'SL']) {
+    for (const lineId of ['01', '02', '03', '04', '05', '06', '07', '08', '09', 'UI', 'SL', 'AR', 'SB', 'GM']) {
       expect(ids.has(lineId)).toBe(true);
     }
   });
