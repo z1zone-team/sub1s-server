@@ -47,7 +47,8 @@ describe('Voice Route Recommend (e2e)', () => {
       .useValue({
         canActivate: (context: any) => {
           context.switchToHttp().getRequest().user = {
-            id: '00000000-0000-0000-0000-000000000001',
+            // `voice-jobs.e2e-spec.ts`가 같은 Valkey에서 쓰는 MOCK_USER_ID와 락 키가 겹치지 않게 전용 사용자를 쓴다
+            id: '00000000-0000-0000-0000-0000000e2e02',
             clerkId: 'user_mock_test_1',
             nickname: '테스트유저',
           };
