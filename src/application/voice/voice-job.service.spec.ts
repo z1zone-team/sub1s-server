@@ -211,6 +211,33 @@ describe('VoiceJobService', () => {
       });
     });
 
+    it('작업을 읽은 뒤 상태를 읽기 전에 끝났어도 최신 결과로 COMPLETED를 돌려준다', async () => {
+      const result = { transcript: '강남에서 사당까지' };
+      // 처음 읽을 때는 아직 진행 중이라 returnvalue가 없고, 상태를 읽을 때는 이미 끝나 있다
+      const stale = jobIn('completed');
+      const fresh = jobIn('completed', {
+        returnvalue: { ok: true, result },
+      });
+      queue.getJob.mockResolvedValueOnce(stale).mockResolvedValueOnce(fresh);
+
+      await expect(service.getStatus('user-1', 'job-1')).resolves.toEqual({
+        jobId: 'job-1',
+        status: 'COMPLETED',
+        result,
+      });
+    });
+
+    it('끝난 작업을 다시 읽다가 사라졌으면 알 수 없는 실패이다', async () => {
+      queue.getJob
+        .mockResolvedValueOnce(jobIn('completed'))
+        .mockResolvedValueOnce(undefined);
+
+      await expect(service.getStatus('user-1', 'job-1')).resolves.toMatchObject({
+        status: 'FAILED',
+        error: { code: 'VOICE_JOB_FAILED' },
+      });
+    });
+
     it('다른 사용자의 작업은 없는 것과 똑같이 404이다', async () => {
       queue.getJob.mockResolvedValue(jobIn('completed'));
 
