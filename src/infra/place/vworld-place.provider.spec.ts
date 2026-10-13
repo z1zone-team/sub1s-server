@@ -175,4 +175,164 @@ describe('VWorldPlaceProvider', () => {
 
     expect(await provider('k').search('교보타워', 10)).toEqual([]);
   });
+  describe('주소 검색', () => {
+    const roadItem = (building: string) => ({
+      id: '1',
+      address: {
+        zipcode: '12762',
+        category: 'ROAD',
+        road: '경기도 광주시 문화로 67-1 (경안동,한솔빌라)',
+        parcel: '경안동 167-42',
+        bldnm: '한솔빌라',
+        bldnmdc: building,
+      },
+      point: { x: '127.25283142566201', y: '37.40904320974688' },
+    });
+    const urlOf = (call: number) =>
+      new URL(fetchMock.mock.calls[call][0] as string).searchParams;
+
+    it('도로명 주소는 ADDRESS(ROAD)로 찾고 주소를 이름으로 쓴다', async () => {
+      respond({
+        response: { status: 'OK', result: { items: [roadItem('A동')] } },
+      });
+
+      const places = await provider('secret').search('문화로 67-1', 5);
+
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+      expect(Object.fromEntries(urlOf(0))).toMatchObject({
+        type: 'ADDRESS',
+        category: 'ROAD',
+        query: '문화로 67-1',
+      });
+      expect(places).toEqual([
+        {
+          name: '경기도 광주시 문화로 67-1',
+          address: '경안동 167-42 한솔빌라',
+          category: '도로명주소',
+          lat: 37.40904320974688,
+          lng: 127.25283142566201,
+        },
+      ]);
+    });
+
+    it('같은 주소가 동마다 나오면 하나로 합친다', async () => {
+      respond({
+        response: {
+          status: 'OK',
+          result: {
+            items: [roadItem('A동'), roadItem('B동'), roadItem('C동')],
+          },
+        },
+      });
+
+      const places = await provider('secret').search('문화로 67-1', 5);
+
+      expect(places).toHaveLength(1);
+    });
+
+    it('합친 뒤에도 limit개가 남도록 limit보다 넉넉히 요청한다', async () => {
+      respond({ response: { status: 'NOT_FOUND' } });
+
+      await provider('secret').search('문화로 67-1', 5);
+
+      expect(urlOf(0).get('size')).toBe('15');
+    });
+
+    it('지번 주소는 ADDRESS(PARCEL)로 찾고 지번을 이름으로 쓴다', async () => {
+      respond({
+        response: {
+          status: 'OK',
+          result: {
+            items: [
+              {
+                address: {
+                  category: 'PARCEL',
+                  road: '허준로 23',
+                  parcel: '서울특별시 강서구 가양동 1460',
+                  bldnm: '한강아파트',
+                },
+                point: { x: '126.8448', y: '37.5711' },
+              },
+            ],
+          },
+        },
+      });
+
+      const places = await provider('secret').search('가양동 1460', 5);
+
+      expect(urlOf(0).get('category')).toBe('PARCEL');
+      expect(places).toEqual([
+        {
+          name: '서울특별시 강서구 가양동 1460',
+          address: '허준로 23 한강아파트',
+          category: '지번주소',
+          lat: 37.5711,
+          lng: 126.8448,
+        },
+      ]);
+    });
+
+    it('주소 검색 결과가 limit을 넘으면 자른다', async () => {
+      const items = [1, 2, 3, 4].map((n) => ({
+        address: { road: `경기도 광주시 문화로 ${n}`, parcel: '경안동', bldnm: '' },
+        point: { x: '127.2', y: '37.4' },
+      }));
+      respond({ response: { status: 'OK', result: { items } } });
+
+      expect(await provider('secret').search('문화로 1', 2)).toHaveLength(2);
+    });
+
+    it('주소로 못 찾으면 장소 이름 검색(PLACE)으로 대체한다', async () => {
+      fetchMock
+        .mockResolvedValueOnce({
+          ok: true,
+          status: 200,
+          json: async () => ({ response: { status: 'NOT_FOUND' } }),
+        })
+        .mockResolvedValueOnce({
+          ok: true,
+          status: 200,
+          json: async () => ({ response: { status: 'OK', result: { items: [item] } } }),
+        });
+
+      const places = await provider('secret').search('강남대로 465', 5);
+
+      expect(fetchMock).toHaveBeenCalledTimes(2);
+      expect(urlOf(0).get('type')).toBe('ADDRESS');
+      expect(urlOf(1).get('type')).toBe('PLACE');
+      expect(places.map((place) => place.name)).toEqual(['강남 교보타워']);
+    });
+
+    it('번지만 있는 입력은 V-World를 부르지 않는다', async () => {
+      expect(await provider('secret').search('67-1', 5)).toEqual([]);
+      expect(fetchMock).not.toHaveBeenCalled();
+    });
+
+    it('주소가 아닌 입력은 지금처럼 PLACE로만 찾는다', async () => {
+      respond({ response: { status: 'NOT_FOUND' } });
+
+      await provider('secret').search('서울시청', 5);
+
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+      expect(urlOf(0).get('type')).toBe('PLACE');
+      expect(urlOf(0).has('category')).toBe(false);
+    });
+
+    it('좌표가 없는 항목과 주소가 비어 있는 항목은 버린다', async () => {
+      respond({
+        response: {
+          status: 'OK',
+          result: {
+            items: [
+              { address: { road: '경기도 광주시 문화로 67-1' }, point: { x: 'x', y: 'y' } },
+              { address: { road: '' }, point: { x: '127.2', y: '37.4' } },
+              roadItem('A동'),
+            ],
+          },
+        },
+      });
+
+      expect(await provider('secret').search('문화로 67-1', 5)).toHaveLength(1);
+    });
+  });
 });
