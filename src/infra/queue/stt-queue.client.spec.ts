@@ -117,10 +117,21 @@ describe('SttQueueClient', () => {
     await expectUnavailable(make().transcribe(Buffer.from('a')));
   });
 
-  it('전사문이 비어 있으면 503이다', async () => {
+  it('전사문이 비어 있으면 AI 고장이 아니라 422 VOICE_NO_SPEECH이다', async () => {
     mockQueue.add.mockResolvedValue(jobReturning({ transcript: '   ' }));
 
-    await expectUnavailable(make().transcribe(Buffer.from('a')));
+    await expect(make().transcribe(Buffer.from('a'))).rejects.toMatchObject({
+      errorCode: 'VOICE_NO_SPEECH',
+      status: 422,
+    });
+  });
+
+  it('전사문이 아예 빈 문자열이어도 VOICE_NO_SPEECH이다', async () => {
+    mockQueue.add.mockResolvedValue(jobReturning({ transcript: '' }));
+
+    await expect(make().transcribe(Buffer.from('a'))).rejects.toMatchObject({
+      errorCode: 'VOICE_NO_SPEECH',
+    });
   });
 
   it('결과 형식이 다르면 503이다', async () => {

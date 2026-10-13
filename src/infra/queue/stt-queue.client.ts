@@ -41,12 +41,14 @@ export class SttQueueClient implements OnModuleDestroy {
   }
 
   /**
-   * 오디오를 전사한다. AI 워커가 없거나 시간 안에 끝나지 않거나 결과가 비면 503이다.
+   * 오디오를 전사한다. AI 워커가 없거나 시간 안에 끝나지 않거나 결과 형식이 다르면 503이다.
+   * 말소리가 없어 전사문이 비면 `VOICE_NO_SPEECH`(422)이다(AI 고장이 아니라 다시 말하면 되는 경우).
    * 오디오는 큐(Valkey 메모리)에 base64로 담기므로 끝난 작업은 짧게만 보관한다
    */
   async transcribe(audio: Buffer): Promise<QueuedSttResult> {
     const { queue, events } = this.ensureQueue();
     let jobId: string | undefined;
+    let result: unknown;
     try {
       const job = await queue.add(
         'stt',
@@ -58,17 +60,14 @@ export class SttQueueClient implements OnModuleDestroy {
         },
       );
       jobId = job.id;
-      const result: unknown = await job.waitUntilFinished(
-        events,
-        this.timeoutMs,
-      );
-      return this.parse(result);
+      result = await job.waitUntilFinished(events, this.timeoutMs);
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : String(error);
       this.logger.warn(`STT queue job ${jobId ?? '-'} failed: ${message}`);
       if (jobId) await this.discard(queue, jobId);
       throw this.unavailable();
     }
+    return this.parse(result);
   }
 
   async onModuleDestroy(): Promise<void> {
@@ -83,12 +82,13 @@ export class SttQueueClient implements OnModuleDestroy {
       error?: unknown;
     } | null;
     if (!body || body.error || typeof body.transcript !== 'string') {
-      throw new Error(
+      this.logger.warn(
         `unexpected STT result: ${JSON.stringify(body)?.slice(0, 120)}`,
       );
+      throw this.unavailable();
     }
     const transcript = body.transcript.trim();
-    if (!transcript) throw new Error('empty transcript');
+    if (!transcript) throw this.noSpeech();
     return {
       transcript,
       durationSec:
@@ -123,6 +123,14 @@ export class SttQueueClient implements OnModuleDestroy {
       );
     }
     return { queue: this.queue, events: this.events };
+  }
+
+  private noSpeech(): BusinessException {
+    return new BusinessException(
+      'VOICE_NO_SPEECH',
+      '말소리가 잘 들리지 않았어요. 조용한 곳에서 역 이름을 또박또박 말씀해 주세요.',
+      HttpStatus.UNPROCESSABLE_ENTITY,
+    );
   }
 
   private unavailable(): BusinessException {
