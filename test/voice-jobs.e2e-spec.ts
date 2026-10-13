@@ -21,6 +21,9 @@ import { MOCK_USER_ID } from '../src/infra/auth/mock-auth.guard';
  * AI 서비스의 STT 워커만 같은 큐를 소비하는 가짜 BullMQ 워커로 대신한다.
  */
 describe('Voice jobs (e2e)', () => {
+  // 실제 Valkey, BullMQ, WebSocket을 쓰고 CI에서는 jest 워커가 병렬로 돌아 5초 기본값으로는 모자란다
+  jest.setTimeout(30000);
+
   const VALKEY_HOST = process.env.VALKEY_HOST ?? '127.0.0.1';
   const VALKEY_PORT = process.env.VALKEY_PORT ?? '6379';
   const suffix = randomUUID().slice(0, 8);
@@ -178,7 +181,7 @@ describe('Voice jobs (e2e)', () => {
       if (value === undefined) delete process.env[key];
       else process.env[key] = value;
     }
-  });
+  }, 30000);
 
   beforeEach(async () => {
     aiBehavior = 'ok';
@@ -224,7 +227,7 @@ describe('Voice jobs (e2e)', () => {
 
     const polled = await status(jobId).expect(200);
 
-    expect(polled.body.data.status).toBe('COMPLETED');
+    expect(polled.body.data).toMatchObject({ status: 'COMPLETED', result: event.result });
     expect(polled.body.data.result).toEqual(event.result);
   });
 
@@ -238,7 +241,8 @@ describe('Voice jobs (e2e)', () => {
     expect(early.body.data.result).toBeUndefined();
 
     const done = await untilFinished(jobId);
-    expect(done.body.data.status).toBe('COMPLETED');
+    // 실패하면 오류 코드와 메시지가 함께 보이도록 객체째로 비교한다 (CI에서 원인을 바로 알 수 있게)
+    expect(done.body.data).toMatchObject({ status: 'COMPLETED' });
   });
 
   it('역을 찾지 못하면 voice_failed로 같은 오류 코드와 메시지를 보낸다', async () => {
