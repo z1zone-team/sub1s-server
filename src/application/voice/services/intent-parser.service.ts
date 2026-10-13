@@ -3,6 +3,7 @@ import { BusinessException } from '../../../common/exceptions/business.exception
 import { RouteMode } from '../../../domain/subway/models/route';
 import { SubwayGraphService } from '../../../domain/subway/services/subway-graph.service';
 import { InterpretedIntentDto } from '../dto/voice-route-recommend-response.dto';
+import { StationNameMatcher } from './station-name-matcher';
 
 /** 출발지를 말하지 않았을 때 의도에 쓰는 표시 이름 */
 export const CURRENT_LOCATION = '현재 위치';
@@ -10,6 +11,7 @@ export const CURRENT_LOCATION = '현재 위치';
 @Injectable()
 export class IntentParserService {
   private readonly logger = new Logger(IntentParserService.name);
+  private matcher?: StationNameMatcher;
 
   constructor(private readonly graphService: SubwayGraphService) {}
 
@@ -46,7 +48,14 @@ export class IntentParserService {
     originStationName: string | null;
     destStationName: string;
   } {
-    // 1. 역명 사전 기반 검색 (가장 긴 역명 우선 매칭)
+    // 1. "A에서 B까지" 꼴이면 표지로 출발 구간과 도착 구간을 나눠 구간마다 가장 가까운 역을 찾는다.
+    //    구간 안에서는 공백을 지우고 비교한다(Whisper는 이름 안에 공백을 넣기도 한다: `광흥 창역`, `동두천 중앙`).
+    //    정확히 일치하는 이름은 거리 0이라 같은 결과이고, 이름을 잘못 알아들은 경우만 보정된다
+    const corrected = this.resolveAroundMarkers(text.replace(/\s+/g, ''));
+    if (corrected) return corrected;
+
+    // 2. 역명 사전 기반 검색 (가장 긴 역명 우선 매칭)
+    // 공백을 지우지 않은 원래 문장에서 찾는다. 지우면 단어 경계를 넘는 우연한 일치가 생긴다(`홍제에서 초당` → `에서초당`의 `서초`)
     const matchedStations = this.findKnownStationsInText(text);
     if (matchedStations.length >= 2) {
       return {
@@ -60,6 +69,15 @@ export class IntentParserService {
       const only = matchedStations[0];
       const originOnly = new RegExp(`${only}역?\s*(?:에서|부터)`).test(text);
       if (!originOnly) {
+        // "에서"를 말했는데 출발역을 찾지 못했으면(이름을 잘못 알아들은 것) 조용히 현재 위치에서 출발한 것으로
+        // 처리하지 않고 알아듣지 못했다고 알린다. "여기에서", "지금" 같은 현재 위치 표현은 그대로 둔다
+        if (this.saidUnresolvedOrigin(text)) {
+          throw new BusinessException(
+            'VOICE_INTENT_NOT_UNDERSTOOD',
+            '출발역을 알아듣지 못했어요. 역 이름을 또박또박 말씀해 주세요.',
+            HttpStatus.UNPROCESSABLE_ENTITY,
+          );
+        }
         return { originStationName: null, destStationName: only };
       }
     }
@@ -107,6 +125,72 @@ export class IntentParserService {
       '어디로 갈지 알아듣지 못했어요. 역 이름을 말씀해 주세요.',
       HttpStatus.UNPROCESSABLE_ENTITY,
     );
+  }
+
+  /** 출발 표지("에서", "부터")가 있는데 그 앞이 현재 위치를 뜻하는 말이 아닌지 */
+  private saidUnresolvedOrigin(text: string): boolean {
+    if (!/(?:에서|부터)/.test(text)) return false;
+    return !/(?:여기|지금|현재|이곳|내\s*위치)\s*(?:에서|부터)?/.test(text.split(/에서|부터/)[0] + '에서');
+  }
+
+  /**
+   * "A역에서 B역까지" 꼴에서 표지(에서, 부터, 까지, 으로) 앞의 이름을 역 사전에서 가장 가까운 역으로 찾습니다.
+   * 두 역을 모두 찾고 서로 다를 때만 돌려줍니다. 찾지 못하면 null이라 기존 방식으로 넘어갑니다.
+   */
+  private resolveAroundMarkers(compact: string): {
+    originStationName: string;
+    destStationName: string;
+  } | null {
+    const originMarker = /역?(?:에서|부터)/.exec(compact);
+    if (!originMarker) return null;
+
+    const originRegion = compact.slice(0, originMarker.index);
+    const rest = compact.slice(originMarker.index + originMarker[0].length);
+    const destEnd = this.destinationEnd(rest);
+    if (destEnd < 0) return null;
+    const destRegion = rest.slice(0, destEnd);
+
+    const matcher = this.stationMatcher();
+    const origin = matcher.closestAtEnd(originRegion);
+    const dest = matcher.closestAtEnd(destRegion);
+    if (!origin || !dest || origin.name === dest.name) return null;
+
+    for (const [said, found] of [
+      [originRegion, origin],
+      [destRegion, dest],
+    ] as const) {
+      if (found.distance > 0) {
+        this.logger.log(
+          `Corrected station in voice text: "${said}" -> "${found.name}" (distance ${found.distance})`,
+        );
+      }
+    }
+    return {
+      originStationName: origin.name,
+      destStationName: dest.name,
+    };
+  }
+
+  /** 도착 구간이 끝나는 위치. "까지"를 먼저 보고, 없으면 "으로", 마지막으로 "로" */
+  private destinationEnd(rest: string): number {
+    for (const end of ['까지', '으로']) {
+      const index = rest.indexOf(end);
+      if (index > 0) return index;
+    }
+    return rest.lastIndexOf('로');
+  }
+
+  private stationMatcher(): StationNameMatcher {
+    if (!this.matcher) {
+      const graph = this.graphService.getGraph();
+      const names: string[] = [];
+      for (let i = 0; i < graph.stationCount; i++) {
+        const pure = this.normalizeStationName(graph.station(i).stationName);
+        if (pure.length >= 2) names.push(pure);
+      }
+      this.matcher = new StationNameMatcher(names);
+    }
+    return this.matcher;
   }
 
   /**
