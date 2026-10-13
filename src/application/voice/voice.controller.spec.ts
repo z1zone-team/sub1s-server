@@ -16,26 +16,6 @@ describe('VoiceController', () => {
   };
 
   const mockVoiceService = {
-    recommendRouteByVoice: jest.fn().mockResolvedValue({
-      transcript: '강남역에서 을지로입구역까지',
-      interpretedIntent: {
-        originStationName: '강남',
-        destStationName: '을지로입구',
-        preferredMode: 'OPTIMAL',
-        reason: '최적 경로',
-      },
-      recommendedRoute: {
-        mode: 'OPTIMAL',
-        totalDurationSec: 2500,
-        totalDistanceKm: 18.0,
-        totalFare: 1600,
-        transferCount: 0,
-        estimatedArrivalTimestamp: '2026-10-06T12:00:00Z',
-        segments: [],
-      },
-      briefingText: '강남역에서 을지로입구역까지 최적 경로입니다.',
-      audioTtsUrl: '/api/v1/voice/tts/stream?text=test',
-    }),
     openTtsStream: jest.fn().mockResolvedValue({
       body: new ReadableStream<Uint8Array>({
         start(controller) {
@@ -74,32 +54,6 @@ describe('VoiceController', () => {
     controller = module.get<VoiceController>(VoiceController);
     voiceService = module.get<VoiceService>(VoiceService);
     voiceJobService = module.get<VoiceJobService>(VoiceJobService);
-  });
-
-  it('should delegate recommendRoute call to VoiceService', async () => {
-    const sampleFile: UploadedAudioFile = {
-      fieldname: 'file',
-      originalname: 'test.mp3',
-      encoding: '7bit',
-      mimetype: 'audio/mpeg',
-      size: 500,
-      buffer: Buffer.from('audio-data'),
-    };
-
-    const result = await controller.recommendRoute(
-      mockUser,
-      sampleFile,
-      { preferredMode: 'OPTIMAL' },
-    );
-
-    expect(result.success).toBe(true);
-    expect(result.data.transcript).toBe('강남역에서 을지로입구역까지');
-    expect(result.timestamp).toMatch(/\+09:00$/);
-    expect(voiceService.recommendRouteByVoice).toHaveBeenCalledWith(
-      mockUser.id,
-      sampleFile,
-      { preferredMode: 'OPTIMAL' },
-    );
   });
 
   it('streamTts는 AI 서비스의 오디오를 audio/mpeg 스트림으로 돌려준다', async () => {

@@ -6,7 +6,6 @@ import { WebsocketModule } from '../../infra/websocket/websocket.module';
 import { RouteModule } from '../route/route.module';
 import { AiServiceAdapter } from './services/ai-service.adapter';
 import { IntentParserService } from './services/intent-parser.service';
-import { VoiceLockService } from './services/voice-lock.service';
 import { VoiceController } from './voice.controller';
 import { VoiceJobService } from './voice-job.service';
 import { VoicePipelineProcessor } from './voice-pipeline.processor';
@@ -18,13 +17,12 @@ import { VoiceService } from './voice.service';
   controllers: [VoiceController],
   providers: [
     VoiceService,
-    VoiceLockService,
     AiServiceAdapter,
     IntentParserService,
     VoiceJobService,
     VoicePipelineProcessor,
     { provide: VoiceResultNotifier, useExisting: WebsocketVoiceResultNotifier },
   ],
-  exports: [VoiceService, VoiceLockService],
+  exports: [VoiceService],
 })
 export class VoiceModule {}
