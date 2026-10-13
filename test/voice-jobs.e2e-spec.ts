@@ -84,10 +84,19 @@ describe('Voice jobs (e2e)', () => {
         resolvePromise(early as T);
         return;
       }
-      const timer = setTimeout(
-        () => reject(new Error(`${event} for ${jobId} not received`)),
-        15000,
-      );
+      const timer = setTimeout(async () => {
+        // 진단: 이벤트가 안 올 때 작업과 소켓, 큐가 어떤 상태인지 함께 알린다
+        let detail = '';
+        try {
+          const polled = await status(jobId);
+          const counts = async (name: string) =>
+            `${name}: wait=${await redis.llen(`bull:${name}:wait`)} active=${await redis.llen(`bull:${name}:active`)} completed=${await redis.zcard(`bull:${name}:completed`)} failed=${await redis.zcard(`bull:${name}:failed`)}`;
+          detail = ` | GET=${JSON.stringify(polled.body.data).slice(0, 200)} | socket.connected=${socket.connected} id=${socket.id} | ${await counts(PIPELINE_QUEUE)} | ${await counts(AI_QUEUE)} | receivedKeys=${[...received.keys()].join(',')}`;
+        } catch (error) {
+          detail = ` | diagnostics failed: ${String(error)}`;
+        }
+        reject(new Error(`${event} for ${jobId} not received${detail}`));
+      }, 15000);
       const handler = (payload: { jobId: string }) => {
         if (payload.jobId !== jobId) return;
         clearTimeout(timer);
