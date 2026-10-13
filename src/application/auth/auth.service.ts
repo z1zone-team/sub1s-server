@@ -8,7 +8,10 @@ import { AuthSyncRequestDto } from './dto/auth-sync-request.dto';
 import { AuthSyncResponseDto } from './dto/auth-sync-response.dto';
 import { UserProfileResponseDto } from './dto/user-profile-response.dto';
 import { toKstIso } from '../../common/utils/kst';
-import { isSameNickname } from '../../domain/user/models/nickname';
+import {
+  isSameNickname,
+  sanitizeNickname,
+} from '../../domain/user/models/nickname';
 
 @Injectable()
 export class AuthService {
@@ -22,20 +25,22 @@ export class AuthService {
     dto?: AuthSyncRequestDto,
   ): Promise<AuthSyncResponseDto> {
     let user = await this.userRepo.findById(authUser.id);
+    // 앱이 보내는 이름(인증 서비스의 이름)은 닉네임 규칙을 모르므로 규칙에 맞게 다듬는다
+    const syncedNickname = sanitizeNickname(dto?.nickname);
 
     if (!user) {
       user = await this.userRepo.upsertByClerkId({
         clerkId: authUser.clerkId,
-        nickname: dto?.nickname || authUser.nickname,
+        nickname: syncedNickname || authUser.nickname,
         profileImageUrl: dto?.profileImageUrl || authUser.profileImageUrl || null,
       });
     } else {
       if (
-        dto?.nickname &&
+        syncedNickname &&
         !user.nicknameCustomized &&
-        !isSameNickname(dto.nickname, user.nickname)
+        !isSameNickname(syncedNickname, user.nickname)
       ) {
-        user = await this.userRepo.syncNickname(user.id, dto.nickname);
+        user = await this.userRepo.syncNickname(user.id, syncedNickname);
       }
       if (dto?.profileImageUrl) {
         user = await this.userRepo.updateUser(user.id, {

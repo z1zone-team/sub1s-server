@@ -91,6 +91,55 @@ describe('AuthService', () => {
       expect(result.nickname).toBe('새클러크이름');
     });
 
+    it('turns spaces in the Clerk name into underscores when applying it', async () => {
+      userRepo.findById.mockResolvedValueOnce(existingUser);
+      userRepo.syncNickname.mockResolvedValueOnce({ ...existingUser, nickname: '수현_박' });
+
+      await service.syncUser(mockAuthUser, { nickname: '수현 박' });
+
+      expect(userRepo.syncNickname).toHaveBeenCalledWith('user-uuid-1', '수현_박');
+    });
+
+    it('repairs a stored nickname that has a space when the user never chose one', async () => {
+      userRepo.findById.mockResolvedValueOnce({ ...existingUser, nickname: '수현 박' });
+      userRepo.syncNickname.mockResolvedValueOnce({ ...existingUser, nickname: '수현_박' });
+
+      const result = await service.syncUser(mockAuthUser, { nickname: '수현 박' });
+
+      expect(userRepo.syncNickname).toHaveBeenCalledWith('user-uuid-1', '수현_박');
+      expect(result.nickname).toBe('수현_박');
+    });
+
+    it('does not write again once the sanitized nickname is already stored', async () => {
+      userRepo.findById.mockResolvedValueOnce({ ...existingUser, nickname: '수현_박' });
+
+      await service.syncUser(mockAuthUser, { nickname: '수현 박' });
+
+      expect(userRepo.syncNickname).not.toHaveBeenCalled();
+    });
+
+    it('creates a new user with the sanitized Clerk name', async () => {
+      userRepo.findById.mockResolvedValueOnce(null);
+      userRepo.upsertByClerkId.mockResolvedValueOnce({ ...existingUser, nickname: '수현_박' });
+
+      await service.syncUser(mockAuthUser, { nickname: '수현 박' });
+
+      expect(userRepo.upsertByClerkId).toHaveBeenCalledWith(
+        expect.objectContaining({ nickname: '수현_박' }),
+      );
+    });
+
+    it('falls back to the auth user nickname when the Clerk name cannot be a nickname', async () => {
+      userRepo.findById.mockResolvedValueOnce(null);
+      userRepo.upsertByClerkId.mockResolvedValueOnce({ ...existingUser });
+
+      await service.syncUser(mockAuthUser, { nickname: '!!' });
+
+      expect(userRepo.upsertByClerkId).toHaveBeenCalledWith(
+        expect.objectContaining({ nickname: mockAuthUser.nickname }),
+      );
+    });
+
     it('keeps the nickname the user chose', async () => {
       userRepo.findById.mockResolvedValueOnce({
         ...existingUser,
