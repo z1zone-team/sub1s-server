@@ -148,7 +148,10 @@ export class VoiceJobService {
 
     const state = await job.getState();
     if (state === 'completed') {
-      const outcome = job.returnvalue as
+      // 작업을 읽은 뒤 상태를 읽기 전에 끝났다면 메모리의 `returnvalue`는 진행 중일 때의 빈 값이다.
+      // 끝난 것이 확인됐으니 다시 읽어 최신 결과를 쓴다(그렇지 않으면 성공한 작업이 실패로 보인다)
+      const finished = await this.refetchFinished(job, jobId);
+      const outcome = finished.returnvalue as
         | VoiceJobOutcome<VoiceRouteRecommendResponseDto>
         | undefined;
       if (outcome?.ok) {
@@ -164,6 +167,20 @@ export class VoiceJobService {
       return { jobId, status: 'FAILED', error: this.unknownFailure() };
     }
     return { jobId, status: state === 'active' ? 'PROCESSING' : 'QUEUED' };
+  }
+
+  /** 끝난 작업의 결과를 최신 상태로 읽는다. 이미 결과가 있으면 다시 읽지 않고, 다시 읽지 못하면 있는 값을 쓴다 */
+  private async refetchFinished(
+    job: VoicePipelineJob,
+    jobId: string,
+  ): Promise<Pick<VoicePipelineJob, 'returnvalue'>> {
+    if (job.returnvalue !== undefined && job.returnvalue !== null) return job;
+    try {
+      return (await this.queue.getJob(jobId)) ?? job;
+    } catch (error: unknown) {
+      this.logQueueError('lookup', error);
+      return job;
+    }
   }
 
   private unknownFailure(): VoiceJobError {
