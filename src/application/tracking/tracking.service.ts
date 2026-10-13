@@ -19,7 +19,6 @@ import {
   TRACKING_REPOSITORY,
 } from '../../domain/tracking/ports/ITrackingRepository';
 import { OffRouteDetector } from '../../domain/tracking/services/offroute-detector.service';
-import { SubwayEventsGateway } from '../../infra/websocket/subway-events.gateway';
 import { PathSegmentDto } from '../route/dto/route-search-response.dto';
 import { RouteService } from '../route/route.service';
 import {
@@ -29,6 +28,7 @@ import {
   StartTrackingRequestDto,
   TrackingSessionDto,
 } from './dto';
+import { OffRouteNotifier } from './off-route.notifier';
 
 /** 좌표가 이 거리 안의 역 근처일 때만 위치를 판단한다 */
 const POSITION_RADIUS_KM = 0.3;
@@ -48,7 +48,7 @@ export class TrackingService {
     private readonly routeService: RouteService,
     private readonly walkingService: WalkingService,
     @Optional()
-    private readonly subwayEventsGateway?: SubwayEventsGateway,
+    private readonly offRouteNotifier?: OffRouteNotifier,
   ) {}
 
   async startTracking(
@@ -258,7 +258,7 @@ export class TrackingService {
     };
 
     try {
-      this.subwayEventsGateway?.sendOffRouteAlert(session.userId, alertDto);
+      this.offRouteNotifier?.sendOffRouteAlert(session.userId, alertDto);
     } catch (err) {
       this.logger.warn(`Failed to emit offroute alert to websocket: ${err}`);
     }

@@ -5,8 +5,8 @@ import { SubwayGraphService } from '../../domain/subway/services/subway-graph.se
 import { WalkingService } from '../../domain/subway/services/walking.service';
 import { TRACKING_REPOSITORY } from '../../domain/tracking/ports/ITrackingRepository';
 import { OffRouteDetector } from '../../domain/tracking/services/offroute-detector.service';
-import { InMemoryTrackingRepository } from '../../infra/database/repositories/in-memory-tracking.repository';
-import { SubwayEventsGateway } from '../../infra/websocket/subway-events.gateway';
+import { InMemoryTrackingRepository } from '../../infra/tracking/in-memory-tracking.repository';
+import { OffRouteNotifier } from './off-route.notifier';
 import { SubwayRouteOptionDto } from '../route/dto/route-search-response.dto';
 import { RouteService } from '../route/route.service';
 import { TrackingService } from './tracking.service';
@@ -171,7 +171,7 @@ describe('TrackingService', () => {
           useValue: mockRouteService,
         },
         {
-          provide: SubwayEventsGateway,
+          provide: OffRouteNotifier,
           useValue: mockGateway,
         },
       ],

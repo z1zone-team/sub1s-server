@@ -1,4 +1,18 @@
-import { SubwayRouteOptionDto } from '../../../application/route/dto/route-search-response.dto';
+import { RouteMode } from '../../subway/models/route';
+
+/** 추적이 경로에서 읽는 구간 정보. 경로 응답 DTO의 일부와 같은 모양이라 DTO를 그대로 넣을 수 있다 */
+export interface TrackedRouteSegment {
+  fromStationId: string;
+  toStationId: string;
+  lineId: string;
+}
+
+/** 추적 세션이 기억하는 경로. 추적이 쓰는 필드만 둔다(경로 응답 DTO 전체를 도메인이 알 필요가 없다) */
+export interface TrackedRoute {
+  mode: RouteMode;
+  totalDurationSec: number;
+  segments: TrackedRouteSegment[];
+}
 
 export type DeviationReason =
   'ON_ROUTE' | 'SUSPECTED_DEVIATION' | 'USER_CONFIRMED' | 'CONFIRMED_OFFROUTE';
@@ -14,7 +28,7 @@ export interface DeviationResult {
 export interface TrackingSession {
   sessionId: string;
   userId: string;
-  routeOption: SubwayRouteOptionDto;
+  routeOption: TrackedRoute;
   allStationIds: string[];
   originStationId: string;
   destStationId: string;
