@@ -385,22 +385,4 @@ describe('Voice jobs (e2e)', () => {
 
     expect(JSON.parse(stored as string).audioBase64).toBe('');
   });
-
-  it('기존 동기 엔드포인트는 그대로 동작하고 5초 락은 Valkey를 쓴다', async () => {
-    const first = await request(app.getHttpServer())
-      .post('/api/v1/voice/route-recommend')
-      .set('x-test-user', MOCK_USER_ID)
-      .field('transcriptHint', '강남에서 사당까지')
-      .attach('file', audio(), { filename: 'q.m4a', contentType: 'audio/m4a' })
-      .expect(201);
-    expect(first.body.data.interpretedIntent.destStationName).toBe('사당');
-
-    expect(await redis.exists(`lock:voice:${MOCK_USER_ID}`)).toBe(1);
-    await request(app.getHttpServer())
-      .post('/api/v1/voice/route-recommend')
-      .set('x-test-user', MOCK_USER_ID)
-      .field('transcriptHint', '강남에서 사당까지')
-      .attach('file', audio(), { filename: 'q.m4a', contentType: 'audio/m4a' })
-      .expect(429);
-  });
 });

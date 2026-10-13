@@ -26,7 +26,6 @@ import {
   IntentParserService,
   SAVED_PLACE_NAMES,
 } from './services/intent-parser.service';
-import { VoiceLockService } from './services/voice-lock.service';
 
 export interface UploadedAudioFile {
   fieldname: string;
@@ -65,7 +64,6 @@ export class VoiceService {
   private readonly logger = new Logger(VoiceService.name);
 
   constructor(
-    private readonly voiceLockService: VoiceLockService,
     private readonly aiServiceAdapter: AiServiceAdapter,
     private readonly intentParserService: IntentParserService,
     private readonly subwayGraphService: SubwayGraphService,
@@ -80,33 +78,7 @@ export class VoiceService {
   }
 
   /**
-   * 음성 질의 파일을 수신받아 5초 멱등성 락 검증 후
-   * STT -> 의도 분석 -> 경로 탐색 -> AI 브리핑/TTS 합성을 오케스트레이션합니다.
-   */
-  async recommendRouteByVoice(
-    userId: string,
-    file?: UploadedAudioFile,
-    dto?: VoiceRouteRecommendRequestDto,
-  ): Promise<VoiceRouteRecommendResponseDto> {
-    // 1. 5초 멱등성 락 검증 (연타/중복 요청 방어)
-    await this.voiceLockService.assertLock(userId, 5);
-
-    // 2. 파일 유효성 검사
-    this.validateAudioFile(file);
-
-    // 3. STT 음성 전사 (FastAPI AI 서비스 또는 Fallback)
-    const sttResult = await this.aiServiceAdapter.transcribeAudio(
-      file!.buffer,
-      file!.originalname,
-      dto?.transcriptHint,
-    );
-
-    return this.recommendFromTranscript(userId, sttResult.transcript, dto);
-  }
-
-  /**
-   * 전사문에서 의도 분석, 경로 탐색, 브리핑까지 처리합니다. 동기 요청(`recommendRouteByVoice`)과
-   * 큐 작업(서버 워커)이 STT 이후의 같은 단계를 공유합니다.
+   * 전사문에서 의도 분석, 경로 탐색, 브리핑까지 처리합니다. 큐 작업(서버 워커)이 STT 이후에 부릅니다.
    */
   async recommendFromTranscript(
     userId: string,

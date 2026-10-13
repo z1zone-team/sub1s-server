@@ -11,7 +11,6 @@ import {
   SUBWAY_GRAPH_REPOSITORY,
 } from '../src/domain/subway/ports/ISubwayGraphRepository';
 import { PrismaService } from '../src/infra/prisma/prisma.service';
-import { VoiceLockService } from '../src/application/voice/services/voice-lock.service';
 import { DataUpdateBatchService } from '../src/infra/batch/data-update-batch.service';
 
 describe('Full User Journey (Mobile App ↔ Backend E2E)', () => {
@@ -158,8 +157,6 @@ describe('Full User Journey (Mobile App ↔ Backend E2E)', () => {
     await app.init();
 
     batchService = app.get<DataUpdateBatchService>(DataUpdateBatchService);
-    const voiceLock = app.get<VoiceLockService>(VoiceLockService);
-    voiceLock.clear();
   });
 
   afterAll(async () => {
