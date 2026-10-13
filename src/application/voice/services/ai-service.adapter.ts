@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { BusinessException } from '../../../common/exceptions/business.exception';
 import { RouteMode } from '../../../domain/subway/models/route';
 import { SubwayRouteOptionDto } from '../../route/dto/route-search-response.dto';
-import { CURRENT_LOCATION } from './intent-parser.service';
+import { CURRENT_LOCATION, SAVED_PLACE_NAMES } from './intent-parser.service';
 
 export interface SttResult {
   transcript: string;
@@ -20,9 +20,11 @@ export interface BriefingResult {
   audioTtsUrl?: string;
 }
 
-/** 안내 문장에서 장소를 부르는 말. 현재 위치는 역이 아니므로 `역`을 붙이지 않는다 */
+/** 안내 문장에서 장소를 부르는 말. 현재 위치와 저장한 집, 학교는 역이 아니므로 `역`을 붙이지 않는다 */
 function placeLabel(name: string): string {
-  return name === CURRENT_LOCATION ? name : `${name}역`;
+  return name === CURRENT_LOCATION || SAVED_PLACE_NAMES.includes(name)
+    ? name
+    : `${name}역`;
 }
 
 @Injectable()

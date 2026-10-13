@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SubwayGraphService } from '../../domain/subway/services/subway-graph.service';
+import { USER_PLACE_REPOSITORY } from '../../domain/user/ports/IUserPlaceRepository';
 import { RouteService } from '../route/route.service';
 import { AiServiceAdapter } from './services/ai-service.adapter';
 import { IntentParserService } from './services/intent-parser.service';
@@ -17,6 +18,8 @@ describe('VoiceService', () => {
   let voiceLockService: VoiceLockService;
   let aiServiceAdapter: AiServiceAdapter;
   let routeService: RouteService;
+  let intentParser: { parseIntent: jest.Mock };
+  let placeRepo: { findAll: jest.Mock };
 
   const sampleFile: UploadedAudioFile = {
     fieldname: 'file',
@@ -89,6 +92,10 @@ describe('VoiceService', () => {
             }),
           },
         },
+        {
+          provide: USER_PLACE_REPOSITORY,
+          useValue: { findAll: jest.fn().mockResolvedValue([]) },
+        },
       ],
     }).compile();
 
@@ -96,6 +103,8 @@ describe('VoiceService', () => {
     voiceLockService = module.get<VoiceLockService>(VoiceLockService);
     aiServiceAdapter = module.get<AiServiceAdapter>(AiServiceAdapter);
     routeService = module.get<RouteService>(RouteService);
+    intentParser = module.get(IntentParserService);
+    placeRepo = module.get(USER_PLACE_REPOSITORY);
   });
 
   it('should recommend route successfully for valid voice file', async () => {
@@ -216,6 +225,113 @@ describe('VoiceService', () => {
       service.recommendRouteByVoice('user-noloc', sampleFile),
     ).rejects.toMatchObject({
       errorCode: 'VOICE_ORIGIN_REQUIRED',
+    });
+  });
+  describe('저장한 집과 학교', () => {
+    const intent = (originStationName: string, destStationName: string) => ({
+      originStationName,
+      destStationName,
+      preferredMode: 'OPTIMAL' as const,
+      reason: '최적 경로 추천',
+    });
+    const here = { lat: 37.5, lng: 127.0 };
+    const home = (extra: Record<string, unknown>) => ({
+      kind: 'HOME',
+      name: '우리집',
+      stationId: null,
+      lat: null,
+      lng: null,
+      ...extra,
+    });
+    const searchArg = () =>
+      (routeService.search as jest.Mock).mock.calls[0][0] as Record<string, unknown>;
+
+    it('도착이 집이고 역으로 저장했으면 그 역으로 현재 위치에서 검색한다', async () => {
+      intentParser.parseIntent.mockReturnValue(intent('현재 위치', '집'));
+      placeRepo.findAll.mockResolvedValue([home({ stationId: '02_202' })]);
+
+      await service.recommendFromTranscript('user-1', '집으로 가자', here);
+
+      expect(placeRepo.findAll).toHaveBeenCalledWith('user-1');
+      expect(searchArg()).toMatchObject({
+        originLat: 37.5,
+        originLng: 127.0,
+        destinationStationId: '02_202',
+      });
+    });
+
+    it('도착이 집이고 좌표로 저장했으면 좌표와 이름으로 검색한다', async () => {
+      intentParser.parseIntent.mockReturnValue(intent('현재 위치', '집'));
+      placeRepo.findAll.mockResolvedValue([home({ lat: 37.56, lng: 126.85 })]);
+
+      await service.recommendFromTranscript('user-1', '집으로 가자', here);
+
+      expect(searchArg()).toMatchObject({
+        destinationLat: 37.56,
+        destinationLng: 126.85,
+        destinationName: '우리집',
+      });
+      expect(searchArg()).not.toHaveProperty('destinationStationId');
+    });
+
+    it('출발이 학교이면 저장한 학교에서 출발한다', async () => {
+      intentParser.parseIntent.mockReturnValue(intent('학교', '강남'));
+      placeRepo.findAll.mockResolvedValue([
+        home({ kind: 'SCHOOL', name: '명지대', stationId: '02_202' }),
+      ]);
+
+      await service.recommendFromTranscript('user-1', '학교에서 강남까지');
+
+      expect(searchArg()).toMatchObject({
+        originStationId: '02_202',
+        destinationStationId: '02_222',
+      });
+    });
+
+    it('집이 없고 학교만 저장했으면 집은 VOICE_PLACE_NOT_SAVED(422)이다', async () => {
+      intentParser.parseIntent.mockReturnValue(intent('현재 위치', '집'));
+      placeRepo.findAll.mockResolvedValue([
+        home({ kind: 'SCHOOL', name: '명지대', stationId: '02_202' }),
+      ]);
+
+      await expect(
+        service.recommendFromTranscript('user-1', '집으로 가자', here),
+      ).rejects.toMatchObject({
+        errorCode: 'VOICE_PLACE_NOT_SAVED',
+        status: 422,
+        message: expect.stringContaining('집을'),
+      });
+      expect(routeService.search).not.toHaveBeenCalled();
+    });
+
+    it('학교를 저장하지 않았으면 학교를 안내한다', async () => {
+      intentParser.parseIntent.mockReturnValue(intent('현재 위치', '학교'));
+
+      await expect(
+        service.recommendFromTranscript('user-1', '학교 가는 길', here),
+      ).rejects.toMatchObject({
+        errorCode: 'VOICE_PLACE_NOT_SAVED',
+        message: expect.stringContaining('학교를'),
+      });
+    });
+
+    it('저장한 집과 말한 도착역이 같은 역이면 400이다', async () => {
+      intentParser.parseIntent.mockReturnValue(intent('집', '강남'));
+      placeRepo.findAll.mockResolvedValue([home({ stationId: '02_222' })]);
+
+      await expect(
+        service.recommendFromTranscript('user-1', '집에서 강남까지'),
+      ).rejects.toMatchObject({ status: 400 });
+    });
+
+    it('집이나 학교가 아니면 저장한 장소를 읽지 않는다', async () => {
+      await service.recommendFromTranscript('user-1', '강남에서 을지로입구까지');
+
+      expect(placeRepo.findAll).not.toHaveBeenCalled();
+      expect(searchArg()).toMatchObject({
+        originStationId: '02_222',
+        destinationStationId: '02_202',
+      });
     });
   });
 });

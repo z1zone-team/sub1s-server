@@ -7,6 +7,18 @@ import { StationNameMatcher } from './station-name-matcher';
 
 /** 출발지를 말하지 않았을 때 의도에 쓰는 표시 이름 */
 export const CURRENT_LOCATION = '현재 위치';
+/** 사용자가 저장한 집과 학교를 가리키는 의도 이름. 역 이름이 아니라 저장한 장소로 풀어야 한다 */
+export const HOME_PLACE = '집';
+export const SCHOOL_PLACE = '학교';
+export const SAVED_PLACE_NAMES: readonly string[] = [HOME_PLACE, SCHOOL_PLACE];
+
+/**
+ * `집`, `학교`(앞에 `우리`, `내`가 붙을 수 있다)와 바로 뒤의 표지. 표지가 없으면 한글이 이어지지 않아야 한다
+ * (`모집`, `집중`, `학교생활`을 장소로 보지 않기 위해서). 서울 지하철 역 이름에는 `집`, `학교`가 없어 역 이름과 겹치지 않는다
+ */
+const SAVED_PLACE_WORD =
+  /(?<![가-힣])(?:우리\s*|내\s*)?(집|학교)(?:(에서|부터|으로|로|까지|가는|가자|갈래|가고|에)|(?![가-힣]))/g;
+const PLACE_ORIGIN_MARKERS = ['에서', '부터'];
 
 @Injectable()
 export class IntentParserService {
@@ -48,6 +60,10 @@ export class IntentParserService {
     originStationName: string | null;
     destStationName: string;
   } {
+    // 0. 저장한 집이나 학교를 말했으면("집으로 가자", "집에서 강남까지") 그 장소로 해석한다
+    const places = this.extractSavedPlaces(text);
+    if (places) return places;
+
     // 1. "A에서 B까지" 꼴이면 표지로 출발 구간과 도착 구간을 나눠 구간마다 가장 가까운 역을 찾는다.
     //    구간 안에서는 공백을 지우고 비교한다(Whisper는 이름 안에 공백을 넣기도 한다: `광흥 창역`, `동두천 중앙`).
     //    정확히 일치하는 이름은 거리 0이라 같은 결과이고, 이름을 잘못 알아들은 경우만 보정된다
@@ -121,6 +137,65 @@ export class IntentParserService {
 
     this.logger.warn(`Could not extract stations from: "${text}"`);
     throw new BusinessException(
+      'VOICE_INTENT_NOT_UNDERSTOOD',
+      '어디로 갈지 알아듣지 못했어요. 역 이름을 말씀해 주세요.',
+      HttpStatus.UNPROCESSABLE_ENTITY,
+    );
+  }
+
+  /**
+   * "집으로 가자", "학교 가는 길", "집에서 강남까지", "강남에서 집으로", "집에서 학교까지"처럼
+   * 저장한 집이나 학교를 말한 경우를 해석한다. 장소가 없으면 null이라 역 이름 해석으로 넘어간다.
+   * `에서`, `부터`가 붙으면 출발, 그 밖(`으로`, `까지`, `가는`, 표지 없음)은 도착이다
+   */
+  private extractSavedPlaces(text: string): {
+    originStationName: string | null;
+    destStationName: string;
+  } | null {
+    let origin: string | null = null;
+    let dest: string | null = null;
+    for (const match of text.matchAll(SAVED_PLACE_WORD)) {
+      const name = match[1] === '집' ? HOME_PLACE : SCHOOL_PLACE;
+      if (match[2] && PLACE_ORIGIN_MARKERS.includes(match[2])) origin ??= name;
+      else dest ??= name;
+    }
+    if (!origin && !dest) return null;
+    if (origin && origin === dest) throw this.notUnderstood();
+
+    if (origin && dest) {
+      return { originStationName: origin, destStationName: dest };
+    }
+
+    // 장소가 하나면 나머지 한쪽은 문장에서 역을 찾는다
+    const rest = text.replace(SAVED_PLACE_WORD, ' ');
+    const station = this.stationIn(rest);
+    if (origin) {
+      if (!station) throw this.notUnderstood();
+      return { originStationName: origin, destStationName: station };
+    }
+    // 도착이 장소이고 역이 있으면 "강남에서 집으로"처럼 출발 표지가 있을 때만 출발역으로 본다
+    const stationIsOrigin = station !== null && /(?:에서|부터)/.test(rest);
+    return {
+      originStationName: stationIsOrigin ? station : null,
+      destStationName: dest!,
+    };
+  }
+
+  /** 장소를 뗀 나머지 문장에서 역 하나를 찾는다. 정확한 이름을 먼저, 없으면 가장 가까운 역으로 보정한다 */
+  private stationIn(rest: string): string | null {
+    const exact = this.findKnownStationsInText(rest);
+    if (exact.length > 0) return exact[0];
+
+    const compact = rest
+      .replace(/\s+/g, '')
+      .split(/에서|부터|까지|으로|가는|가자|길/)[0]
+      .replace(/로$/, '');
+    if (!compact) return null;
+    return this.stationMatcher().closestAtEnd(compact)?.name ?? null;
+  }
+
+  private notUnderstood(): BusinessException {
+    return new BusinessException(
       'VOICE_INTENT_NOT_UNDERSTOOD',
       '어디로 갈지 알아듣지 못했어요. 역 이름을 말씀해 주세요.',
       HttpStatus.UNPROCESSABLE_ENTITY,

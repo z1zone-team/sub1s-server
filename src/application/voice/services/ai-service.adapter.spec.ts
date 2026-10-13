@@ -167,6 +167,14 @@ describe('AiServiceAdapter.generateBriefing', () => {
     expect(result.briefingText).not.toContain('현재 위치역');
   });
 
+  it('저장한 집과 학교에도 역을 붙이지 않는다', async () => {
+    const toHome = await briefing('현재 위치', '집');
+    const fromSchool = await briefing('학교', '강남');
+
+    expect(toHome.briefingText).toMatch(/^현재 위치에서 집까지 최적 경로로/);
+    expect(fromSchool.briefingText).toMatch(/^학교에서 강남역까지 최적 경로로/);
+  });
+
   it('음성 안내 주소(audioTtsUrl)에도 같은 문장이 들어간다', async () => {
     const result = await briefing('현재 위치');
 
