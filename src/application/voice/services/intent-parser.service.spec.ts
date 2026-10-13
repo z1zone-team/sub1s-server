@@ -183,3 +183,100 @@ describe('IntentParserService', () => {
     });
   });
 });
+
+describe('IntentParserService 저장한 집과 학교', () => {
+  let service: IntentParserService;
+  const stations = ['강남', '사당', '홍제', '광흥창'];
+  const graph = {
+    getGraph: () => ({
+      stationCount: stations.length,
+      station: (idx: number) => ({ id: `s${idx}`, stationName: stations[idx] }),
+    }),
+  };
+
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        IntentParserService,
+        { provide: SubwayGraphService, useValue: graph },
+      ],
+    }).compile();
+    service = module.get(IntentParserService);
+  });
+
+  const parse = (text: string) => {
+    const { originStationName, destStationName } = service.parseIntent(text);
+    return [originStationName, destStationName];
+  };
+
+  it.each([
+    ['집으로 가자', ['현재 위치', '집']],
+    ['집 가는 길', ['현재 위치', '집']],
+    ['우리 집 가는 길', ['현재 위치', '집']],
+    ['내 집으로 가고 싶어', ['현재 위치', '집']],
+    ['학교 가는 길', ['현재 위치', '학교']],
+    ['학교로 가자', ['현재 위치', '학교']],
+    ['학교', ['현재 위치', '학교']],
+  ])('도착이 장소: %s', (text, expected) => {
+    expect(parse(text)).toEqual(expected);
+  });
+
+  it.each([
+    ['집에서 강남까지', ['집', '강남']],
+    ['집에서 강남역까지 가장 빠르게', ['집', '강남']],
+    ['학교에서 사당으로 가자', ['학교', '사당']],
+    ['우리 집에서 홍제역까지', ['집', '홍제']],
+    ['집부터 강남까지', ['집', '강남']],
+  ])('출발이 장소: %s', (text, expected) => {
+    expect(parse(text)).toEqual(expected);
+  });
+
+  it.each([
+    ['강남에서 집으로', ['강남', '집']],
+    ['강남역에서 학교까지', ['강남', '학교']],
+    ['사당에서 우리 집 가는 길', ['사당', '집']],
+  ])('도착이 장소이고 출발역을 말함: %s', (text, expected) => {
+    expect(parse(text)).toEqual(expected);
+  });
+
+  it('집에서 학교까지처럼 둘 다 장소일 수 있다', () => {
+    expect(parse('집에서 학교까지')).toEqual(['집', '학교']);
+    expect(parse('학교에서 집으로')).toEqual(['학교', '집']);
+  });
+
+  it('출발 표지 없이 역과 장소를 함께 말하면 역은 출발이 아니라고 보고 현재 위치에서 출발한다', () => {
+    expect(parse('강남 집으로')).toEqual(['현재 위치', '집']);
+  });
+
+  it('역 이름 안에 공백이 들어가도 장소와 함께 찾는다 (집에서 광흥 창까지)', () => {
+    expect(parse('집에서 광흥 창까지')).toEqual(['집', '광흥창']);
+  });
+
+  it('이 시험의 역 목록에서 가까운 역이 하나뿐이면 장소와 함께 보정한다 (집에서 상당으로)', () => {
+    expect(parse('집에서 상당으로')).toEqual(['집', '사당']);
+  });
+
+  it('집에서 출발한다고만 하고 도착역이 없으면 알아듣지 못했다고 알린다', () => {
+    expect(() => service.parseIntent('집에서 가자')).toThrow(
+      expect.objectContaining({ errorCode: 'VOICE_INTENT_NOT_UNDERSTOOD' }),
+    );
+  });
+
+  it('같은 장소에서 같은 장소로는 알아듣지 못했다고 알린다', () => {
+    expect(() => service.parseIntent('집에서 집으로')).toThrow(
+      expect.objectContaining({ errorCode: 'VOICE_INTENT_NOT_UNDERSTOOD' }),
+    );
+  });
+
+  it.each(['모집 공고 강남역 가는 길', '집중해서 강남역 가는 길', '학교생활 강남역 가는 길'])(
+    '`집`, `학교`가 다른 말의 일부면 장소로 보지 않는다: %s',
+    (text) => {
+      expect(parse(text)).toEqual(['현재 위치', '강남']);
+    },
+  );
+
+  it('장소를 말하지 않은 기존 문장은 그대로다', () => {
+    expect(parse('강남에서 사당까지 가장 빠르게')).toEqual(['강남', '사당']);
+    expect(parse('강남역 가는 길')).toEqual(['현재 위치', '강남']);
+  });
+});

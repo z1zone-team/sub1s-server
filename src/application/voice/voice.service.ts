@@ -1,12 +1,19 @@
 import {
   BadRequestException,
   HttpStatus,
+  Inject,
   Injectable,
   Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { BusinessException } from '../../common/exceptions/business.exception';
 import { SubwayGraphService } from '../../domain/subway/services/subway-graph.service';
+import { UserPlace } from '../../domain/user/models/place';
+import {
+  IUserPlaceRepository,
+  USER_PLACE_REPOSITORY,
+} from '../../domain/user/ports/IUserPlaceRepository';
+import { RouteSearchRequestDto } from '../route/dto/route-search-request.dto';
 import { RouteService } from '../route/route.service';
 import {
   VoiceRouteRecommendRequestDto,
@@ -15,7 +22,9 @@ import {
 import { AiServiceAdapter, TtsStream } from './services/ai-service.adapter';
 import {
   CURRENT_LOCATION,
+  HOME_PLACE,
   IntentParserService,
+  SAVED_PLACE_NAMES,
 } from './services/intent-parser.service';
 import { VoiceLockService } from './services/voice-lock.service';
 
@@ -45,6 +54,12 @@ const ALLOWED_MIME_TYPES = new Set([
 const ALLOWED_EXTENSIONS = new Set(['.m4a', '.wav', '.mp3', '.webm']);
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
+/** 출발지나 도착지를 경로 검색 요청으로 바꾼 것. 역이면 `stationId`도 가진다 */
+interface ResolvedEndpoint {
+  stationId?: string;
+  search: Partial<RouteSearchRequestDto>;
+}
+
 @Injectable()
 export class VoiceService {
   private readonly logger = new Logger(VoiceService.name);
@@ -55,6 +70,8 @@ export class VoiceService {
     private readonly intentParserService: IntentParserService,
     private readonly subwayGraphService: SubwayGraphService,
     private readonly routeService: RouteService,
+    @Inject(USER_PLACE_REPOSITORY)
+    private readonly placeRepo: IUserPlaceRepository,
   ) {}
 
   /** 브리핑 문장을 음성(MP3) 스트림으로 만든다 */
@@ -102,35 +119,14 @@ export class VoiceService {
       dto?.preferredMode,
     );
 
-    // 5. 역명 매핑 및 검증
-    const originIsCurrentLocation =
-      intent.originStationName === CURRENT_LOCATION;
-    if (
-      originIsCurrentLocation &&
-      (dto?.lat === undefined || dto?.lng === undefined)
-    ) {
-      throw new BusinessException(
-        'VOICE_ORIGIN_REQUIRED',
-        '출발지를 말씀해 주시거나 현재 위치를 켜 주세요.',
-        HttpStatus.UNPROCESSABLE_ENTITY,
-      );
-    }
-    const originStationId = originIsCurrentLocation
-      ? null
-      : this.findStationIdByName(intent.originStationName);
-    const destStationId = this.findStationIdByName(intent.destStationName);
-
-    if (!originIsCurrentLocation && !originStationId) {
-      throw new NotFoundException(
-        `출발역 '${intent.originStationName}'을(를) 지하철 노선망에서 찾을 수 없습니다.`,
-      );
-    }
-    if (!destStationId) {
-      throw new NotFoundException(
-        `도착역 '${intent.destStationName}'을(를) 지하철 노선망에서 찾을 수 없습니다.`,
-      );
-    }
-    if (!originIsCurrentLocation && originStationId === destStationId) {
+    // 5. 역 이름, 현재 위치, 저장한 집과 학교를 경로 검색 입력으로 바꾼다
+    const origin = await this.resolveOrigin(
+      userId,
+      intent.originStationName,
+      dto,
+    );
+    const dest = await this.resolveDestination(userId, intent.destStationName);
+    if (origin.stationId && origin.stationId === dest.stationId) {
       throw new BusinessException(
         'INVALID_REQUEST_PAYLOAD',
         '출발역과 도착역이 동일합니다. 다른 역을 지정해주세요.',
@@ -142,12 +138,10 @@ export class VoiceService {
     // 로그인 사용자의 설문, 시간대, 이력으로 개인화한 추천(PERSONAL)을 받도록 사용자를 넘긴다
     const searchResult = await this.routeService.search(
       {
-        ...(originIsCurrentLocation
-          ? { originLat: dto!.lat, originLng: dto!.lng }
-          : { originStationId: originStationId! }),
-        destinationStationId: destStationId,
+        ...origin.search,
+        ...dest.search,
         routeMode: intent.preferredMode,
-      },
+      } as RouteSearchRequestDto,
       userId,
     );
 
@@ -205,6 +199,96 @@ export class VoiceService {
   /**
    * 역 이름으로 지하철 그래프 내 Station ID를 조회합니다.
    */
+  private async resolveOrigin(
+    userId: string,
+    name: string,
+    dto?: Pick<VoiceRouteRecommendRequestDto, 'lat' | 'lng'>,
+  ): Promise<ResolvedEndpoint> {
+    if (name === CURRENT_LOCATION) {
+      if (dto?.lat === undefined || dto?.lng === undefined) {
+        throw new BusinessException(
+          'VOICE_ORIGIN_REQUIRED',
+          '출발지를 말씀해 주시거나 현재 위치를 켜 주세요.',
+          HttpStatus.UNPROCESSABLE_ENTITY,
+        );
+      }
+      return { search: { originLat: dto.lat, originLng: dto.lng } };
+    }
+
+    const saved = await this.savedPlace(userId, name);
+    if (saved) {
+      return saved.stationId
+        ? { stationId: saved.stationId, search: { originStationId: saved.stationId } }
+        : {
+            search: {
+              originLat: saved.lat!,
+              originLng: saved.lng!,
+              originName: saved.name,
+            },
+          };
+    }
+
+    const stationId = this.findStationIdByName(name);
+    if (!stationId) {
+      throw new NotFoundException(
+        `출발역 '${name}'을(를) 지하철 노선망에서 찾을 수 없습니다.`,
+      );
+    }
+    return { stationId, search: { originStationId: stationId } };
+  }
+
+  private async resolveDestination(
+    userId: string,
+    name: string,
+  ): Promise<ResolvedEndpoint> {
+    const saved = await this.savedPlace(userId, name);
+    if (saved) {
+      return saved.stationId
+        ? {
+            stationId: saved.stationId,
+            search: { destinationStationId: saved.stationId },
+          }
+        : {
+            search: {
+              destinationLat: saved.lat!,
+              destinationLng: saved.lng!,
+              destinationName: saved.name,
+            },
+          };
+    }
+
+    const stationId = this.findStationIdByName(name);
+    if (!stationId) {
+      throw new NotFoundException(
+        `도착역 '${name}'을(를) 지하철 노선망에서 찾을 수 없습니다.`,
+      );
+    }
+    return { stationId, search: { destinationStationId: stationId } };
+  }
+
+  /**
+   * `집`, `학교`이면 사용자가 저장한 장소를 돌려준다. 장소를 말한 것이 아니면 null이고,
+   * 말했는데 저장하지 않았으면 `VOICE_PLACE_NOT_SAVED`(422)다
+   */
+  private async savedPlace(
+    userId: string,
+    name: string,
+  ): Promise<UserPlace | null> {
+    if (!SAVED_PLACE_NAMES.includes(name)) return null;
+    const kind = name === HOME_PLACE ? 'HOME' : 'SCHOOL';
+    const place = (await this.placeRepo.findAll(userId)).find(
+      (candidate) => candidate.kind === kind,
+    );
+    if (!place) {
+      throw new BusinessException(
+        'VOICE_PLACE_NOT_SAVED',
+        `${name === HOME_PLACE ? '집을' : '학교를'} 아직 저장하지 않았어요. 홈에서 집과 학교를 먼저 저장해 주세요.`,
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      );
+    }
+    return place;
+  }
+
   findStationIdByName(name: string): string | null {
     const normalizedTarget =
       this.intentParserService.normalizeStationName(name);
