@@ -6,10 +6,7 @@ import { join, relative } from 'path';
 // 구체 모듈이 따라온다 (docs/ARCHITECTURE_DESIGN.md 3.4, 서버 아키텍처 점검 1번)
 
 // 아직 고치지 못한 기존 위반. 새로 늘리지 않고 고칠 때 이 목록에서 지운다
-const KNOWN_VIOLATIONS = new Set<string>([
-  // 주행 세션 모델이 경로 응답 DTO를 그대로 쓴다. DTO를 도메인 모델로 옮겨야 한다
-  join('domain', 'tracking', 'models', 'tracking-session.ts'),
-]);
+const KNOWN_VIOLATIONS = new Set<string>([]);
 
 const FORBIDDEN_IMPORT = /from\s+['"](?:\.\.\/)+(infra|application)\//;
 
