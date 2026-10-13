@@ -72,8 +72,18 @@ describe('Voice jobs (e2e)', () => {
       .get(`/api/v1/voice/jobs/${jobId}`)
       .set('x-test-user', userId);
 
+  // 소켓 이벤트는 도착하는 대로 모아 둔다. 202 응답을 처리하는 동안 작업이 끝나 이벤트가 먼저 와도
+  // 놓치지 않게 하기 위해서다(앱도 요청 전에 채널을 열어 같은 방식으로 받는다)
+  const received = new Map<string, unknown>();
+  const VOICE_EVENTS = ['voice_result', 'voice_failed'];
+
   const waitFor = <T>(event: string, jobId: string): Promise<T> =>
     new Promise<T>((resolvePromise, reject) => {
+      const early = received.get(`${event}:${jobId}`);
+      if (early) {
+        resolvePromise(early as T);
+        return;
+      }
       const timer = setTimeout(
         () => reject(new Error(`${event} for ${jobId} not received`)),
         15000,
@@ -167,6 +177,11 @@ describe('Voice jobs (e2e)', () => {
       socket.on('connect', () => done());
       socket.on('connect_error', reject);
     });
+    for (const event of VOICE_EVENTS) {
+      socket.on(event, (payload: { jobId: string }) => {
+        received.set(`${event}:${payload.jobId}`, payload);
+      });
+    }
   }, 30000);
 
   afterAll(async () => {
