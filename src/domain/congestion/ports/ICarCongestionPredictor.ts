@@ -25,5 +25,10 @@ export interface ICarCongestionPredictor {
     direction: string,
     atEpochMs: number,
     transferCars?: readonly number[],
+    /**
+     * 열차의 칸 수. 생략하면 기본값(10), `null`이면 칸 수를 모르는 노선이라 칸별 예측을 하지 않는다(`cars`가 빈 배열).
+     * `trainCarCount`가 노선별로 돌려준다
+     */
+    carCount?: number | null,
   ): CarPrediction;
 }

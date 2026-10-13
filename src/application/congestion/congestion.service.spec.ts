@@ -124,6 +124,50 @@ describe('CongestionService', () => {
     },
   );
 
+  it('passes the number of cars of the line to the provider', async () => {
+    await service.getTrainCongestion({
+      lineId: '01',
+      trainId: '1004',
+      stationId: '01_133',
+    });
+
+    // 1호선은 10칸. 칸 수는 여섯 번째 인자다
+    expect(mockCongestionProvider.predictCars.mock.calls[0][5]).toBe(10);
+  });
+
+  it('returns no cars but the station rate for a line whose car count is unknown', async () => {
+    const unknownLineGraph = new SubwayGraph({
+      stations: [
+        {
+          id: 'GJ_100',
+          lineId: 'GJ',
+          stationName: '판교',
+          lat: 37.39,
+          lng: 127.11,
+          lineSeq: 1,
+        },
+      ],
+      edges: [],
+      transfers: [],
+    });
+    mockGraphService.getGraph.mockReturnValue(unknownLineGraph);
+    mockCongestionProvider.predictCars.mockReturnValue({
+      ratePercent: 47.6,
+      source: 'STATISTICS',
+      cars: [],
+    });
+
+    const result = await service.getTrainCongestion({
+      lineId: 'GJ',
+      trainId: '1',
+      stationId: 'GJ_100',
+    });
+
+    expect(mockCongestionProvider.predictCars.mock.calls[0][5]).toBeNull();
+    expect(result.cars).toEqual([]);
+    expect(result.averageRate).toBe(48);
+  });
+
   it('throws BusinessException when station is unknown', async () => {
     await expect(
       service.getTrainCongestion({

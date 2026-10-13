@@ -100,9 +100,15 @@ export class StatisticalCongestionProvider
     direction: string,
     atEpochMs: number,
     transferCars: readonly number[] = [],
+    carCount?: number | null,
   ): CarPrediction {
     const rate = this.stationRate(lineId, stationId, direction, atEpochMs);
-    return { ...rate, cars: predictCars(rate.ratePercent, transferCars) };
+    // 칸 수를 모르는 노선은 없는 칸을 만들지 않는다
+    if (carCount === null) return { ...rate, cars: [] };
+    return {
+      ...rate,
+      cars: predictCars(rate.ratePercent, transferCars, carCount),
+    };
   }
 
   // The published rate of the direction. A branch station can be listed under other direction names

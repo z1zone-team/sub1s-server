@@ -12,6 +12,7 @@ import {
   TrainCongestionResponseDto,
 } from './dto/train-congestion-response.dto';
 import { toKstIso } from '../../common/utils/kst';
+import { trainCarCount } from '../../domain/congestion/services/train-composition';
 
 @Injectable()
 export class CongestionService {
@@ -57,6 +58,7 @@ export class CongestionService {
       direction,
       nowEpochMs,
       [],
+      trainCarCount(query.lineId, [query.stationId]) ?? null,
     );
 
     const cars: CarCongestionDto[] = prediction.cars.map((car) => ({

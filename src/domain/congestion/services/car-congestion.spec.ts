@@ -50,4 +50,21 @@ describe('predictCars', () => {
 
     expect([1, 10]).toContain(least.carNo);
   });
+describe('칸 수가 다른 열차', () => {
+  it('8칸 열차는 8개를 만들고 8번이 끝 칸이다', () => {
+    const cars = predictCars(80, [], 8);
+
+    expect(cars).toHaveLength(8);
+    expect(cars[7].rate).toBeCloseTo(80 * 0.775);
+    expect(cars[0].rate).toBeCloseTo(80 * 0.775);
+    expect(cars[3].rate).toBeCloseTo(80);
+  });
+
+  it('2칸 열차는 두 칸 모두 끝 칸이다', () => {
+    const cars = predictCars(60, [], 2);
+
+    expect(cars.map((car) => car.carNo)).toEqual([1, 2]);
+    expect(cars.every((car) => car.rate === cars[0].rate)).toBe(true);
+  });
+});
 });

@@ -22,7 +22,7 @@ const OPERATION_STATUS_DESCRIPTION =
   'NORMAL 서울교통공사가 공지한 이상 상황이 없음, DISRUPTED 지연·무정차 등 진행 중인 공지가 이 구간에 걸림, UNKNOWN 공지로 알 수 없음(도보, 공지가 빠짐없이 오지 않는 노선, 공지를 가져오지 못함)';
 
 export class SegmentCarDto {
-  @ApiProperty({ description: '칸 번호 (1~10)', example: 3 })
+  @ApiProperty({ description: '칸 번호 (1부터 그 열차의 칸 수까지)', example: 3 })
   carNo!: number;
 
   @ApiProperty({ description: '혼잡도 % (0~100)', example: 42 })
@@ -73,7 +73,7 @@ export class PathSegmentDto {
   distanceKm!: number;
 
   @ApiProperty({
-    description: '추천 탑승 칸 번호 (1~10, 도보 시 0)',
+    description: '추천 탑승 칸 번호 (1부터 그 열차의 칸 수까지). 도보 구간이나 칸 수를 모르는 노선은 0',
     example: 4,
   })
   recommendedCarNo!: number;
@@ -118,7 +118,7 @@ export class PathSegmentDto {
 
   @ApiPropertyOptional({
     description:
-      '이 구간 출발역의 1~10번 칸별 예측 혼잡도. 추천 칸은 이 중 가장 한산한 칸이다. 도보 구간에는 없음',
+      '이 구간 출발역의 칸별 예측 혼잡도(그 열차의 칸 수만큼, 예: 1~4호선 10칸, 5~7호선 8칸, 8, 9호선 6칸). 추천 칸은 이 중 가장 한산한 칸이다. 도보 구간과 칸 수를 모르는 노선에는 없거나 빈 배열',
     type: [SegmentCarDto],
   })
   cars?: SegmentCarDto[];
