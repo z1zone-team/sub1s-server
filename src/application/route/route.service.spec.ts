@@ -307,6 +307,46 @@ describe('RouteService', () => {
       expect(segment.cars?.find((car) => car.carNo === segment.recommendedCarNo)?.rate).toBe(lowest);
     });
 
+    it('passes the number of cars of the line to the congestion provider', async () => {
+      mockEngine.findRoute.mockImplementation(async (query) => ({
+        ...sampleRouteResult,
+        mode: query.mode,
+        segments: [{ ...sampleRouteResult.segments[0], lineId: '09' }],
+      }));
+
+      await search();
+
+      // 9호선은 6칸이다. 칸 수는 여섯 번째 인자다
+      expect(mockCongestionProvider.predictCars.mock.calls[0][5]).toBe(6);
+    });
+
+    it('predicts no cars and recommends none on a line whose car count is unknown', async () => {
+      mockEngine.findRoute.mockImplementation(async (query) => ({
+        ...sampleRouteResult,
+        mode: query.mode,
+        segments: [{ ...sampleRouteResult.segments[0], lineId: 'GJ' }],
+      }));
+      mockCongestionProvider.predictCars.mockImplementation(
+        (...args: unknown[]) => ({
+          ratePercent: 42,
+          source: 'STATISTICS',
+          cars:
+            args[5] === null
+              ? []
+              : [{ carNo: 1, rate: 35, level: '여유' }],
+        }),
+      );
+
+      const [segment] = (await search()).options[0].segments;
+
+      expect(mockCongestionProvider.predictCars.mock.calls[0][5]).toBeNull();
+      expect(segment.cars).toEqual([]);
+      expect(segment.recommendedCarNo).toBe(0);
+      expect(segment.isWeakAirConditioned).toBe(false);
+      // 칸을 모르는 노선도 구간 혼잡도는 낸다
+      expect(segment.congestionRate).toBe(42);
+    });
+
     it('marks the weak air-conditioned cars of lines that have them', async () => {
       mockEngine.findRoute.mockImplementation(async (query) => ({
         ...sampleRouteResult,

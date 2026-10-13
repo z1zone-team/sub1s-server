@@ -131,4 +131,26 @@ describe('StatisticalCongestionProvider', () => {
     expect(prediction.cars[2].rate).toBeCloseTo(6 * 1.425);
     expect(prediction.cars[0].rate).toBeCloseTo(6 * 0.775);
   });
+  describe('칸 수', () => {
+    it('칸 수를 넘기면 그만큼만 예측하고 끝 칸 보정이 실제 끝 칸에 적용된다', () => {
+      const prediction = provider.predictCars('08', 'S_1', 'DOWN', mondayMorning, [], 6);
+
+      expect(prediction.cars).toHaveLength(6);
+      expect(prediction.cars.map((car) => car.carNo)).toEqual([1, 2, 3, 4, 5, 6]);
+      // 끝 칸(1번과 6번)은 낮고 가운데 칸은 높다. 6칸 열차의 6번이 일반 칸 취급이던 이전 동작이 아니다
+      expect(prediction.cars[5].rate).toBeCloseTo(prediction.cars[0].rate);
+      expect(prediction.cars[5].rate).toBeLessThan(prediction.cars[4].rate);
+    });
+
+    it('칸 수를 모르면(null) 칸별 예측을 하지 않지만 역 혼잡도는 돌려준다', () => {
+      const prediction = provider.predictCars('GJ', 'S_1', 'DOWN', mondayMorning, [], null);
+
+      expect(prediction.cars).toEqual([]);
+      expect(prediction.ratePercent).toBeGreaterThan(0);
+    });
+
+    it('생략하면 기본 10칸이다(이전 호출과 같음)', () => {
+      expect(provider.predictCars('02', 'S_1', 'DOWN', mondayMorning).cars).toHaveLength(10);
+    });
+  });
 });

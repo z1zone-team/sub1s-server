@@ -50,6 +50,7 @@ import {
   SubwayRouteOptionDto,
 } from './dto/route-search-response.dto';
 import { parseIsoAsKst, toKstIso } from '../../common/utils/kst';
+import { trainCarCount } from '../../domain/congestion/services/train-composition';
 
 /** 로그인하지 않은 사용자에게 주는 모드. 추천(PERSONAL)은 개인화 기능이라 로그인한 사용자에게만 준다 */
 const PUBLIC_ROUTE_MODES: RouteMode[] = ['OPTIMAL', 'COMFORTABLE', 'CHEAPEST'];
@@ -427,22 +428,28 @@ export class RouteService {
         }
       }
 
+      // 칸 수를 아는 노선만 칸별로 예측한다. 모르는 노선은 칸 추천 없이(0) 구간 혼잡도만 낸다
+      const carCount =
+        trainCarCount(seg.lineId, [seg.fromStationId, seg.toStationId]) ??
+        null;
       const prediction = this.congestionProvider.predictCars(
         seg.lineId,
         seg.fromStationId,
         seg.direction,
         segmentDepartureEpoch,
         nextTransferCars,
+        carCount,
       );
 
-      let bestCar = prediction.cars[0];
+      let bestCar: (typeof prediction.cars)[number] | undefined =
+        prediction.cars[0];
       for (const car of prediction.cars) {
-        if (car.rate < bestCar.rate) {
+        if (car.rate < bestCar!.rate) {
           bestCar = car;
         }
       }
 
-      const recommendedCarNo = bestCar.carNo;
+      const recommendedCarNo = bestCar?.carNo ?? 0;
       const weakAc = isWeakAirConditioned(seg.lineId, recommendedCarNo);
       const rate = Math.round(prediction.ratePercent);
       const level = congestionLevel(rate);

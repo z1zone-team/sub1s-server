@@ -1,3 +1,4 @@
+import { trainCarCount } from '../src/domain/congestion/services/train-composition';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
@@ -109,7 +110,7 @@ describe('Route highlights (e2e)', () => {
     for (const option of options) expect(option.highlights).toEqual(['NO_TRANSFER']);
   });
 
-  it('lists ten cars on every ride segment and recommends the least crowded one', async () => {
+  it('lists the cars of the line on every ride segment and recommends the least crowded one', async () => {
     const res = await request(app.getHttpServer())
       .post('/api/v1/routes/search')
       .send(diverging)
@@ -121,7 +122,16 @@ describe('Route highlights (e2e)', () => {
           expect(segment.cars).toBeUndefined();
           continue;
         }
-        expect(segment.cars.map((car: { carNo: number }) => car.carNo)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+        // 칸 수는 호선마다 다르다. 칸 수를 모르는 노선은 칸별 예측도 추천 칸도 없다
+        const carCount = trainCarCount(segment.lineId, [segment.fromStationId, segment.toStationId]);
+        if (carCount === undefined) {
+          expect(segment.cars).toEqual([]);
+          expect(segment.recommendedCarNo).toBe(0);
+          continue;
+        }
+        expect(segment.cars.map((car: { carNo: number }) => car.carNo)).toEqual(
+          Array.from({ length: carCount }, (_, i) => i + 1),
+        );
         for (const car of segment.cars) {
           expect(car.rate).toBeGreaterThanOrEqual(0);
           expect(car.rate).toBeLessThanOrEqual(100);
