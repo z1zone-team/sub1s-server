@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { BusinessException } from '../../../common/exceptions/business.exception';
 import { RouteMode } from '../../../domain/subway/models/route';
 import { SubwayRouteOptionDto } from '../../route/dto/route-search-response.dto';
+import { CURRENT_LOCATION } from './intent-parser.service';
 
 export interface SttResult {
   transcript: string;
@@ -17,6 +18,11 @@ export interface TtsStream {
 export interface BriefingResult {
   briefingText: string;
   audioTtsUrl?: string;
+}
+
+/** 안내 문장에서 장소를 부르는 말. 현재 위치는 역이 아니므로 `역`을 붙이지 않는다 */
+function placeLabel(name: string): string {
+  return name === CURRENT_LOCATION ? name : `${name}역`;
 }
 
 @Injectable()
@@ -90,7 +96,7 @@ export class AiServiceAdapter {
     const modeLabel = modeLabelMap[intent.preferredMode] ?? '추천';
 
     const defaultBriefing =
-      `${intent.originStationName}역에서 ${intent.destStationName}역까지 ${modeLabel} 경로로 안내해 드릴게요. ` +
+      `${placeLabel(intent.originStationName)}에서 ${placeLabel(intent.destStationName)}까지 ${modeLabel} 경로로 안내해 드릴게요. ` +
       `총 약 ${durationMin}분 소요되며 환승은 ${route.transferCount}회입니다. 안전한 이동 되세요.`;
 
     if (this.aiServiceUrl) {
