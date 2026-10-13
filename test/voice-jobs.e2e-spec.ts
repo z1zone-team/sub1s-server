@@ -292,7 +292,7 @@ describe('Voice jobs (e2e)', () => {
     });
   });
 
-  it('AI 음성 인식이 빈 전사를 주면 503으로 알린다', async () => {
+  it('AI 음성 인식이 빈 전사를 주면 422 VOICE_NO_SPEECH로 알린다', async () => {
     aiBehavior = 'empty';
     const res = await submit().expect(202);
 
@@ -301,7 +301,7 @@ describe('Voice jobs (e2e)', () => {
       res.body.data.jobId,
     );
 
-    expect(event.error.code).toBe('AI_SERVICE_UNAVAILABLE');
+    expect(event.error).toMatchObject({ code: 'VOICE_NO_SPEECH', status: 422 });
   });
 
   it('텍스트 힌트가 있으면 AI 큐를 거치지 않는다', async () => {
