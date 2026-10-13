@@ -5,15 +5,25 @@ import {
   ExternalPlace,
   IPlaceSearchProvider,
 } from '../../domain/place/ports/IPlaceSearchProvider';
+import { classifyAddressQuery } from './address-query';
 
 const ENDPOINT = 'https://api.vworld.kr/req/search';
 const TIMEOUT_MS = 2000;
 const DEFAULT_DAILY_LIMIT = 10_000;
+// 같은 주소가 동(A동, B동)마다 따로 오므로 합친 뒤에도 limit개가 남도록 넉넉히 받는다
+const ADDRESS_OVERFETCH = 3;
+const ADDRESS_MAX_SIZE = 50;
+const ROAD_ADDRESS_CATEGORY = '도로명주소';
+const PARCEL_ADDRESS_CATEGORY = '지번주소';
 
 interface VWorldItem {
   title?: string;
   category?: string;
-  address?: { road?: string; parcel?: string };
+  address?: {
+    road?: string;
+    parcel?: string;
+    bldnm?: string;
+  };
   point?: { x?: string; y?: string };
 }
 
@@ -38,19 +48,116 @@ export class VWorldPlaceProvider implements IPlaceSearchProvider {
       this.logger.warn('VWORLD_API_KEY is not set, place search is disabled');
       return [];
     }
+
+    const kind = classifyAddressQuery(query);
+    // 번지만 있는 입력은 장소 이름으로도 주소로도 찾을 수 없다
+    if (kind === 'NUMBER_ONLY') return [];
+
+    if (kind === 'ROAD' || kind === 'PARCEL') {
+      const addresses = await this.searchAddress(key, query, limit, kind);
+      if (addresses.length > 0) return addresses;
+      // 주소로 못 찾으면 장소 이름일 수 있다(예: 이름에 숫자가 들어간 장소)
+    }
+    return this.searchPlace(key, query, limit);
+  }
+
+  private async searchPlace(
+    key: string,
+    query: string,
+    limit: number,
+  ): Promise<ExternalPlace[]> {
+    const items = await this.request(key, { type: 'PLACE' }, query, limit);
+    return items.flatMap((item) => {
+      const point = this.pointOf(item);
+      if (!item.title || !point) return [];
+      return [
+        {
+          name: item.title,
+          address: item.address?.road || item.address?.parcel || '',
+          category: item.category,
+          ...point,
+        },
+      ];
+    });
+  }
+
+  /**
+   * 도로명(`ROAD`) 또는 지번(`PARCEL`) 주소 검색. 응답에는 이름(`title`)이 없어 주소를 이름으로 쓰고,
+   * 같은 주소가 동마다 반복되므로 하나로 합친다
+   */
+  private async searchAddress(
+    key: string,
+    query: string,
+    limit: number,
+    kind: 'ROAD' | 'PARCEL',
+  ): Promise<ExternalPlace[]> {
+    const size = Math.min(limit * ADDRESS_OVERFETCH, ADDRESS_MAX_SIZE);
+    const items = await this.request(
+      key,
+      { type: 'ADDRESS', category: kind },
+      query,
+      size,
+    );
+
+    const seen = new Set<string>();
+    const places: ExternalPlace[] = [];
+    for (const item of items) {
+      const point = this.pointOf(item);
+      const address = item.address;
+      if (!point || !address) continue;
+
+      const road = (address.road ?? '').replace(/\s*\([^)]*\)\s*$/, '').trim();
+      const parcel = (address.parcel ?? '').trim();
+      const building = (address.bldnm ?? '').trim();
+      const isRoad = kind === 'ROAD';
+      const name = isRoad ? road : parcel;
+      if (!name) continue;
+
+      const detail = [isRoad ? parcel : road, building]
+        .filter((part) => part.length > 0)
+        .join(' ');
+      const dedupeKey = `${name}|${detail}`;
+      if (seen.has(dedupeKey)) continue;
+      seen.add(dedupeKey);
+
+      places.push({
+        name,
+        address: detail,
+        category: isRoad ? ROAD_ADDRESS_CATEGORY : PARCEL_ADDRESS_CATEGORY,
+        ...point,
+      });
+      if (places.length >= limit) break;
+    }
+    return places;
+  }
+
+  private pointOf(item: VWorldItem): { lat: number; lng: number } | undefined {
+    const lng = Number(item.point?.x);
+    const lat = Number(item.point?.y);
+    return Number.isFinite(lat) && Number.isFinite(lng) ? { lat, lng } : undefined;
+  }
+
+  /** V-World 검색을 한 번 부른다. 실패하거나 일일 호출 수를 넘었으면 빈 목록이다 */
+  private async request(
+    key: string,
+    kind: { type: 'PLACE' | 'ADDRESS'; category?: string },
+    query: string,
+    size: number,
+  ): Promise<VWorldItem[]> {
     if (!this.consumeBudget()) return [];
     const params = new URLSearchParams({
       service: 'search',
       request: 'search',
       version: '2.0',
       crs: 'EPSG:4326',
-      type: 'PLACE',
+      type: kind.type,
       format: 'json',
-      size: String(limit),
+      size: String(size),
       page: '1',
       query,
       key,
     });
+    if (kind.category) params.set('category', kind.category);
     try {
       const res = await fetch(`${ENDPOINT}?${params.toString()}`, {
         signal: AbortSignal.timeout(TIMEOUT_MS),
@@ -67,22 +174,7 @@ export class VWorldPlaceProvider implements IPlaceSearchProvider {
         }
         return [];
       }
-      return (body.result?.items ?? []).flatMap((item) => {
-        const lng = Number(item.point?.x);
-        const lat = Number(item.point?.y);
-        if (!item.title || !Number.isFinite(lat) || !Number.isFinite(lng)) {
-          return [];
-        }
-        return [
-          {
-            name: item.title,
-            address: item.address?.road || item.address?.parcel || '',
-            category: item.category,
-            lat,
-            lng,
-          },
-        ];
-      });
+      return body.result?.items ?? [];
     } catch (error) {
       this.logger.warn(
         `V-World search error: ${error instanceof Error ? error.name : 'unknown'}`,
