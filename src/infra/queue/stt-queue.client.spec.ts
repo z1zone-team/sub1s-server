@@ -210,4 +210,73 @@ describe('SttQueueClient', () => {
     expect(mockQueue.close).toHaveBeenCalled();
     expect(mockEvents.close).toHaveBeenCalled();
   });
+
+  describe('완료 이벤트를 놓쳤을 때', () => {
+    // 이벤트가 영영 오지 않는 작업. QueueEvents가 연결 직후의 이벤트를 놓친 상황을 흉내 낸다
+    const jobWithoutEvent = () =>
+      jobReturning(undefined, {
+        waitUntilFinished: jest.fn(() => new Promise(() => undefined)),
+      });
+    const storedJob = (state: string, extra: Record<string, unknown> = {}) => ({
+      getState: jest.fn().mockResolvedValue(state),
+      ...extra,
+    });
+
+    beforeEach(() => jest.useFakeTimers());
+    afterEach(() => jest.useRealTimers());
+
+    it('작업 상태가 completed이면 이벤트가 없어도 결과를 돌려준다', async () => {
+      mockQueue.add.mockResolvedValue(jobWithoutEvent());
+      mockQueue.getJob.mockResolvedValue(
+        storedJob('completed', { returnvalue: { transcript: '강남에서 사당까지' } }),
+      );
+
+      const pending = make().transcribe(Buffer.from('a'));
+      await jest.advanceTimersByTimeAsync(1000);
+
+      await expect(pending).resolves.toEqual({
+        transcript: '강남에서 사당까지',
+        durationSec: undefined,
+      });
+      expect(mockQueue.getJob).toHaveBeenCalledWith('stt-1');
+    });
+
+    it('작업 상태가 failed이면 AI_SERVICE_UNAVAILABLE이다', async () => {
+      mockQueue.add.mockResolvedValue(jobWithoutEvent());
+      mockQueue.getJob.mockResolvedValue(
+        storedJob('failed', { failedReason: 'worker crashed' }),
+      );
+
+      const pending = make().transcribe(Buffer.from('a'));
+      const check = expectUnavailable(pending);
+      await jest.advanceTimersByTimeAsync(1000);
+
+      await check;
+    });
+
+    it('아직 처리 중이면 계속 확인하고 끝나면 결과를 돌려준다', async () => {
+      mockQueue.add.mockResolvedValue(jobWithoutEvent());
+      mockQueue.getJob
+        .mockResolvedValueOnce(storedJob('active'))
+        .mockRejectedValueOnce(new Error('valkey blip'))
+        .mockResolvedValue(
+          storedJob('completed', { returnvalue: { transcript: '안내' } }),
+        );
+
+      const pending = make().transcribe(Buffer.from('a'));
+      await jest.advanceTimersByTimeAsync(3000);
+
+      await expect(pending).resolves.toMatchObject({ transcript: '안내' });
+      expect(mockQueue.getJob).toHaveBeenCalledTimes(3);
+    });
+
+    it('이벤트로 먼저 끝나면 상태를 확인하지 않는다', async () => {
+      mockQueue.add.mockResolvedValue(jobReturning({ transcript: '안내' }));
+
+      await make().transcribe(Buffer.from('a'));
+      await jest.advanceTimersByTimeAsync(5000);
+
+      expect(mockQueue.getJob).not.toHaveBeenCalled();
+    });
+  });
 });

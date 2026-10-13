@@ -16,6 +16,8 @@ export interface QueuedSttResult {
 
 const DEFAULT_AI_QUEUE = 'subway-voice';
 const DEFAULT_STT_TIMEOUT_MS = 25000;
+/** 완료 이벤트를 놓쳤을 때를 대비해 작업 상태를 확인하는 간격 */
+const POLL_INTERVAL_MS = 1000;
 
 /**
  * AI 서비스(Python 워커)의 `subway-voice` 큐에 `stt` 작업을 넣고 전사 결과를 기다린다.
@@ -60,7 +62,7 @@ export class SttQueueClient implements OnModuleDestroy {
         },
       );
       jobId = job.id;
-      result = await job.waitUntilFinished(events, this.timeoutMs);
+      result = await this.waitForResult(queue, job, events);
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : String(error);
       this.logger.warn(`STT queue job ${jobId ?? '-'} failed: ${message}`);
@@ -68,6 +70,53 @@ export class SttQueueClient implements OnModuleDestroy {
       throw this.unavailable();
     }
     return this.parse(result);
+  }
+
+  /**
+   * 작업이 끝나기를 기다린다. 완료 이벤트(QueueEvents)를 기다리면서, 이벤트를 놓쳐도 끝난 작업을
+   * 찾도록 주기적으로 작업 상태도 확인한다. QueueEvents는 연결 직후 읽기를 시작하기 전에 일어난 이벤트를
+   * 못 받을 수 있어서(CI에서 AI 큐 작업은 completed인데 서버가 계속 기다린 사례, 서버 이슈 #154)
+   * 이벤트만 믿으면 제한 시간까지 멈춘다
+   */
+  private waitForResult(
+    queue: Queue,
+    job: Awaited<ReturnType<Queue['add']>>,
+    events: QueueEvents,
+  ): Promise<unknown> {
+    return new Promise<unknown>((resolve, reject) => {
+      let settled = false;
+      let timer: NodeJS.Timeout | undefined;
+      const settle = <T>(finish: (value: T) => void) => (value: T) => {
+        if (settled) return;
+        settled = true;
+        if (timer) clearTimeout(timer);
+        finish(value);
+      };
+      const ok = settle(resolve);
+      const fail = settle(reject);
+
+      job.waitUntilFinished(events, this.timeoutMs).then(ok, fail);
+
+      const poll = async (): Promise<void> => {
+        if (settled) return;
+        try {
+          const current = job.id ? await queue.getJob(job.id) : undefined;
+          const state = await current?.getState();
+          if (state === 'completed') {
+            ok(current?.returnvalue);
+            return;
+          }
+          if (state === 'failed') {
+            fail(new Error(current?.failedReason ?? 'STT job failed'));
+            return;
+          }
+        } catch {
+          // 이번 확인이 실패해도 이벤트 대기나 다음 확인이 이어 간다
+        }
+        if (!settled) timer = setTimeout(poll, POLL_INTERVAL_MS);
+      };
+      timer = setTimeout(poll, POLL_INTERVAL_MS);
+    });
   }
 
   async onModuleDestroy(): Promise<void> {
