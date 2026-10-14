@@ -85,4 +85,22 @@ jobs:
         run: pnpm test
 
       - name: E2E tests
-        run: pnpm test:e2e
+        id: e2e
+        run: pnpm test:e2e --json --outputFile=/tmp/sub1s-e2e-results.json
+
+      - name: Report failing E2E assertions
+        if: failure() && steps.e2e.outcome == 'failure'
+        run: |
+          node <<'JS'
+          const fs = require('node:fs');
+          const file = '/tmp/sub1s-e2e-results.json';
+          if (!fs.existsSync(file)) process.exit(0);
+          const report = JSON.parse(fs.readFileSync(file, 'utf8'));
+          const annotate = (message) => console.log('::error::' + message.slice(0, 12000)
+            .replace(/%/g, '%25').replace(/\r/g, '%0D').replace(/\n/g, '%0A'));
+          for (const suite of report.testResults) {
+            const failed = suite.assertionResults.filter((test) => test.status === 'failed');
+            for (const test of failed) annotate(test.fullName + '\n' + test.failureMessages.join('\n'));
+            if (suite.status === 'failed' && !failed.length) annotate(suite.name + '\n' + suite.message);
+          }
+          JS
