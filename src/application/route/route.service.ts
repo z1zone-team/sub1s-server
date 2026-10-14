@@ -884,7 +884,7 @@ export class RouteService {
           isWeakAirConditioned: false,
           congestionLevel: '여유',
           congestionRate: 0,
-          isEstimated: false,
+          isEstimated: true,
           walkCalories: metrics.calories,
           walkSteps: metrics.steps,
         },
@@ -893,6 +893,7 @@ export class RouteService {
       operationStatus: 'UNKNOWN',
       totalWalkDurationSec: metrics.durationSec,
       totalWalkDistanceKm: metrics.actualDistanceKm,
+      walkDistanceSource: 'ESTIMATED',
       totalCalories: metrics.calories,
       totalSteps: metrics.steps,
     };

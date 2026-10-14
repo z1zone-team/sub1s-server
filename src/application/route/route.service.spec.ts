@@ -620,6 +620,8 @@ describe('RouteService', () => {
 
       expect(result.options).toHaveLength(1);
       expect(result.options[0].mode).toBe('ONLY_WALK');
+      expect(result.options[0].walkDistanceSource).toBe('ESTIMATED');
+      expect(result.options[0].segments[0].isEstimated).toBe(true);
       expect(result.options[0].totalFare).toBe(0);
       expect(result.options[0].segments[0].lineId).toBe('WALK');
     });
