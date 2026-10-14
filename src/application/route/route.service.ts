@@ -523,8 +523,8 @@ export class RouteService {
     while (this.choices.size > 1000)
       this.choices.delete(this.choices.keys().next().value!);
     for (const option of validOptions) {
-      option.routeId = randomUUID();
-      if (userId)
+      option.routeId = userId ? randomUUID() : undefined;
+      if (userId && option.routeId)
         this.choices.set(option.routeId, {
           owner: userId,
           expires: Date.now() + 10 * 60_000,

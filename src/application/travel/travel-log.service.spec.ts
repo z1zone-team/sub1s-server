@@ -257,6 +257,34 @@ describe('TravelLogService', () => {
       ).toMatchObject({ durationSec: 180, routeSource: 'SELECTED' });
     });
 
+    it('does not trust unverified client distance or transfers for ranking points', async () => {
+      mockTrackingRepo.findById.mockResolvedValueOnce({
+        userId: 'user-1',
+        originStationId: '02_222',
+        destStationId: '02_221',
+        createdAt: new Date(),
+        routeOption: {
+          ...mockRouteOption,
+          totalDistanceKm: 100000,
+          transferCount: 99,
+        },
+      });
+      const result = await service.createLog('user-1', {
+        originStationId: '02_222',
+        destStationId: '02_221',
+        sessionId: 'legacy',
+      });
+      expect(mockRouteService.search).toHaveBeenCalledTimes(1);
+      expect(result.totalDistanceKm).toBe(1);
+      expect(result.transferCount).toBe(0);
+      expect(mockTravelLogRepo.saveTravelWithScores).toHaveBeenCalledWith(
+        expect.objectContaining({
+          choiceSnapshot: undefined,
+          totalDistanceKm: 1,
+        }),
+      );
+    });
+
     it('does not learn a choice from another user session', async () => {
       mockTrackingRepo.findById.mockResolvedValueOnce({
         userId: 'other',

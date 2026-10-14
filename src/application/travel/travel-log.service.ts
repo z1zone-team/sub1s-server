@@ -115,6 +115,7 @@ export class TravelLogService {
       if (
         session &&
         session.userId === userId &&
+        session.choiceSnapshot &&
         session.originStationId === dto.originStationId &&
         session.destStationId === dto.destStationId &&
         session.routeOption?.totalDistanceKm !== undefined &&

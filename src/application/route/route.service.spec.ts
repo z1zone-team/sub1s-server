@@ -663,6 +663,9 @@ describe('RouteService', () => {
         'OPTIMAL',
       ]);
       expect(result.recommendation).toBeUndefined();
+      expect(
+        result.options.every((option) => option.routeId === undefined),
+      ).toBe(true);
       expect(personalCall()).toBeUndefined();
       expect(mockUserRepo.findPreferences).not.toHaveBeenCalled();
     });
