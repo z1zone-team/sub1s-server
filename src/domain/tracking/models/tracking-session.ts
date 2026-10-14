@@ -1,3 +1,4 @@
+import { ChoiceSnapshot } from '../../subway/models/preference-model';
 import { RouteMode } from '../../subway/models/route';
 
 /** 추적이 경로에서 읽는 구간 정보. 경로 응답 DTO의 일부와 같은 모양이라 DTO를 그대로 넣을 수 있다 */
@@ -11,6 +12,9 @@ export interface TrackedRouteSegment {
 export interface TrackedRoute {
   mode: RouteMode;
   totalDurationSec: number;
+  totalDistanceKm?: number;
+  transferCount?: number;
+  routeId?: string;
   segments: TrackedRouteSegment[];
 }
 
@@ -29,6 +33,7 @@ export interface TrackingSession {
   sessionId: string;
   userId: string;
   routeOption: TrackedRoute;
+  choiceSnapshot?: ChoiceSnapshot;
   allStationIds: string[];
   originStationId: string;
   destStationId: string;

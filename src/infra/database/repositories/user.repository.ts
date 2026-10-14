@@ -1,3 +1,7 @@
+import {
+  PreferenceModel,
+  validPreference,
+} from '../../../domain/subway/models/preference-model';
 import { Injectable } from '@nestjs/common';
 import { Prisma, User } from '@prisma/client';
 import { NicknameTakenError } from '../../../domain/user/errors/nickname-taken.error';
@@ -29,6 +33,35 @@ function isUniqueViolation(error: unknown, target: UniqueTarget): boolean {
 @Injectable()
 export class UserRepository implements IUserRepository {
   constructor(private readonly prisma: PrismaService) {}
+
+  async findPreferenceModel(
+    userId: string,
+  ): Promise<{ model: PreferenceModel; inputKey: string } | null> {
+    const row = await this.prisma.userPreference.findUnique({
+      where: { userId },
+      select: { preferenceModelV2: true },
+    });
+    const stored = row?.preferenceModelV2 as unknown as
+      { model: unknown; inputKey: string } | undefined;
+    return stored &&
+      validPreference(stored.model) &&
+      typeof stored.inputKey === 'string'
+      ? { model: stored.model, inputKey: stored.inputKey }
+      : null;
+  }
+
+  async savePreferenceModel(
+    userId: string,
+    model: PreferenceModel,
+    inputKey: string,
+  ): Promise<void> {
+    if (!validPreference(model))
+      throw new Error('Invalid versioned preference model');
+    const vector = `[${model.vector.join(',')}]`;
+    const metadata = JSON.stringify({ model, inputKey });
+    await this.prisma
+      .$executeRaw`INSERT INTO user_preferences (user_id, preference_vector_v2, preference_model_v2, updated_at) VALUES (${userId}::uuid, ${vector}::vector, ${metadata}::jsonb, NOW()) ON CONFLICT (user_id) DO UPDATE SET preference_vector_v2 = EXCLUDED.preference_vector_v2, preference_model_v2 = EXCLUDED.preference_model_v2, updated_at = NOW()`;
+  }
 
   async findById(id: string): Promise<User | null> {
     return this.prisma.user.findUnique({

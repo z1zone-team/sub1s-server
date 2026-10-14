@@ -31,7 +31,8 @@ export class AStarRouteEngine extends MultiCriteriaRouteEngine {
     params: SearchParams,
   ): ((station: number) => number) | undefined {
     // the 'distance' cost comes from distance tables rather than coordinates, so no straight-line bound
-    if (params.metric === 'distance') return undefined;
+    if (params.metric === 'distance' || params.expressPreference)
+      return undefined;
     const { x, y, maxSpeed } = this.geometryOf(graph);
     if (maxSpeed <= 0) return undefined;
 

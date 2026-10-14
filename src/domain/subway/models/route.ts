@@ -1,5 +1,12 @@
 export type RouteMode =
-  'OPTIMAL' | 'COMFORTABLE' | 'PERSONAL' | 'CHEAPEST' | 'ONLY_WALK';
+  | 'OPTIMAL'
+  | 'COMFORTABLE'
+  | 'PERSONAL'
+  | 'CHEAPEST'
+  | 'ONLY_WALK'
+  | 'FASTEST'
+  | 'LEAST_WALK'
+  | 'FEWEST_TRANSFERS';
 
 export const ROUTE_MODES: readonly RouteMode[] = [
   'OPTIMAL',
@@ -7,12 +14,18 @@ export const ROUTE_MODES: readonly RouteMode[] = [
   'PERSONAL',
   'CHEAPEST',
   'ONLY_WALK',
+  'FASTEST',
+  'LEAST_WALK',
+  'FEWEST_TRANSFERS',
 ];
 
 export const isRouteMode = (value: unknown): value is RouteMode =>
-  typeof value === 'string' && (ROUTE_MODES as readonly string[]).includes(value);
+  typeof value === 'string' &&
+  (ROUTE_MODES as readonly string[]).includes(value);
 
 export interface RouteWeights {
+  expressPreference?: number;
+  walkingWeight?: number;
   // congestion avoidance weight (wc)
   congestion: number;
   // transfer penalty in seconds (wt)
@@ -92,7 +105,15 @@ export class UnknownStationError extends Error {
 }
 
 export const ROUTE_MODE_WEIGHTS: Record<
-  Exclude<RouteMode, 'PERSONAL' | 'CHEAPEST' | 'ONLY_WALK'>,
+  Exclude<
+    RouteMode,
+    | 'PERSONAL'
+    | 'CHEAPEST'
+    | 'ONLY_WALK'
+    | 'FASTEST'
+    | 'LEAST_WALK'
+    | 'FEWEST_TRANSFERS'
+  >,
   RouteWeights
 > = {
   OPTIMAL: { congestion: 0, transferSec: 180 },

@@ -126,7 +126,10 @@ describe('RouteService', () => {
         RouteService,
         WalkingService,
         { provide: SUBWAY_ROUTE_ENGINE, useValue: mockEngine },
-        { provide: OperationStatusService, useValue: { annotate: jest.fn().mockResolvedValue(undefined) } },
+        {
+          provide: OperationStatusService,
+          useValue: { annotate: jest.fn().mockResolvedValue(undefined) },
+        },
         { provide: SubwayGraphService, useValue: mockGraphService },
         { provide: USER_REPOSITORY, useValue: mockUserRepo },
         { provide: TRAVEL_LOG_REPOSITORY, useValue: mockTravelLogRepo },
@@ -140,7 +143,32 @@ describe('RouteService', () => {
     service = module.get<RouteService>(RouteService);
   });
 
-  it('computes and returns all 4 route options for a signed-in user', async () => {
+  it('keeps only offered alternatives and restricts choice snapshots to their owner and lifetime', async () => {
+    const result = await service.search(
+      { originStationId: '02_222', destinationStationId: '02_221' },
+      'user-1',
+    );
+    const option = result.options[0];
+    expect(service.getChosenRoute(option.routeId, 'user-1')).toBe(option);
+    expect(
+      service.getChoiceSnapshot(option.routeId, 'user-1')?.alternatives,
+    ).toHaveLength(result.options.length);
+    expect(service.getChosenRoute(option.routeId, 'other')).toBeUndefined();
+    expect(service.getChoiceSnapshot(option.routeId, 'other')).toBeUndefined();
+    const clock = jest
+      .spyOn(Date, 'now')
+      .mockReturnValue(Date.now() + 11 * 60_000);
+    try {
+      expect(service.getChosenRoute(option.routeId, 'user-1')).toBeUndefined();
+      expect(
+        service.getChoiceSnapshot(option.routeId, 'user-1'),
+      ).toBeUndefined();
+    } finally {
+      clock.mockRestore();
+    }
+  });
+
+  it('computes and returns all 7 route options for a signed-in user', async () => {
     const result = await service.search(
       {
         originStationId: '02_222',
@@ -149,7 +177,7 @@ describe('RouteService', () => {
       'user-1',
     );
 
-    expect(result.options).toHaveLength(4);
+    expect(result.options).toHaveLength(7);
     const modes = result.options.map((opt) => opt.mode);
     expect(modes).toEqual(
       expect.arrayContaining([
@@ -177,7 +205,11 @@ describe('RouteService', () => {
   });
 
   describe('highlights', () => {
-    const ride = (lineId: string, durationSec: number, direction: 'UP' | 'DOWN' = 'UP') => ({
+    const ride = (
+      lineId: string,
+      durationSec: number,
+      direction: 'UP' | 'DOWN' = 'UP',
+    ) => ({
       lineId,
       direction,
       isExpress: false,
@@ -193,15 +225,30 @@ describe('RouteService', () => {
       ...over,
     });
     const search = () =>
-      service.search({ originStationId: '02_222', destinationStationId: '02_221' });
-    const byMode = (options: { mode: string; highlights: string[] }[], mode: string) =>
-      options.find((option) => option.mode === mode)?.highlights;
+      service.search({
+        originStationId: '02_222',
+        destinationStationId: '02_221',
+      });
+    const byMode = (
+      options: { mode: string; highlights: string[] }[],
+      mode: string,
+    ) => options.find((option) => option.mode === mode)?.highlights;
 
     it('tags the options by comparing them with each other', async () => {
       mockEngine.findRoute.mockImplementation(async (query) =>
         query.mode === 'OPTIMAL'
-          ? result('OPTIMAL', { segments: [ride('02', 1200)], totalDurationSec: 1200, transferCount: 2, totalFare: 1600 })
-          : result(query.mode, { segments: [ride('02', 1800)], totalDurationSec: 1800, transferCount: 1, totalFare: 1600 }),
+          ? result('OPTIMAL', {
+              segments: [ride('02', 1200)],
+              totalDurationSec: 1200,
+              transferCount: 2,
+              totalFare: 1600,
+            })
+          : result(query.mode, {
+              segments: [ride('02', 1800)],
+              totalDurationSec: 1800,
+              transferCount: 1,
+              totalFare: 1600,
+            }),
       );
 
       const { options } = await search();
@@ -213,7 +260,8 @@ describe('RouteService', () => {
     it('tags NO_TRANSFER on a route without transfers', async () => {
       const { options } = await search();
 
-      for (const option of options) expect(option.highlights).toEqual(['NO_TRANSFER']);
+      for (const option of options)
+        expect(option.highlights).toEqual(['NO_TRANSFER']);
     });
 
     it('counts the walk between lines as walking time', async () => {
@@ -242,8 +290,14 @@ describe('RouteService', () => {
     it('tags WEAK_AC_CAR when most of the ride is on lines with weak air-conditioned cars', async () => {
       mockEngine.findRoute.mockImplementation(async (query) =>
         query.mode === 'OPTIMAL'
-          ? result('OPTIMAL', { segments: [ride('03', 700), ride('02', 300)], transferCount: 1 })
-          : result(query.mode, { segments: [ride('02', 700), ride('03', 300)], transferCount: 1 }),
+          ? result('OPTIMAL', {
+              segments: [ride('03', 700), ride('02', 300)],
+              transferCount: 1,
+            })
+          : result(query.mode, {
+              segments: [ride('02', 700), ride('03', 300)],
+              transferCount: 1,
+            }),
       );
 
       const { options } = await search();
@@ -267,7 +321,10 @@ describe('RouteService', () => {
 
   describe('cars', () => {
     const search = () =>
-      service.search({ originStationId: '02_222', destinationStationId: '02_221' });
+      service.search({
+        originStationId: '02_222',
+        destinationStationId: '02_221',
+      });
 
     it('lists the predicted congestion of every car on a ride segment, with the rate rounded', async () => {
       mockCongestionProvider.predictCars.mockReturnValue({
@@ -304,7 +361,10 @@ describe('RouteService', () => {
 
       expect(segment.recommendedCarNo).toBe(2);
       const lowest = Math.min(...(segment.cars ?? []).map((car) => car.rate));
-      expect(segment.cars?.find((car) => car.carNo === segment.recommendedCarNo)?.rate).toBe(lowest);
+      expect(
+        segment.cars?.find((car) => car.carNo === segment.recommendedCarNo)
+          ?.rate,
+      ).toBe(lowest);
     });
 
     it('passes the number of cars of the line to the congestion provider', async () => {
@@ -330,10 +390,7 @@ describe('RouteService', () => {
         (...args: unknown[]) => ({
           ratePercent: 42,
           source: 'STATISTICS',
-          cars:
-            args[5] === null
-              ? []
-              : [{ carNo: 1, rate: 35, level: '여유' }],
+          cars: args[5] === null ? [] : [{ carNo: 1, rate: 35, level: '여유' }],
         }),
       );
 
@@ -361,7 +418,9 @@ describe('RouteService', () => {
 
       const [segment] = (await search()).options[0].segments;
 
-      expect(segment.cars?.map((car) => [car.carNo, car.isWeakAirConditioned])).toEqual([
+      expect(
+        segment.cars?.map((car) => [car.carNo, car.isWeakAirConditioned]),
+      ).toEqual([
         [4, true],
         [5, false],
         [7, true],
@@ -375,7 +434,9 @@ describe('RouteService', () => {
         destinationStationId: '02_221',
       });
 
-      const walk = options.flatMap((option) => option.segments).find((s) => s.lineId === 'WALK');
+      const walk = options
+        .flatMap((option) => option.segments)
+        .find((s) => s.lineId === 'WALK');
       expect(walk).toBeDefined();
       expect(walk?.cars).toBeUndefined();
     });
@@ -593,9 +654,14 @@ describe('RouteService', () => {
     it('does not offer the recommended route to a user who is not signed in', async () => {
       const result = await service.search(request);
 
-      expect(result.options.map((option) => option.mode).sort()).toEqual(
-        ['CHEAPEST', 'COMFORTABLE', 'OPTIMAL'],
-      );
+      expect(result.options.map((option) => option.mode).sort()).toEqual([
+        'CHEAPEST',
+        'COMFORTABLE',
+        'FASTEST',
+        'FEWEST_TRANSFERS',
+        'LEAST_WALK',
+        'OPTIMAL',
+      ]);
       expect(result.recommendation).toBeUndefined();
       expect(personalCall()).toBeUndefined();
       expect(mockUserRepo.findPreferences).not.toHaveBeenCalled();
@@ -608,7 +674,7 @@ describe('RouteService', () => {
         congestion: 1.5,
         transferSec: 240,
       });
-      expect(result.recommendation).toEqual({
+      expect(result.recommendation).toMatchObject({
         context: 'WEEKDAY_MIDDAY',
         reasons: [],
         usedHistory: false,
@@ -630,8 +696,8 @@ describe('RouteService', () => {
         transferSec: 420,
       });
       expect(result.recommendation?.reasons).toEqual([
-        'PREF_FEW_TRANSFERS',
         'PREF_UNCROWDED',
+        'PREF_FEW_TRANSFERS',
       ]);
     });
 
@@ -660,7 +726,7 @@ describe('RouteService', () => {
 
       expect(personalCall()?.weights?.congestion).toBe(2);
       expect(result.recommendation?.usedHistory).toBe(true);
-      expect(result.recommendation?.reasons).toEqual(['HISTORY_COMFORT']);
+      expect(result.recommendation?.reasons).toEqual([]);
     });
 
     it('ignores stored modes it does not know', async () => {
@@ -681,7 +747,7 @@ describe('RouteService', () => {
 
       const result = await service.search(request, 'user-1');
 
-      expect(result.options).toHaveLength(4);
+      expect(result.options).toHaveLength(7);
       expect(personalCall()?.weights).toEqual({
         congestion: 1.5,
         transferSec: 240,

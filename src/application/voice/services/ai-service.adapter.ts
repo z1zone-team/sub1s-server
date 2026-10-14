@@ -94,6 +94,9 @@ export class AiServiceAdapter {
       PERSONAL: '개인 맞춤',
       CHEAPEST: '최소 비용',
       ONLY_WALK: '도보 전용',
+      FASTEST: '최소시간',
+      LEAST_WALK: '최소 도보',
+      FEWEST_TRANSFERS: '최소 환승',
     };
     const modeLabel = modeLabelMap[intent.preferredMode] ?? '추천';
 

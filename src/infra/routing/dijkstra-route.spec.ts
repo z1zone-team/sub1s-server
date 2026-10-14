@@ -208,7 +208,9 @@ describe('DijkstraRouteEngine', () => {
       });
 
       expect(result.stationIds).toEqual(['X_O', 'Y_O', 'Y_D', 'X_D']);
-      expect(result.transferCount).toBe(2);
+      // Walking to the first train and from the last train is not a train change.
+      expect(result.transferCount).toBe(0);
+      expect(result.transfers).toHaveLength(2);
       expect(result.totalDurationSec).toBe(760);
     });
 

@@ -22,6 +22,7 @@ import {
 } from '../../domain/subway/ports/ICongestionProvider';
 import { ISubwayRouteEngine } from '../../domain/subway/ports/ISubwayRouteEngine';
 import { MinPriorityQueue } from './min-priority-queue';
+import { objectiveSearch } from './objective-search';
 
 export interface SubwayGraphSource {
   getGraph(): SubwayGraph;
@@ -34,6 +35,8 @@ export const FARE_RULE = Symbol('FARE_RULE');
 // 'distance' ranks routes by kilometers (the integrated fare grows with distance).
 export interface SearchParams {
   metric: 'time' | 'distance';
+  expressPreference?: number;
+  walkingWeight?: number;
   congestion: number;
   transferSec: number;
   blockedPairs?: Set<number>;
@@ -121,6 +124,37 @@ export abstract class MultiCriteriaRouteEngine implements ISubwayRouteEngine {
     const departureMs = query.departureAt?.getTime() ?? Date.now();
     const totals = { visitedNodes: 0, relaxedEdges: 0 };
 
+    if (
+      query.mode === 'FASTEST' ||
+      query.mode === 'LEAST_WALK' ||
+      query.mode === 'FEWEST_TRANSFERS'
+    ) {
+      const result = objectiveSearch(
+        graph,
+        origin,
+        destination,
+        query.mode,
+        (steps) => this.toResult(graph, steps, query.mode, query.weekend),
+        blockedPairs,
+        totals,
+      );
+      return {
+        result,
+        stats: {
+          ...totals,
+          cost:
+            query.mode === 'LEAST_WALK'
+              ? result.transfers.reduce(
+                  (sum, transfer) => sum + transfer.walkingDurationSec * 1.2,
+                  0,
+                )
+              : query.mode === 'FEWEST_TRANSFERS'
+                ? result.transferCount
+                : result.totalDurationSec,
+        },
+      };
+    }
+
     if (query.mode === 'CHEAPEST') {
       const best = this.findCheapest(
         graph,
@@ -142,6 +176,8 @@ export abstract class MultiCriteriaRouteEngine implements ISubwayRouteEngine {
       {
         metric: 'time',
         congestion: weights.congestion,
+        expressPreference: weights.expressPreference ?? 0,
+        walkingWeight: weights.walkingWeight ?? 0,
         transferSec: weights.transferSec,
         blockedPairs,
         departureMs,
@@ -158,6 +194,8 @@ export abstract class MultiCriteriaRouteEngine implements ISubwayRouteEngine {
   private weightsFor(query: RouteQuery): {
     congestion: number;
     transferSec: number;
+    expressPreference?: number;
+    walkingWeight?: number;
   } {
     if (query.mode === 'PERSONAL') {
       const weights = query.weights;
@@ -167,9 +205,25 @@ export abstract class MultiCriteriaRouteEngine implements ISubwayRouteEngine {
       if (weights.congestion < 0 || weights.transferSec < 0) {
         throw new InvalidRouteQueryError('weights must not be negative');
       }
+      if (
+        !Number.isFinite(weights.congestion) ||
+        !Number.isFinite(weights.transferSec) ||
+        !Number.isFinite(weights.expressPreference ?? 0) ||
+        (weights.expressPreference ?? 0) < 0 ||
+        (weights.expressPreference ?? 0) > 1 ||
+        !Number.isFinite(weights.walkingWeight ?? 0) ||
+        (weights.walkingWeight ?? 0) < 0
+      )
+        throw new InvalidRouteQueryError('Invalid personal preference weights');
       return weights;
     }
-    if (query.mode === 'CHEAPEST' || query.mode === 'ONLY_WALK') {
+    if (
+      query.mode === 'CHEAPEST' ||
+      query.mode === 'ONLY_WALK' ||
+      query.mode === 'FASTEST' ||
+      query.mode === 'LEAST_WALK' ||
+      query.mode === 'FEWEST_TRANSFERS'
+    ) {
       return ROUTE_MODE_WEIGHTS.OPTIMAL;
     }
     return ROUTE_MODE_WEIGHTS[query.mode];
@@ -327,6 +381,8 @@ export abstract class MultiCriteriaRouteEngine implements ISubwayRouteEngine {
           );
           cost = edge.durationSec * (1 + params.congestion * level);
         }
+        if (edge.isExpress && params.expressPreference)
+          cost *= 1 - 0.25 * params.expressPreference;
         const next = currentCost + cost;
         if (next >= dist[edge.toIndex]) continue;
         dist[edge.toIndex] = next;
@@ -347,7 +403,8 @@ export abstract class MultiCriteriaRouteEngine implements ISubwayRouteEngine {
         const cost =
           params.metric === 'distance'
             ? DISTANCE_METRIC_TRANSFER_COST
-            : transfer.walkingDurationSec + params.transferSec;
+            : transfer.walkingDurationSec * (1 + (params.walkingWeight ?? 0)) +
+              params.transferSec;
         const next = currentCost + cost;
         if (next >= dist[transfer.toIndex]) continue;
         dist[transfer.toIndex] = next;
@@ -426,7 +483,12 @@ export abstract class MultiCriteriaRouteEngine implements ISubwayRouteEngine {
         distanceKm: edge.distanceKm,
       });
 
-      if (open && open.lineId === edge.lineId) {
+      if (
+        open &&
+        open.lineId === edge.lineId &&
+        open.isExpress === edge.isExpress &&
+        open.direction === edge.direction
+      ) {
         open.toStationId = toId;
         open.stationCount += 1;
         open.durationSec += edge.durationSec;
@@ -456,7 +518,17 @@ export abstract class MultiCriteriaRouteEngine implements ISubwayRouteEngine {
       transfers,
       totalDurationSec,
       totalDistanceKm,
-      transferCount: transfers.length,
+      transferCount: steps.reduce(
+        (state, step) =>
+          step.isTransfer
+            ? { ...state, pending: state.ridden }
+            : {
+                ridden: true,
+                pending: false,
+                count: state.count + (state.pending ? 1 : 0),
+              },
+        { ridden: false, pending: false, count: 0 },
+      ).count,
       totalFare: calculateFare(totalDistanceKm, this.fareRule, ridden, {
         weekend,
       }),

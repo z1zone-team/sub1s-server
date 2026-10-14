@@ -7,7 +7,7 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
-import { RouteMode } from '../../../domain/subway/models/route';
+import { RouteMode, ROUTE_MODES } from '../../../domain/subway/models/route';
 
 export class RouteSearchRequestDto {
   @ApiPropertyOptional({
@@ -79,12 +79,13 @@ export class RouteSearchRequestDto {
   destinationName?: string;
 
   @ApiPropertyOptional({
-    description: '경로 탐색 모드 (OPTIMAL, COMFORTABLE, PERSONAL, CHEAPEST, ONLY_WALK)',
-    enum: ['OPTIMAL', 'COMFORTABLE', 'PERSONAL', 'CHEAPEST', 'ONLY_WALK'],
+    description:
+      '경로 탐색 모드 (OPTIMAL, COMFORTABLE, PERSONAL, CHEAPEST, ONLY_WALK)',
+    enum: ROUTE_MODES,
     example: 'OPTIMAL',
   })
   @IsOptional()
-  @IsIn(['OPTIMAL', 'COMFORTABLE', 'PERSONAL', 'CHEAPEST', 'ONLY_WALK'])
+  @IsIn(ROUTE_MODES)
   routeMode?: RouteMode;
 
   @ApiPropertyOptional({

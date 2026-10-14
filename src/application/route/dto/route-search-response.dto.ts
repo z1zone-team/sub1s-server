@@ -11,7 +11,10 @@ import {
 } from '../../../domain/subway/models/route-highlight';
 
 export class OperationNoticeDto {
-  @ApiProperty({ description: '서울교통공사 공지 제목', example: '2호선 이대역 안전문장애로 열차 무정차 통과중' })
+  @ApiProperty({
+    description: '서울교통공사 공지 제목',
+    example: '2호선 이대역 안전문장애로 열차 무정차 통과중',
+  })
   title!: string;
 
   @ApiProperty({ description: '공지가 올라온 시각 (KST ISO)' })
@@ -22,7 +25,10 @@ const OPERATION_STATUS_DESCRIPTION =
   'NORMAL 서울교통공사가 공지한 이상 상황이 없음, DISRUPTED 지연·무정차 등 진행 중인 공지가 이 구간에 걸림, UNKNOWN 공지로 알 수 없음(도보, 공지가 빠짐없이 오지 않는 노선, 공지를 가져오지 못함)';
 
 export class SegmentCarDto {
-  @ApiProperty({ description: '칸 번호 (1부터 그 열차의 칸 수까지)', example: 3 })
+  @ApiProperty({
+    description: '칸 번호 (1부터 그 열차의 칸 수까지)',
+    example: 3,
+  })
   carNo!: number;
 
   @ApiProperty({ description: '혼잡도 % (0~100)', example: 42 })
@@ -73,7 +79,8 @@ export class PathSegmentDto {
   distanceKm!: number;
 
   @ApiProperty({
-    description: '추천 탑승 칸 번호 (1부터 그 열차의 칸 수까지). 도보 구간이나 칸 수를 모르는 노선은 0',
+    description:
+      '추천 탑승 칸 번호 (1부터 그 열차의 칸 수까지). 도보 구간이나 칸 수를 모르는 노선은 0',
     example: 4,
   })
   recommendedCarNo!: number;
@@ -140,6 +147,16 @@ export class PathSegmentDto {
 }
 
 export class SubwayRouteOptionDto {
+  familiarity?: number;
+  @ApiPropertyOptional({ description: '서버 선택 기록 식별자' })
+  routeId?: string;
+
+  @ApiPropertyOptional({
+    description: '도보거리 출처. 환승 시간 환산 또는 좌표 우회율 모델',
+    enum: ['ESTIMATED', 'NONE'],
+  })
+  walkDistanceSource?: 'ESTIMATED' | 'NONE';
+
   @ApiProperty({
     description:
       '경로 모드 (OPTIMAL, COMFORTABLE, PERSONAL, CHEAPEST, ONLY_WALK)',
@@ -233,6 +250,23 @@ export class SubwayRouteOptionDto {
 }
 
 export class RecommendationMetaDto {
+  @ApiPropertyOptional({ description: '개인 선호 모델 버전' })
+  modelVersion?: string;
+  @ApiPropertyOptional({
+    description: '선호 산출 출처',
+    enum: ['AI', 'SURVEY'],
+  })
+  preferenceSource?: 'AI' | 'SURVEY';
+  @ApiPropertyOptional({
+    description: '자료 부족으로 반영하지 못한 설문 코드',
+    type: [String],
+  })
+  unsupportedPreferences?: string[];
+  @ApiPropertyOptional({
+    description: '서버에서 개인 기준으로 고른 경로 식별자',
+  })
+  personalRouteId?: string;
+
   @ApiProperty({
     description:
       '출발 시각의 상황 (WEEKDAY_MORNING_RUSH 등교와 출근, WEEKDAY_MIDDAY 낮 공강, WEEKDAY_EVENING_RUSH 하교와 퇴근, WEEKDAY_NIGHT, LATE_NIGHT, EARLY_MORNING, WEEKEND_DAYTIME, WEEKEND_OTHER)',
@@ -269,6 +303,10 @@ export class RecommendationMetaDto {
 }
 
 export class RouteSearchResultDto {
+  @ApiPropertyOptional({ description: '종합 평가 범위' })
+  candidateScope?: string;
+  @ApiPropertyOptional({ description: '공통 종합 최적 경로 식별자' })
+  commonRouteId?: string;
   @ApiProperty({
     description: '추천 경로 옵션 목록',
     type: [SubwayRouteOptionDto],
