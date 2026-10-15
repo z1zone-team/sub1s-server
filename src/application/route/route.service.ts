@@ -69,6 +69,7 @@ import {
   SubwayRouteOptionDto,
 } from './dto/route-search-response.dto';
 import { parseIsoAsKst, toKstIso } from '../../common/utils/kst';
+import { leastCrowdedCar } from '../../domain/congestion/services/car-congestion';
 import { trainCarCount } from '../../domain/congestion/services/train-composition';
 
 /** 로그인하지 않은 사용자에게 주는 모드. 추천(PERSONAL)은 개인화 기능이라 로그인한 사용자에게만 준다 */
@@ -91,6 +92,13 @@ const ALL_ROUTE_MODES: RouteMode[] = [
 ];
 /** 개인화에 쓰는 최근 선택 이력의 건수 */
 const HISTORY_LIMIT = 20;
+
+/** 추천 칸이 같은 값으로 동률일 때 칸을 고르는 기준. 같은 구간은 항상 같은 칸이 나온다 */
+const carSeed = (segment: {
+  lineId: string;
+  fromStationId: string;
+  direction: string;
+}): string => `${segment.lineId}:${segment.fromStationId}:${segment.direction}`;
 
 @Injectable()
 export class RouteService {
@@ -505,11 +513,12 @@ export class RouteService {
         };
         if (importance(personalization!.model, 'weakAc') > 0.5) {
           preferred.segments.forEach((segment) => {
-            const cars = segment.cars
-              ?.filter((car) => car.isWeakAirConditioned)
-              .sort((a, b) => a.rate - b.rate || a.carNo - b.carNo);
-            if (cars?.length) {
-              segment.recommendedCarNo = cars[0].carNo;
+            const weakAcCar = leastCrowdedCar(
+              segment.cars?.filter((car) => car.isWeakAirConditioned) ?? [],
+              carSeed(segment),
+            );
+            if (weakAcCar) {
+              segment.recommendedCarNo = weakAcCar.carNo;
               segment.isWeakAirConditioned = true;
             }
           });
@@ -738,14 +747,7 @@ export class RouteService {
       const availableCars = preferredCars.length
         ? preferredCars
         : prediction.cars;
-      let bestCar: (typeof prediction.cars)[number] | undefined =
-        availableCars[0];
-      for (const car of availableCars) {
-        if (car.rate < bestCar!.rate) {
-          bestCar = car;
-        }
-      }
-
+      const bestCar = leastCrowdedCar(availableCars, carSeed(seg));
       const recommendedCarNo = bestCar?.carNo ?? 0;
       const weakAc = isWeakAirConditioned(seg.lineId, recommendedCarNo);
       const rate = Math.round(prediction.ratePercent);

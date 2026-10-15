@@ -359,7 +359,11 @@ describe('RouteService', () => {
 
       const [segment] = (await search()).options[0].segments;
 
-      expect(segment.recommendedCarNo).toBe(2);
+      // 2번과 3번이 같은 값이면 둘 중 하나를 고르고, 같은 구간은 항상 같은 칸이다
+      expect([2, 3]).toContain(segment.recommendedCarNo);
+      expect((await search()).options[0].segments[0].recommendedCarNo).toBe(
+        segment.recommendedCarNo,
+      );
       const lowest = Math.min(...(segment.cars ?? []).map((car) => car.rate));
       expect(
         segment.cars?.find((car) => car.carNo === segment.recommendedCarNo)

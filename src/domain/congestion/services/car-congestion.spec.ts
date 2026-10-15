@@ -2,6 +2,7 @@ import {
   END_CAR_FACTOR,
   TRANSFER_CAR_FACTOR,
   carLocationFactor,
+  leastCrowdedCar,
   predictCars,
 } from './car-congestion';
 
@@ -67,4 +68,80 @@ describe('칸 수가 다른 열차', () => {
     expect(cars.every((car) => car.rate === cars[0].rate)).toBe(true);
   });
 });
+});
+
+describe('leastCrowdedCar', () => {
+  // 환승 계단 칸이 없으면 1번과 마지막 칸이 같은 값으로 가장 낮다
+  const cars = predictCars(60);
+
+  it('returns the car with the lowest rate', () => {
+    const picked = leastCrowdedCar(
+      [
+        { carNo: 1, rate: 50 },
+        { carNo: 2, rate: 30 },
+        { carNo: 3, rate: 40 },
+      ],
+      'any-seed',
+    );
+
+    expect(picked?.carNo).toBe(2);
+  });
+
+  it('picks one of the tied end cars and the same one for the same seed', () => {
+    const first = leastCrowdedCar(cars, '02:02_222:INNER');
+
+    expect([1, 10]).toContain(first?.carNo);
+    expect(leastCrowdedCar(cars, '02:02_222:INNER')?.carNo).toBe(first?.carNo);
+  });
+
+  it('does not always choose the same end car across stations', () => {
+    const picked = new Set(
+      Array.from(
+        { length: 40 },
+        (_, i) => leastCrowdedCar(cars, `02:02_${200 + i}:INNER`)?.carNo,
+      ),
+    );
+
+    expect(picked).toEqual(new Set([1, 10]));
+  });
+
+  it('does not depend on the order of the cars', () => {
+    expect(leastCrowdedCar([...cars].reverse(), 'seed')?.carNo).toBe(
+      leastCrowdedCar(cars, 'seed')?.carNo,
+    );
+  });
+
+  it('treats rates that differ only by rounding noise as tied', () => {
+    const picked = new Set(
+      Array.from(
+        { length: 40 },
+        (_, i) =>
+          leastCrowdedCar(
+            [
+              { carNo: 1, rate: 30 },
+              { carNo: 2, rate: 30 + 1e-12 },
+              { carNo: 3, rate: 55 },
+            ],
+            `seed-${i}`,
+          )?.carNo,
+      ),
+    );
+
+    expect(picked).toEqual(new Set([1, 2]));
+  });
+
+  it('picks the only lowest car whatever the seed', () => {
+    const lone = [
+      { carNo: 1, rate: 40 },
+      { carNo: 2, rate: 20 },
+    ];
+
+    for (let i = 0; i < 10; i += 1) {
+      expect(leastCrowdedCar(lone, `seed-${i}`)?.carNo).toBe(2);
+    }
+  });
+
+  it('returns undefined without cars', () => {
+    expect(leastCrowdedCar([], 'seed')).toBeUndefined();
+  });
 });
