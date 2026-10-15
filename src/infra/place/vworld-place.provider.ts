@@ -170,11 +170,12 @@ export class VWorldPlaceProvider implements IPlaceSearchProvider {
       size: String(size),
       page: '1',
       query,
-      key,
     });
     if (kind.category) params.set('category', kind.category);
+    const { url, headers } = this.target(key, params);
     try {
-      const res = await fetch(`${ENDPOINT}?${params.toString()}`, {
+      const res = await fetch(url, {
+        headers,
         signal: AbortSignal.timeout(TIMEOUT_MS),
       });
       if (!res.ok) {
@@ -198,6 +199,30 @@ export class VWorldPlaceProvider implements IPlaceSearchProvider {
       );
       return [];
     }
+  }
+
+  /**
+   * 호출 주소와 헤더. 해외 IP를 V-World가 막으므로 `VWORLD_PROXY_URL`이 있으면 한국에 있는 중계 서버로 보낸다.
+   * 중계 서버에는 키를 URL이 아니라 헤더로 보내(로그에 남지 않게) 중계 서버가 V-World를 부를 때 쿼리에 붙인다.
+   * 없으면 V-World를 직접 부르고 키는 쿼리에 붙인다
+   */
+  private target(
+    key: string,
+    params: URLSearchParams,
+  ): { url: string; headers?: Record<string, string> } {
+    const proxy = this.config.get<string>('VWORLD_PROXY_URL');
+    if (!proxy) {
+      params.set('key', key);
+      return { url: `${ENDPOINT}?${params.toString()}` };
+    }
+    const secret = this.config.get<string>('VWORLD_PROXY_SECRET');
+    return {
+      url: `${proxy}${proxy.includes('?') ? '&' : '?'}${params.toString()}`,
+      headers: {
+        'X-Vworld-Key': key,
+        ...(secret ? { 'X-Proxy-Secret': secret } : {}),
+      },
+    };
   }
 
   // 키가 도는 일일 호출 수를 넘으면 외부 호출을 멈추고 역 결과만 돌려준다. 재시작하면 0부터 다시 센다
