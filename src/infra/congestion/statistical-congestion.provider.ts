@@ -9,6 +9,11 @@ import {
   CarCongestion,
   predictCars,
 } from '../../domain/congestion/services/car-congestion';
+import {
+  FallbackProfile,
+  buildFallbackProfile,
+  fallbackProfileRate,
+} from '../../domain/congestion/services/fallback-profile';
 import { mockStationRate } from '../../domain/congestion/services/mock-congestion.model';
 import {
   CarPrediction,
@@ -36,8 +41,10 @@ export interface CongestionData {
 type RatesByDirection = Map<string, readonly number[]>;
 
 // Predicts how crowded a train is when it leaves a station at a given time. Seoul Metro statistics
-// (lines 1 to 8, 30-minute averages by day type and direction) are used where they exist; everything else
-// (other lines, other stations, hours without statistics) falls back to the ADR-005 model.
+// (lines 1 to 8, 30-minute averages by day type and direction) are used where they exist. Everything else
+// (other lines, other stations, hours without statistics) is an estimate (`MOCK`): the average statistics curve
+// of the day type scaled by the line coefficient, and the ADR-005 model where there is no curve (no records for
+// the day type, or no train runs).
 // The result is deterministic: the same input always gives the same congestion.
 export class StatisticalCongestionProvider
   implements ICongestionProvider, ICarCongestionPredictor
@@ -48,7 +55,10 @@ export class StatisticalCongestionProvider
     SUNDAY: new Map(),
   };
 
+  private readonly profile: FallbackProfile;
+
   constructor(data: CongestionData) {
+    this.profile = buildFallbackProfile(data.records);
     for (const record of data.records) {
       const stations = this.index[record.dayType];
       let directions = stations.get(record.stationId);
@@ -85,6 +95,15 @@ export class StatisticalCongestionProvider
       const published = this.published(dayType, stationId, direction, slot);
       if (published !== undefined) {
         return { ratePercent: clampPercent(published), source: 'STATISTICS' };
+      }
+      const estimated = fallbackProfileRate(
+        this.profile,
+        lineId,
+        dayType,
+        slot,
+      );
+      if (estimated !== undefined) {
+        return { ratePercent: estimated, source: 'MOCK' };
       }
     }
     return {

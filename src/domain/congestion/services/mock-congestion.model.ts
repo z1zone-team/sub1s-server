@@ -2,6 +2,8 @@ import { DayType, clampPercent } from '../models/congestion';
 
 // ADR-005 3.1: the model for lines and stations that have no published statistics.
 // Congestion = C_base x BaseRate(line) x Peak(time), without the random noise (route search must be deterministic).
+// The provider uses this only where it has no average statistics curve for the day type (see fallback-profile.ts),
+// that is when no train runs or the statistics file has no records for the day type.
 export const BASE_CONGESTION_PERCENT = 35;
 
 const BASE_RATE_BY_LINE: Record<string, number> = {
