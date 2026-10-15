@@ -34,6 +34,7 @@ describe('Full User Journey (Mobile App ↔ Backend E2E)', () => {
     totalDistanceKm: number;
     transferCount: number;
     earnedPoints: number;
+    routeMode?: string | null;
     createdAt: Date;
     originStation: { stationName: string };
     destStation: { stationName: string };
@@ -294,6 +295,10 @@ describe('Full User Journey (Mobile App ↔ Backend E2E)', () => {
     expect(res.body.data.earnedPoints).toBeGreaterThan(0);
     expect(res.body.data.totalDistanceKm).toBeGreaterThan(0);
     expect(mockLogs.length).toBeGreaterThan(0);
+    // 안내 세션을 못 찾으면(TrackingModule이 저장소를 내보내지 않은 E-82) 경로 모드가 비고 OPTIMAL 재계산 값이 저장된다.
+    // 세션이 연결되면 안내를 시작할 때 고른 경로 모드가 기록에 남는다.
+    const saved = mockLogs[mockLogs.length - 1];
+    expect(saved.routeMode).toBe(searchedRouteOption.mode);
   });
 
   it('Step 6-A: User Travel Timeline Inquiry (GET /api/v1/travel/timeline)', async () => {
