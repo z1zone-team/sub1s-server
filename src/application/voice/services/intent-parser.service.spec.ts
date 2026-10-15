@@ -280,3 +280,113 @@ describe('IntentParserService 저장한 집과 학교', () => {
     expect(parse('강남역 가는 길')).toEqual(['현재 위치', '강남']);
   });
 });
+
+describe('IntentParserService 장소 이름과 주소', () => {
+  let service: IntentParserService;
+  const stations = ['강남', '을지로입구', '명지대', '서울숲', '사당'];
+  const graph = {
+    getGraph: () => ({
+      stationCount: stations.length,
+      station: (idx: number) => ({ id: `s${idx}`, stationName: stations[idx] }),
+    }),
+  };
+
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        IntentParserService,
+        { provide: SubwayGraphService, useValue: graph },
+      ],
+    }).compile();
+    service = module.get(IntentParserService);
+  });
+
+  const parse = (text: string) => {
+    const { originStationName, destStationName } = service.parseIntent(text);
+    return [originStationName, destStationName];
+  };
+
+  describe('출발 표지가 있을 때', () => {
+    it.each([
+      ['강남역에서 문화로 67-1로 가자', ['강남', '문화로 67-1']],
+      ['강남에서 문화로 67-1 가는 길', ['강남', '문화로 67-1']],
+      [
+        '강남역에서 경기도 광주시 문화로 67-1로 가자',
+        ['강남', '경기도 광주시 문화로 67-1'],
+      ],
+      ['강남에서 가양동 1460까지', ['강남', '가양동 1460']],
+    ])(
+      '도착이 주소이면 말한 주소를 그대로 도착으로 넘긴다: %s',
+      (text, expected) => {
+        expect(parse(text)).toEqual(expected);
+      },
+    );
+
+    it.each([
+      [
+        '강남에서 명지대학교 인문캠퍼스로 가자',
+        ['강남', '명지대학교 인문캠퍼스'],
+      ],
+      ['강남역에서 서울 시청광장까지', ['강남', '서울 시청광장']],
+    ])(
+      '도착이 역 이름으로 풀리지 않는 장소 이름이면 말한 구절을 넘긴다: %s',
+      (text, expected) => {
+        expect(parse(text)).toEqual(expected);
+      },
+    );
+
+    it('역 이름은 지금처럼 역으로 풀린다', () => {
+      expect(parse('강남에서 을지로입구까지')).toEqual(['강남', '을지로입구']);
+      expect(parse('강남역에서 사당역으로 가자')).toEqual(['강남', '사당']);
+    });
+
+    it('역 이름을 조금 잘못 알아들은 것은 지금처럼 보정한다', () => {
+      expect(parse('강남에서 울지로입구까지')).toEqual(['강남', '을지로입구']);
+    });
+
+    it('경로 조건을 말한 구절은 장소로 넘기지 않는다', () => {
+      expect(() => service.parseIntent('강남에서 편한 길로 가자')).toThrow(
+        expect.objectContaining({ errorCode: 'VOICE_INTENT_NOT_UNDERSTOOD' }),
+      );
+    });
+  });
+
+  describe('도착지만 말했을 때', () => {
+    it.each([
+      ['명지대학교 인문캠퍼스로 가자', '명지대학교 인문캠퍼스'],
+      ['명지대학교 인문캠퍼스 가는 길 알려줘', '명지대학교 인문캠퍼스'],
+      ['강남대로 396 가는 길', '강남대로 396'],
+    ])(
+      '사전의 역 이름이 더 긴 낱말의 앞부분일 뿐이면 장소로 본다: %s',
+      (text, dest) => {
+        expect(parse(text)).toEqual(['현재 위치', dest]);
+      },
+    );
+
+    it.each([
+      ['문화로 67-1 가는 길', '문화로 67-1'],
+      ['문화로 67-1로 가자', '문화로 67-1'],
+      ['가양동 1460 가는 길', '가양동 1460'],
+    ])('역 없이 주소만 말하면 그 주소가 도착이다: %s', (text, dest) => {
+      expect(parse(text)).toEqual(['현재 위치', dest]);
+    });
+
+    it.each([
+      ['명지대역 가는 길', '명지대'],
+      ['명지대 가는 길', '명지대'],
+      ['명지대로 가자', '명지대'],
+      ['강남역 가는 길 알려줘', '강남'],
+      ['서울숲 근처로 가자', '서울숲'],
+    ])('낱말이 역 이름에서 끝나면 지금처럼 역이다: %s', (text, dest) => {
+      expect(parse(text)).toEqual(['현재 위치', dest]);
+    });
+
+    it('번지만 말하거나 장소도 주소도 아니면 알아듣지 못했다고 알린다', () => {
+      for (const text of ['67-1 가는 길', '지하철 경로 알려주세요']) {
+        expect(() => service.parseIntent(text)).toThrow(
+          expect.objectContaining({ errorCode: 'VOICE_INTENT_NOT_UNDERSTOOD' }),
+        );
+      }
+    });
+  });
+});
