@@ -21,6 +21,7 @@ describe('VoiceService', () => {
   let intentParser: { parseIntent: jest.Mock };
   let placeRepo: { findAll: jest.Mock };
   let placeService: { search: jest.Mock };
+  let ai: { generateBriefing: jest.Mock };
 
   // 경로 결과이면 그대로, 확인 요청이면 테스트를 실패시킨다
   const asRoute = (result: VoiceResultDto): VoiceRouteRecommendResponseDto => {
@@ -116,6 +117,7 @@ describe('VoiceService', () => {
     intentParser = module.get(IntentParserService);
     placeRepo = module.get(USER_PLACE_REPOSITORY);
     placeService = module.get(PlaceService);
+    ai = module.get(AiServiceAdapter);
   });
 
   it('should recommend a route from a transcript', async () => {
@@ -554,6 +556,221 @@ describe('VoiceService', () => {
       await service.recommendFromTranscript('user-1', '집으로 가자');
 
       expect(placeService.search).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('출발지가 장소 이름이나 주소일 때', () => {
+    const place = (name: string, address = '서울 서대문구 거북골로') => ({
+      type: 'PLACE' as const,
+      name,
+      address,
+      lat: 37.58,
+      lng: 126.92,
+      nearestStation: {
+        stationId: 'GJ_K315',
+        name: '가좌',
+        walkDistanceM: 900,
+        walkDurationSec: 720,
+      },
+    });
+    const speak = (originStationName: string, destStationName = '강남') =>
+      intentParser.parseIntent.mockReturnValue({
+        originStationName,
+        destStationName,
+        preferredMode: 'OPTIMAL',
+        reason: '최적 경로 추천',
+      });
+
+    it('후보가 하나뿐이면 그 좌표와 이름으로 출발해 바로 경로를 찾는다', async () => {
+      speak('명지대학교 자연캠퍼스');
+      placeService.search.mockResolvedValue({
+        items: [place('명지대학교 자연캠퍼스')],
+      });
+
+      const result = await service.recommendFromTranscript(
+        'user-1',
+        '명지대학교 자연캠퍼스에서 강남까지',
+      );
+
+      expect(result.kind).toBe('ROUTE');
+      expect(placeService.search).toHaveBeenCalledWith({
+        q: '명지대학교 자연캠퍼스',
+        limit: 10,
+      });
+      expect(routeService.search).toHaveBeenCalledWith(
+        expect.objectContaining({
+          originLat: 37.58,
+          originLng: 126.92,
+          originName: '명지대학교 자연캠퍼스',
+          destinationStationId: '02_222',
+        }),
+        'user-1',
+      );
+    });
+
+    it('출발 후보가 여럿이면 경로를 찾지 않고 확인을 요청하며 정해진 도착지를 담는다', async () => {
+      speak('문화로 67-1');
+      placeService.search.mockResolvedValue({
+        items: [
+          place('경기도 광주시 문화로 67-1', '경기도 광주시'),
+          place('경기도 연천군 문화로 67-1', '경기도 연천군'),
+        ],
+      });
+
+      const result = await service.recommendFromTranscript(
+        'user-1',
+        '문화로 67-1에서 강남까지',
+      );
+
+      expect(result.kind).toBe('CONFIRM_ORIGIN');
+      if (result.kind !== 'CONFIRM_ORIGIN') return;
+      expect(result.originCandidates).toHaveLength(2);
+      expect(result.destination).toEqual({ name: '강남', stationId: '02_222' });
+      expect(result.destinationCandidates).toBeUndefined();
+      expect(routeService.search).not.toHaveBeenCalled();
+    });
+
+    it('출발과 도착이 모두 모호하면 출발 후보와 도착 후보를 함께 담는다', async () => {
+      speak('시청', '중앙공원');
+      placeService.search.mockImplementation(({ q }: { q: string }) =>
+        Promise.resolve({
+          items: [place(`${q} 가`, '가'), place(`${q} 나`, '나')],
+        }),
+      );
+
+      const result = await service.recommendFromTranscript(
+        'user-1',
+        '시청에서 중앙공원까지',
+      );
+
+      expect(result.kind).toBe('CONFIRM_ORIGIN');
+      if (result.kind !== 'CONFIRM_ORIGIN') return;
+      expect(result.originCandidates.map((c) => c.name)).toEqual([
+        '시청 가',
+        '시청 나',
+      ]);
+      expect(result.destination).toBeUndefined();
+      expect(result.destinationCandidates?.map((c) => c.name)).toEqual([
+        '중앙공원 가',
+        '중앙공원 나',
+      ]);
+    });
+
+    it('출발 후보는 최대 5개까지 돌려준다', async () => {
+      speak('시청');
+      placeService.search.mockResolvedValue({
+        items: Array.from({ length: 8 }, (_, i) => place(`시청 ${i}`)),
+      });
+
+      const result = await service.recommendFromTranscript(
+        'user-1',
+        '시청에서 강남까지',
+      );
+
+      expect(result.kind).toBe('CONFIRM_ORIGIN');
+      if (result.kind !== 'CONFIRM_ORIGIN') return;
+      expect(result.originCandidates).toHaveLength(5);
+    });
+
+    it('출발 후보가 없으면 404이다', async () => {
+      speak('없는장소');
+
+      await expect(
+        service.recommendFromTranscript('user-1', '없는장소에서 강남까지'),
+      ).rejects.toThrow(NotFoundException);
+    });
+
+    it('역 이름으로 출발하면 장소 검색을 하지 않는다', async () => {
+      await service.recommendFromTranscript('user-1', '강남에서 을지로입구');
+
+      expect(placeService.search).not.toHaveBeenCalled();
+    });
+
+    it('도착 후보만 여럿이면 확인 결과의 출발지가 장소의 좌표와 이름이다', async () => {
+      speak('명지대학교 자연캠퍼스', '시청');
+      placeService.search.mockImplementation(({ q }: { q: string }) =>
+        Promise.resolve({
+          items:
+            q === '시청'
+              ? [place('시청 가'), place('시청 나')]
+              : [place('명지대학교 자연캠퍼스')],
+        }),
+      );
+
+      const result = await service.recommendFromTranscript(
+        'user-1',
+        '명지대학교 자연캠퍼스에서 시청까지',
+      );
+
+      expect(result.kind).toBe('CONFIRM_DESTINATION');
+      if (result.kind !== 'CONFIRM_DESTINATION') return;
+      expect(result.origin).toEqual({
+        name: '명지대학교 자연캠퍼스',
+        lat: 37.58,
+        lng: 126.92,
+      });
+    });
+  });
+
+  describe('안내 문장에서 부르는 이름', () => {
+    const labels = () => ai.generateBriefing.mock.calls[0][2] as unknown;
+    const place = {
+      type: 'PLACE' as const,
+      name: '명지대학교 인문캠퍼스',
+      address: '서울 서대문구',
+      lat: 37.58,
+      lng: 126.92,
+      nearestStation: {
+        stationId: 'GJ_K315',
+        name: '가좌',
+        walkDistanceM: 900,
+        walkDurationSec: 720,
+      },
+    };
+
+    it('역 이름은 역을 붙이고 현재 위치와 장소는 붙이지 않는다', async () => {
+      intentParser.parseIntent.mockReturnValue({
+        originStationName: CURRENT_LOCATION,
+        destStationName: '명지대학교 인문캠퍼스',
+        preferredMode: 'OPTIMAL',
+        reason: '최적 경로 추천',
+      });
+      placeService.search.mockResolvedValue({ items: [place] });
+
+      await service.recommendFromTranscript('user-1', '명지대학교 인문캠퍼스', {
+        lat: 37.2,
+        lng: 127.1,
+      });
+
+      expect(labels()).toEqual({
+        origin: CURRENT_LOCATION,
+        destination: '명지대학교 인문캠퍼스',
+      });
+    });
+
+    it('이름으로 찾은 역에는 역을 붙인다', async () => {
+      await service.recommendFromTranscript('user-1', '강남에서 을지로입구');
+
+      expect(labels()).toEqual({
+        origin: '강남역',
+        destination: '을지로입구역',
+      });
+    });
+
+    it('저장한 집에는 역을 붙이지 않는다', async () => {
+      intentParser.parseIntent.mockReturnValue({
+        originStationName: '강남',
+        destStationName: '집',
+        preferredMode: 'OPTIMAL',
+        reason: '최적 경로 추천',
+      });
+      placeRepo.findAll.mockResolvedValue([
+        { kind: 'HOME', name: '집', stationId: '02_202' },
+      ]);
+
+      await service.recommendFromTranscript('user-1', '강남에서 집으로');
+
+      expect(labels()).toEqual({ origin: '강남역', destination: '집' });
     });
   });
 });

@@ -61,11 +61,15 @@ const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 interface ResolvedEndpoint {
   stationId?: string;
   search: Partial<RouteSearchRequestDto>;
+  /** 안내 문장에서 부르는 말. 역이면 `역`을 붙이고 장소와 현재 위치는 붙이지 않는다 */
+  label: string;
 }
 
-/** 도착지를 해석한 결과. 하나로 정해지면 `endpoint`, 사용자에게 물어야 하면 `candidates` */
-type ResolvedDestination =
+/** 출발지나 도착지를 해석한 결과. 하나로 정해지면 `endpoint`, 사용자에게 물어야 하면 `candidates` */
+type ResolvedPlace =
   { endpoint: ResolvedEndpoint } | { candidates: PlaceSearchResultItemDto[] };
+
+type EndpointSide = 'origin' | 'destination';
 
 /** 장소 검색에서 가져오는 후보 수와, 확인 화면에 보여 주는 최대 후보 수 */
 const PLACE_SEARCH_LIMIT = 10;
@@ -107,29 +111,52 @@ export class VoiceService {
       dto?.preferredMode,
     );
 
-    // 5. 역 이름, 현재 위치, 저장한 집과 학교를 경로 검색 입력으로 바꾼다
-    const origin = await this.resolveOrigin(
+    // 5. 역 이름, 현재 위치, 저장한 집과 학교, 장소 이름과 주소를 경로 검색 입력으로 바꾼다
+    const resolvedOrigin = await this.resolveEndpoint(
       userId,
       intent.originStationName,
+      'origin',
       dto,
     );
-    const destination = await this.resolveDestination(
+    const resolvedDestination = await this.resolveEndpoint(
       userId,
       intent.destStationName,
+      'destination',
     );
+    // 출발지로 말한 이름의 후보가 여럿이면 경로를 계산하지 않고 "이 곳이 맞나요?"를 묻는다(출발부터 묻는다)
+    if ('candidates' in resolvedOrigin) {
+      return {
+        kind: 'CONFIRM_ORIGIN',
+        transcript,
+        interpretedIntent: intent,
+        originCandidates: this.toCandidates(resolvedOrigin.candidates),
+        ...('endpoint' in resolvedDestination
+          ? {
+              destination: this.toEndpointDto(
+                resolvedDestination.endpoint,
+                intent.destStationName,
+                'destination',
+              ),
+            }
+          : {
+              destinationCandidates: this.toCandidates(
+                resolvedDestination.candidates,
+              ),
+            }),
+      };
+    }
+    const origin = resolvedOrigin.endpoint;
     // 도착지로 말한 이름의 후보가 여럿이면 경로를 계산하지 않고 "이 곳이 맞나요?"를 묻는다
-    if ('candidates' in destination) {
+    if ('candidates' in resolvedDestination) {
       return {
         kind: 'CONFIRM_DESTINATION',
         transcript,
         interpretedIntent: intent,
-        origin: this.toOrigin(origin, intent.originStationName),
-        candidates: destination.candidates
-          .slice(0, MAX_CANDIDATES)
-          .map((item) => this.toCandidate(item)),
+        origin: this.toEndpointDto(origin, intent.originStationName, 'origin'),
+        candidates: this.toCandidates(resolvedDestination.candidates),
       };
     }
-    const dest = destination.endpoint;
+    const dest = resolvedDestination.endpoint;
     if (origin.stationId && origin.stationId === dest.stationId) {
       throw new BusinessException(
         'INVALID_REQUEST_PAYLOAD',
@@ -163,6 +190,7 @@ export class VoiceService {
     const briefing = await this.aiServiceAdapter.generateBriefing(
       intent,
       recommendedRoute,
+      { origin: origin.label, destination: dest.label },
     );
 
     return {
@@ -202,14 +230,16 @@ export class VoiceService {
   }
 
   /**
-   * 역 이름으로 지하철 그래프 내 Station ID를 조회합니다.
+   * 말한 출발지나 도착지를 경로 검색 입력으로 바꿉니다. 순서는 현재 위치(출발만), 저장한 집과 학교, 역 이름,
+   * 장소 검색이다. 장소 검색 후보가 여럿이면 `candidates`를 돌려줘 사용자에게 묻게 한다
    */
-  private async resolveOrigin(
+  private async resolveEndpoint(
     userId: string,
     name: string,
+    side: EndpointSide,
     dto?: Pick<VoiceRouteRecommendRequestDto, 'lat' | 'lng'>,
-  ): Promise<ResolvedEndpoint> {
-    if (name === CURRENT_LOCATION) {
+  ): Promise<ResolvedPlace> {
+    if (side === 'origin' && name === CURRENT_LOCATION) {
       if (dto?.lat === undefined || dto?.lng === undefined) {
         throw new BusinessException(
           'VOICE_ORIGIN_REQUIRED',
@@ -217,60 +247,27 @@ export class VoiceService {
           HttpStatus.UNPROCESSABLE_ENTITY,
         );
       }
-      return { search: { originLat: dto.lat, originLng: dto.lng } };
+      return {
+        endpoint: {
+          search: { originLat: dto.lat, originLng: dto.lng },
+          label: name,
+        },
+      };
     }
 
-    const saved = await this.savedPlace(userId, name);
-    if (saved) {
-      return saved.stationId
-        ? { stationId: saved.stationId, search: { originStationId: saved.stationId } }
-        : {
-            search: {
-              originLat: saved.lat!,
-              originLng: saved.lng!,
-              originName: saved.name,
-            },
-          };
-    }
-
-    const stationId = this.findStationIdByName(name);
-    if (!stationId) {
-      throw new NotFoundException(
-        `출발역 '${name}'을(를) 지하철 노선망에서 찾을 수 없습니다.`,
-      );
-    }
-    return { stationId, search: { originStationId: stationId } };
-  }
-
-  private async resolveDestination(
-    userId: string,
-    name: string,
-  ): Promise<ResolvedDestination> {
     const saved = await this.savedPlace(userId, name);
     if (saved) {
       return {
         endpoint: saved.stationId
-          ? {
-              stationId: saved.stationId,
-              search: { destinationStationId: saved.stationId },
-            }
-          : {
-              search: {
-                destinationLat: saved.lat!,
-                destinationLng: saved.lng!,
-                destinationName: saved.name,
-              },
-            },
+          ? this.stationEndpoint(side, saved.stationId, name)
+          : this.pointEndpoint(side, saved.lat!, saved.lng!, saved.name, name),
       };
     }
 
     const stationId = this.findStationIdByName(name);
     if (stationId) {
       return {
-        endpoint: {
-          stationId,
-          search: { destinationStationId: stationId },
-        },
+        endpoint: this.stationEndpoint(side, stationId, `${name}역`),
       };
     }
 
@@ -278,7 +275,7 @@ export class VoiceService {
     const found = await this.findPlaces(name);
     if (found.length === 0) {
       throw new NotFoundException(
-        `도착역 '${name}'을(를) 지하철 노선망에서 찾을 수 없습니다.`,
+        `${side === 'origin' ? '출발역' : '도착역'} '${name}'을(를) 지하철 노선망에서 찾을 수 없습니다.`,
       );
     }
     const sure = this.pickUnambiguous(found, name);
@@ -286,17 +283,39 @@ export class VoiceService {
     return {
       endpoint:
         sure.type === 'STATION'
-          ? {
-              stationId: sure.stationId,
-              search: { destinationStationId: sure.stationId },
-            }
-          : {
-              search: {
-                destinationLat: sure.lat,
-                destinationLng: sure.lng,
-                destinationName: sure.name,
-              },
-            },
+          ? this.stationEndpoint(side, sure.stationId, `${sure.name}역`)
+          : this.pointEndpoint(side, sure.lat, sure.lng, sure.name, sure.name),
+    };
+  }
+
+  private stationEndpoint(
+    side: EndpointSide,
+    stationId: string,
+    label: string,
+  ): ResolvedEndpoint {
+    return {
+      stationId,
+      search:
+        side === 'origin'
+          ? { originStationId: stationId }
+          : { destinationStationId: stationId },
+      label,
+    };
+  }
+
+  private pointEndpoint(
+    side: EndpointSide,
+    lat: number,
+    lng: number,
+    name: string,
+    label: string,
+  ): ResolvedEndpoint {
+    return {
+      search:
+        side === 'origin'
+          ? { originLat: lat, originLng: lng, originName: name }
+          : { destinationLat: lat, destinationLng: lng, destinationName: name },
+      label,
     };
   }
 
@@ -341,17 +360,28 @@ export class VoiceService {
     return exact.length === 1 ? exact[0] : undefined;
   }
 
-  private toOrigin(
-    origin: ResolvedEndpoint,
+  private toEndpointDto(
+    endpoint: ResolvedEndpoint,
     spokenName: string,
+    side: EndpointSide,
   ): VoiceOriginDto {
+    const { search } = endpoint;
+    const name =
+      (side === 'origin' ? search.originName : search.destinationName) ??
+      spokenName;
+    const lat = side === 'origin' ? search.originLat : search.destinationLat;
+    const lng = side === 'origin' ? search.originLng : search.destinationLng;
     return {
-      name: origin.search.originName ?? spokenName,
-      ...(origin.stationId ? { stationId: origin.stationId } : {}),
-      ...(origin.search.originLat !== undefined
-        ? { lat: origin.search.originLat, lng: origin.search.originLng }
-        : {}),
+      name,
+      ...(endpoint.stationId ? { stationId: endpoint.stationId } : {}),
+      ...(lat !== undefined ? { lat, lng } : {}),
     };
+  }
+
+  private toCandidates(
+    items: PlaceSearchResultItemDto[],
+  ): VoiceDestinationCandidateDto[] {
+    return items.slice(0, MAX_CANDIDATES).map((item) => this.toCandidate(item));
   }
 
   private toCandidate(

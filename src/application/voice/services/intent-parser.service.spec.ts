@@ -390,3 +390,64 @@ describe('IntentParserService 장소 이름과 주소', () => {
     });
   });
 });
+
+describe('IntentParserService 출발지가 장소 이름이나 주소일 때', () => {
+  let service: IntentParserService;
+  const stations = ['강남', '을지로입구', '명지대', '서울숲', '사당'];
+  const graph = {
+    getGraph: () => ({
+      stationCount: stations.length,
+      station: (idx: number) => ({ id: `s${idx}`, stationName: stations[idx] }),
+    }),
+  };
+
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        IntentParserService,
+        { provide: SubwayGraphService, useValue: graph },
+      ],
+    }).compile();
+    service = module.get(IntentParserService);
+  });
+
+  const parse = (text: string) => {
+    const { originStationName, destStationName } = service.parseIntent(text);
+    return [originStationName, destStationName];
+  };
+
+  it.each([
+    ['명지대학교 자연캠퍼스에서 강남까지', ['명지대학교 자연캠퍼스', '강남']],
+    [
+      '국립중앙박물관에서 을지로입구역까지 가자',
+      ['국립중앙박물관', '을지로입구'],
+    ],
+    ['문화로 67-1에서 강남까지', ['문화로 67-1', '강남']],
+    [
+      '경기도 광주시 문화로 67-1에서 강남역으로 가자',
+      ['경기도 광주시 문화로 67-1', '강남'],
+    ],
+  ])(
+    '출발이 장소 이름이나 주소이면 말한 구절을 그대로 출발로 넘긴다: %s',
+    (text, expected) => {
+      expect(parse(text)).toEqual(expected);
+    },
+  );
+
+  it('출발과 도착이 모두 장소 이름이나 주소이면 둘 다 그대로 넘긴다', () => {
+    expect(
+      parse('명지대학교 자연캠퍼스에서 명지대학교 인문캠퍼스까지'),
+    ).toEqual(['명지대학교 자연캠퍼스', '명지대학교 인문캠퍼스']);
+  });
+
+  it('짧아서 역 이름을 잘못 알아들은 것으로 보이는 출발은 지금처럼 알린다', () => {
+    expect(() => parse('아무개에서 강남까지')).toThrow(
+      expect.objectContaining({ errorCode: 'VOICE_INTENT_NOT_UNDERSTOOD' }),
+    );
+  });
+
+  it('현재 위치를 뜻하는 말과 역 이름 출발은 그대로 둔다', () => {
+    expect(parse('여기에서 강남까지')).toEqual(['현재 위치', '강남']);
+    expect(parse('강남에서 을지로입구까지')).toEqual(['강남', '을지로입구']);
+  });
+});

@@ -25,6 +25,12 @@ const PLACE_ORIGIN_MARKERS = ['에서', '부터'];
 const MODE_WORDS =
   /(여유|편한|편하게|자리|앉아|쾌적|덜\s*붐비|최소\s*비용|저렴|싼|알뜰|요금|취향|맞춤|평소|자주\s*가던)/;
 
+// 역 이름으로 풀리지 않는 출발 구절이 이 길이 이상이어야 장소 이름으로 본다(짧은 것은 역 이름을 잘못 알아들은 것으로 보고 알린다)
+const MIN_PLACE_ORIGIN = 4;
+
+// 출발을 현재 위치로 말한 구절("여기에서", "지금 위치에서")은 장소 이름으로 넘기지 않는다
+const CURRENT_LOCATION_WORD = /(?:여기|지금|현재|이곳|내\s*위치)/;
+
 // 장소 이름이나 주소 뒤에 붙는 말("가자", "가는 길 알려줘")과 조사를 뗄 때 쓴다
 const TRAILING_REQUEST =
   /\s*(?:가는\s*길|가자|가줘|가고\s*싶|갈래|길\s*안내|안내|알려\s*줘|찾아\s*줘).*$/;
@@ -262,6 +268,24 @@ export class IntentParserService {
     if (origin && !dest && spoken && !MODE_WORDS.test(spoken)) {
       return { originStationName: origin.name, destStationName: spoken };
     }
+    // 출발 구절이 주소이거나 역 이름으로 풀리지 않으면 말한 구절을 그대로 출발지로 넘긴다(도착지와 같은 방식)
+    const spokenFrom = this.spokenOrigin(original);
+    if (
+      spokenFrom &&
+      (classifyAddressQuery(spokenFrom) !== 'PLACE' ||
+        (!origin &&
+          spokenFrom.replace(/\s+/g, '').length >= MIN_PLACE_ORIGIN)) &&
+      !CURRENT_LOCATION_WORD.test(spokenFrom) &&
+      !MODE_WORDS.test(spokenFrom)
+    ) {
+      if (dest) {
+        return { originStationName: spokenFrom, destStationName: dest.name };
+      }
+      const spokenTo = this.spokenDestination(original);
+      if (spokenTo && !MODE_WORDS.test(spokenTo)) {
+        return { originStationName: spokenFrom, destStationName: spokenTo };
+      }
+    }
     if (!origin || !dest || origin.name === dest.name) return null;
 
     for (const [said, found] of [
@@ -286,6 +310,14 @@ export class IntentParserService {
       .replace(TRAILING_REQUEST, '')
       .replace(/(?:으로|까지|로)\s*$/, '')
       .trim();
+  }
+
+  /** 출발 표지("에서", "부터") 앞에서 출발로 말한 구절을 공백을 살려 돌려준다. 두 글자 미만이면 null */
+  private spokenOrigin(text: string): string | null {
+    const marker = /역?(?:에서|부터)/.exec(text);
+    if (!marker) return null;
+    const phrase = text.slice(0, marker.index).trim();
+    return phrase.length >= 2 ? phrase : null;
   }
 
   /** 출발 표지("에서", "부터") 뒤에서 도착으로 말한 구절을 공백을 살려 돌려준다. 두 글자 미만이면 null */

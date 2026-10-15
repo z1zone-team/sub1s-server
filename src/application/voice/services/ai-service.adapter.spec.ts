@@ -160,6 +160,23 @@ describe('AiServiceAdapter.generateBriefing', () => {
     );
   });
 
+  it('이름을 넘기면 그 이름을 그대로 쓴다(장소 이름과 주소에는 역을 붙이지 않는다)', async () => {
+    const result = await adapterWith(undefined).generateBriefing(
+      {
+        originStationName: '현재 위치',
+        destStationName: '문화로 67-1',
+        preferredMode: 'OPTIMAL',
+      },
+      route,
+      { origin: '현재 위치', destination: '경기도 광주시 문화로 67-1' },
+    );
+
+    expect(result.briefingText).toMatch(
+      /^현재 위치에서 경기도 광주시 문화로 67-1까지 최적 경로로/,
+    );
+    expect(result.briefingText).not.toContain('67-1역');
+  });
+
   it('현재 위치에서 출발하면 현재 위치에는 역을 붙이지 않는다', async () => {
     const result = await briefing('현재 위치');
 
