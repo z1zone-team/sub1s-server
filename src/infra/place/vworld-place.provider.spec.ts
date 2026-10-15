@@ -1,3 +1,4 @@
+import { Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { VWorldPlaceProvider } from './vworld-place.provider';
 
@@ -122,6 +123,58 @@ describe('VWorldPlaceProvider', () => {
       expect(await provider('k').search('교보타워', 10)).toEqual([]);
     },
   );
+
+  describe('error logging', () => {
+    const warn = () =>
+      jest.spyOn(Logger.prototype, 'warn').mockImplementation(() => undefined);
+
+    afterEach(() => jest.restoreAllMocks());
+
+    it('logs the reason V-World gives for an ERROR status', async () => {
+      const spy = warn();
+      respond({
+        response: {
+          status: 'ERROR',
+          error: { code: 'INCORRECT_KEY', text: '인증키가 올바르지 않습니다' },
+        },
+      });
+
+      expect(await provider('k').search('교보타워', 10)).toEqual([]);
+      expect(spy).toHaveBeenCalledWith(
+        'V-World search returned status ERROR (INCORRECT_KEY: 인증키가 올바르지 않습니다)',
+      );
+    });
+
+    it('still logs when V-World gives no reason', async () => {
+      const spy = warn();
+      respond({ response: { status: 'ERROR' } });
+
+      await provider('k').search('교보타워', 10);
+
+      expect(spy).toHaveBeenCalledWith('V-World search returned status ERROR');
+    });
+
+    it('limits the length of the logged reason', async () => {
+      const spy = warn();
+      respond({
+        response: { status: 'ERROR', error: { text: 'x'.repeat(500) } },
+      });
+
+      await provider('k').search('교보타워', 10);
+
+      const message = String(spy.mock.calls[0][0]);
+      expect(message.length).toBeLessThan(200);
+    });
+
+    it('does not log anything for NOT_FOUND', async () => {
+      const spy = warn();
+      respond({ response: { status: 'NOT_FOUND' } });
+
+      await provider('k').search('교보타워', 10);
+
+      expect(spy).not.toHaveBeenCalled();
+    });
+  });
 
   describe('daily limit', () => {
     const limited = (limit: string) =>
