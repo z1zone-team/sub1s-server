@@ -21,7 +21,7 @@ import {
   VoiceJobStatusResponseDto,
   VoiceJobSubmitResponseDto,
   VoiceRouteRecommendRequestDto,
-  VoiceRouteRecommendResponseDto,
+  VoiceResultDto,
 } from './dto';
 import { UploadedAudioFile, VoiceService } from './voice.service';
 
@@ -152,8 +152,7 @@ export class VoiceJobService {
       // 끝난 것이 확인됐으니 다시 읽어 최신 결과를 쓴다(그렇지 않으면 성공한 작업이 실패로 보인다)
       const finished = await this.refetchFinished(job, jobId);
       const outcome = finished.returnvalue as
-        | VoiceJobOutcome<VoiceRouteRecommendResponseDto>
-        | undefined;
+        VoiceJobOutcome<VoiceResultDto> | undefined;
       if (outcome?.ok) {
         return { jobId, status: 'COMPLETED', result: outcome.result };
       }

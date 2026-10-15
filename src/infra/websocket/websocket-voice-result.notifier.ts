@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { VoiceJobError } from '../../domain/voice/models/voice-job';
-import { VoiceRouteRecommendResponseDto } from '../../application/voice/dto';
+import { VoiceResultDto } from '../../application/voice/dto';
 import { VoiceResultNotifier } from '../../application/voice/voice-result.notifier';
 import { SubwayEventsGateway } from './subway-events.gateway';
 
@@ -14,7 +14,7 @@ export class WebsocketVoiceResultNotifier extends VoiceResultNotifier {
   sendResult(
     userId: string,
     jobId: string,
-    result: VoiceRouteRecommendResponseDto,
+    result: VoiceResultDto,
   ): void {
     this.gateway.sendVoiceResult(userId, { jobId, result });
   }

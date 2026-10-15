@@ -1,6 +1,7 @@
 import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { BusinessException } from '../../../common/exceptions/business.exception';
 import { RouteMode } from '../../../domain/subway/models/route';
+import { classifyAddressQuery } from '../../../infra/place/address-query';
 import { SubwayGraphService } from '../../../domain/subway/services/subway-graph.service';
 import { InterpretedIntentDto } from '../dto/voice-route-recommend-response.dto';
 import { StationNameMatcher } from './station-name-matcher';
@@ -19,6 +20,18 @@ export const SAVED_PLACE_NAMES: readonly string[] = [HOME_PLACE, SCHOOL_PLACE];
 const SAVED_PLACE_WORD =
   /(?<![가-힣])(?:우리\s*|내\s*)?(집|학교)(?:(에서|부터|으로|로|까지|가는|가자|갈래|가고|에)|(?![가-힣]))/g;
 const PLACE_ORIGIN_MARKERS = ['에서', '부터'];
+
+// 장소 이름이 아니라 경로 조건을 말한 구절("편한 길로")은 도착지로 넘기지 않는다
+const MODE_WORDS =
+  /(여유|편한|편하게|자리|앉아|쾌적|덜\s*붐비|최소\s*비용|저렴|싼|알뜰|요금|취향|맞춤|평소|자주\s*가던)/;
+
+// 장소 이름이나 주소 뒤에 붙는 말("가자", "가는 길 알려줘")과 조사를 뗄 때 쓴다
+const TRAILING_REQUEST =
+  /\s*(?:가는\s*길|가자|가줘|가고\s*싶|갈래|길\s*안내|안내|알려\s*줘|찾아\s*줘).*$/;
+
+// 역 이름 바로 뒤에 와도 낱말이 끝난 것으로 보는 말(역, 조사, 방향 표현, 공백이나 기호)
+const STATION_WORD_END =
+  /^(?:역|에서|에|으로|로|까지|부터|가는|가자|가줘|갈래|가고|길|은|는|이|가|을|를|도|쪽|근처|부근|앞|방면|[^가-힣])/;
 
 @Injectable()
 export class IntentParserService {
@@ -67,7 +80,7 @@ export class IntentParserService {
     // 1. "A에서 B까지" 꼴이면 표지로 출발 구간과 도착 구간을 나눠 구간마다 가장 가까운 역을 찾는다.
     //    구간 안에서는 공백을 지우고 비교한다(Whisper는 이름 안에 공백을 넣기도 한다: `광흥 창역`, `동두천 중앙`).
     //    정확히 일치하는 이름은 거리 0이라 같은 결과이고, 이름을 잘못 알아들은 경우만 보정된다
-    const corrected = this.resolveAroundMarkers(text.replace(/\s+/g, ''));
+    const corrected = this.resolveAroundMarkers(text.replace(/\s+/g, ''), text);
     if (corrected) return corrected;
 
     // 2. 역명 사전 기반 검색 (가장 긴 역명 우선 매칭)
@@ -83,6 +96,11 @@ export class IntentParserService {
     // 도착지 하나만 말한 경우("강남역 가는 길")는 출발지를 현재 위치로 둔다
     if (matchedStations.length === 1) {
       const only = matchedStations[0];
+      // `명지대학교`의 `명지대`, `강남대로`의 `강남`처럼 역 이름이 더 긴 낱말의 앞부분일 뿐이면 역이 아니라 장소다
+      if (!/(?:에서|부터)/.test(text)) {
+        const place = this.placeNameAround(text, only);
+        if (place) return { originStationName: null, destStationName: place };
+      }
       const originOnly = new RegExp(`${only}역?\s*(?:에서|부터)`).test(text);
       if (!originOnly) {
         // "에서"를 말했는데 출발역을 찾지 못했으면(이름을 잘못 알아들은 것) 조용히 현재 위치에서 출발한 것으로
@@ -134,6 +152,10 @@ export class IntentParserService {
         };
       }
     }
+
+    // 역은 없지만 주소를 말했으면("문화로 67-1 가는 길") 그 주소가 도착지다
+    const address = this.addressIn(text);
+    if (address) return { originStationName: null, destStationName: address };
 
     this.logger.warn(`Could not extract stations from: "${text}"`);
     throw new BusinessException(
@@ -212,7 +234,10 @@ export class IntentParserService {
    * "A역에서 B역까지" 꼴에서 표지(에서, 부터, 까지, 으로) 앞의 이름을 역 사전에서 가장 가까운 역으로 찾습니다.
    * 두 역을 모두 찾고 서로 다를 때만 돌려줍니다. 찾지 못하면 null이라 기존 방식으로 넘어갑니다.
    */
-  private resolveAroundMarkers(compact: string): {
+  private resolveAroundMarkers(
+    compact: string,
+    original: string,
+  ): {
     originStationName: string;
     destStationName: string;
   } | null {
@@ -227,7 +252,16 @@ export class IntentParserService {
 
     const matcher = this.stationMatcher();
     const origin = matcher.closestAtEnd(originRegion);
+    // 도착으로 말한 구절이 주소이거나 역 이름으로 풀리지 않으면, 출발역은 풀렸다는 조건에서 말한 구절을 그대로
+    // 도착지(장소 이름이나 주소)로 넘긴다. 서버가 장소 검색으로 후보를 찾는다
+    const spoken = origin ? this.spokenDestination(original) : null;
+    if (origin && spoken && classifyAddressQuery(spoken) !== 'PLACE') {
+      return { originStationName: origin.name, destStationName: spoken };
+    }
     const dest = matcher.closestAtEnd(destRegion);
+    if (origin && !dest && spoken && !MODE_WORDS.test(spoken)) {
+      return { originStationName: origin.name, destStationName: spoken };
+    }
     if (!origin || !dest || origin.name === dest.name) return null;
 
     for (const [said, found] of [
@@ -244,6 +278,53 @@ export class IntentParserService {
       originStationName: origin.name,
       destStationName: dest.name,
     };
+  }
+
+  /** 장소 이름이나 주소 뒤의 요청 말("가자", "가는 길 알려줘")과 "으로", "까지", "로"를 뗀다 */
+  private trimDestinationPhrase(phrase: string): string {
+    return phrase
+      .replace(TRAILING_REQUEST, '')
+      .replace(/(?:으로|까지|로)\s*$/, '')
+      .trim();
+  }
+
+  /** 출발 표지("에서", "부터") 뒤에서 도착으로 말한 구절을 공백을 살려 돌려준다. 두 글자 미만이면 null */
+  private spokenDestination(text: string): string | null {
+    const marker = /역?(?:에서|부터)/.exec(text);
+    if (!marker) return null;
+    const phrase = this.trimDestinationPhrase(
+      text.slice(marker.index + marker[0].length),
+    );
+    return phrase.length >= 2 ? phrase : null;
+  }
+
+  /**
+   * 사전에서 찾은 역 이름이 더 긴 낱말의 앞부분일 뿐이면(`명지대학교`의 `명지대`, `강남대로`의 `강남`)
+   * 그 낱말부터 도착 표지까지를 장소 이름으로 돌려준다. 낱말 끝이 맞으면(`강남역`, `강남으로`) null이다
+   */
+  private placeNameAround(text: string, station: string): string | null {
+    let from = 0;
+    while (from < text.length) {
+      const index = text.indexOf(station, from);
+      if (index < 0) return null;
+      const after = text.slice(index + station.length);
+      if (after !== '' && !STATION_WORD_END.test(after)) {
+        const start = text.lastIndexOf(' ', index) + 1;
+        const phrase = this.trimDestinationPhrase(text.slice(start));
+        return phrase.length >= 2 ? phrase : null;
+      }
+      from = index + 1;
+    }
+    return null;
+  }
+
+  /** 역 없이 주소만 말한 문장에서 주소를 돌려준다(도로명이나 지번 주소가 아니면 null) */
+  private addressIn(text: string): string | null {
+    const phrase = this.trimDestinationPhrase(text);
+    return classifyAddressQuery(phrase) === 'PLACE' ||
+      classifyAddressQuery(phrase) === 'NUMBER_ONLY'
+      ? null
+      : phrase;
   }
 
   /** 도착 구간이 끝나는 위치. "까지"를 먼저 보고, 없으면 "으로", 마지막으로 "로" */

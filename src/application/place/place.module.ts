@@ -13,5 +13,6 @@ import { StationController } from './station.controller';
     PlaceService,
     { provide: PLACE_SEARCH_PROVIDER, useClass: VWorldPlaceProvider },
   ],
+  exports: [PlaceService],
 })
 export class PlaceModule {}
