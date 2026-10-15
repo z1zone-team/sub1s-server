@@ -29,11 +29,26 @@ interface VWorldItem {
 
 interface VWorldBody {
   status?: string;
+  /** `status`가 ERROR일 때 V-World가 알려 주는 사유(예: 키 오류, 등록하지 않은 도메인) */
+  error?: { code?: string; text?: string };
   result?: { items?: VWorldItem[] };
 }
 
 // V-World 문서는 status, result가 최상위라고 하지만 JSON 예시는 response 아래에 있어 둘 다 처리한다
 type VWorldResponse = VWorldBody & { response?: VWorldBody };
+
+const MAX_ERROR_TEXT = 120;
+
+/** 로그에 붙일 오류 사유. 사유가 없으면 빈 문자열이고, 길이는 제한한다(키는 응답에 없지만 길이로도 막는다) */
+function describeError(error?: { code?: string; text?: string }): string {
+  const code = typeof error?.code === 'string' ? error.code : '';
+  const text = typeof error?.text === 'string' ? error.text : '';
+  const detail = [code, text]
+    .filter(Boolean)
+    .join(': ')
+    .slice(0, MAX_ERROR_TEXT);
+  return detail ? ` (${detail})` : '';
+}
 
 @Injectable()
 export class VWorldPlaceProvider implements IPlaceSearchProvider {
@@ -170,7 +185,9 @@ export class VWorldPlaceProvider implements IPlaceSearchProvider {
       const body = parsed.response ?? parsed;
       if (body.status !== 'OK') {
         if (body.status === 'ERROR') {
-          this.logger.warn('V-World search returned status ERROR');
+          this.logger.warn(
+            `V-World search returned status ERROR${describeError(body.error)}`,
+          );
         }
         return [];
       }
