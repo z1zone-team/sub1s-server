@@ -8,7 +8,7 @@ describe('VWorldPlaceProvider', () => {
 
   const provider = (key?: string) =>
     new VWorldPlaceProvider({
-      get: () => key,
+      get: (name: string) => (name === 'VWORLD_API_KEY' ? key : undefined),
     } as unknown as ConfigService);
 
   const respond = (
@@ -123,6 +123,73 @@ describe('VWorldPlaceProvider', () => {
       expect(await provider('k').search('교보타워', 10)).toEqual([]);
     },
   );
+
+  describe('proxy', () => {
+    const withConfig = (values: Record<string, string>) =>
+      new VWorldPlaceProvider({
+        get: (name: string) => values[name],
+      } as unknown as ConfigService);
+
+    it('calls V-World directly with the key in the query when no proxy is set', async () => {
+      respond({ response: { status: 'OK', result: { items: [item] } } });
+
+      await withConfig({ VWORLD_API_KEY: 'secret-key' }).search('교보타워', 5);
+
+      const [url, init] = fetchMock.mock.calls[0];
+      expect(String(url)).toContain('https://api.vworld.kr/req/search?');
+      expect(String(url)).toContain('key=secret-key');
+      expect(init.headers).toBeUndefined();
+    });
+
+    it('sends the request to the proxy with the key in a header, not in the URL', async () => {
+      respond({ response: { status: 'OK', result: { items: [item] } } });
+
+      const result = await withConfig({
+        VWORLD_API_KEY: 'secret-key',
+        VWORLD_PROXY_URL: 'https://proxy.example.com/vworld',
+        VWORLD_PROXY_SECRET: 'shared',
+      }).search('교보타워', 5);
+
+      const [url, init] = fetchMock.mock.calls[0];
+      expect(String(url).startsWith('https://proxy.example.com/vworld?')).toBe(
+        true,
+      );
+      expect(String(url)).toContain('query=');
+      expect(String(url)).not.toContain('secret-key');
+      expect(String(url)).not.toContain('key=');
+      expect(init.headers).toEqual({
+        'X-Vworld-Key': 'secret-key',
+        'X-Proxy-Secret': 'shared',
+      });
+      expect(result).toHaveLength(1);
+    });
+
+    it('omits the secret header when no secret is configured', async () => {
+      respond({ response: { status: 'NOT_FOUND' } });
+
+      await withConfig({
+        VWORLD_API_KEY: 'secret-key',
+        VWORLD_PROXY_URL: 'https://proxy.example.com/vworld',
+      }).search('교보타워', 5);
+
+      expect(fetchMock.mock.calls[0][1].headers).toEqual({
+        'X-Vworld-Key': 'secret-key',
+      });
+    });
+
+    it('appends with & when the proxy URL already has a query string', async () => {
+      respond({ response: { status: 'NOT_FOUND' } });
+
+      await withConfig({
+        VWORLD_API_KEY: 'k',
+        VWORLD_PROXY_URL: 'https://proxy.example.com/api?mode=search',
+      }).search('교보타워', 5);
+
+      expect(String(fetchMock.mock.calls[0][0])).toContain(
+        'https://proxy.example.com/api?mode=search&service=search',
+      );
+    });
+  });
 
   describe('error logging', () => {
     const warn = () =>
