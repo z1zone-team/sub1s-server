@@ -1,4 +1,14 @@
 import { join } from 'path';
+import {
+  FIRST_SLOT_MINUTE,
+  SLOT_MINUTES,
+  clampPercent,
+} from '../../domain/congestion/models/congestion';
+import {
+  buildFallbackProfile,
+  fallbackProfileRate,
+} from '../../domain/congestion/services/fallback-profile';
+import { mockStationRate } from '../../domain/congestion/services/mock-congestion.model';
 import { FareRule } from '../../domain/subway/fare/fare-calculator';
 import {
   GraphData,
@@ -84,6 +94,33 @@ describe('StatisticalCongestionProvider on the published congestion data', () =>
       provider.stationRate('GA', 'GA_X106', 'DOWN', kst('2026-10-05T08:15:00'))
         .source,
     ).toBe('MOCK');
+  });
+
+  // 곡선에 대상 호선 자신이 들어 있어 낙관적인 비교다. 호선 하나를 빼고 맞힌 검증(서버 이슈 #170)에서는
+  // 평일 30분 칸 단위 평균 오차가 ADR-005 곡선 18.8%p, 실측 평균 곡선 14.3%p였다.
+  it('estimates the published lines closer with the average curve than with the ADR-005 curve', () => {
+    const profile = buildFallbackProfile(congestion.records);
+    let curveError = 0;
+    let adrError = 0;
+    let count = 0;
+
+    for (const record of congestion.records) {
+      if (record.dayType !== 'WEEKDAY') continue;
+      const lineId = record.stationId.split('_')[0];
+      record.rates.forEach((rate, slot) => {
+        const curve = fallbackProfileRate(profile, lineId, 'WEEKDAY', slot);
+        if (curve === undefined || !Number.isFinite(rate)) return;
+        const minute = FIRST_SLOT_MINUTE + slot * SLOT_MINUTES;
+        const truth = clampPercent(rate);
+        const adr = mockStationRate(lineId, minute, 'WEEKDAY');
+        curveError += Math.abs(curve - truth);
+        adrError += Math.abs(adr - truth);
+        count += 1;
+      });
+    }
+
+    expect(count).toBeGreaterThan(10000);
+    expect(curveError / count).toBeLessThan(adrError / count);
   });
 
   describe('with the route engine', () => {

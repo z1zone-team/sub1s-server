@@ -1,3 +1,4 @@
+import { serviceTime } from '../../domain/congestion/models/congestion';
 import { mockStationRate } from '../../domain/congestion/services/mock-congestion.model';
 import {
   CongestionData,
@@ -85,28 +86,33 @@ describe('StatisticalCongestionProvider', () => {
     });
   });
 
-  it('falls back to the ADR-005 model for stations without statistics', () => {
+  it('estimates stations without statistics from the average curve of the day type', () => {
     const rate = provider.stationRate('SB', 'NO_DATA', 'DOWN', mondayMorning);
+
+    // slot 6 averages the weekday records (6 + 106 + 16 + 36) / 4 = 41.
+    // The records are on lines without a coefficient (0.75), SB is 1.05, so 41 x 1.05 / 0.75
+    expect(rate.source).toBe('MOCK');
+    expect(rate.ratePercent).toBeCloseTo(57.4);
+  });
+
+  it('falls back to the ADR-005 model when no statistics exist for the day type', () => {
+    const sunday = kst('2026-10-11T08:45:00');
+    const rate = provider.stationRate('02', 'S_1', 'DOWN', sunday);
 
     expect(rate.source).toBe('MOCK');
     expect(rate.ratePercent).toBeCloseTo(
-      mockStationRate('SB', 8 * 60 + 45, 'WEEKDAY'),
+      mockStationRate('02', 8 * 60 + 45, 'SUNDAY'),
     );
   });
 
-  it('falls back to the model when no statistics exist for the day type', () => {
-    const sunday = kst('2026-10-11T08:45:00');
-
-    expect(provider.stationRate('02', 'S_1', 'DOWN', sunday).source).toBe(
-      'MOCK',
-    );
-  });
-
-  it('falls back to the model when no train runs', () => {
+  it('falls back to the ADR-005 model when no train runs', () => {
     const night = kst('2026-10-05T03:00:00');
+    const { dayType, minute } = serviceTime(night);
+    const rate = provider.stationRate('02', 'S_1', 'DOWN', night);
 
-    expect(provider.stationRate('02', 'S_1', 'DOWN', night).source).toBe(
-      'MOCK',
+    expect(rate.source).toBe('MOCK');
+    expect(rate.ratePercent).toBeCloseTo(
+      mockStationRate('02', minute, dayType),
     );
   });
 
