@@ -18,7 +18,7 @@ export interface VoiceRouteRecommendResponseDto {
   audioTtsUrl?: string;
 }
 
-/** 해석한 출발지. 앱이 후보를 고른 뒤 경로를 검색할 때 그대로 쓴다. 역이면 `stationId`, 현재 위치나 장소면 좌표 */
+/** 해석한 출발지나 도착지. 앱이 후보를 고른 뒤 경로를 검색할 때 그대로 쓴다. 역이면 `stationId`, 현재 위치나 장소면 좌표 */
 export interface VoiceOriginDto {
   name: string;
   stationId?: string;
@@ -57,6 +57,22 @@ export interface VoiceDestinationConfirmDto {
   candidates: VoiceDestinationCandidateDto[];
 }
 
+/**
+ * 출발지로 말한 장소 이름이나 주소의 후보가 여러 개여서 "이 곳이 맞나요?"를 물어야 하는 결과. 경로는 계산하지 않았다.
+ * 도착지가 하나로 정해졌으면 `destination`, 도착지도 후보가 여럿이면 `destinationCandidates`를 담는다(둘 중 하나).
+ * 앱은 출발 후보를 고른 뒤 도착 후보가 있으면 이어서 묻고, 정해지면 그 출발지와 도착지로 경로를 검색한다
+ */
+export interface VoiceOriginConfirmDto {
+  kind: 'CONFIRM_ORIGIN';
+  transcript: string;
+  interpretedIntent: InterpretedIntentDto;
+  originCandidates: VoiceDestinationCandidateDto[];
+  destination?: VoiceOriginDto;
+  destinationCandidates?: VoiceDestinationCandidateDto[];
+}
+
 /** 음성 작업의 결과. 작업 조회와 WebSocket `voice_result`가 같은 형태를 쓴다 */
 export type VoiceResultDto =
-  VoiceRouteRecommendResponseDto | VoiceDestinationConfirmDto;
+  | VoiceRouteRecommendResponseDto
+  | VoiceDestinationConfirmDto
+  | VoiceOriginConfirmDto;

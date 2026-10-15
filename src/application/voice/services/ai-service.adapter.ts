@@ -86,6 +86,8 @@ export class AiServiceAdapter {
       preferredMode: RouteMode;
     },
     route: SubwayRouteOptionDto,
+    /** 안내 문장에서 부를 이름. 주면 그대로 쓰고(역이면 `역`이 이미 붙어 있다), 없으면 이름으로 짐작한다 */
+    labels?: { origin: string; destination: string },
   ): Promise<BriefingResult> {
     const durationMin = Math.round(route.totalDurationSec / 60);
     const modeLabelMap: Record<RouteMode, string> = {
@@ -101,7 +103,7 @@ export class AiServiceAdapter {
     const modeLabel = modeLabelMap[intent.preferredMode] ?? '추천';
 
     const defaultBriefing =
-      `${placeLabel(intent.originStationName)}에서 ${placeLabel(intent.destStationName)}까지 ${modeLabel} 경로로 안내해 드릴게요. ` +
+      `${labels?.origin ?? placeLabel(intent.originStationName)}에서 ${labels?.destination ?? placeLabel(intent.destStationName)}까지 ${modeLabel} 경로로 안내해 드릴게요. ` +
       `총 약 ${durationMin}분 소요되며 환승은 ${route.transferCount}회입니다. 안전한 이동 되세요.`;
 
     if (this.aiServiceUrl) {
