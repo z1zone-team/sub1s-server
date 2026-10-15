@@ -1,3 +1,5 @@
+import { SubwayRouteOptionDto } from '../route/dto/route-search-response.dto';
+import { ChoiceSnapshot } from '../../domain/subway/models/preference-model';
 import {
   HttpStatus,
   Inject,
@@ -103,14 +105,35 @@ export class TravelLogService {
       );
     }
 
-    // Official route calculation via backend engine
-    const searchRes = await this.routeService.search({
-      originStationId: dto.originStationId,
-      destinationStationId: dto.destStationId,
-      routeMode: 'OPTIMAL',
-    });
-
-    const route = searchRes.options[0];
+    let chosen: SubwayRouteOptionDto | undefined;
+    let choiceSnapshot: ChoiceSnapshot | undefined;
+    const session =
+      dto.sessionId && this.trackingRepo
+        ? await this.trackingRepo.findById(dto.sessionId).catch(() => null)
+        : null;
+    if (session) {
+      if (
+        session &&
+        session.userId === userId &&
+        session.choiceSnapshot &&
+        session.originStationId === dto.originStationId &&
+        session.destStationId === dto.destStationId &&
+        session.routeOption?.totalDistanceKm !== undefined &&
+        session.routeOption?.transferCount !== undefined
+      ) {
+        chosen = session.routeOption as unknown as SubwayRouteOptionDto;
+        choiceSnapshot = session.choiceSnapshot;
+      }
+    }
+    const route =
+      chosen ??
+      (
+        await this.routeService.search({
+          originStationId: dto.originStationId,
+          destinationStationId: dto.destStationId,
+          routeMode: 'OPTIMAL',
+        })
+      ).options[0];
     const totalDistanceKm = route.totalDistanceKm;
     const transferCount = route.transferCount;
 
@@ -121,10 +144,9 @@ export class TravelLogService {
     let routeMode: RouteMode | undefined;
     if (dto.sessionId && this.trackingRepo) {
       try {
-        const session = await this.trackingRepo.findById(dto.sessionId);
         if (session && session.userId === userId) {
           const actualSec = (Date.now() - session.createdAt.getTime()) / 1000;
-          const plannedSec = route.totalDurationSec;
+          const plannedSec = chosen?.totalDurationSec ?? route.totalDurationSec;
           rideDurationSec = Math.round(actualSec);
           // 사용자가 고른 경로 모드를 이력으로 남긴다 (추천 개인화에 쓴다)
           const chosenMode = session.routeOption?.mode;
@@ -149,6 +171,8 @@ export class TravelLogService {
       destStationId: dto.destStationId,
       segments: route.segments,
       stationIds: route.stationIds,
+      durationSec: chosen?.totalDurationSec,
+      routeSource: chosen ? 'SELECTED' : 'RECALCULATED',
       completedAt: kstNowIso(),
     });
     const encrypted = this.cryptoService.encrypt(sensitivePayload);
@@ -170,6 +194,7 @@ export class TravelLogService {
         routeMode,
         monthlyKey,
         encrypted,
+        choiceSnapshot,
       });
 
     try {
@@ -265,9 +290,15 @@ export class TravelLogService {
     const nowMs = Date.now();
     const startDate = this.calculateStartDate(query.period, nowMs);
 
-    const logs = await this.travelLogRepo.findStatsLogs(targetUserId, startDate);
+    const logs = await this.travelLogRepo.findStatsLogs(
+      targetUserId,
+      startDate,
+    );
 
-    const totalDistanceRaw = logs.reduce((sum, l) => sum + l.totalDistanceKm, 0);
+    const totalDistanceRaw = logs.reduce(
+      (sum, l) => sum + l.totalDistanceKm,
+      0,
+    );
     const totalDistanceKm = Math.round(totalDistanceRaw * 10) / 10;
     const totalTravelCount = logs.length;
     const transferCount = logs.reduce((sum, l) => sum + l.transferCount, 0);
@@ -324,8 +355,7 @@ export class TravelLogService {
       // 3. 최다 이용 호선 카운트
       const originLineId =
         l.originStation?.lineId ?? l.originStationId.split('_')[0];
-      const destLineId =
-        l.destStation?.lineId ?? l.destStationId.split('_')[0];
+      const destLineId = l.destStation?.lineId ?? l.destStationId.split('_')[0];
       if (originLineId) {
         lineCountMap.set(
           originLineId,
@@ -379,7 +409,10 @@ export class TravelLogService {
     const targetUserId = query.userId ?? currentUserId;
     const startDate = this.calculateStartDate(query.period);
 
-    const logs = await this.travelLogRepo.findLineMapLogs(targetUserId, startDate);
+    const logs = await this.travelLogRepo.findLineMapLogs(
+      targetUserId,
+      startDate,
+    );
 
     const visitedSet = new Set<string>();
     for (const l of logs) {
@@ -473,7 +506,10 @@ export class TravelLogService {
           ? kstYearKey
           : kstDayKey;
 
-    const buckets = new Map<string, { distanceKm: number; rideCount: number }>();
+    const buckets = new Map<
+      string,
+      { distanceKm: number; rideCount: number }
+    >();
     for (const key of this.bucketKeys(period, logs, nowMs)) {
       buckets.set(key, { distanceKm: 0, rideCount: 0 });
     }
@@ -556,7 +592,12 @@ export class TravelLogService {
   }
 
   private readRoutePayload(log: TravelLogWithStations): unknown {
-    if (!log.encryptedRoutePayload || !log.iv || !log.authTag || !log.wrappedDek) {
+    if (
+      !log.encryptedRoutePayload ||
+      !log.iv ||
+      !log.authTag ||
+      !log.wrappedDek
+    ) {
       return undefined;
     }
     try {

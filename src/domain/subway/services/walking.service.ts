@@ -57,9 +57,13 @@ export class WalkingService {
   /**
    * 직선 거리(km)를 기반으로 실제 도보 거리, 소요 시간, 칼로리, 걸음 수를 산출합니다.
    */
-  calculateWalkMetrics(straightDistanceKm: number): WalkMetrics {
-    const actualDistanceKm =
-      Math.round(straightDistanceKm * this.DETOUR_FACTOR * 100) / 100;
+  calculateWalkMetrics(
+    straightDistanceKm: number,
+    precise = false,
+  ): WalkMetrics {
+    const actualDistanceKm = precise
+      ? straightDistanceKm * this.DETOUR_FACTOR
+      : Math.round(straightDistanceKm * this.DETOUR_FACTOR * 100) / 100;
     const durationSec = Math.round(
       (actualDistanceKm * 1000) / this.WALKING_SPEED_MPS,
     );
@@ -79,6 +83,38 @@ export class WalkingService {
    * 주어진 위경도 좌표에서 반경 maxRadiusKm 내에 위치한 가장 가까운 지하철역 후보를 탐색합니다.
    * 물리적 환승역(동일 역명)은 최단 거리 노드를 우선 채택하여 중복을 방지합니다.
    */
+  /** Preserve all line nodes of the three closest physical station names. */
+  findApproachStations(
+    graph: SubwayGraph,
+    lat: number,
+    lng: number,
+  ): NearestStationResult[] {
+    const rows: NearestStationResult[] = [];
+    for (let i = 0; i < graph.stationCount; i++) {
+      const station = graph.station(i);
+      const distance = this.haversineDistanceKm(
+        lat,
+        lng,
+        station.lat,
+        station.lng,
+      );
+      if (distance <= 2.5)
+        rows.push({
+          station,
+          metrics: this.calculateWalkMetrics(distance, true),
+        });
+    }
+    rows.sort(
+      (a, b) =>
+        a.metrics.actualDistanceKm - b.metrics.actualDistanceKm ||
+        a.station.id.localeCompare(b.station.id),
+    );
+    const names = [
+      ...new Set(rows.map((row) => row.station.stationName)),
+    ].slice(0, 3);
+    return rows.filter((row) => names.includes(row.station.stationName));
+  }
+
   findNearestStations(
     graph: SubwayGraph,
     lat: number,

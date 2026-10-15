@@ -1,4 +1,23 @@
-import { HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
+import { randomUUID } from 'node:crypto';
+import {
+  ChoiceSnapshot,
+  PreferenceModel,
+  surveyPreference,
+  importance,
+} from '../../domain/subway/models/preference-model';
+import {
+  chooseRecommendation,
+  routeFeatures,
+  routeFingerprint,
+} from '../../domain/subway/models/recommendation-policy';
+import { PreferenceModelService } from './preference-model.service';
+import {
+  HttpStatus,
+  Inject,
+  Injectable,
+  Logger,
+  Optional,
+} from '@nestjs/common';
 import { BusinessException } from '../../common/exceptions/business.exception';
 import { isWeakAirConditioned } from '../../common/utils/air-conditioning';
 import { congestionLevel } from '../../domain/congestion/models/congestion';
@@ -53,12 +72,22 @@ import { parseIsoAsKst, toKstIso } from '../../common/utils/kst';
 import { trainCarCount } from '../../domain/congestion/services/train-composition';
 
 /** 로그인하지 않은 사용자에게 주는 모드. 추천(PERSONAL)은 개인화 기능이라 로그인한 사용자에게만 준다 */
-const PUBLIC_ROUTE_MODES: RouteMode[] = ['OPTIMAL', 'COMFORTABLE', 'CHEAPEST'];
+const PUBLIC_ROUTE_MODES: RouteMode[] = [
+  'OPTIMAL',
+  'COMFORTABLE',
+  'CHEAPEST',
+  'FASTEST',
+  'LEAST_WALK',
+  'FEWEST_TRANSFERS',
+];
 const ALL_ROUTE_MODES: RouteMode[] = [
   'OPTIMAL',
   'COMFORTABLE',
   'PERSONAL',
   'CHEAPEST',
+  'FASTEST',
+  'LEAST_WALK',
+  'FEWEST_TRANSFERS',
 ];
 /** 개인화에 쓰는 최근 선택 이력의 건수 */
 const HISTORY_LIMIT = 20;
@@ -66,6 +95,37 @@ const HISTORY_LIMIT = 20;
 @Injectable()
 export class RouteService {
   private readonly logger = new Logger(RouteService.name);
+  private readonly choices = new Map<
+    string,
+    {
+      owner?: string;
+      snapshot: ChoiceSnapshot;
+      option: SubwayRouteOptionDto;
+      expires: number;
+    }
+  >();
+
+  getChoiceSnapshot(
+    routeId?: string,
+    userId?: string,
+  ): ChoiceSnapshot | undefined {
+    if (!routeId) return undefined;
+    const record = this.choices.get(routeId);
+    if (!record || record.owner !== userId || record.expires < Date.now())
+      return undefined;
+    return record.snapshot;
+  }
+
+  getChosenRoute(
+    routeId?: string,
+    userId?: string,
+  ): SubwayRouteOptionDto | undefined {
+    if (!routeId) return undefined;
+    const record = this.choices.get(routeId);
+    return record && record.owner === userId && record.expires >= Date.now()
+      ? record.option
+      : undefined;
+  }
 
   constructor(
     @Inject(SUBWAY_ROUTE_ENGINE)
@@ -79,6 +139,7 @@ export class RouteService {
     private readonly userRepo: IUserRepository,
     @Inject(TRAVEL_LOG_REPOSITORY)
     private readonly travelLogRepo: ITravelLogRepository,
+    @Optional() private readonly preferenceModels?: PreferenceModelService,
   ) {}
 
   /**
@@ -88,32 +149,61 @@ export class RouteService {
   private async personalizationFor(
     userId: string,
     departureAt: Date,
-  ): Promise<Personalization> {
+  ): Promise<
+    Personalization & {
+      model: PreferenceModel;
+      routePrefs: string[];
+      fingerprints: string[];
+    }
+  > {
     try {
       const [preferences, history] = await Promise.all([
         this.userRepo.findPreferences(userId),
         this.travelLogRepo.findRecentRouteChoices(userId, HISTORY_LIMIT),
       ]);
-      return personalize({
+      const model = this.preferenceModels
+        ? await this.preferenceModels.compute(
+            userId,
+            preferences.routePrefs,
+            history.flatMap((record) =>
+              record.choiceSnapshot ? [record.choiceSnapshot] : [],
+            ),
+          )
+        : surveyPreference(preferences.routePrefs);
+      return {
+        ...personalize({
+          routePrefs: preferences.routePrefs,
+          purposes: preferences.purposes,
+          history: history.flatMap((record) =>
+            isRouteMode(record.routeMode)
+              ? [{ mode: record.routeMode, createdAt: record.createdAt }]
+              : [],
+          ),
+          departureAt,
+        }),
+        model,
         routePrefs: preferences.routePrefs,
-        purposes: preferences.purposes,
-        history: history.flatMap((record) =>
-          isRouteMode(record.routeMode)
-            ? [{ mode: record.routeMode, createdAt: record.createdAt }]
+        fingerprints: history.flatMap((record) =>
+          record.choiceSnapshot?.routeFingerprint
+            ? [record.choiceSnapshot.routeFingerprint]
             : [],
         ),
-        departureAt,
-      });
+      };
     } catch (error) {
       this.logger.warn(
         `Personalization failed for ${userId}, using the default weights: ${error}`,
       );
-      return personalize({
+      return {
+        ...personalize({
+          routePrefs: [],
+          purposes: [],
+          history: [],
+          departureAt,
+        }),
+        model: surveyPreference([]),
         routePrefs: [],
-        purposes: [],
-        history: [],
-        departureAt,
-      });
+        fingerprints: [],
+      };
     }
   }
 
@@ -269,43 +359,205 @@ export class RouteService {
     const personalization = userId
       ? await this.personalizationFor(userId, departureDate)
       : undefined;
+    if (personalization) {
+      const expressPreference =
+        Math.max(0, importance(personalization.model, 'express') - 0.5) * 2;
+      const walkingWeight =
+        Math.max(0, importance(personalization.model, 'walk') - 0.5) * 2;
+      if (expressPreference > 0)
+        personalization.weights.expressPreference = expressPreference;
+      if (walkingWeight > 0)
+        personalization.weights.walkingWeight = walkingWeight;
+    }
     const modes = userId ? ALL_ROUTE_MODES : PUBLIC_ROUTE_MODES;
-    const optionResults = await Promise.all(
-      modes.map(async (mode) => {
-        try {
-          const result = await this.routeEngine.findRoute({
-            originStationId: originStation.id,
-            destinationStationId: destinationStation.id,
-            mode,
-            departureAt: departureDate,
-            weights:
-              mode === 'PERSONAL' ? personalization?.weights : undefined,
-          });
-          return this.mapToOptionDto(
-            result,
+    const origins =
+      !dto.originStationId &&
+      dto.originLat !== undefined &&
+      dto.originLng !== undefined
+        ? (this.walkingService.findApproachStations?.(
             graph,
-            departureDate,
-            dto,
-            originStation,
-            destinationStation,
-            firstMileWalk,
-            lastMileWalk,
-          );
-        } catch (error) {
-          if (
-            error instanceof RouteNotFoundError ||
-            error instanceof UnknownStationError
-          ) {
-            return null;
+            dto.originLat,
+            dto.originLng,
+          ) ?? [])
+        : [];
+    const destinations =
+      !dto.destinationStationId &&
+      dto.destinationLat !== undefined &&
+      dto.destinationLng !== undefined
+        ? (this.walkingService.findApproachStations?.(
+            graph,
+            dto.destinationLat,
+            dto.destinationLng,
+          ) ?? [])
+        : [];
+    const originCandidates = origins.length
+      ? origins
+      : [{ station: originStation, metrics: firstMileWalk }];
+    const destinationCandidates = destinations.length
+      ? destinations
+      : [{ station: destinationStation, metrics: lastMileWalk }];
+    const pool: SubwayRouteOptionDto[] = [];
+    for (const mode of modes) {
+      for (const from of originCandidates)
+        for (const to of destinationCandidates) {
+          if (from.station.id === to.station.id) continue;
+          try {
+            const result = await this.routeEngine.findRoute({
+              originStationId: from.station.id,
+              destinationStationId: to.station.id,
+              mode,
+              departureAt: new Date(
+                departureDate.getTime() +
+                  (from.metrics?.durationSec ?? 0) * 1000,
+              ),
+              weights:
+                mode === 'PERSONAL' ? personalization?.weights : undefined,
+            });
+            pool.push(
+              this.mapToOptionDto(
+                result,
+                graph,
+                departureDate,
+                dto,
+                from.station,
+                to.station,
+                from.metrics,
+                to.metrics,
+                mode === 'PERSONAL' &&
+                  !!personalization &&
+                  importance(personalization.model, 'weakAc') > 0.5,
+              ),
+            );
+          } catch (error) {
+            if (!(
+              error instanceof RouteNotFoundError ||
+              error instanceof UnknownStationError
+            ))
+              throw error;
           }
-          throw error;
         }
-      }),
-    );
+    }
+    const compareOptions = (
+      a: SubwayRouteOptionDto,
+      b: SubwayRouteOptionDto,
+    ): number => {
+      const primary =
+        a.mode === 'LEAST_WALK'
+          ? (a.totalWalkDistanceKm ?? 0) - (b.totalWalkDistanceKm ?? 0)
+          : a.mode === 'FEWEST_TRANSFERS'
+            ? a.transferCount - b.transferCount
+            : a.mode === 'CHEAPEST'
+              ? a.totalFare - b.totalFare
+              : a.totalDurationSec - b.totalDurationSec;
+      return (
+        primary ||
+        a.totalDurationSec - b.totalDurationSec ||
+        a.totalFare - b.totalFare ||
+        (a.stationIds ?? [])
+          .join('|')
+          .localeCompare((b.stationIds ?? []).join('|'))
+      );
+    };
+    const validOptions = modes.flatMap((mode) => {
+      const candidates = pool
+        .filter((option) => option.mode === mode)
+        .sort(compareOptions);
+      return candidates.length ? [candidates[0]] : [];
+    });
 
-    const validOptions = optionResults.filter(
-      (opt): opt is SubwayRouteOptionDto => opt !== null,
+    if (personalization?.fingerprints.length) {
+      pool.forEach((option) => {
+        option.familiarity = personalization.fingerprints.includes(
+          routeFingerprint(option),
+        )
+          ? 1
+          : 0;
+      });
+    }
+    const publicPool = pool.filter(
+      (option) => option.mode !== 'PERSONAL' && option.mode !== 'ONLY_WALK',
     );
+    const common = chooseRecommendation(publicPool);
+    const personal = personalization
+      ? chooseRecommendation(
+          [
+            ...publicPool,
+            ...pool.filter((option) => option.mode === 'PERSONAL'),
+          ],
+          personalization.model,
+        )
+      : undefined;
+    if (common) {
+      const index = validOptions.findIndex(
+        (option) => option.mode === 'OPTIMAL',
+      );
+      if (index >= 0) validOptions[index] = { ...common, mode: 'OPTIMAL' };
+    }
+    if (personal) {
+      const index = validOptions.findIndex(
+        (option) => option.mode === 'PERSONAL',
+      );
+      if (index >= 0) {
+        const preferred = {
+          ...personal,
+          mode: 'PERSONAL' as const,
+          segments: personal.segments.map((segment) => ({ ...segment })),
+        };
+        if (importance(personalization!.model, 'weakAc') > 0.5) {
+          preferred.segments.forEach((segment) => {
+            const cars = segment.cars
+              ?.filter((car) => car.isWeakAirConditioned)
+              .sort((a, b) => a.rate - b.rate || a.carNo - b.carNo);
+            if (cars?.length) {
+              segment.recommendedCarNo = cars[0].carNo;
+              segment.isWeakAirConditioned = true;
+            }
+          });
+        }
+        validOptions[index] = preferred;
+      }
+    }
+    const alternatives = validOptions.map(routeFeatures);
+    for (const [id, record] of this.choices)
+      if (record.expires < Date.now()) this.choices.delete(id);
+    while (this.choices.size > 1000)
+      this.choices.delete(this.choices.keys().next().value!);
+    for (const option of validOptions) {
+      option.routeId = userId ? randomUUID() : undefined;
+      if (userId && option.routeId)
+        this.choices.set(option.routeId, {
+          owner: userId,
+          expires: Date.now() + 10 * 60_000,
+          option,
+          snapshot: {
+            selected: routeFeatures(option),
+            alternatives,
+            routeFingerprint: routeFingerprint(option),
+          },
+        });
+    }
+    const unsupportedPreferences =
+      personalization?.routePrefs.filter(
+        (code) =>
+          ['SEAT', 'ELEVATOR', 'AVOID_STAIRS'].includes(code) ||
+          (code === 'FAMILIAR_ROUTE' &&
+            !personalization?.fingerprints.length) ||
+          (code === 'WEAK_AC' &&
+            validOptions
+              .find((option) => option.mode === 'PERSONAL')
+              ?.segments.some(
+                (segment) =>
+                  segment.lineId !== 'WALK' && !segment.isWeakAirConditioned,
+              )) ||
+          (code === 'UNCROWDED' &&
+            publicPool.some((option) =>
+              option.segments.some(
+                (segment) =>
+                  segment.lineId !== 'WALK' &&
+                  segment.congestionSource !== 'STATISTICS',
+              ),
+            )),
+      ) ?? [];
 
     // 직접 도보 옵션이 있으면 목록에 병합
     if (directWalkOption) {
@@ -334,11 +586,22 @@ export class RouteService {
 
     return {
       options: validOptions,
+      candidateScope: 'MODE_CANDIDATES_NEAREST_3_PHYSICAL_STATIONS_ALL_LINES',
+      commonRouteId: validOptions.find((option) => option.mode === 'OPTIMAL')
+        ?.routeId,
       ...(personalization
         ? {
             recommendation: {
               context: personalization.context,
-              reasons: personalization.reasons,
+              modelVersion: personalization.model.modelVersion,
+              preferenceSource: personalization.model.source,
+              unsupportedPreferences,
+              personalRouteId: validOptions.find(
+                (option) => option.mode === 'PERSONAL',
+              )?.routeId,
+              reasons: personalization.routePrefs
+                .filter((code) => !unsupportedPreferences.includes(code))
+                .map((code) => `PREF_${code}`),
               usedHistory: personalization.usedHistory,
               fareSensitive: personalization.fareSensitive,
               weights: personalization.weights,
@@ -365,6 +628,7 @@ export class RouteService {
     destinationStation: StationRecord,
     firstMileWalk?: WalkMetrics,
     lastMileWalk?: WalkMetrics,
+    preferWeakAc = false,
   ): SubwayRouteOptionDto {
     const segments: PathSegmentDto[] = [];
     let elapsedSec = 0;
@@ -387,11 +651,29 @@ export class RouteService {
         isWeakAirConditioned: false,
         congestionLevel: '여유',
         congestionRate: 0,
-        isEstimated: false,
+        isEstimated: true,
         walkCalories: firstMileWalk.calories,
         walkSteps: firstMileWalk.steps,
       });
       elapsedSec += firstMileWalk.durationSec;
+    }
+
+    // Walking between line nodes before the first train also precedes its congestion prediction.
+    let boardingStationId = result.stationIds[0];
+    const firstRideStationId = result.segments[0]?.fromStationId;
+    const boardingVisited = new Set<string>();
+    while (
+      firstRideStationId &&
+      boardingStationId !== firstRideStationId &&
+      !boardingVisited.has(boardingStationId)
+    ) {
+      boardingVisited.add(boardingStationId);
+      const corridor = result.transfers.find(
+        (transfer) => transfer.fromStationId === boardingStationId,
+      );
+      if (!corridor) break;
+      elapsedSec += corridor.walkingDurationSec;
+      boardingStationId = corridor.toStationId;
     }
 
     // 2. 지하철 주행 세그먼트
@@ -406,12 +688,20 @@ export class RouteService {
       if (i < result.segments.length - 1) {
         const nextSeg = result.segments[i + 1];
         const transfer = result.transfers.find(
-          (t) =>
-            t.fromStationId === seg.toStationId &&
-            t.toStationId === nextSeg.fromStationId,
+          (t) => t.fromStationId === seg.toStationId,
         );
+        let cursor = seg.toStationId;
+        const visited = new Set<string>();
+        while (cursor !== nextSeg.fromStationId && !visited.has(cursor)) {
+          visited.add(cursor);
+          const corridor = result.transfers.find(
+            (t) => t.fromStationId === cursor,
+          );
+          if (!corridor) break;
+          elapsedSec += corridor.walkingDurationSec;
+          cursor = corridor.toStationId;
+        }
         if (transfer) {
-          elapsedSec += transfer.walkingDurationSec;
           if (
             transfer.recommendedDoors &&
             transfer.recommendedDoors.length > 0
@@ -430,8 +720,7 @@ export class RouteService {
 
       // 칸 수를 아는 노선만 칸별로 예측한다. 모르는 노선은 칸 추천 없이(0) 구간 혼잡도만 낸다
       const carCount =
-        trainCarCount(seg.lineId, [seg.fromStationId, seg.toStationId]) ??
-        null;
+        trainCarCount(seg.lineId, [seg.fromStationId, seg.toStationId]) ?? null;
       const prediction = this.congestionProvider.predictCars(
         seg.lineId,
         seg.fromStationId,
@@ -441,9 +730,17 @@ export class RouteService {
         carCount,
       );
 
+      const preferredCars = preferWeakAc
+        ? prediction.cars.filter((car) =>
+            isWeakAirConditioned(seg.lineId, car.carNo),
+          )
+        : [];
+      const availableCars = preferredCars.length
+        ? preferredCars
+        : prediction.cars;
       let bestCar: (typeof prediction.cars)[number] | undefined =
-        prediction.cars[0];
-      for (const car of prediction.cars) {
+        availableCars[0];
+      for (const car of availableCars) {
         if (car.rate < bestCar!.rate) {
           bestCar = car;
         }
@@ -502,26 +799,30 @@ export class RouteService {
         isWeakAirConditioned: false,
         congestionLevel: '여유',
         congestionRate: 0,
-        isEstimated: false,
+        isEstimated: true,
         walkCalories: lastMileWalk.calories,
         walkSteps: lastMileWalk.steps,
       });
       elapsedSec += lastMileWalk.durationSec;
     }
 
-    const totalWalkDurationSec =
+    const accessWalkDurationSec =
       (firstMileWalk?.durationSec || 0) + (lastMileWalk?.durationSec || 0);
+    const transferWalkDurationSec = result.transfers.reduce(
+      (sum, transfer) => sum + transfer.walkingDurationSec,
+      0,
+    );
+    const totalWalkDurationSec =
+      accessWalkDurationSec + transferWalkDurationSec;
     const totalWalkDistanceKm =
-      Math.round(
-        ((firstMileWalk?.actualDistanceKm || 0) +
-          (lastMileWalk?.actualDistanceKm || 0)) *
-          100,
-      ) / 100;
+      (firstMileWalk?.actualDistanceKm ?? 0) +
+      (lastMileWalk?.actualDistanceKm ?? 0) +
+      (transferWalkDurationSec * 1.2) / 1000;
     const totalCalories =
       (firstMileWalk?.calories || 0) + (lastMileWalk?.calories || 0);
     const totalSteps = (firstMileWalk?.steps || 0) + (lastMileWalk?.steps || 0);
 
-    const totalDurationSec = result.totalDurationSec + totalWalkDurationSec;
+    const totalDurationSec = result.totalDurationSec + accessWalkDurationSec;
     const totalDistanceKm =
       Math.round((result.totalDistanceKm + totalWalkDistanceKm) * 100) / 100;
 
@@ -542,6 +843,7 @@ export class RouteService {
       operationStatus: 'UNKNOWN',
       totalWalkDurationSec,
       totalWalkDistanceKm,
+      walkDistanceSource: totalWalkDurationSec > 0 ? 'ESTIMATED' : 'NONE',
       totalCalories,
       totalSteps,
     };
@@ -582,7 +884,7 @@ export class RouteService {
           isWeakAirConditioned: false,
           congestionLevel: '여유',
           congestionRate: 0,
-          isEstimated: false,
+          isEstimated: true,
           walkCalories: metrics.calories,
           walkSteps: metrics.steps,
         },
@@ -591,6 +893,7 @@ export class RouteService {
       operationStatus: 'UNKNOWN',
       totalWalkDurationSec: metrics.durationSec,
       totalWalkDistanceKm: metrics.actualDistanceKm,
+      walkDistanceSource: 'ESTIMATED',
       totalCalories: metrics.calories,
       totalSteps: metrics.steps,
     };
@@ -603,7 +906,10 @@ function toHighlightInput(option: SubwayRouteOptionDto): HighlightInput {
   const rides = option.segments.filter((segment) => segment.lineId !== 'WALK');
   const rideSec = rides.reduce((sum, segment) => sum + segment.durationSec, 0);
   const endpointWalkSec = option.totalWalkDurationSec ?? 0;
-  const transferWalkSec = Math.max(0, option.totalDurationSec - endpointWalkSec - rideSec);
+  const transferWalkSec = Math.max(
+    0,
+    option.totalDurationSec - endpointWalkSec - rideSec,
+  );
 
   return {
     totalDurationSec: option.totalDurationSec,
@@ -611,7 +917,11 @@ function toHighlightInput(option: SubwayRouteOptionDto): HighlightInput {
     totalFare: option.totalFare,
     averageCongestionRate:
       rideSec > 0
-        ? rides.reduce((sum, segment) => sum + segment.congestionRate * segment.durationSec, 0) / rideSec
+        ? rides.reduce(
+            (sum, segment) =>
+              sum + segment.congestionRate * segment.durationSec,
+            0,
+          ) / rideSec
         : null,
     walkSec: endpointWalkSec + transferWalkSec,
     hasWeakAcCar: mostlyOnWeakAcLines(rides, rideSec),
@@ -619,7 +929,10 @@ function toHighlightInput(option: SubwayRouteOptionDto): HighlightInput {
 }
 
 // 약냉방칸이 있는 노선에서 탑승 시간의 절반 이상을 보낼 때만 약냉방칸 선호에 맞는다고 본다
-function mostlyOnWeakAcLines(rides: PathSegmentDto[], rideSec: number): boolean {
+function mostlyOnWeakAcLines(
+  rides: PathSegmentDto[],
+  rideSec: number,
+): boolean {
   if (rideSec <= 0) return false;
   const weakAcSec = rides
     .filter((segment) => lineHasWeakAcCars(segment.lineId))

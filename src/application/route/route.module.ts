@@ -7,12 +7,14 @@ import { RoutingModule } from '../../infra/routing/routing.module';
 import { RouteController } from './route.controller';
 import { OperationStatusService } from './operation-status.service';
 import { RouteService } from './route.service';
+import { PreferenceModelService } from './preference-model.service';
 
 @Module({
   imports: [SubwayModule, RoutingModule, InfraAuthModule],
   controllers: [RouteController],
   providers: [
     RouteService,
+    PreferenceModelService,
     OperationStatusService,
     { provide: OPERATION_NOTICE_PROVIDER, useClass: DataGoKrNoticeProvider },
   ],

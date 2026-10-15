@@ -17,6 +17,10 @@ export const ROUTE_PREFS = [
   'LESS_WALK',
   'SEAT',
   'ELEVATOR',
+  'LOW_FARE',
+  'AVOID_STAIRS',
+  'EXPRESS',
+  'FAMILIAR_ROUTE',
 ] as const;
 
 export type TravelPurpose = (typeof TRAVEL_PURPOSES)[number];

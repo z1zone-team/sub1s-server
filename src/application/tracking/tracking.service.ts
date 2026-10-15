@@ -67,11 +67,24 @@ export class TrackingService {
       );
     }
 
+    const selectedRoute = this.routeService.getChosenRoute?.(
+      dto.routeOption.routeId,
+      userId,
+    );
+    if (dto.routeOption.routeId && !selectedRoute) {
+      throw new BusinessException(
+        'ROUTE_CHOICE_EXPIRED',
+        '경로 선택이 만료됐어요. 다시 검색해 주세요.',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    const tracked = selectedRoute ?? dto.routeOption;
     const graph = this.graphService.getGraph();
-    const allStationIds =
-      dto.stationIds && dto.stationIds.length > 0
+    const allStationIds = selectedRoute?.stationIds?.length
+      ? selectedRoute.stationIds
+      : dto.stationIds && dto.stationIds.length > 0
         ? dto.stationIds
-        : this.expandStationIds(graph, dto.routeOption.segments);
+        : this.expandStationIds(graph, tracked.segments);
 
     const originStationId = allStationIds[0];
     const destStationId = allStationIds[allStationIds.length - 1];
@@ -82,14 +95,18 @@ export class TrackingService {
     const session: TrackingSession = {
       sessionId: randomUUID(),
       userId,
-      routeOption: dto.routeOption,
+      routeOption: tracked,
+      choiceSnapshot: this.routeService.getChoiceSnapshot?.(
+        dto.routeOption.routeId,
+        userId,
+      ),
       allStationIds,
       originStationId,
       destStationId,
       currentStationId: originStationId,
       nextStationId,
       expectedRemainingStationIds,
-      remainingDurationSec: dto.routeOption.totalDurationSec,
+      remainingDurationSec: tracked.totalDurationSec,
       isOffRoute: false,
       createdAt: now,
       updatedAt: now,
@@ -232,7 +249,10 @@ export class TrackingService {
   ): Promise<OffRouteAlertDto> {
     const detectedIndex = graph.indexOf(detectedStationId)!;
     const detectedStation = graph.station(detectedIndex);
-    const reason = this.determineDeviationReason(session, detectedStation.lineId);
+    const reason = this.determineDeviationReason(
+      session,
+      detectedStation.lineId,
+    );
 
     const rerouteResult = await this.routeService.search({
       originStationId: detectedStationId,
@@ -274,7 +294,9 @@ export class TrackingService {
   ): string | undefined {
     return session.allStationIds.find((id) => {
       const index = graph.indexOf(id);
-      return index !== undefined && graph.station(index).stationName === stationName;
+      return (
+        index !== undefined && graph.station(index).stationName === stationName
+      );
     });
   }
 

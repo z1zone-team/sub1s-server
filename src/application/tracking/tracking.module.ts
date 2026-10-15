@@ -23,6 +23,6 @@ import { TrackingService } from './tracking.service';
       useClass: InMemoryTrackingRepository,
     },
   ],
-  exports: [TrackingService, OffRouteDetector],
+  exports: [TrackingService, OffRouteDetector, TRACKING_REPOSITORY],
 })
 export class TrackingModule {}
