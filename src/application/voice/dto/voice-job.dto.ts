@@ -4,7 +4,7 @@ import {
   VoiceJobError,
   VoiceJobStatus,
 } from '../../../domain/voice/models/voice-job';
-import { VoiceRouteRecommendResponseDto } from './voice-route-recommend-response.dto';
+import { VoiceResultDto } from './voice-route-recommend-response.dto';
 
 export class VoiceJobIdParamDto {
   @ApiProperty({
@@ -24,7 +24,7 @@ export interface VoiceJobStatusResponseDto {
   jobId: string;
   status: VoiceJobStatus;
   /** `COMPLETED`일 때만 */
-  result?: VoiceRouteRecommendResponseDto;
+  result?: VoiceResultDto;
   /** `FAILED`일 때만 (HTTP 오류 응답과 같은 코드와 메시지) */
   error?: VoiceJobError;
 }

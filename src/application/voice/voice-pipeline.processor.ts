@@ -12,7 +12,7 @@ import {
   VoicePipelineJob,
   VoicePipelineQueue,
 } from '../../infra/queue/voice-pipeline.queue';
-import { VoiceRouteRecommendResponseDto } from './dto';
+import { VoiceResultDto } from './dto';
 import { activeVoiceJobKey } from './voice-job.service';
 import { VoiceResultNotifier } from './voice-result.notifier';
 import { VoiceService } from './voice.service';
@@ -52,18 +52,22 @@ export class VoicePipelineProcessor implements OnModuleInit {
     this.queue.startWorker(
       (job) => this.process(job),
       (job, outcome) =>
-        this.notify(job.data.userId, job.id ?? '', outcome as VoiceJobOutcome<VoiceRouteRecommendResponseDto>),
+        this.notify(
+          job.data.userId,
+          job.id ?? '',
+          outcome as VoiceJobOutcome<VoiceResultDto>,
+        ),
     );
   }
 
   /** 작업 하나를 처리한다. 업무 오류는 던지지 않고 `ok: false` 결과로 돌려준다 */
   async process(
     job: VoicePipelineJob,
-  ): Promise<VoiceJobOutcome<VoiceRouteRecommendResponseDto>> {
+  ): Promise<VoiceJobOutcome<VoiceResultDto>> {
     const { userId } = job.data;
     const jobId = job.id ?? '';
 
-    let outcome: VoiceJobOutcome<VoiceRouteRecommendResponseDto>;
+    let outcome: VoiceJobOutcome<VoiceResultDto>;
     try {
       const result = await this.withTimeout(this.run(job));
       outcome = { ok: true, result };
@@ -92,7 +96,7 @@ export class VoicePipelineProcessor implements OnModuleInit {
   notify(
     userId: string,
     jobId: string,
-    outcome: VoiceJobOutcome<VoiceRouteRecommendResponseDto>,
+    outcome: VoiceJobOutcome<VoiceResultDto>,
   ): void {
     try {
       if (outcome.ok) this.notifier.sendResult(userId, jobId, outcome.result);
@@ -105,7 +109,7 @@ export class VoicePipelineProcessor implements OnModuleInit {
 
   private async run(
     job: VoicePipelineJob,
-  ): Promise<VoiceRouteRecommendResponseDto> {
+  ): Promise<VoiceResultDto> {
     const data = job.data;
     const hint = data.options.transcriptHint?.trim();
 

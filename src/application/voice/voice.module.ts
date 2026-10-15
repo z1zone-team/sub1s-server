@@ -3,6 +3,7 @@ import { SubwayModule } from '../../domain/subway/subway.module';
 import { QueueModule } from '../../infra/queue/queue.module';
 import { WebsocketVoiceResultNotifier } from '../../infra/websocket/websocket-voice-result.notifier';
 import { WebsocketModule } from '../../infra/websocket/websocket.module';
+import { PlaceModule } from '../place/place.module';
 import { RouteModule } from '../route/route.module';
 import { AiServiceAdapter } from './services/ai-service.adapter';
 import { IntentParserService } from './services/intent-parser.service';
@@ -13,7 +14,13 @@ import { VoiceResultNotifier } from './voice-result.notifier';
 import { VoiceService } from './voice.service';
 
 @Module({
-  imports: [RouteModule, SubwayModule, QueueModule, WebsocketModule],
+  imports: [
+    RouteModule,
+    PlaceModule,
+    SubwayModule,
+    QueueModule,
+    WebsocketModule,
+  ],
   controllers: [VoiceController],
   providers: [
     VoiceService,

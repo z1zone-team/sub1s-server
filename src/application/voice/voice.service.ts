@@ -13,11 +13,15 @@ import {
   IUserPlaceRepository,
   USER_PLACE_REPOSITORY,
 } from '../../domain/user/ports/IUserPlaceRepository';
+import { PlaceSearchResultItemDto } from '../place/dto/place-search-response.dto';
+import { PlaceService } from '../place/place.service';
 import { RouteSearchRequestDto } from '../route/dto/route-search-request.dto';
 import { RouteService } from '../route/route.service';
 import {
+  VoiceDestinationCandidateDto,
+  VoiceOriginDto,
+  VoiceResultDto,
   VoiceRouteRecommendRequestDto,
-  VoiceRouteRecommendResponseDto,
 } from './dto';
 import { AiServiceAdapter, TtsStream } from './services/ai-service.adapter';
 import {
@@ -59,6 +63,17 @@ interface ResolvedEndpoint {
   search: Partial<RouteSearchRequestDto>;
 }
 
+/** 도착지를 해석한 결과. 하나로 정해지면 `endpoint`, 사용자에게 물어야 하면 `candidates` */
+type ResolvedDestination =
+  { endpoint: ResolvedEndpoint } | { candidates: PlaceSearchResultItemDto[] };
+
+/** 장소 검색에서 가져오는 후보 수와, 확인 화면에 보여 주는 최대 후보 수 */
+const PLACE_SEARCH_LIMIT = 10;
+const MAX_CANDIDATES = 5;
+
+const comparable = (text: string): string =>
+  text.replace(/[^0-9A-Za-z가-힣]/g, '').toLowerCase();
+
 @Injectable()
 export class VoiceService {
   private readonly logger = new Logger(VoiceService.name);
@@ -70,6 +85,7 @@ export class VoiceService {
     private readonly routeService: RouteService,
     @Inject(USER_PLACE_REPOSITORY)
     private readonly placeRepo: IUserPlaceRepository,
+    private readonly placeService: PlaceService,
   ) {}
 
   /** 브리핑 문장을 음성(MP3) 스트림으로 만든다 */
@@ -84,7 +100,7 @@ export class VoiceService {
     userId: string,
     transcript: string,
     dto?: Pick<VoiceRouteRecommendRequestDto, 'preferredMode' | 'lat' | 'lng'>,
-  ): Promise<VoiceRouteRecommendResponseDto> {
+  ): Promise<VoiceResultDto> {
     // 4. 의도 분석 및 슬롯 필링
     const intent = this.intentParserService.parseIntent(
       transcript,
@@ -97,7 +113,23 @@ export class VoiceService {
       intent.originStationName,
       dto,
     );
-    const dest = await this.resolveDestination(userId, intent.destStationName);
+    const destination = await this.resolveDestination(
+      userId,
+      intent.destStationName,
+    );
+    // 도착지로 말한 이름의 후보가 여럿이면 경로를 계산하지 않고 "이 곳이 맞나요?"를 묻는다
+    if ('candidates' in destination) {
+      return {
+        kind: 'CONFIRM_DESTINATION',
+        transcript,
+        interpretedIntent: intent,
+        origin: this.toOrigin(origin, intent.originStationName),
+        candidates: destination.candidates
+          .slice(0, MAX_CANDIDATES)
+          .map((item) => this.toCandidate(item)),
+      };
+    }
+    const dest = destination.endpoint;
     if (origin.stationId && origin.stationId === dest.stationId) {
       throw new BusinessException(
         'INVALID_REQUEST_PAYLOAD',
@@ -134,6 +166,7 @@ export class VoiceService {
     );
 
     return {
+      kind: 'ROUTE',
       transcript,
       interpretedIntent: intent,
       recommendedRoute,
@@ -212,30 +245,136 @@ export class VoiceService {
   private async resolveDestination(
     userId: string,
     name: string,
-  ): Promise<ResolvedEndpoint> {
+  ): Promise<ResolvedDestination> {
     const saved = await this.savedPlace(userId, name);
     if (saved) {
-      return saved.stationId
-        ? {
-            stationId: saved.stationId,
-            search: { destinationStationId: saved.stationId },
-          }
-        : {
-            search: {
-              destinationLat: saved.lat!,
-              destinationLng: saved.lng!,
-              destinationName: saved.name,
+      return {
+        endpoint: saved.stationId
+          ? {
+              stationId: saved.stationId,
+              search: { destinationStationId: saved.stationId },
+            }
+          : {
+              search: {
+                destinationLat: saved.lat!,
+                destinationLng: saved.lng!,
+                destinationName: saved.name,
+              },
             },
-          };
+      };
     }
 
     const stationId = this.findStationIdByName(name);
-    if (!stationId) {
+    if (stationId) {
+      return {
+        endpoint: {
+          stationId,
+          search: { destinationStationId: stationId },
+        },
+      };
+    }
+
+    // 역 이름이 아니면 장소 이름이나 주소로 보고 후보를 찾는다
+    const found = await this.findPlaces(name);
+    if (found.length === 0) {
       throw new NotFoundException(
         `도착역 '${name}'을(를) 지하철 노선망에서 찾을 수 없습니다.`,
       );
     }
-    return { stationId, search: { destinationStationId: stationId } };
+    const sure = this.pickUnambiguous(found, name);
+    if (!sure) return { candidates: found };
+    return {
+      endpoint:
+        sure.type === 'STATION'
+          ? {
+              stationId: sure.stationId,
+              search: { destinationStationId: sure.stationId },
+            }
+          : {
+              search: {
+                destinationLat: sure.lat,
+                destinationLng: sure.lng,
+                destinationName: sure.name,
+              },
+            },
+    };
+  }
+
+  /**
+   * 말한 이름으로 장소 검색을 해서 후보를 돌려준다. 환승역은 호선마다 한 건씩 나오므로 같은 이름의 역은 하나로 합친다.
+   * 검색이 실패하면 후보가 없는 것으로 보고 `404`로 안내한다
+   */
+  private async findPlaces(name: string): Promise<PlaceSearchResultItemDto[]> {
+    let items: PlaceSearchResultItemDto[];
+    try {
+      ({ items } = await this.placeService.search({
+        q: name,
+        limit: PLACE_SEARCH_LIMIT,
+      }));
+    } catch (error) {
+      this.logger.warn(
+        `place search failed for '${name}': ${(error as Error).message}`,
+      );
+      return [];
+    }
+    const seen = new Set<string>();
+    return items.filter((item) => {
+      if (item.type !== 'STATION') return true;
+      const key = comparable(item.name);
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  }
+
+  /**
+   * 사용자에게 묻지 않고 바로 안내해도 되는 후보. 후보가 하나뿐이거나, 말한 이름과 이름이 정확히 같은
+   * 후보가 하나뿐일 때다(공백과 기호는 무시한다). 그 밖에는 확인이 필요하다
+   */
+  private pickUnambiguous(
+    items: PlaceSearchResultItemDto[],
+    spoken: string,
+  ): PlaceSearchResultItemDto | undefined {
+    if (items.length === 1) return items[0];
+    const target = comparable(spoken);
+    const exact = items.filter((item) => comparable(item.name) === target);
+    return exact.length === 1 ? exact[0] : undefined;
+  }
+
+  private toOrigin(
+    origin: ResolvedEndpoint,
+    spokenName: string,
+  ): VoiceOriginDto {
+    return {
+      name: origin.search.originName ?? spokenName,
+      ...(origin.stationId ? { stationId: origin.stationId } : {}),
+      ...(origin.search.originLat !== undefined
+        ? { lat: origin.search.originLat, lng: origin.search.originLng }
+        : {}),
+    };
+  }
+
+  private toCandidate(
+    item: PlaceSearchResultItemDto,
+  ): VoiceDestinationCandidateDto {
+    if (item.type === 'STATION') {
+      return {
+        type: 'STATION',
+        name: item.name,
+        lat: item.lat,
+        lng: item.lng,
+        stationId: item.stationId,
+      };
+    }
+    return {
+      type: 'PLACE',
+      name: item.name,
+      address: item.address,
+      ...(item.category ? { category: item.category } : {}),
+      lat: item.lat,
+      lng: item.lng,
+      nearestStation: item.nearestStation,
+    };
   }
 
   /**

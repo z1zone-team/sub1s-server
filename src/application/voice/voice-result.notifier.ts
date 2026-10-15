@@ -1,5 +1,5 @@
 import { VoiceJobError } from '../../domain/voice/models/voice-job';
-import { VoiceRouteRecommendResponseDto } from './dto';
+import { VoiceResultDto } from './dto';
 
 /**
  * 음성 작업이 끝났을 때 요청한 사용자에게 알리는 포트. 구현(WebSocket)은 infra에 있고
@@ -9,7 +9,7 @@ export abstract class VoiceResultNotifier {
   abstract sendResult(
     userId: string,
     jobId: string,
-    result: VoiceRouteRecommendResponseDto,
+    result: VoiceResultDto,
   ): void;
 
   abstract sendFailed(
