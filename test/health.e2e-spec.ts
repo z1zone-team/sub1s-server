@@ -24,6 +24,7 @@ describe('Health (e2e)', () => {
       .get('/api/health')
       .expect(200);
     expect(res.body.success).toBe(true);
-    expect(res.body.data).toEqual({ status: 'ok', database: 'up' });
+    expect(res.body.data).toMatchObject({ status: 'ok', database: 'up' });
+    expect(['up', 'down', 'not_configured']).toContain(res.body.data.ai);
   });
 });
