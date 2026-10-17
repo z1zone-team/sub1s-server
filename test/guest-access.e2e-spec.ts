@@ -56,6 +56,7 @@ describe('Guest access scope (e2e)', () => {
   const open: [Method, string, Record<string, unknown>?][] = [
     ['get', '/api/health'],
     ['get', '/api/v1/places/search?q=강남'],
+    ['get', '/api/v1/places/reverse?lat=37.4985&lng=127.0278'],
     ['get', '/api/v1/stations?ids=02_222'],
     ['get', '/api/v1/stations/02_222/next-trains'],
     ['get', '/api/v1/stations/02_222/facilities'],

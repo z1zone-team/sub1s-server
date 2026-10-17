@@ -4,10 +4,11 @@ import { kstDayKey } from '../../common/utils/kst';
 import {
   ExternalPlace,
   IPlaceSearchProvider,
+  ReverseGeocodeResult,
 } from '../../domain/place/ports/IPlaceSearchProvider';
 import { classifyAddressQuery } from './address-query';
 
-const ENDPOINT = 'https://api.vworld.kr/req/search';
+const ENDPOINT = 'https://api.vworld.kr/req';
 const TIMEOUT_MS = 2000;
 const DEFAULT_DAILY_LIMIT = 10_000;
 // 같은 주소가 동(A동, B동)마다 따로 오므로 합친 뒤에도 limit개가 남도록 넉넉히 받는다
@@ -27,11 +28,16 @@ interface VWorldItem {
   point?: { x?: string; y?: string };
 }
 
+interface VWorldAddressItem {
+  type?: string;
+  text?: string;
+}
+
 interface VWorldBody {
   status?: string;
   /** `status`가 ERROR일 때 V-World가 알려 주는 사유(예: 키 오류, 등록하지 않은 도메인) */
   error?: { code?: string; text?: string };
-  result?: { items?: VWorldItem[] };
+  result?: { items?: VWorldItem[] } | VWorldAddressItem[];
 }
 
 // V-World 문서는 status, result가 최상위라고 하지만 JSON 예시는 response 아래에 있어 둘 다 처리한다
@@ -74,6 +80,37 @@ export class VWorldPlaceProvider implements IPlaceSearchProvider {
       // 주소로 못 찾으면 장소 이름일 수 있다(예: 이름에 숫자가 들어간 장소)
     }
     return this.searchPlace(key, query, limit);
+  }
+
+  async reverse(lat: number, lng: number): Promise<ReverseGeocodeResult | null> {
+    const key = this.config.get<string>('VWORLD_API_KEY');
+    if (!key) {
+      this.logger.warn('VWORLD_API_KEY is not set, reverse geocoding is disabled');
+      return null;
+    }
+    const params = new URLSearchParams({
+      service: 'address',
+      request: 'getAddress',
+      version: '2.0',
+      crs: 'EPSG:4326',
+      point: `${lng},${lat}`,
+      type: 'BOTH',
+      format: 'json',
+    });
+    const result = await this.call(key, 'address', params);
+    if (!Array.isArray(result)) return null;
+
+    const textOf = (type: string) =>
+      result.find((item) => item.type === type)?.text?.trim() ?? '';
+    const road = textOf('road');
+    const parcel = textOf('parcel');
+    if (road) {
+      return { name: road, address: parcel, category: ROAD_ADDRESS_CATEGORY };
+    }
+    if (parcel) {
+      return { name: parcel, address: '', category: PARCEL_ADDRESS_CATEGORY };
+    }
+    return null;
   }
 
   private async searchPlace(
@@ -159,7 +196,6 @@ export class VWorldPlaceProvider implements IPlaceSearchProvider {
     query: string,
     size: number,
   ): Promise<VWorldItem[]> {
-    if (!this.consumeBudget()) return [];
     const params = new URLSearchParams({
       service: 'search',
       request: 'search',
@@ -172,32 +208,43 @@ export class VWorldPlaceProvider implements IPlaceSearchProvider {
       query,
     });
     if (kind.category) params.set('category', kind.category);
-    const { url, headers } = this.target(key, params);
+    const result = await this.call(key, 'search', params);
+    return result && !Array.isArray(result) ? (result.items ?? []) : [];
+  }
+
+  /** V-World를 한 번 부르고 응답의 `result`를 돌려준다. 실패하거나 일일 호출 수를 넘었으면 undefined다 */
+  private async call(
+    key: string,
+    path: 'search' | 'address',
+    params: URLSearchParams,
+  ): Promise<VWorldBody['result']> {
+    if (!this.consumeBudget()) return undefined;
+    const { url, headers } = this.target(key, path, params);
     try {
       const res = await fetch(url, {
         headers,
         signal: AbortSignal.timeout(TIMEOUT_MS),
       });
       if (!res.ok) {
-        this.logger.warn(`V-World search failed: HTTP ${res.status}`);
-        return [];
+        this.logger.warn(`V-World ${path} failed: HTTP ${res.status}`);
+        return undefined;
       }
       const parsed = (await res.json()) as VWorldResponse;
       const body = parsed.response ?? parsed;
       if (body.status !== 'OK') {
         if (body.status === 'ERROR') {
           this.logger.warn(
-            `V-World search returned status ERROR${describeError(body.error)}`,
+            `V-World ${path} returned status ERROR${describeError(body.error)}`,
           );
         }
-        return [];
+        return undefined;
       }
-      return body.result?.items ?? [];
+      return body.result;
     } catch (error) {
       this.logger.warn(
-        `V-World search error: ${error instanceof Error ? error.name : 'unknown'}`,
+        `V-World ${path} error: ${error instanceof Error ? error.name : 'unknown'}`,
       );
-      return [];
+      return undefined;
     }
   }
 
@@ -208,12 +255,13 @@ export class VWorldPlaceProvider implements IPlaceSearchProvider {
    */
   private target(
     key: string,
+    path: 'search' | 'address',
     params: URLSearchParams,
   ): { url: string; headers?: Record<string, string> } {
     const proxy = this.config.get<string>('VWORLD_PROXY_URL');
     if (!proxy) {
       params.set('key', key);
-      return { url: `${ENDPOINT}?${params.toString()}` };
+      return { url: `${ENDPOINT}/${path}?${params.toString()}` };
     }
     const secret = this.config.get<string>('VWORLD_PROXY_SECRET');
     return {

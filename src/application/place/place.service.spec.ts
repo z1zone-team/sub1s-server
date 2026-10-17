@@ -3,6 +3,7 @@ import { WalkingService } from '../../domain/subway/services/walking.service';
 import { IPlaceSearchProvider } from '../../domain/place/ports/IPlaceSearchProvider';
 import { ISubwayLineRepository } from '../../domain/place/ports/ISubwayLineRepository';
 import { SubwayGraphService } from '../../domain/subway/services/subway-graph.service';
+import { PlaceReverseQueryDto } from './dto/place-reverse-query.dto';
 import { PlaceSearchQueryDto } from './dto/place-search-query.dto';
 import { PlaceService } from './place.service';
 
@@ -100,7 +101,7 @@ describe('PlaceService', () => {
     ],
   };
 
-  let provider: { search: jest.Mock };
+  let provider: { search: jest.Mock; reverse: jest.Mock };
   let service: PlaceService;
 
   const query = (
@@ -109,7 +110,10 @@ describe('PlaceService', () => {
     Object.assign(new PlaceSearchQueryDto(), { limit: 10 }, overrides);
 
   beforeEach(async () => {
-    provider = { search: jest.fn().mockResolvedValue([]) };
+    provider = {
+      search: jest.fn().mockResolvedValue([]),
+      reverse: jest.fn().mockResolvedValue(null),
+    };
     service = new PlaceService(
       lineRepository,
       provider as IPlaceSearchProvider,
@@ -445,6 +449,48 @@ describe('PlaceService', () => {
       const { items } = await service.findStations(['07_732', '07_732']);
 
       expect(items).toHaveLength(1);
+    });
+  });
+
+  describe('reverse', () => {
+    const at = (lat: number, lng: number) =>
+      Object.assign(new PlaceReverseQueryDto(), { lat, lng });
+
+    it('주소와 가까운 역을 장소 항목으로 돌려준다', async () => {
+      provider.reverse.mockResolvedValue({
+        name: '서울 강남구 강남대로 396',
+        address: '서울 강남구 역삼동 814-6',
+        category: '도로명주소',
+      });
+
+      const item = await service.reverse(at(37.4985, 127.0278));
+
+      expect(provider.reverse).toHaveBeenCalledWith(37.4985, 127.0278);
+      expect(item).toMatchObject({
+        type: 'PLACE',
+        name: '서울 강남구 강남대로 396',
+        address: '서울 강남구 역삼동 814-6',
+        category: '도로명주소',
+        lat: 37.4985,
+        lng: 127.0278,
+      });
+      expect(item.nearestStation).toMatchObject({ name: '강남' });
+      expect(item.nearestStation.walkDistanceM).toBeGreaterThan(0);
+      expect(item.nearestStation.walkDurationSec).toBeGreaterThan(0);
+    });
+
+    it('주소를 찾지 못해도 가까운 역이 있으면 이름을 선택한 위치로 한다', async () => {
+      const item = await service.reverse(at(37.4985, 127.0278));
+
+      expect(item).toMatchObject({ name: '선택한 위치', address: '' });
+      expect(item.category).toBeUndefined();
+    });
+
+    it('반경 안에 역이 없으면 V-World를 부르지 않고 422로 알린다', async () => {
+      await expect(service.reverse(at(33.4996, 126.5312))).rejects.toMatchObject(
+        { errorCode: 'PLACE_OUT_OF_SERVICE_AREA', status: 422 },
+      );
+      expect(provider.reverse).not.toHaveBeenCalled();
     });
   });
 
