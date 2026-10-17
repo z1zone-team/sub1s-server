@@ -491,6 +491,20 @@ describe('VWorldPlaceProvider', () => {
       });
     });
 
+    it('도로명 주소 끝의 괄호 설명은 뗀다', async () => {
+      addressOk([
+        { type: 'parcel', text: '서울특별시 용산구 동자동 43-205' },
+        {
+          type: 'road',
+          text: '서울특별시 중구 한강대로 405 (봉래동2가,경부고속철도서울민자역사)',
+        },
+      ]);
+
+      expect(await provider('k').reverse(37.5547, 126.9707)).toMatchObject({
+        name: '서울특별시 중구 한강대로 405',
+      });
+    });
+
     it('도로명 주소가 없으면 지번 주소를 이름으로 쓴다', async () => {
       addressOk([{ type: 'parcel', text: '경기도 연천군 연천읍 차탄리 1' }]);
 

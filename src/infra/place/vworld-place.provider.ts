@@ -45,6 +45,11 @@ type VWorldResponse = VWorldBody & { response?: VWorldBody };
 
 const MAX_ERROR_TEXT = 120;
 
+/** 도로명 주소 끝에 붙는 괄호 설명(법정동, 건물명)을 뗀다 */
+function withoutTrailingNote(road: string): string {
+  return road.replace(/\s*\([^)]*\)\s*$/, '').trim();
+}
+
 /** 로그에 붙일 오류 사유. 사유가 없으면 빈 문자열이고, 길이는 제한한다(키는 응답에 없지만 길이로도 막는다) */
 function describeError(error?: { code?: string; text?: string }): string {
   const code = typeof error?.code === 'string' ? error.code : '';
@@ -102,7 +107,7 @@ export class VWorldPlaceProvider implements IPlaceSearchProvider {
 
     const textOf = (type: string) =>
       result.find((item) => item.type === type)?.text?.trim() ?? '';
-    const road = textOf('road');
+    const road = withoutTrailingNote(textOf('road'));
     const parcel = textOf('parcel');
     if (road) {
       return { name: road, address: parcel, category: ROAD_ADDRESS_CATEGORY };
@@ -158,7 +163,7 @@ export class VWorldPlaceProvider implements IPlaceSearchProvider {
       const address = item.address;
       if (!point || !address) continue;
 
-      const road = (address.road ?? '').replace(/\s*\([^)]*\)\s*$/, '').trim();
+      const road = withoutTrailingNote(address.road ?? '');
       const parcel = (address.parcel ?? '').trim();
       const building = (address.bldnm ?? '').trim();
       const isRoad = kind === 'ROAD';
