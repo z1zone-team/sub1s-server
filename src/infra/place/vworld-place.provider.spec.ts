@@ -455,4 +455,102 @@ describe('VWorldPlaceProvider', () => {
       expect(await provider('secret').search('문화로 67-1', 5)).toHaveLength(1);
     });
   });
+
+  describe('역지오코딩', () => {
+    const roadAndParcel = [
+      { type: 'parcel', text: '서울특별시 강남구 역삼동 814-6' },
+      { type: 'road', text: '서울특별시 강남구 강남대로 396' },
+    ];
+    const addressOk = (result: unknown) =>
+      respond({ response: { status: 'OK', result } });
+
+    it('경도,위도 순서의 point로 주소 API를 부른다', async () => {
+      addressOk(roadAndParcel);
+
+      await provider('secret').reverse(37.4985, 127.0278);
+
+      const url = new URL(fetchMock.mock.calls[0][0] as string);
+      expect(url.origin + url.pathname).toBe('https://api.vworld.kr/req/address');
+      expect(Object.fromEntries(url.searchParams)).toMatchObject({
+        service: 'address',
+        request: 'getAddress',
+        point: '127.0278,37.4985',
+        type: 'BOTH',
+        format: 'json',
+        key: 'secret',
+      });
+    });
+
+    it('도로명 주소를 이름으로, 지번 주소를 부가 주소로 돌려준다', async () => {
+      addressOk(roadAndParcel);
+
+      expect(await provider('k').reverse(37.4985, 127.0278)).toEqual({
+        name: '서울특별시 강남구 강남대로 396',
+        address: '서울특별시 강남구 역삼동 814-6',
+        category: '도로명주소',
+      });
+    });
+
+    it('도로명 주소 끝의 괄호 설명은 뗀다', async () => {
+      addressOk([
+        { type: 'parcel', text: '서울특별시 용산구 동자동 43-205' },
+        {
+          type: 'road',
+          text: '서울특별시 중구 한강대로 405 (봉래동2가,경부고속철도서울민자역사)',
+        },
+      ]);
+
+      expect(await provider('k').reverse(37.5547, 126.9707)).toMatchObject({
+        name: '서울특별시 중구 한강대로 405',
+      });
+    });
+
+    it('도로명 주소가 없으면 지번 주소를 이름으로 쓴다', async () => {
+      addressOk([{ type: 'parcel', text: '경기도 연천군 연천읍 차탄리 1' }]);
+
+      expect(await provider('k').reverse(38.09, 127.07)).toEqual({
+        name: '경기도 연천군 연천읍 차탄리 1',
+        address: '',
+        category: '지번주소',
+      });
+    });
+
+    it('키가 없으면 호출하지 않고 null이다', async () => {
+      expect(await provider(undefined).reverse(37.5, 127)).toBeNull();
+      expect(fetchMock).not.toHaveBeenCalled();
+    });
+
+    it('결과가 없거나 호출이 실패하면 null이다', async () => {
+      respond({ response: { status: 'NOT_FOUND' } });
+      expect(await provider('k').reverse(37.5, 127)).toBeNull();
+
+      respond({}, { ok: false, status: 502 });
+      expect(await provider('k').reverse(37.5, 127)).toBeNull();
+
+      fetchMock.mockRejectedValue(new Error('timeout'));
+      expect(await provider('k').reverse(37.5, 127)).toBeNull();
+    });
+
+    it('프록시가 있으면 service=address로 프록시에 보내고 키는 헤더에 둔다', async () => {
+      addressOk(roadAndParcel);
+
+      await new VWorldPlaceProvider({
+        get: (name: string) =>
+          ({
+            VWORLD_API_KEY: 'secret-key',
+            VWORLD_PROXY_URL: 'https://proxy.example.com/vworld',
+            VWORLD_PROXY_SECRET: 'shared',
+          })[name],
+      } as unknown as ConfigService).reverse(37.4985, 127.0278);
+
+      const [url, init] = fetchMock.mock.calls[0];
+      expect(String(url).startsWith('https://proxy.example.com/vworld?')).toBe(true);
+      expect(String(url)).toContain('service=address');
+      expect(String(url)).not.toContain('secret-key');
+      expect(init.headers).toEqual({
+        'X-Vworld-Key': 'secret-key',
+        'X-Proxy-Secret': 'shared',
+      });
+    });
+  });
 });

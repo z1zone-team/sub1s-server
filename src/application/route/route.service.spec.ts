@@ -643,6 +643,57 @@ describe('RouteService', () => {
         status: HttpStatus.NOT_FOUND,
       });
     });
+
+    it('returns only a walking route when both coordinates are far from any station', async () => {
+      // 한라산 주변의 두 지점(약 5km). 반경 2.5km 안에 역이 없다
+      const result = await service.search({
+        originLat: 33.3617,
+        originLng: 126.5292,
+        destinationLat: 33.4067,
+        destinationLng: 126.5292,
+      });
+
+      expect(result.options).toHaveLength(1);
+      expect(result.options[0]).toMatchObject({
+        mode: 'ONLY_WALK',
+        totalFare: 0,
+        transferCount: 0,
+      });
+      expect(result.options[0].segments).toHaveLength(1);
+      expect(result.options[0].segments[0]).toMatchObject({
+        lineId: 'WALK',
+        fromStationId: 'ORIGIN_COORDINATE',
+        toStationId: 'DEST_COORDINATE',
+      });
+      expect(result.options[0].totalDurationSec).toBeGreaterThan(0);
+    });
+
+    it('returns a walking route when only the destination coordinate is far from any station', async () => {
+      const result = await service.search({
+        originLat: 37.4982,
+        originLng: 127.0275,
+        destinationLat: 33.4067,
+        destinationLng: 126.5292,
+      });
+
+      expect(result.options.map((option) => option.mode)).toEqual([
+        'ONLY_WALK',
+      ]);
+    });
+
+    it('rejects the same position even when no station is near', async () => {
+      await expect(
+        service.search({
+          originLat: 33.3617,
+          originLng: 126.5292,
+          destinationLat: 33.3617,
+          destinationLng: 126.5293,
+        }),
+      ).rejects.toMatchObject({
+        errorCode: 'INVALID_REQUEST_PAYLOAD',
+        status: HttpStatus.BAD_REQUEST,
+      });
+    });
   });
 
   describe('personalized recommendation', () => {

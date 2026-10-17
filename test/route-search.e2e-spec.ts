@@ -176,4 +176,27 @@ describe('Route Search (e2e)', () => {
     expect(options[0].totalFare).toBe(0);
     expect(options[0].segments[0].lineId).toBe('WALK');
   });
+
+  it('POST /api/v1/routes/search returns only a walking route when no station is within 2.5km of the coordinates', async () => {
+    const res = await request(app.getHttpServer())
+      .post('/api/v1/routes/search')
+      .send({
+        originLat: 33.3617,
+        originLng: 126.5292,
+        originName: '한라산 중턱',
+        destinationLat: 33.4067,
+        destinationLng: 126.5292,
+        destinationName: '제주시 연동',
+      })
+      .expect(200);
+
+    const options = res.body.data.options;
+    expect(options).toHaveLength(1);
+    expect(options[0].mode).toBe('ONLY_WALK');
+    expect(options[0].segments[0]).toMatchObject({
+      lineId: 'WALK',
+      fromStationName: '한라산 중턱',
+      toStationName: '제주시 연동',
+    });
+  });
 });

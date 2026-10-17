@@ -15,8 +15,10 @@ import {
 } from '../../domain/subway/models/subway-graph';
 import { SubwayGraphService } from '../../domain/subway/services/subway-graph.service';
 import { WalkingService } from '../../domain/subway/services/walking.service';
+import { PlaceReverseQueryDto } from './dto/place-reverse-query.dto';
 import { PlaceSearchQueryDto } from './dto/place-search-query.dto';
 import {
+  PlaceReverseDto,
   PlaceSearchItemDto,
   PlaceSearchResultDto,
   StationLineDto,
@@ -29,6 +31,7 @@ const SAME_STATION_RADIUS_KM = 0.5;
 const NEAREST_STATION_RADIUS_KM = 2.5;
 const MIN_PLACE_QUERY_LENGTH = 2;
 const RAILWAY_CATEGORY = '철도/지하철';
+const UNNAMED_PLACE = '선택한 위치';
 const UNKNOWN_LINE_COLOR = '#9CA3AF';
 // 원본 데이터에서 GTX-A 노드만 '서울'이다. 변경 감지 배치가 원본 이름과 비교하므로 데이터는 두고 표시 이름만 보정한다
 const STATION_DISPLAY_NAMES: Readonly<Record<string, string>> = {
@@ -85,6 +88,31 @@ export class PlaceService {
     const places = await this.searchPlaces(graph, rawQuery, limit);
 
     return { items: [...stations, ...places] };
+  }
+
+  async reverse(query: PlaceReverseQueryDto): Promise<PlaceReverseDto> {
+    const nearest = this.walkingService.findNearestStations(
+      this.graphService.getGraph(),
+      query.lat,
+      query.lng,
+      NEAREST_STATION_RADIUS_KM,
+      1,
+    )[0];
+    const address = await this.placeProvider.reverse(query.lat, query.lng);
+    return {
+      type: 'PLACE',
+      name: address?.name ?? UNNAMED_PLACE,
+      address: address?.address ?? '',
+      category: address?.category,
+      lat: query.lat,
+      lng: query.lng,
+      nearestStation: nearest && {
+        stationId: nearest.station.id,
+        name: this.displayName(nearest.station),
+        walkDistanceM: Math.round(nearest.metrics.actualDistanceKm * 1000),
+        walkDurationSec: nearest.metrics.durationSec,
+      },
+    };
   }
 
   async findStations(ids: string[]): Promise<StationLookupResultDto> {
