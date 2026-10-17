@@ -144,6 +144,13 @@ export class PathSegmentDto {
     example: 850,
   })
   walkSteps?: number;
+
+  @ApiPropertyOptional({
+    description:
+      '도보 구간이 실제 보행로를 따르는 경로 선. 구글 인코딩 폴리라인(정밀도 5, 위도 경도 순). 보행 경로를 구하지 못한 구간에는 없고, 그때는 두 점을 직선으로 이으면 된다',
+    example: '_p~iF~ps|U_ulLnnqC_mqNvxq`@',
+  })
+  path?: string;
 }
 
 export class SubwayRouteOptionDto {
@@ -152,10 +159,11 @@ export class SubwayRouteOptionDto {
   routeId?: string;
 
   @ApiPropertyOptional({
-    description: '도보거리 출처. 환승 시간 환산 또는 좌표 우회율 모델',
-    enum: ['ESTIMATED', 'NONE'],
+    description:
+      '도보거리 출처. ROUTED는 출발지, 도착지와 역 사이를 실제 보행로로 구한 값(환승 걷기가 없을 때), ESTIMATED는 환승 시간 환산이나 좌표 우회율 모델, NONE은 걷는 구간 없음',
+    enum: ['ROUTED', 'ESTIMATED', 'NONE'],
   })
-  walkDistanceSource?: 'ESTIMATED' | 'NONE';
+  walkDistanceSource?: 'ROUTED' | 'ESTIMATED' | 'NONE';
 
   @ApiProperty({
     description:
