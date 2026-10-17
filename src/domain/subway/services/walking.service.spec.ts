@@ -10,13 +10,23 @@ describe('WalkingService', () => {
 
   describe('haversineDistanceKm', () => {
     it('should return 0 for identical coordinates', () => {
-      const dist = service.haversineDistanceKm(37.4979, 127.0276, 37.4979, 127.0276);
+      const dist = service.haversineDistanceKm(
+        37.4979,
+        127.0276,
+        37.4979,
+        127.0276,
+      );
       expect(dist).toBe(0);
     });
 
     it('should accurately calculate distance between City Hall and Gangnam', () => {
       // 서울시청 (37.5665, 126.9780) <-> 강남역 (37.4979, 127.0276)
-      const dist = service.haversineDistanceKm(37.5665, 126.978, 37.4979, 127.0276);
+      const dist = service.haversineDistanceKm(
+        37.5665,
+        126.978,
+        37.4979,
+        127.0276,
+      );
       expect(dist).toBeGreaterThan(8.5);
       expect(dist).toBeLessThan(9.2);
     });
@@ -96,6 +106,29 @@ describe('WalkingService', () => {
 
       const 수원 = nearest.find((n) => n.station.stationName === '수원');
       expect(수원).toBeUndefined();
+    });
+  });
+
+  describe('metricsForRoutedDistance', () => {
+    it('실제 보행로 거리로 시간, 칼로리, 걸음 수를 직선 추정과 같은 속도와 보폭으로 계산한다', () => {
+      const metrics = service.metricsForRoutedDistance(1.01, 1.336, 'poly');
+
+      expect(metrics).toMatchObject({
+        straightDistanceKm: 1.01,
+        actualDistanceKm: 1.34,
+        durationSec: Math.round(1340 / 1.2),
+        calories: Math.round(1.34 * 65),
+        steps: Math.round(1.34 * 1300),
+        routed: true,
+        path: 'poly',
+      });
+    });
+
+    it('직선 추정에는 routed와 path가 없다', () => {
+      const metrics = service.calculateWalkMetrics(1);
+
+      expect(metrics.routed).toBeUndefined();
+      expect(metrics.path).toBeUndefined();
     });
   });
 });

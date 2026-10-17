@@ -58,6 +58,11 @@ import {
   WalkMetrics,
 } from '../../domain/subway/services/walking.service';
 import {
+  GeoPoint,
+  IWalkRouteProvider,
+  WALK_ROUTE_PROVIDER,
+} from '../../domain/subway/ports/IWalkRouteProvider';
+import {
   CAR_CONGESTION_PREDICTOR,
   ICarCongestionPredictor,
 } from '../../domain/congestion/ports/ICarCongestionPredictor';
@@ -148,6 +153,9 @@ export class RouteService {
     @Inject(TRAVEL_LOG_REPOSITORY)
     private readonly travelLogRepo: ITravelLogRepository,
     @Optional() private readonly preferenceModels?: PreferenceModelService,
+    @Optional()
+    @Inject(WALK_ROUTE_PROVIDER)
+    private readonly walkRoutes?: IWalkRouteProvider,
   ) {}
 
   /**
@@ -262,7 +270,8 @@ export class RouteService {
         1,
       );
       if (nearest.length === 0) {
-        if (coordinatesOnly) return this.walkOnlyResult(dto, departureDate);
+        if (coordinatesOnly)
+          return await this.walkOnlyResult(dto, departureDate);
         throw new BusinessException(
           'STATION_NOT_FOUND',
           '출발지 반경 2.5km 이내에 접근 가능한 지하철역이 없습니다.',
@@ -305,7 +314,8 @@ export class RouteService {
         1,
       );
       if (nearest.length === 0) {
-        if (coordinatesOnly) return this.walkOnlyResult(dto, departureDate);
+        if (coordinatesOnly)
+          return await this.walkOnlyResult(dto, departureDate);
         throw new BusinessException(
           'STATION_NOT_FOUND',
           '도착지 반경 2.5km 이내에 접근 가능한 지하철역이 없습니다.',
@@ -334,7 +344,7 @@ export class RouteService {
 
       // 두 지점이 같은 지하철역으로 매핑되거나 1.5km 이내인 경우 도보 경로 생성
       if (originStation.id === destinationStation.id || straightKm <= 1.5) {
-        directWalkOption = this.createDirectWalkOption(
+        directWalkOption = await this.createDirectWalkOption(
           dto,
           straightKm,
           departureDate,
@@ -342,7 +352,7 @@ export class RouteService {
 
         // 동일 역 매핑 또는 800m 이내 초근거리는 지하철 탑승 없이 순수 도보만 반환
         if (originStation.id === destinationStation.id || straightKm <= 0.8) {
-          return this.walkOnlyResult(dto, departureDate);
+          return await this.walkOnlyResult(dto, departureDate);
         }
       }
     }
@@ -391,12 +401,20 @@ export class RouteService {
             dto.destinationLng,
           ) ?? [])
         : [];
-    const originCandidates = origins.length
-      ? origins
-      : [{ station: originStation, metrics: firstMileWalk }];
-    const destinationCandidates = destinations.length
-      ? destinations
-      : [{ station: destinationStation, metrics: lastMileWalk }];
+    const originCandidates = await this.withRoutedWalks(
+      this.pointOf(dto.originLat, dto.originLng),
+      origins.length
+        ? origins
+        : [{ station: originStation, metrics: firstMileWalk }],
+      'TO_STATION',
+    );
+    const destinationCandidates = await this.withRoutedWalks(
+      this.pointOf(dto.destinationLat, dto.destinationLng),
+      destinations.length
+        ? destinations
+        : [{ station: destinationStation, metrics: lastMileWalk }],
+      'FROM_STATION',
+    );
     const pool: SubwayRouteOptionDto[] = [];
     for (const mode of modes) {
       for (const from of originCandidates)
@@ -653,9 +671,10 @@ export class RouteService {
         isWeakAirConditioned: false,
         congestionLevel: '여유',
         congestionRate: 0,
-        isEstimated: true,
+        isEstimated: !firstMileWalk.routed,
         walkCalories: firstMileWalk.calories,
         walkSteps: firstMileWalk.steps,
+        ...(firstMileWalk.path ? { path: firstMileWalk.path } : {}),
       });
       elapsedSec += firstMileWalk.durationSec;
     }
@@ -794,9 +813,10 @@ export class RouteService {
         isWeakAirConditioned: false,
         congestionLevel: '여유',
         congestionRate: 0,
-        isEstimated: true,
+        isEstimated: !lastMileWalk.routed,
         walkCalories: lastMileWalk.calories,
         walkSteps: lastMileWalk.steps,
+        ...(lastMileWalk.path ? { path: lastMileWalk.path } : {}),
       });
       elapsedSec += lastMileWalk.durationSec;
     }
@@ -838,10 +858,67 @@ export class RouteService {
       operationStatus: 'UNKNOWN',
       totalWalkDurationSec,
       totalWalkDistanceKm,
-      walkDistanceSource: totalWalkDurationSec > 0 ? 'ESTIMATED' : 'NONE',
+      walkDistanceSource: walkDistanceSourceOf(
+        totalWalkDurationSec,
+        transferWalkDurationSec,
+        [firstMileWalk, lastMileWalk],
+      ),
       totalCalories,
       totalSteps,
     };
+  }
+
+  private pointOf(
+    lat: number | undefined,
+    lng: number | undefined,
+  ): GeoPoint | undefined {
+    return lat !== undefined && lng !== undefined ? { lat, lng } : undefined;
+  }
+
+  /** 실제 보행로를 따라 걸은 도보 지표. 보행 경로를 구하지 못하면(서비스 꺼짐, 시간 초과, 길 없음) undefined라 호출한 쪽이 직선 추정을 쓴다 */
+  private async routedWalk(
+    from: GeoPoint | undefined,
+    to: GeoPoint | undefined,
+    straightDistanceKm: number,
+  ): Promise<WalkMetrics | undefined> {
+    if (!this.walkRoutes || !from || !to) return undefined;
+    const leg = await this.walkRoutes.route(from, to);
+    return leg
+      ? this.walkingService.metricsForRoutedDistance(
+          straightDistanceKm,
+          leg.distanceM / 1000,
+          leg.polyline,
+        )
+      : undefined;
+  }
+
+  /**
+   * 출발지(또는 도착지) 좌표와 후보 역 사이의 도보를 실제 보행로로 바꾼다. 후보마다 따로 구하고,
+   * 구하지 못한 후보는 직선 추정을 그대로 둔다. 좌표가 없으면(역으로 정한 출발지) 그대로 돌려준다
+   */
+  private async withRoutedWalks<
+    T extends { station: StationRecord; metrics?: WalkMetrics },
+  >(
+    point: GeoPoint | undefined,
+    candidates: T[],
+    direction: 'TO_STATION' | 'FROM_STATION',
+  ): Promise<T[]> {
+    if (!point || !this.walkRoutes) return candidates;
+    return Promise.all(
+      candidates.map(async (candidate) => {
+        if (!candidate.metrics) return candidate;
+        const station = {
+          lat: candidate.station.lat,
+          lng: candidate.station.lng,
+        };
+        const routed = await this.routedWalk(
+          direction === 'TO_STATION' ? point : station,
+          direction === 'TO_STATION' ? station : point,
+          candidate.metrics.straightDistanceKm,
+        );
+        return routed ? { ...candidate, metrics: routed } : candidate;
+      }),
+    );
   }
 
   /** 출발지와 도착지 좌표의 직선 거리. 같은 위치(50m 미만)는 요청 오류다 */
@@ -863,11 +940,11 @@ export class RouteService {
   }
 
   /** 지하철을 타지 않는 도보 경로 하나만 담은 결과 */
-  private walkOnlyResult(
+  private async walkOnlyResult(
     dto: RouteSearchRequestDto,
     departureDate: Date,
-  ): RouteSearchResultDto {
-    const option = this.createDirectWalkOption(
+  ): Promise<RouteSearchResultDto> {
+    const option = await this.createDirectWalkOption(
       dto,
       this.straightDistanceKm(dto),
       departureDate,
@@ -878,13 +955,19 @@ export class RouteService {
     };
   }
 
-  private createDirectWalkOption(
+  private async createDirectWalkOption(
     dto: RouteSearchRequestDto,
     straightDistanceKm: number,
     departureDate: Date,
-  ): SubwayRouteOptionDto {
-    const metrics =
+  ): Promise<SubwayRouteOptionDto> {
+    const estimate =
       this.walkingService.calculateWalkMetrics(straightDistanceKm);
+    const metrics =
+      (await this.routedWalk(
+        this.pointOf(dto.originLat, dto.originLng),
+        this.pointOf(dto.destinationLat, dto.destinationLng),
+        straightDistanceKm,
+      )) ?? estimate;
     const estimatedArrivalTimestamp = toKstIso(
       departureDate.getTime() + metrics.durationSec * 1000,
     );
@@ -913,20 +996,39 @@ export class RouteService {
           isWeakAirConditioned: false,
           congestionLevel: '여유',
           congestionRate: 0,
-          isEstimated: true,
+          isEstimated: !metrics.routed,
           walkCalories: metrics.calories,
           walkSteps: metrics.steps,
+          ...(metrics.path ? { path: metrics.path } : {}),
         },
       ],
       highlights: [],
       operationStatus: 'UNKNOWN',
       totalWalkDurationSec: metrics.durationSec,
       totalWalkDistanceKm: metrics.actualDistanceKm,
-      walkDistanceSource: 'ESTIMATED',
+      walkDistanceSource: metrics.routed ? 'ROUTED' : 'ESTIMATED',
       totalCalories: metrics.calories,
       totalSteps: metrics.steps,
     };
   }
+}
+
+/**
+ * 도보거리의 출처. 출발지, 도착지 쪽 도보를 모두 실제 보행로로 구했고 환승 걷기가 없을 때만 ROUTED다.
+ * 환승 걷기(시간 환산)나 직선 추정이 하나라도 섞이면 ESTIMATED다
+ */
+function walkDistanceSourceOf(
+  totalWalkDurationSec: number,
+  transferWalkDurationSec: number,
+  accessWalks: Array<WalkMetrics | undefined>,
+): 'ROUTED' | 'ESTIMATED' | 'NONE' {
+  if (totalWalkDurationSec <= 0) return 'NONE';
+  const legs = accessWalks.filter((walk): walk is WalkMetrics => !!walk);
+  return legs.length > 0 &&
+    transferWalkDurationSec === 0 &&
+    legs.every((walk) => walk.routed)
+    ? 'ROUTED'
+    : 'ESTIMATED';
 }
 
 const CAR_NUMBERS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];

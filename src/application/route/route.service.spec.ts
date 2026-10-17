@@ -10,6 +10,7 @@ import { SubwayGraphService } from '../../domain/subway/services/subway-graph.se
 import { TRAVEL_LOG_REPOSITORY } from '../../domain/travel/ports/ITravelLogRepository';
 import { USER_REPOSITORY } from '../../domain/user/ports/IUserRepository';
 import { WalkingService } from '../../domain/subway/services/walking.service';
+import { WALK_ROUTE_PROVIDER } from '../../domain/subway/ports/IWalkRouteProvider';
 import { CAR_CONGESTION_PREDICTOR } from '../../domain/congestion/ports/ICarCongestionPredictor';
 import { OperationStatusService } from './operation-status.service';
 import { RouteService } from './route.service';
@@ -693,6 +694,154 @@ describe('RouteService', () => {
         errorCode: 'INVALID_REQUEST_PAYLOAD',
         status: HttpStatus.BAD_REQUEST,
       });
+    });
+  });
+
+  describe('routed walking (OSRM)', () => {
+    const origin = { lat: 37.4985, lng: 127.027 };
+    const destination = { lat: 37.484, lng: 127.034 };
+    let walkRoutes: { route: jest.Mock };
+
+    beforeEach(async () => {
+      walkRoutes = { route: jest.fn() };
+      const module: TestingModule = await Test.createTestingModule({
+        providers: [
+          RouteService,
+          WalkingService,
+          { provide: SUBWAY_ROUTE_ENGINE, useValue: mockEngine },
+          {
+            provide: OperationStatusService,
+            useValue: { annotate: jest.fn().mockResolvedValue(undefined) },
+          },
+          { provide: SubwayGraphService, useValue: mockGraphService },
+          { provide: USER_REPOSITORY, useValue: mockUserRepo },
+          { provide: TRAVEL_LOG_REPOSITORY, useValue: mockTravelLogRepo },
+          {
+            provide: CAR_CONGESTION_PREDICTOR,
+            useValue: mockCongestionProvider,
+          },
+          { provide: WALK_ROUTE_PROVIDER, useValue: walkRoutes },
+        ],
+      }).compile();
+      service = module.get<RouteService>(RouteService);
+    });
+
+    const request = {
+      originLat: origin.lat,
+      originLng: origin.lng,
+      destinationLat: destination.lat,
+      destinationLng: destination.lng,
+    };
+
+    it('uses the walking route distance, time and path for the first and last mile', async () => {
+      walkRoutes.route.mockResolvedValue({ distanceM: 1500, polyline: 'abc' });
+
+      const result = await service.search(request);
+      const option = result.options.find((item) => item.transferCount === 0);
+      expect(option).toBeDefined();
+      const walks = option!.segments.filter((item) => item.lineId === 'WALK');
+
+      expect(walks).toHaveLength(2);
+      for (const walk of walks) {
+        expect(walk).toMatchObject({
+          distanceKm: 1.5,
+          durationSec: 1250,
+          isEstimated: false,
+          path: 'abc',
+        });
+      }
+      expect(option!.walkDistanceSource).toBe('ROUTED');
+    });
+
+    it('asks for the walk from the origin to the station and from the station to the destination', async () => {
+      walkRoutes.route.mockResolvedValue({ distanceM: 800, polyline: 'x' });
+
+      await service.search(request);
+
+      const calls = walkRoutes.route.mock.calls as Array<
+        [{ lat: number; lng: number }, { lat: number; lng: number }]
+      >;
+      expect(
+        calls.some(
+          ([from]) => from.lat === origin.lat && from.lng === origin.lng,
+        ),
+      ).toBe(true);
+      expect(
+        calls.some(
+          ([, to]) => to.lat === destination.lat && to.lng === destination.lng,
+        ),
+      ).toBe(true);
+    });
+
+    it('falls back to the straight-line estimate when no walking route can be found', async () => {
+      walkRoutes.route.mockResolvedValue(null);
+
+      const result = await service.search(request);
+      const option = result.options[0];
+      const walks = option.segments.filter((item) => item.lineId === 'WALK');
+
+      expect(walks).toHaveLength(2);
+      for (const walk of walks) {
+        expect(walk.isEstimated).toBe(true);
+        expect(walk.path).toBeUndefined();
+      }
+      expect(option.walkDistanceSource).toBe('ESTIMATED');
+    });
+
+    it('keeps the estimate for a leg without a walking route and routes the other', async () => {
+      walkRoutes.route.mockImplementation(
+        (from: { lat: number; lng: number }) =>
+          Promise.resolve(
+            from.lat === origin.lat
+              ? null
+              : { distanceM: 600, polyline: 'last' },
+          ),
+      );
+
+      const result = await service.search(request);
+      const option = result.options.find((item) => item.transferCount === 0);
+      const [first, last] = option!.segments.filter(
+        (item) => item.lineId === 'WALK',
+      );
+
+      expect(first.path).toBeUndefined();
+      expect(first.isEstimated).toBe(true);
+      expect(last.path).toBe('last');
+      expect(last.isEstimated).toBe(false);
+      expect(option!.walkDistanceSource).toBe('ESTIMATED');
+    });
+
+    it('routes the direct walk when the origin and destination are close', async () => {
+      walkRoutes.route.mockResolvedValue({
+        distanceM: 150,
+        polyline: 'direct',
+      });
+
+      const result = await service.search({
+        originLat: 37.4982,
+        originLng: 127.0275,
+        destinationLat: 37.4975,
+        destinationLng: 127.028,
+      });
+
+      const option = result.options[0];
+      expect(option.mode).toBe('ONLY_WALK');
+      expect(option.walkDistanceSource).toBe('ROUTED');
+      expect(option.totalDurationSec).toBe(125);
+      expect(option.segments[0]).toMatchObject({
+        path: 'direct',
+        isEstimated: false,
+        distanceKm: 0.15,
+      });
+    });
+
+    it('does not ask for a walking route when both ends are stations', async () => {
+      await service.search({
+        originStationId: '02_222',
+        destinationStationId: '02_221',
+      });
+
+      expect(walkRoutes.route).not.toHaveBeenCalled();
     });
   });
 

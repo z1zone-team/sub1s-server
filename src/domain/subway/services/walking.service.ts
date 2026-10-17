@@ -7,6 +7,10 @@ export interface WalkMetrics {
   durationSec: number;
   calories: number;
   steps: number;
+  /** 실제 보행로를 따라 구한 값이면 true. 직선 추정이면 없다 */
+  routed?: boolean;
+  /** 실제 보행 경로 선(구글 인코딩 폴리라인, 정밀도 5). 직선 추정이면 없다 */
+  path?: string;
 }
 
 export interface NearestStationResult {
@@ -76,6 +80,28 @@ export class WalkingService {
       durationSec,
       calories,
       steps,
+    };
+  }
+
+  /**
+   * 실제 보행로를 따라 구한 거리(km)로 도보 지표를 만듭니다. 시간, 칼로리, 걸음 수는 직선 추정과 같은 속도와 보폭을 씁니다.
+   */
+  metricsForRoutedDistance(
+    straightDistanceKm: number,
+    routedDistanceKm: number,
+    path: string,
+  ): WalkMetrics {
+    const actualDistanceKm = Math.round(routedDistanceKm * 100) / 100;
+    return {
+      straightDistanceKm: Math.round(straightDistanceKm * 100) / 100,
+      actualDistanceKm,
+      durationSec: Math.round(
+        (actualDistanceKm * 1000) / this.WALKING_SPEED_MPS,
+      ),
+      calories: Math.round(actualDistanceKm * this.CALORIES_PER_KM),
+      steps: Math.round(actualDistanceKm * this.STEPS_PER_KM),
+      routed: true,
+      path,
     };
   }
 

@@ -1,7 +1,9 @@
 import { Module } from '@nestjs/common';
 import { OPERATION_NOTICE_PROVIDER } from '../../domain/operation/ports/IOperationNoticeProvider';
 import { SubwayModule } from '../../domain/subway/subway.module';
+import { WALK_ROUTE_PROVIDER } from '../../domain/subway/ports/IWalkRouteProvider';
 import { DataGoKrNoticeProvider } from '../../infra/operation/data-go-kr-notice.provider';
+import { OsrmWalkRouteProvider } from '../../infra/walking/osrm-walk-route.provider';
 import { AuthModule as InfraAuthModule } from '../../infra/auth/auth.module';
 import { RoutingModule } from '../../infra/routing/routing.module';
 import { RouteController } from './route.controller';
@@ -17,6 +19,7 @@ import { PreferenceModelService } from './preference-model.service';
     PreferenceModelService,
     OperationStatusService,
     { provide: OPERATION_NOTICE_PROVIDER, useClass: DataGoKrNoticeProvider },
+    { provide: WALK_ROUTE_PROVIDER, useClass: OsrmWalkRouteProvider },
   ],
   exports: [RouteService],
 })
