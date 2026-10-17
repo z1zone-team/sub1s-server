@@ -35,6 +35,11 @@ export interface PlaceSearchItemDto {
   nearestStation: NearestStationDto;
 }
 
+/** 좌표로 찾은 장소. 반경 안에 역이 없으면 `nearestStation`이 없다 */
+export interface PlaceReverseDto extends Omit<PlaceSearchItemDto, 'nearestStation'> {
+  nearestStation?: NearestStationDto;
+}
+
 export type PlaceSearchResultItemDto =
   StationSearchItemDto | PlaceSearchItemDto;
 

@@ -475,8 +475,8 @@ describe('PlaceService', () => {
         lng: 127.0278,
       });
       expect(item.nearestStation).toMatchObject({ name: '강남' });
-      expect(item.nearestStation.walkDistanceM).toBeGreaterThan(0);
-      expect(item.nearestStation.walkDurationSec).toBeGreaterThan(0);
+      expect(item.nearestStation?.walkDistanceM).toBeGreaterThan(0);
+      expect(item.nearestStation?.walkDurationSec).toBeGreaterThan(0);
     });
 
     it('주소를 찾지 못해도 가까운 역이 있으면 이름을 선택한 위치로 한다', async () => {
@@ -486,11 +486,22 @@ describe('PlaceService', () => {
       expect(item.category).toBeUndefined();
     });
 
-    it('반경 안에 역이 없으면 V-World를 부르지 않고 422로 알린다', async () => {
-      await expect(service.reverse(at(33.4996, 126.5312))).rejects.toMatchObject(
-        { errorCode: 'PLACE_OUT_OF_SERVICE_AREA', status: 422 },
-      );
-      expect(provider.reverse).not.toHaveBeenCalled();
+    it('반경 안에 역이 없으면 오류 없이 주소만 돌려주고 nearestStation은 없다', async () => {
+      provider.reverse.mockResolvedValue({
+        name: '제주특별자치도 제주시 연동 1',
+        address: '',
+        category: '지번주소',
+      });
+
+      const item = await service.reverse(at(33.4996, 126.5312));
+
+      expect(item).toMatchObject({
+        type: 'PLACE',
+        name: '제주특별자치도 제주시 연동 1',
+        lat: 33.4996,
+        lng: 126.5312,
+      });
+      expect(item.nearestStation).toBeUndefined();
     });
   });
 

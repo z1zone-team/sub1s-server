@@ -231,6 +231,13 @@ export class RouteService {
     }
 
     const graph = this.graphService.getGraph();
+    const coordinatesOnly =
+      !dto.originStationId &&
+      !dto.destinationStationId &&
+      dto.originLat !== undefined &&
+      dto.originLng !== undefined &&
+      dto.destinationLat !== undefined &&
+      dto.destinationLng !== undefined;
 
     // 1. 출발지 역 및 First-Mile 도보 분석
     let originStation: StationRecord;
@@ -255,6 +262,7 @@ export class RouteService {
         1,
       );
       if (nearest.length === 0) {
+        if (coordinatesOnly) return this.walkOnlyResult(dto, departureDate);
         throw new BusinessException(
           'STATION_NOT_FOUND',
           '출발지 반경 2.5km 이내에 접근 가능한 지하철역이 없습니다.',
@@ -297,6 +305,7 @@ export class RouteService {
         1,
       );
       if (nearest.length === 0) {
+        if (coordinatesOnly) return this.walkOnlyResult(dto, departureDate);
         throw new BusinessException(
           'STATION_NOT_FOUND',
           '도착지 반경 2.5km 이내에 접근 가능한 지하철역이 없습니다.',
@@ -321,20 +330,7 @@ export class RouteService {
       dto.destinationLat !== undefined &&
       dto.destinationLng !== undefined
     ) {
-      const straightKm = this.walkingService.haversineDistanceKm(
-        dto.originLat,
-        dto.originLng,
-        dto.destinationLat,
-        dto.destinationLng,
-      );
-
-      if (straightKm < 0.05) {
-        throw new BusinessException(
-          'INVALID_REQUEST_PAYLOAD',
-          '출발지와 도착지가 동일한 위치입니다.',
-          HttpStatus.BAD_REQUEST,
-        );
-      }
+      const straightKm = this.straightDistanceKm(dto);
 
       // 두 지점이 같은 지하철역으로 매핑되거나 1.5km 이내인 경우 도보 경로 생성
       if (originStation.id === destinationStation.id || straightKm <= 1.5) {
@@ -346,10 +342,7 @@ export class RouteService {
 
         // 동일 역 매핑 또는 800m 이내 초근거리는 지하철 탑승 없이 순수 도보만 반환
         if (originStation.id === destinationStation.id || straightKm <= 0.8) {
-          return {
-            options: [directWalkOption],
-            aiBriefingText: `목적지까지 약 ${Math.round(directWalkOption.totalDurationSec / 60)}분 소요되는 도보 이동을 추천합니다.`,
-          };
+          return this.walkOnlyResult(dto, departureDate);
         }
       }
     }
@@ -848,6 +841,40 @@ export class RouteService {
       walkDistanceSource: totalWalkDurationSec > 0 ? 'ESTIMATED' : 'NONE',
       totalCalories,
       totalSteps,
+    };
+  }
+
+  /** 출발지와 도착지 좌표의 직선 거리. 같은 위치(50m 미만)는 요청 오류다 */
+  private straightDistanceKm(dto: RouteSearchRequestDto): number {
+    const straightKm = this.walkingService.haversineDistanceKm(
+      dto.originLat as number,
+      dto.originLng as number,
+      dto.destinationLat as number,
+      dto.destinationLng as number,
+    );
+    if (straightKm < 0.05) {
+      throw new BusinessException(
+        'INVALID_REQUEST_PAYLOAD',
+        '출발지와 도착지가 동일한 위치입니다.',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    return straightKm;
+  }
+
+  /** 지하철을 타지 않는 도보 경로 하나만 담은 결과 */
+  private walkOnlyResult(
+    dto: RouteSearchRequestDto,
+    departureDate: Date,
+  ): RouteSearchResultDto {
+    const option = this.createDirectWalkOption(
+      dto,
+      this.straightDistanceKm(dto),
+      departureDate,
+    );
+    return {
+      options: [option],
+      aiBriefingText: `목적지까지 약 ${Math.round(option.totalDurationSec / 60)}분 소요되는 도보 이동을 추천합니다.`,
     };
   }
 

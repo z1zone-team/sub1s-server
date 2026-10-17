@@ -1,4 +1,4 @@
-import { HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import {
   ExternalPlace,
   IPlaceSearchProvider,
@@ -15,10 +15,10 @@ import {
 } from '../../domain/subway/models/subway-graph';
 import { SubwayGraphService } from '../../domain/subway/services/subway-graph.service';
 import { WalkingService } from '../../domain/subway/services/walking.service';
-import { BusinessException } from '../../common/exceptions/business.exception';
 import { PlaceReverseQueryDto } from './dto/place-reverse-query.dto';
 import { PlaceSearchQueryDto } from './dto/place-search-query.dto';
 import {
+  PlaceReverseDto,
   PlaceSearchItemDto,
   PlaceSearchResultDto,
   StationLineDto,
@@ -90,7 +90,7 @@ export class PlaceService {
     return { items: [...stations, ...places] };
   }
 
-  async reverse(query: PlaceReverseQueryDto): Promise<PlaceSearchItemDto> {
+  async reverse(query: PlaceReverseQueryDto): Promise<PlaceReverseDto> {
     const nearest = this.walkingService.findNearestStations(
       this.graphService.getGraph(),
       query.lat,
@@ -98,14 +98,6 @@ export class PlaceService {
       NEAREST_STATION_RADIUS_KM,
       1,
     )[0];
-    if (!nearest) {
-      throw new BusinessException(
-        'PLACE_OUT_OF_SERVICE_AREA',
-        '가까운 역이 없는 위치입니다.',
-        HttpStatus.UNPROCESSABLE_ENTITY,
-      );
-    }
-
     const address = await this.placeProvider.reverse(query.lat, query.lng);
     return {
       type: 'PLACE',
@@ -114,7 +106,7 @@ export class PlaceService {
       category: address?.category,
       lat: query.lat,
       lng: query.lng,
-      nearestStation: {
+      nearestStation: nearest && {
         stationId: nearest.station.id,
         name: this.displayName(nearest.station),
         walkDistanceM: Math.round(nearest.metrics.actualDistanceKm * 1000),

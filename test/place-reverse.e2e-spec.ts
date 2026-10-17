@@ -82,11 +82,17 @@ describe('Place reverse geocoding (e2e)', () => {
     expect(res.body.data).toMatchObject({ name: '선택한 위치', address: '' });
   });
 
-  it('반경 안에 역이 없으면 422', async () => {
-    const res = await get('?lat=33.4996&lng=126.5312').expect(422);
+  it('반경 안에 역이 없으면 주소만 돌려주고 nearestStation은 없다', async () => {
+    reverse.mockResolvedValue({
+      name: '제주특별자치도 제주시 연동 1',
+      address: '',
+      category: '지번주소',
+    });
 
-    expect(res.body.error.code).toBe('PLACE_OUT_OF_SERVICE_AREA');
-    expect(reverse).not.toHaveBeenCalled();
+    const res = await get('?lat=33.4996&lng=126.5312').expect(200);
+
+    expect(res.body.data).toMatchObject({ name: '제주특별자치도 제주시 연동 1', lat: 33.4996, lng: 126.5312 });
+    expect(res.body.data.nearestStation).toBeUndefined();
   });
 
   it.each(['', '?lat=37.5', '?lat=abc&lng=127', '?lat=91&lng=127', '?lat=37.5&lng=181'])(

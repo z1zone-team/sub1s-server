@@ -8,7 +8,7 @@ import { ApiResponse } from '../../common/interfaces/api-response.interface';
 import { PlaceReverseQueryDto } from './dto/place-reverse-query.dto';
 import { PlaceSearchQueryDto } from './dto/place-search-query.dto';
 import {
-  PlaceSearchItemDto,
+  PlaceReverseDto,
   PlaceSearchResultDto,
 } from './dto/place-search-response.dto';
 import { PlaceSearchRateLimitGuard } from './place-search-rate-limit.guard';
@@ -48,21 +48,17 @@ export class PlaceController {
   @ApiOperation({
     summary: '좌표의 주소 조회 (지도에서 직접 찍기)',
     description:
-      '좌표의 도로명 주소(없으면 지번 주소)와 가장 가까운 역, 도보 정보를 장소 검색의 PLACE 항목과 같은 모양으로 반환합니다. 주소를 찾지 못해도 가까운 역이 있으면 이름은 "선택한 위치"로 반환합니다.',
+      '좌표의 도로명 주소(없으면 지번 주소)와 가장 가까운 역, 도보 정보를 장소 검색의 PLACE 항목과 같은 모양으로 반환합니다. 반경(2.5km) 안에 역이 없으면 nearestStation이 없고, 주소를 찾지 못하면 이름은 "선택한 위치"입니다.',
   })
   @SwaggerResponse({ status: 200, description: '조회 성공' })
   @SwaggerResponse({ status: 400, description: '좌표 누락 또는 형식 오류' })
-  @SwaggerResponse({
-    status: 422,
-    description: '반경 안에 역이 없는 위치 (PLACE_OUT_OF_SERVICE_AREA)',
-  })
   @SwaggerResponse({
     status: 429,
     description: 'IP당 분당 요청 한도 초과 (TOO_MANY_REQUESTS, Retry-After 헤더)',
   })
   async reverse(
     @Query() query: PlaceReverseQueryDto,
-  ): Promise<ApiResponse<PlaceSearchItemDto>> {
+  ): Promise<ApiResponse<PlaceReverseDto>> {
     const data = await this.placeService.reverse(query);
     return { success: true, data, timestamp: kstNowIso() };
   }
