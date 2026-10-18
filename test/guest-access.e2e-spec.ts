@@ -60,6 +60,7 @@ describe('Guest access scope (e2e)', () => {
     ['get', '/api/v1/stations?ids=02_222'],
     ['get', '/api/v1/stations/02_222/next-trains'],
     ['get', '/api/v1/stations/02_222/facilities'],
+    ['get', '/api/v1/trains/positions?lineId=02'],
     ['get', '/api/v1/congestion/train?lineId=02&trainId=2001&stationId=02_222'],
     ['post', '/api/v1/routes/search', { originStationId: '02_222', destinationStationId: '02_221' }],
   ];
