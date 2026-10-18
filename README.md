@@ -46,7 +46,7 @@ pnpm test:benchmark                             # 경로 엔진 벤치마크
 
 - e2e는 **실제 PostgreSQL**(마이그레이션과 `pnpm seed:subway` 적용)과 **Valkey**가 필요합니다. 음성 큐 e2e(`voice-jobs`)는 실제 Valkey와 WebSocket을 씁니다.
 - 병렬로 돌리면 타임아웃으로 일부가 실패하므로 `--runInBand`로 실행합니다.
-- `clerk-auth` e2e는 `CLERK_SECRET_KEY`가 있으면 실제 Clerk 세션으로 동작하고, 같은 사용자 이름이 DB에 남아 있으면 다시 돌릴 때 실패할 수 있습니다.
+- `clerk-auth` e2e는 실제 Clerk와 DB에 접속하므로 기본으로 건너뜁니다. `RUN_LIVE_CLERK_E2E=1`이고 `CLERK_SECRET_KEY`가 있을 때만 실행하며, 같은 사용자 이름이 DB에 남아 있으면 다시 돌릴 때 실패할 수 있습니다.
 - CI(`.github/workflows/ci.yml`)는 Postgres와 Valkey 서비스를 띄워 타입 검사, 빌드, 단위, e2e를 실행합니다.
 
 ## 음성 경로 추천 큐
