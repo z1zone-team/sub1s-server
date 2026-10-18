@@ -29,6 +29,7 @@ import {
 import {
   IPayloadEncryptor,
   PAYLOAD_ENCRYPTOR,
+  travelLogAad,
 } from '../../domain/travel/ports/IPayloadEncryptor';
 import { RankingNotifier } from './ranking.notifier';
 import { RouteService } from '../route/route.service';
@@ -196,7 +197,10 @@ export class TravelLogService {
       routeSource: chosen ? 'SELECTED' : 'RECALCULATED',
       completedAt: kstNowIso(),
     });
-    const encrypted = this.cryptoService.encrypt(sensitivePayload);
+    const encrypted = this.cryptoService.encrypt(
+      sensitivePayload,
+      travelLogAad(userId),
+    );
 
     const monthlyKey = kstMonthKey(Date.now());
 
@@ -494,18 +498,22 @@ export class TravelLogService {
     const visitedSet = new Set<string>();
     const expressRuns: ExpressRun[] = [];
     const passedPairs: Array<[string, string]> = [];
+    let undecryptable = 0;
     for (const l of logs) {
       visitedSet.add(l.originStationId);
       visitedSet.add(l.destStationId);
 
       if (l.encryptedRoutePayload && l.iv && l.authTag && l.wrappedDek) {
         try {
-          const decrypted = this.cryptoService.decrypt({
-            ciphertext: l.encryptedRoutePayload,
-            iv: l.iv,
-            tag: l.authTag,
-            wrappedDek: l.wrappedDek,
-          });
+          const decrypted = this.cryptoService.decrypt(
+            {
+              ciphertext: l.encryptedRoutePayload,
+              iv: l.iv,
+              tag: l.authTag,
+              wrappedDek: l.wrappedDek,
+            },
+            travelLogAad(targetUserId),
+          );
           const parsed = JSON.parse(decrypted);
           if (Array.isArray(parsed.stationIds)) {
             for (const sId of parsed.stationIds) {
@@ -518,9 +526,15 @@ export class TravelLogService {
             passedPairs.push([passed[i - 1], passed[i]]);
           }
         } catch {
-          // skip
+          undecryptable += 1;
         }
       }
+    }
+    if (undecryptable > 0) {
+      // 풀리지 않는 기록은 노선도에서 빼지만 조용히 넘기지 않고 남긴다(내용은 적지 않는다)
+      this.logger.warn(
+        `line map: ${undecryptable} of ${logs.length} travel logs could not be decrypted (user ${targetUserId})`,
+      );
     }
 
     const graph = this.graphService.getGraph();
@@ -723,14 +737,21 @@ export class TravelLogService {
       return undefined;
     }
     try {
-      const decrypted = this.cryptoService.decrypt({
-        ciphertext: log.encryptedRoutePayload,
-        iv: log.iv,
-        tag: log.authTag,
-        wrappedDek: log.wrappedDek,
-      });
+      const decrypted = this.cryptoService.decrypt(
+        {
+          ciphertext: log.encryptedRoutePayload,
+          iv: log.iv,
+          tag: log.authTag,
+          wrappedDek: log.wrappedDek,
+        },
+        travelLogAad(log.userId),
+      );
       return JSON.parse(decrypted) as unknown;
-    } catch {
+    } catch (error) {
+      // 내용 없이 어느 기록이 왜 안 풀렸는지만 남긴다
+      this.logger.warn(
+        `travel log ${log.id} could not be decrypted: ${error instanceof Error ? error.message : 'unknown error'}`,
+      );
       return undefined;
     }
   }
