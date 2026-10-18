@@ -44,9 +44,11 @@ import {
 } from './dto';
 import { getLineMetadata } from './constants/subway-lines.constant';
 import {
+  ExpressRun,
   RideSegment,
   parsePayloadDurationSec,
   parseRideSegments,
+  parseExpressRuns,
 } from './route-payload';
 import {
   kstAddDays,
@@ -415,6 +417,7 @@ export class TravelLogService {
     );
 
     const visitedSet = new Set<string>();
+    const expressRuns: ExpressRun[] = [];
     for (const l of logs) {
       visitedSet.add(l.originStationId);
       visitedSet.add(l.destStationId);
@@ -433,6 +436,7 @@ export class TravelLogService {
               visitedSet.add(sId);
             }
           }
+          expressRuns.push(...parseExpressRuns(parsed));
         } catch {
           // skip
         }
@@ -457,6 +461,21 @@ export class TravelLogService {
         lng: s.lng,
         visited: visitedSet.has(s.id),
       });
+    }
+
+    // 급행이 지나친 역도 열차가 지나간 곳이라 방문으로 표시해야 노선도의 선이 끊기지 않는다
+    for (const run of expressRuns) {
+      const stations = linesMap.get(run.lineId) ?? [];
+      const from = stations.find((s) => s.stationId === run.fromStationId);
+      const to = stations.find((s) => s.stationId === run.toStationId);
+      if (!from || !to) continue;
+      const low = Math.min(from.lineSeq, to.lineSeq);
+      const high = Math.max(from.lineSeq, to.lineSeq);
+      for (const station of stations) {
+        if (station.lineSeq >= low && station.lineSeq <= high) {
+          station.visited = true;
+        }
+      }
     }
 
     const lines = Array.from(linesMap.entries()).map(([lineId, stations]) => {
