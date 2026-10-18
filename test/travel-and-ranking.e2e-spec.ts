@@ -62,6 +62,7 @@ describe('Travel and Ranking (e2e)', () => {
         .mockResolvedValue({ id: '00000000-0000-0000-0000-000000000001' }),
     },
     travelLog: {
+      findFirst: jest.fn().mockResolvedValue(null),
       create: jest.fn().mockImplementation((args) => {
         const item = {
           id: 'log-e2e-1',
@@ -143,11 +144,26 @@ describe('Travel and Ranking (e2e)', () => {
   });
 
   it('POST /api/v1/travel/log creates log with official distance and points', async () => {
+    const search = await request(app.getHttpServer())
+      .post('/api/v1/routes/search')
+      .send({
+        originStationId: '02_222',
+        destinationStationId: '02_221',
+        routeMode: 'OPTIMAL',
+      })
+      .expect(200);
+    // 점수는 안내를 시작한 주행 세션으로 완료한 기록에만 준다
+    const start = await request(app.getHttpServer())
+      .post('/api/v1/routes/track/start')
+      .send({ routeOption: search.body.data.options[0] })
+      .expect(201);
+
     const res = await request(app.getHttpServer())
       .post('/api/v1/travel/log')
       .send({
         originStationId: '02_222',
         destStationId: '02_221',
+        sessionId: start.body.data.sessionId,
       })
       .expect(201);
 

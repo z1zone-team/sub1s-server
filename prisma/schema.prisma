@@ -269,6 +269,9 @@ model TravelLog {
   routeMode String? @map("route_mode") @db.VarChar(20)
   choiceSnapshot Json? @map("choice_snapshot")
 
+  // 이 기록을 만든 주행 세션 ID. 같은 주행의 완료가 두 번 점수를 주지 못하게 유니크로 둔다. 세션을 확인하지 못한 기록은 비어 있다
+  trackingSessionId String? @unique @map("tracking_session_id") @db.VarChar(64)
+
   // 개인 민감 위치정보 암호화 저장 (SECURITY.md 3-Tier 하이브리드 암호화 연동)
   encryptedRoutePayload String? @map("encrypted_route_payload") @db.Text // Base64 AES-256-GCM 암호문 (상세 이동 궤적/정차역 로그)
   iv                    String? @map("iv") @db.VarChar(32) // Base64 Nonce/IV (12 bytes)

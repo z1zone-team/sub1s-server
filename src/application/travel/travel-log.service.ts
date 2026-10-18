@@ -1,3 +1,4 @@
+import { TravelLog } from '@prisma/client';
 import { SubwayRouteOptionDto } from '../route/dto/route-search-response.dto';
 import { ChoiceSnapshot } from '../../domain/subway/models/preference-model';
 import {
@@ -16,6 +17,7 @@ import {
   TRACKING_REPOSITORY,
 } from '../../domain/tracking/ports/ITrackingRepository';
 import {
+  DuplicateTravelLogError,
   ITravelLogRepository,
   TRAVEL_LOG_REPOSITORY,
   TravelLogWithStations,
@@ -109,6 +111,15 @@ export class TravelLogService {
       );
     }
 
+    // 같은 주행의 완료가 다시 오면 점수를 또 주지 않고 처음 결과를 돌려준다
+    if (dto.sessionId) {
+      const prior = await this.travelLogRepo.findByTrackingSession(
+        userId,
+        dto.sessionId,
+      );
+      if (prior) return this.replayLog(userId, prior);
+    }
+
     let chosen: SubwayRouteOptionDto | undefined;
     let choiceSnapshot: ChoiceSnapshot | undefined;
     const session =
@@ -166,8 +177,14 @@ export class TravelLogService {
       }
     }
 
-    const { distancePoints, onTimeBonus, earnedPoints } =
-      ScorePolicy.calculateBreakdown(totalDistanceKm, isOnTime);
+    // 점수는 본인의 유효한 주행 세션으로 완료한 기록에만 준다. 세션이 없으면 기록만 남긴다
+    const verifiedSessionId =
+      dto.sessionId && session && session.userId === userId
+        ? dto.sessionId
+        : undefined;
+    const { distancePoints, onTimeBonus, earnedPoints } = verifiedSessionId
+      ? ScorePolicy.calculateBreakdown(totalDistanceKm, isOnTime)
+      : { distancePoints: 0, onTimeBonus: 0, earnedPoints: 0 };
 
     // 3-Tier Hybrid Encryption of detailed route trajectory
     const sensitivePayload = JSON.stringify({
@@ -187,8 +204,9 @@ export class TravelLogService {
     await this.userRepo.upsertPlaceholder(userId);
 
     // Atomic increment of Monthly and All-time rank scores + log creation
-    const { monthlyScore, allScore, createdLog } =
-      await this.travelLogRepo.saveTravelWithScores({
+    let saved;
+    try {
+      saved = await this.travelLogRepo.saveTravelWithScores({
         userId,
         originStationId: dto.originStationId,
         destStationId: dto.destStationId,
@@ -197,9 +215,22 @@ export class TravelLogService {
         earnedPoints,
         routeMode,
         monthlyKey,
+        trackingSessionId: verifiedSessionId,
         encrypted,
         choiceSnapshot,
       });
+    } catch (error) {
+      // 같은 세션의 완료 요청이 동시에 와서 다른 요청이 먼저 저장했다
+      if (error instanceof DuplicateTravelLogError && dto.sessionId) {
+        const prior = await this.travelLogRepo.findByTrackingSession(
+          userId,
+          dto.sessionId,
+        );
+        if (prior) return this.replayLog(userId, prior);
+      }
+      throw error;
+    }
+    const { monthlyScore, allScore, createdLog } = saved;
 
     try {
       this.rankingNotifier?.sendScoreUpdate(userId, {
@@ -229,6 +260,43 @@ export class TravelLogService {
       monthlyTotalPoints: monthlyScore.totalPoints,
       rideDurationSec,
       arrivalDeltaSec,
+    };
+  }
+
+  /** 이동 통계와 노선도는 본인 것만 본다. 다른 사용자의 이동 이력을 볼 정책이 아직 없다 */
+  private resolveTargetUser(currentUserId: string, requested?: string): string {
+    if (requested && requested !== currentUserId) {
+      throw new BusinessException(
+        'FORBIDDEN_TRAVEL_HISTORY',
+        '다른 사용자의 이동 기록은 볼 수 없어요.',
+        HttpStatus.FORBIDDEN,
+      );
+    }
+    return currentUserId;
+  }
+
+  private async replayLog(
+    userId: string,
+    log: TravelLog,
+  ): Promise<TravelLogResponseDto> {
+    const totals = await this.travelLogRepo.findScoreTotals(
+      userId,
+      kstMonthKey(Date.now()),
+    );
+    const { distancePoints } = ScorePolicy.calculateBreakdown(
+      log.totalDistanceKm,
+      false,
+    );
+    const distanceShare = Math.min(distancePoints, log.earnedPoints);
+    return {
+      logId: log.id,
+      totalDistanceKm: log.totalDistanceKm,
+      transferCount: log.transferCount,
+      earnedPoints: log.earnedPoints,
+      distancePoints: distanceShare,
+      onTimeBonus: log.earnedPoints - distanceShare,
+      currentTotalPoints: totals.allPoints,
+      monthlyTotalPoints: totals.monthlyPoints,
     };
   }
 
@@ -291,7 +359,7 @@ export class TravelLogService {
     currentUserId: string,
     query: TravelStatsQueryDto,
   ): Promise<TravelStatsResponseDto> {
-    const targetUserId = query.userId ?? currentUserId;
+    const targetUserId = this.resolveTargetUser(currentUserId, query.userId);
     const nowMs = Date.now();
     const startDate = this.calculateStartDate(query.period, nowMs);
 
@@ -411,7 +479,7 @@ export class TravelLogService {
     currentUserId: string,
     query: LineMapQueryDto,
   ): Promise<LineMapResponseDto> {
-    const targetUserId = query.userId ?? currentUserId;
+    const targetUserId = this.resolveTargetUser(currentUserId, query.userId);
     const startDate = this.calculateStartDate(query.period);
 
     const logs = await this.travelLogRepo.findLineMapLogs(
@@ -495,7 +563,8 @@ export class TravelLogService {
       const lineId = graph.station(fromIndex).lineId;
       if (lineId !== graph.station(toIndex).lineId) continue;
       const key = from < to ? `${from}|${to}` : `${to}|${from}`;
-      const links = linksByLine.get(lineId) ?? new Map<string, LineMapLinkDto>();
+      const links =
+        linksByLine.get(lineId) ?? new Map<string, LineMapLinkDto>();
       if (!links.has(key)) {
         links.set(key, { fromStationId: from, toStationId: to });
       }

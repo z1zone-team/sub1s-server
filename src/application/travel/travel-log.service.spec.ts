@@ -3,7 +3,10 @@ import { BusinessException } from '../../common/exceptions/business.exception';
 import { SubwayGraph } from '../../domain/subway/models/subway-graph';
 import { SubwayGraphService } from '../../domain/subway/services/subway-graph.service';
 import { TRACKING_REPOSITORY } from '../../domain/tracking/ports/ITrackingRepository';
-import { TRAVEL_LOG_REPOSITORY } from '../../domain/travel/ports/ITravelLogRepository';
+import {
+  DuplicateTravelLogError,
+  TRAVEL_LOG_REPOSITORY,
+} from '../../domain/travel/ports/ITravelLogRepository';
 import { USER_REPOSITORY } from '../../domain/user/ports/IUserRepository';
 import { PAYLOAD_ENCRYPTOR } from '../../domain/travel/ports/IPayloadEncryptor';
 import { RankingNotifier } from './ranking.notifier';
@@ -15,6 +18,8 @@ describe('TravelLogService', () => {
   let service: TravelLogService;
   let mockTravelLogRepo: {
     saveTravelWithScores: jest.Mock;
+    findByTrackingSession: jest.Mock;
+    findScoreTotals: jest.Mock;
     findTimelineLogs: jest.Mock;
     findStatsLogs: jest.Mock;
     findLineMapLogs: jest.Mock;
@@ -75,6 +80,10 @@ describe('TravelLogService', () => {
         allScore: { totalPoints: 10 },
         createdLog: { id: 'log-123' },
       }),
+      findByTrackingSession: jest.fn().mockResolvedValue(null),
+      findScoreTotals: jest
+        .fn()
+        .mockResolvedValue({ monthlyPoints: 10, allPoints: 10 }),
       findTimelineLogs: jest.fn().mockResolvedValue([]),
       findStatsLogs: jest.fn().mockResolvedValue([]),
       findLineMapLogs: jest.fn().mockResolvedValue([]),
@@ -192,9 +201,17 @@ describe('TravelLogService', () => {
     });
 
     it('creates travel log, encrypts payload, and atomically updates rank scores', async () => {
+      mockTrackingRepo.findById.mockResolvedValueOnce({
+        userId: 'user-1',
+        originStationId: '02_222',
+        destStationId: '02_221',
+        createdAt: new Date(Date.now() - 600000),
+        routeOption: mockRouteOption,
+      });
       const res = await service.createLog('user-1', {
         originStationId: '02_222',
         destStationId: '02_221',
+        sessionId: 'sess-points',
       });
 
       expect(res.logId).toBe('log-123');
@@ -204,8 +221,8 @@ describe('TravelLogService', () => {
       expect(res.onTimeBonus).toBe(0);
       expect(res.currentTotalPoints).toBe(10);
       expect(res.monthlyTotalPoints).toBe(10);
-      expect(res.rideDurationSec).toBeUndefined();
-      expect(res.arrivalDeltaSec).toBeUndefined();
+      expect(res.rideDurationSec).toBe(600);
+      expect(res.arrivalDeltaSec).toBe(480);
       expect(mockCryptoService.encrypt).toHaveBeenCalled();
       expect(mockTravelLogRepo.saveTravelWithScores).toHaveBeenCalled();
       expect(mockUserRepo.upsertPlaceholder).toHaveBeenCalledWith('user-1');
@@ -466,7 +483,106 @@ describe('TravelLogService', () => {
         sessionId: 'sess-other',
       });
 
-      expect(res.earnedPoints).toBe(10);
+      expect(res.earnedPoints).toBe(0);
+    });
+
+    it('records a trip without a verified session but gives no points', async () => {
+      const res = await service.createLog('user-1', {
+        originStationId: '02_222',
+        destStationId: '02_221',
+      });
+
+      expect(res).toMatchObject({
+        earnedPoints: 0,
+        distancePoints: 0,
+        onTimeBonus: 0,
+      });
+      expect(mockTravelLogRepo.saveTravelWithScores).toHaveBeenCalledWith(
+        expect.objectContaining({
+          earnedPoints: 0,
+          trackingSessionId: undefined,
+        }),
+      );
+    });
+
+    it('saves the verified session id so the same trip cannot score twice', async () => {
+      mockTrackingRepo.findById.mockResolvedValueOnce({
+        userId: 'user-1',
+        originStationId: '02_222',
+        destStationId: '02_221',
+        createdAt: new Date(Date.now() - 600000),
+        routeOption: mockRouteOption,
+      });
+
+      await service.createLog('user-1', {
+        originStationId: '02_222',
+        destStationId: '02_221',
+        sessionId: 'sess-once',
+      });
+
+      expect(mockTravelLogRepo.saveTravelWithScores).toHaveBeenCalledWith(
+        expect.objectContaining({ trackingSessionId: 'sess-once' }),
+      );
+    });
+
+    it('returns the first result without scoring again when the session was already completed', async () => {
+      mockTravelLogRepo.findByTrackingSession.mockResolvedValueOnce({
+        id: 'log-first',
+        totalDistanceKm: 1,
+        transferCount: 0,
+        earnedPoints: 30,
+      });
+      mockTravelLogRepo.findScoreTotals.mockResolvedValueOnce({
+        monthlyPoints: 40,
+        allPoints: 90,
+      });
+
+      const res = await service.createLog('user-1', {
+        originStationId: '02_222',
+        destStationId: '02_221',
+        sessionId: 'sess-once',
+      });
+
+      expect(res).toMatchObject({
+        logId: 'log-first',
+        earnedPoints: 30,
+        distancePoints: 10,
+        onTimeBonus: 20,
+        currentTotalPoints: 90,
+        monthlyTotalPoints: 40,
+      });
+      expect(mockTravelLogRepo.saveTravelWithScores).not.toHaveBeenCalled();
+      expect(mockGateway.broadcastChanged).not.toHaveBeenCalled();
+    });
+
+    it('returns the first result when a parallel completion saved the session first', async () => {
+      mockTrackingRepo.findById.mockResolvedValueOnce({
+        userId: 'user-1',
+        originStationId: '02_222',
+        destStationId: '02_221',
+        createdAt: new Date(Date.now() - 600000),
+        routeOption: mockRouteOption,
+      });
+      mockTravelLogRepo.findByTrackingSession
+        .mockResolvedValueOnce(null)
+        .mockResolvedValueOnce({
+          id: 'log-first',
+          totalDistanceKm: 1,
+          transferCount: 0,
+          earnedPoints: 10,
+        });
+      mockTravelLogRepo.saveTravelWithScores.mockRejectedValueOnce(
+        new DuplicateTravelLogError(),
+      );
+
+      const res = await service.createLog('user-1', {
+        originStationId: '02_222',
+        destStationId: '02_221',
+        sessionId: 'sess-race',
+      });
+
+      expect(res.logId).toBe('log-first');
+      expect(mockGateway.broadcastChanged).not.toHaveBeenCalled();
     });
 
     it('keys the ranking month by the KST calendar month, not the server month', async () => {
@@ -675,6 +791,27 @@ describe('TravelLogService', () => {
       expect(calls[0][2].toISOString()).toBe('2026-10-31T15:00:00.000Z');
       expect(calls[1][1].toISOString()).toBe('2026-11-30T15:00:00.000Z');
       expect(calls[1][2].toISOString()).toBe('2026-12-31T15:00:00.000Z');
+    });
+  });
+
+  describe('viewing another user', () => {
+    it('refuses the stats and the line map of someone else', async () => {
+      const other = '2b5f6b7e-7d0a-4f43-8a52-0c1a7f3d9e11';
+
+      await expect(
+        service.getTravelStats('user-1', { period: 'ALL', userId: other }),
+      ).rejects.toMatchObject({ status: 403 });
+      await expect(
+        service.getLineMap('user-1', { period: 'ALL', userId: other }),
+      ).rejects.toMatchObject({ status: 403 });
+      expect(mockTravelLogRepo.findStatsLogs).not.toHaveBeenCalled();
+      expect(mockTravelLogRepo.findLineMapLogs).not.toHaveBeenCalled();
+    });
+
+    it('allows asking for yourself by id', async () => {
+      await expect(
+        service.getTravelStats('user-1', { period: 'ALL', userId: 'user-1' }),
+      ).resolves.toBeDefined();
     });
   });
 
@@ -943,7 +1080,8 @@ describe('TravelLogService', () => {
       });
       const visitedOf = async () => {
         const res = await service.getLineMap('user-1', { period: 'ALL' });
-        const stations = res.lines.find((l) => l.lineId === '09')?.stations ?? [];
+        const stations =
+          res.lines.find((l) => l.lineId === '09')?.stations ?? [];
         return stations.map((s) => s.visited);
       };
       const log = (payload: object) => {
@@ -965,7 +1103,12 @@ describe('TravelLogService', () => {
         log({
           stationIds: ['09_915', '09_917', '09_919'],
           segments: [
-            { lineId: '09', isExpress: true, fromStationId: '09_915', toStationId: '09_919' },
+            {
+              lineId: '09',
+              isExpress: true,
+              fromStationId: '09_915',
+              toStationId: '09_919',
+            },
           ],
         });
 
@@ -977,7 +1120,12 @@ describe('TravelLogService', () => {
         log({
           stationIds: ['09_915', '09_919'],
           segments: [
-            { lineId: '09', isExpress: false, fromStationId: '09_915', toStationId: '09_919' },
+            {
+              lineId: '09',
+              isExpress: false,
+              fromStationId: '09_915',
+              toStationId: '09_919',
+            },
           ],
         });
 
@@ -989,12 +1137,54 @@ describe('TravelLogService', () => {
       // 2호선 A, B, C와 지선 D(번호는 B와 C 사이), 5호선 X, Y
       const twoLines = new SubwayGraph({
         stations: [
-          { id: '02_A', lineId: '02', stationName: 'A', lat: 37.5, lng: 127.01, lineSeq: 1 },
-          { id: '02_B', lineId: '02', stationName: 'B', lat: 37.5, lng: 127.02, lineSeq: 2 },
-          { id: '02_D', lineId: '02', stationName: 'D', lat: 37.5, lng: 127.03, lineSeq: 3 },
-          { id: '02_C', lineId: '02', stationName: 'C', lat: 37.5, lng: 127.04, lineSeq: 4 },
-          { id: '05_X', lineId: '05', stationName: 'X', lat: 37.6, lng: 127.04, lineSeq: 1 },
-          { id: '05_Y', lineId: '05', stationName: 'Y', lat: 37.6, lng: 127.05, lineSeq: 2 },
+          {
+            id: '02_A',
+            lineId: '02',
+            stationName: 'A',
+            lat: 37.5,
+            lng: 127.01,
+            lineSeq: 1,
+          },
+          {
+            id: '02_B',
+            lineId: '02',
+            stationName: 'B',
+            lat: 37.5,
+            lng: 127.02,
+            lineSeq: 2,
+          },
+          {
+            id: '02_D',
+            lineId: '02',
+            stationName: 'D',
+            lat: 37.5,
+            lng: 127.03,
+            lineSeq: 3,
+          },
+          {
+            id: '02_C',
+            lineId: '02',
+            stationName: 'C',
+            lat: 37.5,
+            lng: 127.04,
+            lineSeq: 4,
+          },
+          {
+            id: '05_X',
+            lineId: '05',
+            stationName: 'X',
+            lat: 37.6,
+            lng: 127.04,
+            lineSeq: 1,
+          },
+          {
+            id: '05_Y',
+            lineId: '05',
+            stationName: 'Y',
+            lat: 37.6,
+            lng: 127.05,
+            lineSeq: 2,
+          },
         ],
         edges: [],
         transfers: [],
@@ -1033,7 +1223,9 @@ describe('TravelLogService', () => {
           log('l2', { stationIds: ['02_B', '02_C', '05_X', '05_Y'] }),
         ]);
 
-        expect(await linksOf('02')).toEqual([{ fromStationId: '02_B', toStationId: '02_C' }]);
+        expect(await linksOf('02')).toEqual([
+          { fromStationId: '02_B', toStationId: '02_C' },
+        ]);
         expect(await linksOf('05')).toEqual([]);
       });
 
@@ -1049,7 +1241,9 @@ describe('TravelLogService', () => {
 
       it('has no links for a trip whose route cannot be read', async () => {
         mockGraphService.getGraph.mockReturnValue(twoLines);
-        mockTravelLogRepo.findLineMapLogs.mockResolvedValueOnce([log('l5', undefined)]);
+        mockTravelLogRepo.findLineMapLogs.mockResolvedValueOnce([
+          log('l5', undefined),
+        ]);
 
         expect(await linksOf('02')).toEqual([]);
       });
