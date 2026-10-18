@@ -588,6 +588,41 @@ describe('TravelLogService', () => {
       expect(logs[0].durationSec).toBe(1440 + 900 + 100);
     });
 
+    it('returns the stations the trip passed in order', async () => {
+      mockTravelLogRepo.findTimelineLogs.mockResolvedValueOnce([
+        savedLog('with-stations', '2026-10-06T10:00:00Z', 5, {
+          segments: [segment('09', 5, 600, true)],
+          stationIds: ['09_907', '09_915', '09_925'],
+        }),
+      ]);
+
+      const { logs } = await service.getTimeline('user-1', {
+        year: 2026,
+        month: 10,
+      });
+
+      expect(logs[0].stationIds).toEqual(['09_907', '09_915', '09_925']);
+    });
+
+    it('falls back to the origin and destination when the passed stations are not saved', async () => {
+      mockTravelLogRepo.findTimelineLogs.mockResolvedValueOnce([
+        savedLog('old-log', '2026-10-06T10:00:00Z', 5),
+        savedLog('bad-ids', '2026-10-06T11:00:00Z', 5, {
+          segments: [segment('09', 5, 600)],
+          stationIds: [1, 2],
+        }),
+      ]);
+
+      const { logs } = await service.getTimeline('user-1', {
+        year: 2026,
+        month: 10,
+      });
+
+      for (const log of logs) {
+        expect(log.stationIds).toEqual(['09_907', '09_925']);
+      }
+    });
+
     it('returns traveledAt in KST (+09:00)', async () => {
       mockTravelLogRepo.findTimelineLogs.mockResolvedValueOnce([
         savedLog('t2', '2026-10-06T10:00:00Z', 1),
