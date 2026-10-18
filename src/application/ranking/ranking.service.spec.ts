@@ -3,15 +3,33 @@ import { FRIEND_REPOSITORY } from '../../domain/friend/ports/IFriendRepository';
 import { RANK_SCORE_REPOSITORY } from '../../domain/ranking/ports/IRankScoreRepository';
 import { RankingService } from './ranking.service';
 
+/** 저장소가 DB에서 하는 일(비공개 제외, 본인 포함, 친구만, 자르기, 순위 세기)을 메모리에서 흉내 낸다 */
+const fakePage = (scores: any[]) => async (params: any) => {
+  const friends = params.friendIds ? new Set<string>(params.friendIds) : undefined;
+  const visible = scores.filter(
+    (item) =>
+      item.userId === params.viewerId ||
+      (item.user?.rankingVisibility !== 'PRIVATE' && (!friends || friends.has(item.userId))),
+  );
+  const mineIndex = visible.findIndex((item) => item.userId === params.viewerId);
+  return {
+    items: visible.slice(params.offset, params.offset + params.limit),
+    total: visible.length,
+    mine: mineIndex >= 0 ? { rank: mineIndex + 1, points: visible[mineIndex].totalPoints } : undefined,
+  };
+};
+
 describe('RankingService', () => {
   let service: RankingService;
   let mockRankScoreRepo: {
-    findLeaderboard: jest.Mock;
+    findVisibleRankingPage: jest.Mock;
   };
+  const setScores = (scores: unknown[]) =>
+    mockRankScoreRepo.findVisibleRankingPage.mockImplementation(fakePage(scores));
 
   beforeEach(async () => {
-    mockRankScoreRepo = {
-      findLeaderboard: jest.fn().mockResolvedValue([
+    mockRankScoreRepo = { findVisibleRankingPage: jest.fn() };
+    setScores([
         {
           userId: 'user-top',
           totalPoints: 500,
@@ -30,8 +48,7 @@ describe('RankingService', () => {
           totalDistanceKm: 9.5,
           user: { nickname: '3등유저', profileImageUrl: null },
         },
-      ]),
-    };
+    ]);
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -75,6 +92,24 @@ describe('RankingService', () => {
     expect(res.leaderboard[0].rank).toBe(3);
   });
 
+  it('asks the repository for just the page and never reads the whole leaderboard', async () => {
+    await service.getRanking('user-me', {
+      periodType: 'MONTHLY',
+      periodKey: '2026-10',
+      page: 3,
+      limit: 20,
+    });
+
+    expect(mockRankScoreRepo.findVisibleRankingPage).toHaveBeenCalledWith({
+      periodType: 'MONTHLY',
+      periodKey: '2026-10',
+      viewerId: 'user-me',
+      friendIds: undefined,
+      offset: 40,
+      limit: 20,
+    });
+  });
+
   describe('totalUsers and myPercentile', () => {
     const rankOf = (count: number) =>
       Array.from({ length: count }, (_, i) => ({
@@ -93,7 +128,7 @@ describe('RankingService', () => {
     });
 
     it('does not let floating point push an exact percentile up', async () => {
-      mockRankScoreRepo.findLeaderboard.mockResolvedValueOnce(rankOf(100));
+      setScores(rankOf(100));
 
       const res = await service.getRanking('user-12', query);
 
@@ -102,7 +137,7 @@ describe('RankingService', () => {
     });
 
     it('is top 100% for the last place and top 1% for first of many', async () => {
-      mockRankScoreRepo.findLeaderboard.mockResolvedValue(rankOf(2481));
+      setScores(rankOf(2481));
 
       expect((await service.getRanking('user-2481', query)).myPercentile).toBe(100);
       expect((await service.getRanking('user-1', query)).myPercentile).toBe(1);
@@ -117,7 +152,7 @@ describe('RankingService', () => {
     });
 
     it('reports zero users for an empty period without dividing by zero', async () => {
-      mockRankScoreRepo.findLeaderboard.mockResolvedValueOnce([]);
+      setScores([]);
 
       const res = await service.getRanking('user-me', query);
 
@@ -147,7 +182,7 @@ describe('RankingService', () => {
     });
 
     it('leaves private users out of the leaderboard and the user count', async () => {
-      mockRankScoreRepo.findLeaderboard.mockResolvedValueOnce([
+      setScores([
         entry('a', 500, 'PUBLIC'),
         entry('hidden', 400, 'PRIVATE'),
         entry('me', 300, 'PUBLIC'),
@@ -162,7 +197,7 @@ describe('RankingService', () => {
     });
 
     it('masks the nickname, image and id of anonymous users but keeps their rank and points', async () => {
-      mockRankScoreRepo.findLeaderboard.mockResolvedValueOnce([
+      setScores([
         entry('anon', 500, 'ANONYMOUS'),
         entry('me', 300, 'PUBLIC'),
       ]);
@@ -182,7 +217,7 @@ describe('RankingService', () => {
     });
 
     it('shows public users with their identity', async () => {
-      mockRankScoreRepo.findLeaderboard.mockResolvedValueOnce([entry('a', 500, 'PUBLIC'), entry('me', 300, 'PUBLIC')]);
+      setScores([entry('a', 500, 'PUBLIC'), entry('me', 300, 'PUBLIC')]);
 
       const res = await service.getRanking('me', query);
 
@@ -197,7 +232,7 @@ describe('RankingService', () => {
     });
 
     it('never masks the requesting user, even when anonymous', async () => {
-      mockRankScoreRepo.findLeaderboard.mockResolvedValueOnce([entry('me', 500, 'ANONYMOUS')]);
+      setScores([entry('me', 500, 'ANONYMOUS')]);
 
       const res = await service.getRanking('me', query);
 
@@ -205,7 +240,7 @@ describe('RankingService', () => {
     });
 
     it('still ranks a private user for themselves, counted among the visible users', async () => {
-      mockRankScoreRepo.findLeaderboard.mockResolvedValueOnce([
+      setScores([
         entry('a', 500, 'PUBLIC'),
         entry('me', 300, 'PRIVATE'),
         entry('b', 100, 'PUBLIC'),

@@ -87,9 +87,37 @@ describe('Full User Journey (Mobile App ↔ Backend E2E)', () => {
         return Promise.resolve(item);
       }),
       findMany: jest.fn().mockImplementation(() => Promise.resolve(mockLogs)),
-      count: jest.fn().mockImplementation(() => Promise.resolve(mockLogs.length)),
+      count: jest
+        .fn()
+        .mockImplementation(() => Promise.resolve(mockLogs.length)),
     },
     rankScore: {
+      // 랭킹 조회가 페이지, 순위 계산에 쓴다. 이 시험에서는 기간에 맞는 점수만 걸러 준다
+      count: jest.fn().mockImplementation((args) =>
+        Promise.resolve(
+          // 내 앞의 사용자 수(AND 조건)는 이 시험에서 나 혼자라 0이다
+          args?.where?.AND
+            ? 0
+            : mockScores.filter(
+                (s) =>
+                  (!args?.where?.periodType ||
+                    s.periodType === args.where.periodType) &&
+                  (!args?.where?.periodKey ||
+                    s.periodKey === args.where.periodKey),
+              ).length,
+        ),
+      ),
+      findFirst: jest
+        .fn()
+        .mockImplementation((args) =>
+          Promise.resolve(
+            mockScores.find(
+              (s) =>
+                s.userId === args?.where?.userId &&
+                s.periodKey === args?.where?.periodKey,
+            ) ?? null,
+          ),
+        ),
       upsert: jest.fn().mockImplementation((args) => {
         const item = {
           userId: args.create.userId,
@@ -97,7 +125,10 @@ describe('Full User Journey (Mobile App ↔ Backend E2E)', () => {
           periodKey: args.create.periodKey,
           totalPoints: args.create.totalPoints,
           totalDistanceKm: args.create.totalDistanceKm,
-          user: { nickname: mockUser.nickname, profileImageUrl: mockUser.profileImageUrl },
+          user: {
+            nickname: mockUser.nickname,
+            profileImageUrl: mockUser.profileImageUrl,
+          },
         };
         mockScores.push(item);
         return Promise.resolve(item);
@@ -107,7 +138,8 @@ describe('Full User Journey (Mobile App ↔ Backend E2E)', () => {
         return Promise.resolve(
           mockScores.filter(
             (s) =>
-              (!args.where.periodType || s.periodType === args.where.periodType) &&
+              (!args.where.periodType ||
+                s.periodType === args.where.periodType) &&
               (!args.where.periodKey || s.periodKey === args.where.periodKey),
           ),
         );
@@ -122,7 +154,6 @@ describe('Full User Journey (Mobile App ↔ Backend E2E)', () => {
           },
         ),
       ),
-      count: jest.fn().mockResolvedValue(1),
     },
     $transaction: jest
       .fn()

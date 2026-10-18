@@ -24,41 +24,34 @@ export class RankingService {
     userId: string,
     query: RankingQueryDto,
   ): Promise<RankingResponseDto> {
-    const scores = await this.rankScoreRepo.findLeaderboard(
-      query.periodType,
-      query.periodKey,
-    );
-
     const friendIds = query.friendsOnly
-      ? new Set(await this.friendRepo.findFriendIds(userId))
+      ? await this.friendRepo.findFriendIds(userId)
       : undefined;
+    const friendSet = friendIds ? new Set(friendIds) : undefined;
 
-    const visible = scores.filter(
-      (item) =>
-        item.userId === userId ||
-        (item.user?.rankingVisibility !== 'PRIVATE' &&
-          (!friendIds || friendIds.has(item.userId))),
-    );
+    const page = query.page ?? 1;
+    const limit = query.limit ?? 20;
+    const startIndex = (page - 1) * limit;
+    const { items, total, mine } =
+      await this.rankScoreRepo.findVisibleRankingPage({
+        periodType: query.periodType,
+        periodKey: query.periodKey,
+        viewerId: userId,
+        friendIds,
+        offset: startIndex,
+        limit,
+      });
 
-    let myRank = 0;
-    let myPoints = 0;
-
-    const allRanked: LeaderboardItemDto[] = visible.map((item, index) => {
-      const rank = index + 1;
+    const leaderboard: LeaderboardItemDto[] = items.map((item, index) => {
       const isMe = item.userId === userId;
-      if (isMe) {
-        myRank = rank;
-        myPoints = item.totalPoints;
-      }
-
       const base = {
-        rank,
+        rank: startIndex + index + 1,
         totalPoints: item.totalPoints,
         totalDistanceKm: Math.round(item.totalDistanceKm * 10) / 10,
         isMe,
       };
 
-      const isFriend = friendIds?.has(item.userId) ?? false;
+      const isFriend = friendSet?.has(item.userId) ?? false;
       if (!isMe && !isFriend && item.user?.rankingVisibility === 'ANONYMOUS') {
         return { ...base, nickname: ANONYMOUS_NICKNAME, isAnonymous: true };
       }
@@ -71,13 +64,11 @@ export class RankingService {
       };
     });
 
-    const page = query.page ?? 1;
-    const limit = query.limit ?? 20;
-    const startIndex = (page - 1) * limit;
-    const leaderboard = allRanked.slice(startIndex, startIndex + limit);
+    const myRank = mine?.rank ?? 0;
+    const myPoints = mine?.points ?? 0;
 
     // 부동소수점 오차로 12%가 13%로 올림되지 않도록 정수로 계산
-    const totalUsers = allRanked.length;
+    const totalUsers = total;
     const myPercentile =
       myRank > 0 ? Math.ceil((myRank * 100) / totalUsers) : undefined;
 
