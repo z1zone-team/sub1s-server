@@ -1,5 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import {
+  ADDRESS_PLACE_CATEGORIES,
   ExternalPlace,
   IPlaceSearchProvider,
   PLACE_SEARCH_PROVIDER,
@@ -85,7 +86,7 @@ export class PlaceService {
     const rawQuery = query.q.trim();
 
     const stations = this.searchStations(graph, rawQuery, limit, query);
-    const places = await this.searchPlaces(graph, rawQuery, limit);
+    const places = await this.searchPlaces(graph, rawQuery, limit, query);
 
     return { items: [...stations, ...places] };
   }
@@ -170,6 +171,7 @@ export class PlaceService {
     graph: SubwayGraph,
     rawQuery: string,
     limit: number,
+    origin: Origin,
   ): Promise<PlaceSearchItemDto[]> {
     if (this.normalize(rawQuery).length < MIN_PLACE_QUERY_LENGTH) return [];
 
@@ -179,7 +181,7 @@ export class PlaceService {
     }
 
     const external = await this.placeProvider.search(rawQuery, limit);
-    return this.withoutDuplicates(external)
+    return this.addressesNearestFirst(this.withoutDuplicates(external), origin)
       .filter((place) => !this.isStationPoi(place, stationNames))
       .flatMap((place) => {
         const nearest = this.walkingService.findNearestStations(
@@ -277,6 +279,24 @@ export class PlaceService {
     if (name.startsWith(keyword)) return 1;
     if (name.includes(keyword)) return 2;
     return undefined;
+  }
+
+  // 도시 없이 입력한 주소는 여러 도시에서 나오므로 주소 결과만 현재 위치에서 가까운 순으로 둔다. 장소 이름 결과는 외부 관련도 순서를 지킨다
+  private addressesNearestFirst(
+    places: ExternalPlace[],
+    origin: Origin,
+  ): ExternalPlace[] {
+    if (origin.lat === undefined || origin.lng === undefined) return places;
+    const { lat, lng } = origin;
+    const isAddress = (place: ExternalPlace) =>
+      place.category !== undefined &&
+      ADDRESS_PLACE_CATEGORIES.includes(place.category);
+    const distance = (place: ExternalPlace) =>
+      this.walkingService.haversineDistanceKm(lat, lng, place.lat, place.lng);
+    return [
+      ...places.filter(isAddress).sort((a, b) => distance(a) - distance(b)),
+      ...places.filter((place) => !isAddress(place)),
+    ];
   }
 
   private distanceFrom(origin: Origin, cluster: StationCluster): number {

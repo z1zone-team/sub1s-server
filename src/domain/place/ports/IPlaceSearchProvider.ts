@@ -1,5 +1,13 @@
 export const PLACE_SEARCH_PROVIDER = Symbol('PLACE_SEARCH_PROVIDER');
 
+export const ROAD_ADDRESS_CATEGORY = '도로명주소';
+export const PARCEL_ADDRESS_CATEGORY = '지번주소';
+// 주소로 찾은 결과의 `category`. 같은 주소가 여러 도시에 있을 수 있어 현재 위치에서 가까운 순으로 보여 준다
+export const ADDRESS_PLACE_CATEGORIES: readonly string[] = [
+  ROAD_ADDRESS_CATEGORY,
+  PARCEL_ADDRESS_CATEGORY,
+];
+
 export interface ExternalPlace {
   name: string;
   address: string;
