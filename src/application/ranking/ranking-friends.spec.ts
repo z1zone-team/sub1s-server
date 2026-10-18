@@ -6,6 +6,22 @@ import { IRankScoreRepository } from '../../domain/ranking/ports/IRankScoreRepos
 import { RankingQueryDto } from './dto';
 import { RankingService } from './ranking.service';
 
+/** 저장소가 DB에서 하는 일(비공개 제외, 본인 포함, 친구만, 자르기, 순위 세기)을 메모리에서 흉내 낸다 */
+const fakePage = (scores: any[]) => async (params: any) => {
+  const friends = params.friendIds ? new Set<string>(params.friendIds) : undefined;
+  const visible = scores.filter(
+    (item) =>
+      item.userId === params.viewerId ||
+      (item.user?.rankingVisibility !== 'PRIVATE' && (!friends || friends.has(item.userId))),
+  );
+  const mineIndex = visible.findIndex((item) => item.userId === params.viewerId);
+  return {
+    items: visible.slice(params.offset, params.offset + params.limit),
+    total: visible.length,
+    mine: mineIndex >= 0 ? { rank: mineIndex + 1, points: visible[mineIndex].totalPoints } : undefined,
+  };
+};
+
 describe('RankingService friendsOnly', () => {
   const score = (userId: string, totalPoints: number, rankingVisibility = 'PUBLIC') => ({
     userId,
@@ -24,14 +40,14 @@ describe('RankingService friendsOnly', () => {
 
   const build = (friendIds: string[]) => {
     const rankRepo = {
-      findLeaderboard: jest.fn().mockResolvedValue([
+      findVisibleRankingPage: jest.fn().mockImplementation(fakePage([
         score('stranger', 500),
         score('friend-a', 400),
         score('me', 300),
         score('friend-anon', 200, 'ANONYMOUS'),
         score('friend-private', 150, 'PRIVATE'),
         score('friend-b', 100),
-      ]),
+      ])),
     };
     const friendRepo = { findFriendIds: jest.fn().mockResolvedValue(friendIds) };
     const service = new RankingService(
