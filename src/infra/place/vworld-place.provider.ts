@@ -4,7 +4,9 @@ import { kstDayKey } from '../../common/utils/kst';
 import {
   ExternalPlace,
   IPlaceSearchProvider,
+  PARCEL_ADDRESS_CATEGORY,
   ReverseGeocodeResult,
+  ROAD_ADDRESS_CATEGORY,
 } from '../../domain/place/ports/IPlaceSearchProvider';
 import { classifyAddressQuery } from './address-query';
 
@@ -14,8 +16,6 @@ const DEFAULT_DAILY_LIMIT = 10_000;
 // 같은 주소가 동(A동, B동)마다 따로 오므로 합친 뒤에도 limit개가 남도록 넉넉히 받는다
 const ADDRESS_OVERFETCH = 3;
 const ADDRESS_MAX_SIZE = 50;
-const ROAD_ADDRESS_CATEGORY = '도로명주소';
-const PARCEL_ADDRESS_CATEGORY = '지번주소';
 
 interface VWorldItem {
   title?: string;

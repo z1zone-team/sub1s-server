@@ -372,6 +372,69 @@ describe('PlaceService', () => {
       expect(items.map((item) => item.type)).toEqual(['STATION', 'STATION']);
     });
 
+    describe('address results', () => {
+      const address = (name: string, lat: number, lng: number, category = '도로명주소') => ({
+        name,
+        address: '',
+        category,
+        lat,
+        lng,
+      });
+      // 같은 도로명과 번지가 서울역, 양평, 강남 근처에 하나씩 있고 외부 검색은 이 순서로 돌려준다
+      const sameAddressInThreeCities = [
+        address('서울역 근처 문화로 67-1', 37.5559, 126.9723),
+        address('양평 근처 문화로 67-1', 37.4925, 127.4917),
+        address('강남 근처 문화로 67-1', 37.4979, 127.0276),
+      ];
+      const namesOf = (items: { name: string }[]) => items.map((item) => item.name);
+
+      it('orders address results by distance from the given location', async () => {
+        provider.search.mockResolvedValue(sameAddressInThreeCities);
+
+        const { items } = await service.search(query({ q: '문화로 67-1', lat: 37.4979, lng: 127.0276 }));
+
+        expect(namesOf(items)).toEqual([
+          '강남 근처 문화로 67-1',
+          '서울역 근처 문화로 67-1',
+          '양평 근처 문화로 67-1',
+        ]);
+      });
+
+      it('keeps the external order when the location is unknown', async () => {
+        provider.search.mockResolvedValue(sameAddressInThreeCities);
+
+        const { items } = await service.search(query({ q: '문화로 67-1' }));
+
+        expect(namesOf(items)).toEqual([
+          '서울역 근처 문화로 67-1',
+          '양평 근처 문화로 67-1',
+          '강남 근처 문화로 67-1',
+        ]);
+      });
+
+      it('sorts parcel addresses by distance too', async () => {
+        provider.search.mockResolvedValue([
+          address('양평동 1', 37.4925, 127.4917, '지번주소'),
+          address('강남동 1', 37.4979, 127.0276, '지번주소'),
+        ]);
+
+        const { items } = await service.search(query({ q: '양평동 1', lat: 37.4979, lng: 127.0276 }));
+
+        expect(namesOf(items)).toEqual(['강남동 1', '양평동 1']);
+      });
+
+      it('does not reorder place-name results by distance', async () => {
+        provider.search.mockResolvedValue([
+          address('양평 카페', 37.4925, 127.4917, '음식점'),
+          address('강남 카페', 37.4979, 127.0276, '음식점'),
+        ]);
+
+        const { items } = await service.search(query({ q: '카페', lat: 37.4979, lng: 127.0276 }));
+
+        expect(namesOf(items)).toEqual(['양평 카페', '강남 카페']);
+      });
+    });
+
     it('lists stations before places', async () => {
       provider.search.mockResolvedValue([
         { name: '강남 세브란스', address: '', lat: 37.4979, lng: 127.0276 },
