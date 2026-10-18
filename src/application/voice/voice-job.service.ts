@@ -32,6 +32,10 @@ export const DEFAULT_VOICE_QUEUE_MAX_WAITING = 10;
 /** 사용자당 진행 중 작업 표시의 유효 시간. 작업이 끝나면 바로 지운다 */
 const ACTIVE_GUARD_TTL_SEC = 120;
 
+/** 대기 중인 음성 작업 수를 세는 자리. 작업이 처리를 시작하면 돌려준다 */
+export const VOICE_WAITING_SLOTS_KEY = 'voice:waiting-slots';
+const WAITING_SLOTS_TTL_SEC = 600;
+
 export const activeVoiceJobKey = (userId: string): string =>
   `voice:active:${userId}`;
 
@@ -95,8 +99,15 @@ export class VoiceJobService {
       );
     }
 
+    let slotHeld = false;
     try {
-      if ((await this.queue.waitingCount()) >= this.maxWaiting) {
+      // 대기 수를 읽고 나서 넣으면 동시 요청이 모두 통과하므로 자리를 한 번에 세고 잡는다
+      slotHeld = await this.valkey.acquireSlot(
+        VOICE_WAITING_SLOTS_KEY,
+        this.maxWaiting,
+        WAITING_SLOTS_TTL_SEC,
+      );
+      if (!slotHeld) {
         throw new BusinessException(
           'VOICE_QUEUE_FULL',
           '지금 음성 요청이 많아요. 잠시 후 다시 시도해 주세요.',
@@ -119,6 +130,11 @@ export class VoiceJobService {
     } catch (error: unknown) {
       // 큐에 넣지 못했으면 사용자가 바로 다시 시도할 수 있게 표시를 지운다
       await this.valkey.delete(guardKey).catch(() => undefined);
+      if (slotHeld) {
+        await this.valkey
+          .releaseSlot(VOICE_WAITING_SLOTS_KEY)
+          .catch(() => undefined);
+      }
       if (error instanceof BusinessException) throw error;
       this.logQueueError('enqueue', error);
       throw this.queueUnavailable();

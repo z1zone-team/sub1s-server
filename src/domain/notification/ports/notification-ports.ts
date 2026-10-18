@@ -39,8 +39,13 @@ export interface INotificationSettingsRepository {
 }
 
 export interface ISettlementLogRepository {
-  /** 이미 기록이 있는 사용자는 빼고 새로 기록한 사용자만 돌려준다. 기록은 보내기 전에 남긴다 */
+  /**
+   * 이번에 보낼 사용자를 정해 PROCESSING으로 기록하고 돌려준다. 기록은 보내기 전에 남긴다.
+   * 기록이 없는 사용자, 실패한 사용자, 오래 PROCESSING에 멈춘 사용자(프로세스가 중간에 죽은 경우)가 대상이고
+   * 이미 보낸 사용자와 시도 횟수를 다 쓴 사용자는 뺀다
+   */
   claim(userIds: string[], periodKey: string): Promise<string[]>;
+  markSent(userIds: string[], periodKey: string): Promise<void>;
   markFailed(userIds: string[], periodKey: string): Promise<void>;
 }
 

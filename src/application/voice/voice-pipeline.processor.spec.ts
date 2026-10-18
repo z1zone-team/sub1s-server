@@ -9,7 +9,10 @@ import {
   VoicePipelineQueue,
 } from '../../infra/queue/voice-pipeline.queue';
 import { VoiceRouteRecommendResponseDto } from './dto';
-import { activeVoiceJobKey } from './voice-job.service';
+import {
+  activeVoiceJobKey,
+  VOICE_WAITING_SLOTS_KEY,
+} from './voice-job.service';
 import { VoicePipelineProcessor } from './voice-pipeline.processor';
 import { VoiceResultNotifier } from './voice-result.notifier';
 import { VoiceService } from './voice.service';
@@ -32,7 +35,7 @@ describe('VoicePipelineProcessor', () => {
   let sttQueue: { transcribe: jest.Mock };
   let voiceService: { recommendFromTranscript: jest.Mock };
   let notifier: { sendResult: jest.Mock; sendFailed: jest.Mock };
-  let valkey: { delete: jest.Mock };
+  let valkey: { delete: jest.Mock; releaseSlot: jest.Mock };
 
   const jobWith = (
     overrides: Partial<VoiceJobData> = {},
@@ -74,7 +77,10 @@ describe('VoicePipelineProcessor', () => {
       recommendFromTranscript: jest.fn().mockResolvedValue(RECOMMENDATION),
     };
     notifier = { sendResult: jest.fn(), sendFailed: jest.fn() };
-    valkey = { delete: jest.fn().mockResolvedValue(undefined) };
+    valkey = {
+      delete: jest.fn().mockResolvedValue(undefined),
+      releaseSlot: jest.fn().mockResolvedValue(undefined),
+    };
   });
 
   describe('onModuleInit', () => {
@@ -180,6 +186,23 @@ describe('VoicePipelineProcessor', () => {
       expect(job.updateData).toHaveBeenCalledWith(
         expect.objectContaining({ audioBase64: '', userId: 'user-1' }),
       );
+    });
+
+    it('전사가 실패해도 큐에서 원본 오디오를 비운다', async () => {
+      sttQueue.transcribe.mockRejectedValue(new Error('stt down'));
+      const job = jobWith();
+
+      await expect(make().process(job)).resolves.toMatchObject({ ok: false });
+
+      expect(job.updateData).toHaveBeenCalledWith(
+        expect.objectContaining({ audioBase64: '' }),
+      );
+    });
+
+    it('처리를 시작하면 대기 자리를 돌려준다', async () => {
+      await make().process(jobWith());
+
+      expect(valkey.releaseSlot).toHaveBeenCalledWith(VOICE_WAITING_SLOTS_KEY);
     });
 
     it('끝나면 진행 중 표시를 지운다', async () => {

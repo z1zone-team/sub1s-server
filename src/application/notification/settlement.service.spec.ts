@@ -50,6 +50,7 @@ describe('SettlementService', () => {
     };
     log = {
       claim: jest.fn().mockImplementation(async (ids: string[]) => ids),
+      markSent: jest.fn().mockResolvedValue(undefined),
       markFailed: jest.fn().mockResolvedValue(undefined),
     };
     sender = {
@@ -168,6 +169,7 @@ describe('SettlementService', () => {
 
       expect(report).toMatchObject({ delivered: 1, failed: 1 });
       expect(log.markFailed).toHaveBeenCalledWith(['b'], '2026-09');
+      expect(log.markSent).toHaveBeenCalledWith(['a'], '2026-09');
     });
 
     it('removes tokens the device has unregistered', async () => {
@@ -191,6 +193,7 @@ describe('SettlementService', () => {
 
       expect(report).toMatchObject({ delivered: 0, failed: 2 });
       expect(log.markFailed).toHaveBeenCalledWith(['a', 'b'], '2026-09');
+      expect(log.markSent).toHaveBeenCalledWith([], '2026-09');
       expect(tokens.deleteTokens).toHaveBeenCalledWith([]);
     });
   });

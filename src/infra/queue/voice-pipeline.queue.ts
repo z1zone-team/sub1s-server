@@ -21,6 +21,8 @@ export type VoicePipelineCompleted = (
 const DEFAULT_QUEUE = 'voice-route';
 const DEFAULT_CONCURRENCY = 2;
 const DEFAULT_RETENTION_SEC = 600;
+/** 보관 기간 안에서도 완료, 실패한 작업을 이 개수까지만 남긴다 */
+const RETENTION_COUNT = 200;
 /** 작업 하나가 길어도 BullMQ가 멈춘 작업으로 오해하지 않도록 잠금을 넉넉히 잡는다 */
 const LOCK_DURATION_MS = 60000;
 
@@ -64,8 +66,8 @@ export class VoicePipelineQueue implements OnModuleDestroy {
     await this.ensureQueue().add('voice-route', data, {
       jobId,
       attempts: 1,
-      removeOnComplete: { age: this.retentionSec },
-      removeOnFail: { age: this.retentionSec },
+      removeOnComplete: { age: this.retentionSec, count: RETENTION_COUNT },
+      removeOnFail: { age: this.retentionSec, count: RETENTION_COUNT },
     });
     return jobId;
   }
