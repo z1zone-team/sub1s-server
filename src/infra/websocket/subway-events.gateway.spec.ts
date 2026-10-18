@@ -25,6 +25,22 @@ describe('SubwayEventsGateway', () => {
         lng: 127.0276,
         lineSeq: 1,
       },
+      {
+        id: '02_221',
+        lineId: '02',
+        stationName: '역삼',
+        lat: 37.5007,
+        lng: 127.0365,
+        lineSeq: 2,
+      },
+      {
+        id: '09_925',
+        lineId: '09',
+        stationName: '신논현',
+        lat: 37.5045,
+        lng: 127.0249,
+        lineSeq: 1,
+      },
     ],
     edges: [],
     transfers: [],
@@ -230,12 +246,13 @@ describe('SubwayEventsGateway', () => {
   });
 
   describe('report_location', () => {
-    it('updates active room station and returns acknowledgment', async () => {
+    it('acknowledges the report but does not move the shared room station', async () => {
       const client = createMockSocket('client-1');
 
       await gateway.handleJoinTrain(client as unknown as Socket, {
         lineId: '02',
         trainId: '2145',
+        stationId: '02_221',
       });
 
       const response = gateway.handleReportLocation(
@@ -248,8 +265,57 @@ describe('SubwayEventsGateway', () => {
 
       expect(response.event).toBe('location_reported');
       expect(response.status).toBe('OK');
-      const room = gateway.getActiveRoom('train:02:2145');
-      expect(room?.stationId).toBe('02_222');
+      expect(gateway.getActiveRoom('train:02:2145')?.stationId).toBe('02_221');
+    });
+  });
+
+  describe('join_train limits', () => {
+    const join = (client: unknown, payload: Record<string, string>) =>
+      gateway.handleJoinTrain(client as Socket, payload as never);
+
+    it('keeps the station the room was created with when others join with another one', async () => {
+      await join(createMockSocket('a'), {
+        lineId: '02',
+        trainId: '1',
+        stationId: '02_221',
+      });
+      await join(createMockSocket('b'), {
+        lineId: '02',
+        trainId: '1',
+        stationId: '02_222',
+      });
+
+      expect(gateway.getActiveRoom('train:02:1')?.stationId).toBe('02_221');
+    });
+
+    it('rejects a line that does not exist, a station of another line and odd ids', async () => {
+      const client = createMockSocket('a');
+
+      await expect(
+        join(client, { lineId: '99', trainId: '1' }),
+      ).rejects.toThrow('unknown line');
+      await expect(
+        join(client, { lineId: '02', trainId: '1', stationId: '09_925' }),
+      ).rejects.toThrow('not a station of the line');
+      await expect(
+        join(client, { lineId: '02', trainId: 'x'.repeat(65) }),
+      ).rejects.toThrow('invalid');
+      await expect(
+        join(client, { lineId: '02', trainId: 'a b' }),
+      ).rejects.toThrow('invalid');
+    });
+
+    it('limits the rooms one connection can hold, but lets it rejoin one it already has', async () => {
+      const client = createMockSocket('a');
+      for (let i = 1; i <= 5; i += 1)
+        await join(client, { lineId: '02', trainId: String(i) });
+
+      await expect(
+        join(client, { lineId: '02', trainId: '6' }),
+      ).rejects.toThrow('too many train subscriptions');
+      await expect(
+        join(client, { lineId: '02', trainId: '3' }),
+      ).resolves.toBeDefined();
     });
   });
 
@@ -359,7 +425,10 @@ describe('SubwayEventsGateway', () => {
     });
 
     it('sends the anonymous ranking_changed signal to authenticated sockets only, without user data', () => {
-      gateway.broadcastRankingChanged({ periodType: 'MONTHLY', periodKey: '2026-10' });
+      gateway.broadcastRankingChanged({
+        periodType: 'MONTHLY',
+        periodKey: '2026-10',
+      });
 
       expect(mockServer.to).toHaveBeenCalledWith('authenticated');
       expect(mockEmitToRoom).toHaveBeenCalledWith('ranking_changed', {
@@ -371,10 +440,7 @@ describe('SubwayEventsGateway', () => {
   });
 
   describe('Handshake authentication', () => {
-    type Middleware = (
-      socket: unknown,
-      next: (error?: Error) => void,
-    ) => void;
+    type Middleware = (socket: unknown, next: (error?: Error) => void) => void;
 
     const setup = () => {
       let middleware: Middleware | undefined;
@@ -389,7 +455,10 @@ describe('SubwayEventsGateway', () => {
     const handshake = (
       auth: Record<string, unknown> = {},
       headers: Record<string, string> = {},
-    ) => ({ handshake: { auth, headers }, data: {} as Record<string, unknown> });
+    ) => ({
+      handshake: { auth, headers },
+      data: {} as Record<string, unknown>,
+    });
 
     const run = (middleware: Middleware, socket: unknown) =>
       new Promise<Error | undefined>((resolve) => middleware(socket, resolve));
@@ -436,11 +505,16 @@ describe('SubwayEventsGateway', () => {
 
     it('puts an authenticated socket into its user room and the authenticated room', () => {
       const client = createMockSocket('sock-1');
-      (client as unknown as { data: unknown }).data = { user: { id: 'user-1' } };
+      (client as unknown as { data: unknown }).data = {
+        user: { id: 'user-1' },
+      };
 
       gateway.handleConnection(client as unknown as Socket);
 
-      expect(client.join).toHaveBeenCalledWith(['user:user-1', 'authenticated']);
+      expect(client.join).toHaveBeenCalledWith([
+        'user:user-1',
+        'authenticated',
+      ]);
     });
 
     it('does not put a public socket into any personal room', () => {
