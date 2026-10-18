@@ -985,6 +985,76 @@ describe('TravelLogService', () => {
       });
     });
 
+    describe('links', () => {
+      // 2호선 A, B, C와 지선 D(번호는 B와 C 사이), 5호선 X, Y
+      const twoLines = new SubwayGraph({
+        stations: [
+          { id: '02_A', lineId: '02', stationName: 'A', lat: 37.5, lng: 127.01, lineSeq: 1 },
+          { id: '02_B', lineId: '02', stationName: 'B', lat: 37.5, lng: 127.02, lineSeq: 2 },
+          { id: '02_D', lineId: '02', stationName: 'D', lat: 37.5, lng: 127.03, lineSeq: 3 },
+          { id: '02_C', lineId: '02', stationName: 'C', lat: 37.5, lng: 127.04, lineSeq: 4 },
+          { id: '05_X', lineId: '05', stationName: 'X', lat: 37.6, lng: 127.04, lineSeq: 1 },
+          { id: '05_Y', lineId: '05', stationName: 'Y', lat: 37.6, lng: 127.05, lineSeq: 2 },
+        ],
+        edges: [],
+        transfers: [],
+      });
+      const log = (id: string, payload: unknown) => {
+        if (payload !== undefined) payloads[id] = payload;
+        return {
+          originStationId: '02_A',
+          destStationId: '05_Y',
+          encryptedRoutePayload: payload === undefined ? null : id,
+          iv: payload === undefined ? null : 'iv',
+          authTag: payload === undefined ? null : 'tag',
+          wrappedDek: payload === undefined ? null : 'dek',
+        };
+      };
+      const linksOf = async (lineId: string) => {
+        const res = await service.getLineMap('user-1', { period: 'ALL' });
+        return res.lines.find((l) => l.lineId === lineId)?.links ?? [];
+      };
+
+      it('links the stations a trip passed in order, skipping the branch station it did not pass', async () => {
+        mockGraphService.getGraph.mockReturnValue(twoLines);
+        mockTravelLogRepo.findLineMapLogs.mockResolvedValueOnce([
+          log('l1', { stationIds: ['02_A', '02_B', '02_C'] }),
+        ]);
+
+        expect(await linksOf('02')).toEqual([
+          { fromStationId: '02_A', toStationId: '02_B' },
+          { fromStationId: '02_B', toStationId: '02_C' },
+        ]);
+      });
+
+      it('leaves out the step between two lines (transfer)', async () => {
+        mockGraphService.getGraph.mockReturnValue(twoLines);
+        mockTravelLogRepo.findLineMapLogs.mockResolvedValueOnce([
+          log('l2', { stationIds: ['02_B', '02_C', '05_X', '05_Y'] }),
+        ]);
+
+        expect(await linksOf('02')).toEqual([{ fromStationId: '02_B', toStationId: '02_C' }]);
+        expect(await linksOf('05')).toEqual([]);
+      });
+
+      it('merges the same pair even when trips went the opposite way', async () => {
+        mockGraphService.getGraph.mockReturnValue(twoLines);
+        mockTravelLogRepo.findLineMapLogs.mockResolvedValueOnce([
+          log('l3', { stationIds: ['02_A', '02_B'] }),
+          log('l4', { stationIds: ['02_B', '02_A'] }),
+        ]);
+
+        expect(await linksOf('02')).toHaveLength(1);
+      });
+
+      it('has no links for a trip whose route cannot be read', async () => {
+        mockGraphService.getGraph.mockReturnValue(twoLines);
+        mockTravelLogRepo.findLineMapLogs.mockResolvedValueOnce([log('l5', undefined)]);
+
+        expect(await linksOf('02')).toEqual([]);
+      });
+    });
+
     it('returns subway lines with visited status for stations', async () => {
       mockTravelLogRepo.findLineMapLogs.mockResolvedValueOnce([
         {
