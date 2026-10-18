@@ -231,6 +231,10 @@ export class TravelLogService {
       throw error;
     }
     const { monthlyScore, allScore, createdLog } = saved;
+    // 완료한 주행의 세션은 더 쓸 일이 없으니 지운다
+    if (verifiedSessionId) {
+      await this.trackingRepo?.delete(verifiedSessionId).catch(() => false);
+    }
 
     try {
       this.rankingNotifier?.sendScoreUpdate(userId, {

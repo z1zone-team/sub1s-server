@@ -212,6 +212,85 @@ describe('TrackingService', () => {
     });
   });
 
+  describe('route sent without a server issued id', () => {
+    const start = (routeOption: unknown, stationIds?: string[]) =>
+      service.startTracking(USER_ID, {
+        routeOption: routeOption as never,
+        stationIds,
+      });
+    const segment = (fromStationId: string, toStationId: string) => ({
+      ...mockRouteOption.segments[0],
+      fromStationId,
+      toStationId,
+    });
+
+    it('rejects a segment with a station that is not in the graph', async () => {
+      await expect(
+        start({ ...mockRouteOption, segments: [segment('02_222', '99_999')] }),
+      ).rejects.toMatchObject({ status: 400 });
+    });
+
+    it('rejects segments that do not continue each other', async () => {
+      await expect(
+        start({
+          ...mockRouteOption,
+          segments: [segment('02_222', '02_221'), segment('02_223', '02_220')],
+        }),
+      ).rejects.toMatchObject({ status: 400 });
+    });
+
+    it('accepts a transfer where the next segment starts at the same stop under another station id', async () => {
+      const result = await start({
+        ...mockRouteOption,
+        segments: [segment('02_222', '02_221'), segment('02_221', '02_220')],
+      });
+
+      expect(result.sessionId).toBeDefined();
+    });
+
+    it('rejects a broken duration and malformed segments instead of failing with a server error', async () => {
+      await expect(
+        start({ ...mockRouteOption, totalDurationSec: -5 }),
+      ).rejects.toMatchObject({ status: 400 });
+      await expect(
+        start({ ...mockRouteOption, segments: [null] }),
+      ).rejects.toMatchObject({ status: 400 });
+    });
+
+    it('rejects station ids that do not match the segments', async () => {
+      await expect(
+        start(mockRouteOption, ['02_223', '02_220']),
+      ).rejects.toMatchObject({ status: 400 });
+    });
+  });
+
+  describe('remaining duration', () => {
+    it('shrinks with the stations that are left', async () => {
+      const session = await service.startTracking(USER_ID, {
+        routeOption: mockRouteOption,
+      });
+      expect(session.remainingDurationSec).toBe(
+        mockRouteOption.totalDurationSec,
+      );
+
+      const mid = await service.reportLocation(
+        USER_ID,
+        session.sessionId,
+        '02_221',
+      );
+      expect(mid.remainingDurationSec).toBe(
+        Math.round(mockRouteOption.totalDurationSec / 2),
+      );
+
+      const last = await service.reportLocation(
+        USER_ID,
+        session.sessionId,
+        '02_220',
+      );
+      expect(last.remainingDurationSec).toBe(0);
+    });
+  });
+
   describe('checkDeviate', () => {
     it('returns updated session when passenger is advancing on route', async () => {
       const session = await service.startTracking(USER_ID, {
@@ -305,7 +384,11 @@ describe('TrackingService', () => {
         routeOption: mockRouteOption,
       });
 
-      const updated = await service.reportLocation(USER_ID, session.sessionId, '02_221');
+      const updated = await service.reportLocation(
+        USER_ID,
+        session.sessionId,
+        '02_221',
+      );
       expect(updated.currentStationId).toBe('02_221');
 
       const fetched = await service.getSession(USER_ID, session.sessionId);
@@ -458,7 +541,10 @@ describe('TrackingService', () => {
         ...FAR_FROM_ANY_STATION,
       });
 
-      expect(result).toMatchObject({ currentStationId: '02_222', isOffRoute: false });
+      expect(result).toMatchObject({
+        currentStationId: '02_222',
+        isOffRoute: false,
+      });
       expect(mockRouteService.search).not.toHaveBeenCalled();
     });
 
@@ -470,7 +556,10 @@ describe('TrackingService', () => {
         ...NEAR_GYODAE,
       });
 
-      expect(result).toMatchObject({ currentStationId: '02_222', isOffRoute: false });
+      expect(result).toMatchObject({
+        currentStationId: '02_222',
+        isOffRoute: false,
+      });
       expect(mockGateway.sendOffRouteAlert).not.toHaveBeenCalled();
     });
 
@@ -500,7 +589,10 @@ describe('TrackingService', () => {
       const off = { sessionId: session.sessionId, ...NEAR_GYODAE };
 
       await service.reportPosition(USER_ID, off);
-      await service.reportPosition(USER_ID, { sessionId: session.sessionId, ...NEAR_YEOKSAM });
+      await service.reportPosition(USER_ID, {
+        sessionId: session.sessionId,
+        ...NEAR_YEOKSAM,
+      });
       const result = await service.reportPosition(USER_ID, off);
 
       expect(result).toMatchObject({ isOffRoute: false });
@@ -509,7 +601,10 @@ describe('TrackingService', () => {
 
     it('treats an already passed route station as on route', async () => {
       const session = await start();
-      await service.reportPosition(USER_ID, { sessionId: session.sessionId, ...NEAR_YEOKSAM });
+      await service.reportPosition(USER_ID, {
+        sessionId: session.sessionId,
+        ...NEAR_YEOKSAM,
+      });
 
       const result = await service.reportPosition(USER_ID, {
         sessionId: session.sessionId,
@@ -517,14 +612,20 @@ describe('TrackingService', () => {
         lng: 127.0276,
       });
 
-      expect(result).toMatchObject({ currentStationId: '02_221', isOffRoute: false });
+      expect(result).toMatchObject({
+        currentStationId: '02_221',
+        isOffRoute: false,
+      });
     });
 
     it('hides sessions of other users', async () => {
       const session = await start();
 
       await expect(
-        service.reportPosition(OTHER_USER_ID, { sessionId: session.sessionId, ...NEAR_YEOKSAM }),
+        service.reportPosition(OTHER_USER_ID, {
+          sessionId: session.sessionId,
+          ...NEAR_YEOKSAM,
+        }),
       ).rejects.toMatchObject({ errorCode: 'SESSION_NOT_FOUND' });
     });
   });
