@@ -56,6 +56,12 @@ export interface VoiceFailedPayload {
 
 const AUTHENTICATED_ROOM = 'authenticated';
 
+/** 한 연결이 동시에 구독할 수 있는 열차 방 수 */
+const MAX_ROOMS_PER_CLIENT = 5;
+/** 서버 전체의 열차 방 수. 방마다 30초마다 혼잡도를 계산하므로 넘으면 새 방을 받지 않는다 */
+const MAX_TRAIN_ROOMS = 500;
+const ID_PATTERN = /^[A-Za-z0-9_.:-]{1,64}$/;
+
 export interface EtaTickPayload {
   sessionId: string;
   etaTimestamp: string;
@@ -157,14 +163,26 @@ export class SubwayEventsGateway
     if (!data?.lineId || !data?.trainId) {
       throw new Error('lineId and trainId are required');
     }
+    this.assertValidJoin(data);
 
     const roomKey = SubwayEventsGateway.getTrainRoomKey(
       data.lineId,
       data.trainId,
     );
+    const existing = this.trainRooms.get(roomKey);
+    const subscribed = this.clientSubscriptions.get(client.id);
+    if (!subscribed?.has(roomKey)) {
+      if ((subscribed?.size ?? 0) >= MAX_ROOMS_PER_CLIENT) {
+        throw new Error('too many train subscriptions');
+      }
+      if (!existing && this.trainRooms.size >= MAX_TRAIN_ROOMS) {
+        throw new Error('too many active train rooms');
+      }
+    }
     await client.join(roomKey);
 
-    let room = this.trainRooms.get(roomKey);
+    // 기준 역은 방을 만들 때만 정한다. 나중에 들어오는 연결이 같은 방의 역을 바꾸지 못한다
+    let room = existing;
     if (!room) {
       room = {
         lineId: data.lineId,
@@ -173,8 +191,6 @@ export class SubwayEventsGateway
         clientIds: new Set<string>(),
       };
       this.trainRooms.set(roomKey, room);
-    } else if (data.stationId) {
-      room.stationId = data.stationId;
     }
     room.clientIds.add(client.id);
 
@@ -245,17 +261,7 @@ export class SubwayEventsGateway
       `Location reported for session ${data?.sessionId}: station ${data?.currentStationId}`,
     );
 
-    // Update stationId for any room this client is currently subscribed to
-    const clientRooms = this.clientSubscriptions.get(client.id);
-    if (clientRooms && data?.currentStationId) {
-      for (const roomKey of clientRooms) {
-        const room = this.trainRooms.get(roomKey);
-        if (room) {
-          room.stationId = data.currentStationId;
-        }
-      }
-    }
-
+    // 클라이언트가 신고한 위치는 여러 사용자가 함께 보는 열차 방의 상태를 바꾸지 않는다
     return {
       event: 'location_reported',
       status: 'OK',
@@ -380,6 +386,22 @@ export class SubwayEventsGateway
     const match =
       typeof header === 'string' ? header.match(/^Bearer\s+(.+)$/i) : null;
     return match?.[1]?.trim() || undefined;
+  }
+
+  private assertValidJoin(data: JoinTrainDto): void {
+    if (!ID_PATTERN.test(data.lineId) || !ID_PATTERN.test(data.trainId)) {
+      throw new Error('invalid lineId or trainId');
+    }
+    const graph = this.graphService.getGraph();
+    if (!this.findDefaultStationForLine(data.lineId)) {
+      throw new Error(`unknown line: ${data.lineId}`);
+    }
+    if (data.stationId !== undefined) {
+      const index = graph.indexOf(data.stationId);
+      if (index === undefined || graph.station(index).lineId !== data.lineId) {
+        throw new Error('stationId is not a station of the line');
+      }
+    }
   }
 
   private removeClientFromRoom(clientId: string, roomKey: string): void {
