@@ -36,6 +36,8 @@ import { OffRouteNotifier } from './off-route.notifier';
 import { SmartAlertNotifier } from './smart-alert.notifier';
 
 /** 좌표가 이 거리 안의 역 근처일 때만 위치를 판단한다 */
+/** 서버가 발급한 routeId 없이 올 수 있는 경로의 구간 수 상한 */
+const MAX_CLIENT_SEGMENTS = 50;
 const POSITION_RADIUS_KM = 0.3;
 
 /** 경로에 없는 역이 이만큼 연달아 감지되면 이탈로 본다. 한 번은 승강장 이동이나 지상 보행일 수 있다 */
@@ -87,6 +89,7 @@ export class TrackingService {
     }
     const tracked = selectedRoute ?? dto.routeOption;
     const graph = this.graphService.getGraph();
+    if (!selectedRoute) this.assertClientRouteIsValid(graph, dto);
     const allStationIds = selectedRoute?.stationIds?.length
       ? selectedRoute.stationIds
       : dto.stationIds && dto.stationIds.length > 0
@@ -236,6 +239,67 @@ export class TrackingService {
     return this.toSessionDto(session, graph);
   }
 
+  private isSameStop(graph: SubwayGraph, a: string, b: string): boolean {
+    if (a === b) return true;
+    const ai = graph.indexOf(a);
+    const bi = graph.indexOf(b);
+    return (
+      ai !== undefined &&
+      bi !== undefined &&
+      graph.station(ai).stationName === graph.station(bi).stationName
+    );
+  }
+
+  // 서버가 발급한 routeId 없이 온 경로는 그래프에 있는 역으로 끊김 없이 이어진 경로만 받는다
+  private assertClientRouteIsValid(
+    graph: SubwayGraph,
+    dto: StartTrackingRequestDto,
+  ): void {
+    const { segments, totalDurationSec } = dto.routeOption;
+    const invalid = (message: string): never => {
+      throw new BusinessException(
+        'INVALID_REQUEST_PAYLOAD',
+        message,
+        HttpStatus.BAD_REQUEST,
+      );
+    };
+    if (!Array.isArray(segments) || segments.length > MAX_CLIENT_SEGMENTS) {
+      invalid('routeOption.segments is invalid');
+    }
+    if (!Number.isFinite(totalDurationSec) || totalDurationSec <= 0) {
+      invalid('routeOption.totalDurationSec must be a positive number');
+    }
+    segments.forEach((segment, i) => {
+      const from: unknown = segment?.fromStationId;
+      const to: unknown = segment?.toStationId;
+      if (
+        typeof from !== 'string' ||
+        typeof to !== 'string' ||
+        graph.indexOf(from) === undefined ||
+        graph.indexOf(to) === undefined
+      ) {
+        invalid(`routeOption.segments[${i}] has an unknown station`);
+      }
+      // 환승이면 앞 구간이 끝나는 역과 다음 구간이 시작하는 역의 ID는 다르지만 이름이 같다
+      if (
+        i > 0 &&
+        !this.isSameStop(graph, segments[i - 1].toStationId, from as string)
+      ) {
+        invalid(
+          `routeOption.segments[${i}] does not continue the previous one`,
+        );
+      }
+    });
+    const ids = dto.stationIds;
+    if (ids && ids.length > 0) {
+      const connected =
+        ids[0] === segments[0].fromStationId &&
+        ids[ids.length - 1] === segments[segments.length - 1].toStationId &&
+        ids.every((id) => graph.indexOf(id) !== undefined);
+      if (!connected) invalid('stationIds do not match the route segments');
+    }
+  }
+
   // 다른 사용자의 세션은 없는 세션처럼 응답해 세션 ID의 존재 여부가 드러나지 않게 한다
   private async findOwnedSession(
     userId: string,
@@ -361,6 +425,15 @@ export class TrackingService {
 
     session.nextStationId =
       session.expectedRemainingStationIds[0] ?? session.destStationId;
+
+    // 남은 시간은 경로의 예상 시간을 남은 역 비율로 나눈 추정이다
+    const stops = session.allStationIds.length - 1;
+    if (stops > 0) {
+      session.remainingDurationSec = Math.round(
+        session.routeOption.totalDurationSec *
+          (session.expectedRemainingStationIds.length / stops),
+      );
+    }
   }
 
   private determineDeviationReason(

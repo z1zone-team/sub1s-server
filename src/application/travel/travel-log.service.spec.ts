@@ -31,7 +31,7 @@ describe('TravelLogService', () => {
   let mockRouteService: { search: jest.Mock };
   let mockCryptoService: { encrypt: jest.Mock; decrypt: jest.Mock };
   let mockGraphService: { getGraph: jest.Mock };
-  let mockTrackingRepo: { findById: jest.Mock };
+  let mockTrackingRepo: { findById: jest.Mock; delete: jest.Mock };
   let mockGateway: {
     sendScoreUpdate: jest.Mock;
     broadcastChanged: jest.Mock;
@@ -121,6 +121,7 @@ describe('TravelLogService', () => {
 
     mockTrackingRepo = {
       findById: jest.fn().mockResolvedValue(null),
+      delete: jest.fn().mockResolvedValue(true),
     };
 
     mockGateway = {
@@ -523,6 +524,24 @@ describe('TravelLogService', () => {
       expect(mockTravelLogRepo.saveTravelWithScores).toHaveBeenCalledWith(
         expect.objectContaining({ trackingSessionId: 'sess-once' }),
       );
+    });
+
+    it('removes the tracking session once the trip is completed', async () => {
+      mockTrackingRepo.findById.mockResolvedValueOnce({
+        userId: 'user-1',
+        originStationId: '02_222',
+        destStationId: '02_221',
+        createdAt: new Date(Date.now() - 600000),
+        routeOption: mockRouteOption,
+      });
+
+      await service.createLog('user-1', {
+        originStationId: '02_222',
+        destStationId: '02_221',
+        sessionId: 'sess-done',
+      });
+
+      expect(mockTrackingRepo.delete).toHaveBeenCalledWith('sess-done');
     });
 
     it('returns the first result without scoring again when the session was already completed', async () => {
