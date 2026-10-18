@@ -21,6 +21,7 @@ describe('TrainPositionService', () => {
     stations: [
       { id: '02_222', lineId: '02', stationName: '강남', lat: 37.5, lng: 127.02, lineSeq: 1 },
       { id: '02_221', lineId: '02', stationName: '역삼', lat: 37.5, lng: 127.03, lineSeq: 2 },
+      { id: '02_211', lineId: '02', stationName: '성수', lat: 37.54, lng: 127.05, lineSeq: 3 },
       { id: '09_925', lineId: '09', stationName: '신논현', lat: 37.5, lng: 127.02, lineSeq: 1 },
     ],
     edges: [],
@@ -182,6 +183,22 @@ describe('TrainPositionService', () => {
       expect(result).toMatchObject({ lineId: '02', source: 'REALTIME', status: 'OK', ageSec: 95, pollIntervalSec: 240 });
       expect(result.observedAt).toBe('2026-10-18T12:00:00.000+09:00');
       expect(result.trains[0]).toMatchObject({ trainNo: '1', stationName: '강남', stationId: '02_222', status: 'ARRIVED' });
+    });
+
+    it('finds the station for the branch and terminating names Seoul adds, like 성수지선 and 성수종착', async () => {
+      const provider = makeProvider({
+        fetchLine: jest.fn().mockResolvedValue({
+          ...positions('02', noon, '성수지선'),
+          trains: [
+            { ...positions('02', noon).trains[0], trainNo: '1', stationName: '성수지선' },
+            { ...positions('02', noon).trains[0], trainNo: '2', stationName: '성수종착' },
+          ],
+        }),
+      });
+      const service = make(provider);
+      await service.tick(noon);
+
+      expect(service.getLine('02', noon).trains.map((train) => train.stationId)).toEqual(['02_211', '02_211']);
     });
 
     it('gives a null station id when the station name is not on that line', async () => {
