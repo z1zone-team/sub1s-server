@@ -5,20 +5,18 @@ import { createClerkClient } from '@clerk/backend';
 import { AppModule } from '../src/app.module';
 import { GlobalExceptionFilter } from '../src/common/filters/global-exception.filter';
 
-describe('Clerk Authentication Live Integration (e2e)', () => {
+// 실제 Clerk와 DB에 접속하므로 RUN_LIVE_CLERK_E2E=1이고 CLERK_SECRET_KEY가 있을 때만 돌린다
+const live = process.env.RUN_LIVE_CLERK_E2E === '1' && !!process.env.CLERK_SECRET_KEY;
+
+(live ? describe : describe.skip)('Clerk Authentication Live Integration (e2e)', () => {
   let app: INestApplication;
-  const secretKey = process.env.CLERK_SECRET_KEY;
+  const secretKey = process.env.CLERK_SECRET_KEY as string;
   let clerk: ReturnType<typeof createClerkClient>;
   let testUserId: string | null = null;
   let testSessionId: string | null = null;
   let validJwtToken: string | null = null;
 
   beforeAll(async () => {
-    if (!secretKey) {
-      console.warn('Skipping live Clerk E2E: CLERK_SECRET_KEY not found');
-      return;
-    }
-
     clerk = createClerkClient({ secretKey });
 
     // 1. Clerk Cloud에 실시간 테스트 유저 생성
@@ -69,8 +67,6 @@ describe('Clerk Authentication Live Integration (e2e)', () => {
   }, 30000);
 
   it('토큰 미제공 시 401 UNAUTHORIZED 에러 반환', async () => {
-    if (!validJwtToken) return;
-
     const res = await request(app.getHttpServer())
       .post('/api/v1/auth/sync')
       .send({ nickname: '테스터' })
@@ -80,8 +76,6 @@ describe('Clerk Authentication Live Integration (e2e)', () => {
   });
 
   it('위조/변조된 토큰 전송 시 401 UNAUTHORIZED 에러 반환', async () => {
-    if (!validJwtToken) return;
-
     const res = await request(app.getHttpServer())
       .post('/api/v1/auth/sync')
       .set('Authorization', 'Bearer invalid_tampered_clerk_jwt_token_xyz')
@@ -92,8 +86,6 @@ describe('Clerk Authentication Live Integration (e2e)', () => {
   });
 
   it('실제 Clerk 세션 JWT 토큰으로 인증 통과 및 PostgreSQL DB에 유저 동기화(sync)', async () => {
-    if (!validJwtToken) return;
-
     const res = await request(app.getHttpServer())
       .post('/api/v1/auth/sync')
       .set('Authorization', `Bearer ${validJwtToken}`)
@@ -107,8 +99,6 @@ describe('Clerk Authentication Live Integration (e2e)', () => {
   });
 
   it('실제 토큰으로 GET /api/v1/auth/me 프로필 조회 성공', async () => {
-    if (!validJwtToken) return;
-
     const res = await request(app.getHttpServer())
       .get('/api/v1/auth/me')
       .set('Authorization', `Bearer ${validJwtToken}`)
@@ -121,8 +111,6 @@ describe('Clerk Authentication Live Integration (e2e)', () => {
   });
 
   it('실제 토큰으로 POST /api/v1/travel/log 호출 시 정상 인가 및 이동 기록 저장', async () => {
-    if (!validJwtToken) return;
-
     const res = await request(app.getHttpServer())
       .post('/api/v1/travel/log')
       .set('Authorization', `Bearer ${validJwtToken}`)
@@ -138,8 +126,6 @@ describe('Clerk Authentication Live Integration (e2e)', () => {
   });
 
   it('실제 토큰으로 GET /api/v1/ranking 호출 시 내 랭킹 및 리더보드 정상 반환', async () => {
-    if (!validJwtToken) return;
-
     const now = new Date();
     const monthlyKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
 
