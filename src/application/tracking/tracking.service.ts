@@ -46,6 +46,8 @@ const OFF_ROUTE_MISS_LIMIT = 2;
 @Injectable()
 export class TrackingService {
   private readonly logger = new Logger(TrackingService.name);
+  /** 같은 세션의 요청을 순서대로 처리하는 대기열. 세션 ID별로 마지막 요청의 완료를 가리킨다 */
+  private readonly sessionLocks = new Map<string, Promise<void>>();
 
   constructor(
     @Inject(TRACKING_REPOSITORY)
@@ -134,6 +136,15 @@ export class TrackingService {
     userId: string,
     dto: DeviateCheckRequestDto,
   ): Promise<OffRouteAlertDto | TrackingSessionDto> {
+    return this.withSessionLock(dto.sessionId, () =>
+      this.checkDeviateLocked(userId, dto),
+    );
+  }
+
+  private async checkDeviateLocked(
+    userId: string,
+    dto: DeviateCheckRequestDto,
+  ): Promise<OffRouteAlertDto | TrackingSessionDto> {
     const session = await this.findOwnedSession(userId, dto.sessionId);
 
     const graph = this.graphService.getGraph();
@@ -165,6 +176,15 @@ export class TrackingService {
   }
 
   async reportPosition(
+    userId: string,
+    dto: ReportPositionRequestDto,
+  ): Promise<OffRouteAlertDto | TrackingSessionDto> {
+    return this.withSessionLock(dto.sessionId, () =>
+      this.reportPositionLocked(userId, dto),
+    );
+  }
+
+  private async reportPositionLocked(
     userId: string,
     dto: ReportPositionRequestDto,
   ): Promise<OffRouteAlertDto | TrackingSessionDto> {
@@ -212,6 +232,16 @@ export class TrackingService {
     sessionId: string,
     currentStationId: string,
   ): Promise<TrackingSessionDto> {
+    return this.withSessionLock(sessionId, () =>
+      this.reportLocationLocked(userId, sessionId, currentStationId),
+    );
+  }
+
+  private async reportLocationLocked(
+    userId: string,
+    sessionId: string,
+    currentStationId: string,
+  ): Promise<TrackingSessionDto> {
     const session = await this.findOwnedSession(userId, sessionId);
 
     const graph = this.graphService.getGraph();
@@ -222,6 +252,11 @@ export class TrackingService {
         `station id not found: ${currentStationId}`,
         HttpStatus.NOT_FOUND,
       );
+    }
+
+    // 이미 지난 역의 늦은 보고는 진행도를 되돌리지 못한다
+    if (this.isPassedStation(session, currentStationId)) {
+      return this.toSessionDto(session, graph);
     }
 
     this.advanceOnRoute(session, currentStationId);
@@ -237,6 +272,39 @@ export class TrackingService {
     const session = await this.findOwnedSession(userId, sessionId);
     const graph = this.graphService.getGraph();
     return this.toSessionDto(session, graph);
+  }
+
+  private isPassedStation(
+    session: TrackingSession,
+    stationId: string,
+  ): boolean {
+    const reported = session.allStationIds.indexOf(stationId);
+    const current = session.allStationIds.indexOf(session.currentStationId);
+    return reported !== -1 && current !== -1 && reported < current;
+  }
+
+  /**
+   * 같은 세션의 요청을 한 번에 하나씩 처리한다. 읽고, 바꾸고, 전체를 저장하는 사이에 다른 요청이
+   * 끼어들어 변경이 사라지거나 알림이 두 번 나가지 않게 한다. 서버가 한 대라는 전제(메모리 저장소)와 맞다
+   */
+  private async withSessionLock<T>(
+    sessionId: string,
+    work: () => Promise<T>,
+  ): Promise<T> {
+    const previous = this.sessionLocks.get(sessionId) ?? Promise.resolve();
+    const run = previous.then(work);
+    const tail = run.then(
+      () => undefined,
+      () => undefined,
+    );
+    this.sessionLocks.set(sessionId, tail);
+    try {
+      return await run;
+    } finally {
+      if (this.sessionLocks.get(sessionId) === tail) {
+        this.sessionLocks.delete(sessionId);
+      }
+    }
   }
 
   private isSameStop(graph: SubwayGraph, a: string, b: string): boolean {

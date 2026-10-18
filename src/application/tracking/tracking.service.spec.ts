@@ -396,6 +396,92 @@ describe('TrackingService', () => {
     });
   });
 
+  describe('concurrent reports for one session', () => {
+    // 읽기와 저장 사이에 다른 요청이 끼어들 틈을 만든다
+    const slowRepository = () => {
+      const repo = new InMemoryTrackingRepository();
+      const wait = () => new Promise((resolve) => setTimeout(resolve, 5));
+      const findById = repo.findById.bind(repo);
+      const save = repo.save.bind(repo);
+      repo.findById = async (id) => {
+        const found = await findById(id);
+        await wait();
+        return found;
+      };
+      repo.save = async (session) => {
+        await wait();
+        return save(session);
+      };
+      return repo;
+    };
+
+    const build = async () => {
+      const module = await Test.createTestingModule({
+        providers: [
+          TrackingService,
+          OffRouteDetector,
+          WalkingService,
+          { provide: TRACKING_REPOSITORY, useValue: slowRepository() },
+          { provide: SubwayGraphService, useValue: mockGraphService },
+          { provide: RouteService, useValue: mockRouteService },
+          { provide: OffRouteNotifier, useValue: mockGateway },
+          { provide: SmartAlertNotifier, useValue: mockSmartAlerts },
+        ],
+      }).compile();
+      return module.get(TrackingService);
+    };
+
+    it('sends the alert once when the same station is reported by two requests at the same time', async () => {
+      const tracking = await build();
+      const session = await tracking.startTracking(USER_ID, { routeOption: mockRouteOption });
+
+      await Promise.all([
+        tracking.reportLocation(USER_ID, session.sessionId, '02_221'),
+        tracking.checkDeviate(USER_ID, { sessionId: session.sessionId, detectedStationId: '02_221' }),
+      ]);
+
+      expect(mockSmartAlerts.sendSmartAlert).toHaveBeenCalledTimes(1);
+    });
+
+    it('applies reports in the order they arrived, so the last one wins and none is lost', async () => {
+      const tracking = await build();
+      const session = await tracking.startTracking(USER_ID, { routeOption: mockRouteOption });
+
+      await Promise.all([
+        tracking.reportLocation(USER_ID, session.sessionId, '02_221'),
+        tracking.reportLocation(USER_ID, session.sessionId, '02_220'),
+      ]);
+
+      const fetched = await tracking.getSession(USER_ID, session.sessionId);
+      expect(fetched.currentStationId).toBe('02_220');
+      expect(fetched.expectedRemainingStationIds).toEqual([]);
+    });
+
+    it('keeps working for later requests after one of them failed', async () => {
+      const tracking = await build();
+      const session = await tracking.startTracking(USER_ID, { routeOption: mockRouteOption });
+
+      const results = await Promise.allSettled([
+        tracking.reportLocation(USER_ID, session.sessionId, '99_999'),
+        tracking.reportLocation(USER_ID, session.sessionId, '02_221'),
+      ]);
+
+      expect(results[0].status).toBe('rejected');
+      expect(results[1].status).toBe('fulfilled');
+    });
+  });
+
+  describe('late reports', () => {
+    it('does not move the passenger back when an earlier station is reported after a later one', async () => {
+      const session = await service.startTracking(USER_ID, { routeOption: mockRouteOption });
+      await service.reportLocation(USER_ID, session.sessionId, '02_221');
+
+      const result = await service.reportLocation(USER_ID, session.sessionId, '02_222');
+
+      expect(result.currentStationId).toBe('02_221');
+    });
+  });
+
   describe('smart alerts', () => {
     // 강남 -> 역삼 -> 선릉 한 구간. 역삼이 하차(선릉) 한 역 전이다
     const start = () =>
