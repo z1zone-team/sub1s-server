@@ -103,6 +103,7 @@ export class SettlementService {
     }
 
     const failedUsers = claimed.filter((id) => !deliveredUsers.has(id));
+    await this.log.markSent([...deliveredUsers], period.periodKey);
     await this.log.markFailed(failedUsers, period.periodKey);
     await this.tokens.deleteTokens(invalidTokens);
 

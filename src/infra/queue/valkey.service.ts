@@ -55,6 +55,42 @@ export class ValkeyService implements OnModuleDestroy {
     return reply === 'OK';
   }
 
+  /**
+   * 자리 하나를 잡는다. 지금 잡은 수가 limit 미만이면 하나 늘리고 true. 세는 것과 늘리는 것이 한 번에 일어나
+   * 동시에 요청해도 limit을 넘지 않는다. 반납이 빠져도 ttlSeconds 뒤에는 키가 사라져 다시 0에서 시작한다
+   */
+  async acquireSlot(
+    key: string,
+    limit: number,
+    ttlSeconds: number,
+  ): Promise<boolean> {
+    const client = await this.readyClient();
+    const reply = await client.eval(
+      `local n = tonumber(redis.call('GET', KEYS[1]) or '0')
+if n >= tonumber(ARGV[1]) then return 0 end
+redis.call('INCR', KEYS[1])
+redis.call('EXPIRE', KEYS[1], ARGV[2])
+return 1`,
+      1,
+      key,
+      String(limit),
+      String(ttlSeconds),
+    );
+    return reply === 1;
+  }
+
+  /** 잡은 자리를 하나 돌려준다. 0 아래로는 내려가지 않는다 */
+  async releaseSlot(key: string): Promise<void> {
+    const client = await this.readyClient();
+    await client.eval(
+      `local n = tonumber(redis.call('GET', KEYS[1]) or '0')
+if n > 0 then redis.call('DECR', KEYS[1]) end
+return 0`,
+      1,
+      key,
+    );
+  }
+
   async delete(key: string): Promise<void> {
     await (await this.readyClient()).del(key);
   }

@@ -13,7 +13,10 @@ import {
   VoicePipelineQueue,
 } from '../../infra/queue/voice-pipeline.queue';
 import { VoiceResultDto } from './dto';
-import { activeVoiceJobKey } from './voice-job.service';
+import {
+  activeVoiceJobKey,
+  VOICE_WAITING_SLOTS_KEY,
+} from './voice-job.service';
 import { VoiceResultNotifier } from './voice-result.notifier';
 import { VoiceService } from './voice.service';
 
@@ -67,6 +70,11 @@ export class VoicePipelineProcessor implements OnModuleInit {
     const { userId } = job.data;
     const jobId = job.id ?? '';
 
+    // 작업이 대기열을 떠났으니 대기 자리를 돌려준다
+    await this.valkey
+      .releaseSlot(VOICE_WAITING_SLOTS_KEY)
+      .catch(() => undefined);
+
     let outcome: VoiceJobOutcome<VoiceResultDto>;
     try {
       const result = await this.withTimeout(this.run(job));
@@ -83,6 +91,10 @@ export class VoicePipelineProcessor implements OnModuleInit {
       };
       outcome = { ok: false, error: failure };
     } finally {
+      // 성공이든 실패든 끝났으면 원본 오디오는 큐에 남기지 않는다
+      await job
+        .updateData({ ...job.data, audioBase64: '' })
+        .catch(() => undefined);
       // 같은 사용자가 바로 다시 말할 수 있게 진행 중 표시를 지운다
       await this.valkey
         .delete(activeVoiceJobKey(userId))

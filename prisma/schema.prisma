@@ -21,6 +21,7 @@ enum PushProvider {
 enum SettlementStatus {
   SENT
   FAILED
+  PROCESSING
 
   @@map("settlement_status")
 }
@@ -171,6 +172,9 @@ model SettlementNotification {
   userId    String           @map("user_id") @db.Uuid
   periodKey String           @map("period_key") @db.VarChar(7)
   status    SettlementStatus
+  // 시도 횟수와 마지막 시도 시각. 실패하거나 중간에 멈춘 발송을 다시 시도하는 기준이다
+  attempts  Int              @default(1)
+  updatedAt DateTime         @default(now()) @map("updated_at") @db.Timestamptz
   createdAt DateTime         @default(now()) @map("created_at") @db.Timestamptz
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)

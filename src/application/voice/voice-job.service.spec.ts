@@ -5,6 +5,7 @@ import { ValkeyService } from '../../infra/queue/valkey.service';
 import { VoicePipelineQueue } from '../../infra/queue/voice-pipeline.queue';
 import {
   activeVoiceJobKey,
+  VOICE_WAITING_SLOTS_KEY,
   DEFAULT_VOICE_JOB_MAX_AUDIO_BYTES,
   VoiceJobService,
 } from './voice-job.service';
@@ -27,7 +28,12 @@ describe('VoiceJobService', () => {
     add: jest.Mock;
     getJob: jest.Mock;
   };
-  let valkey: { setIfAbsent: jest.Mock; delete: jest.Mock };
+  let valkey: {
+    setIfAbsent: jest.Mock;
+    delete: jest.Mock;
+    acquireSlot: jest.Mock;
+    releaseSlot: jest.Mock;
+  };
   let service: VoiceJobService;
 
   const make = (env: Record<string, string> = {}) =>
@@ -49,6 +55,8 @@ describe('VoiceJobService', () => {
     valkey = {
       setIfAbsent: jest.fn().mockResolvedValue(true),
       delete: jest.fn().mockResolvedValue(undefined),
+      acquireSlot: jest.fn().mockResolvedValue(true),
+      releaseSlot: jest.fn().mockResolvedValue(undefined),
     };
     service = make();
   });
@@ -154,8 +162,8 @@ describe('VoiceJobService', () => {
       expect(queue.add).not.toHaveBeenCalled();
     });
 
-    it('대기 작업이 10건이면 503 VOICE_QUEUE_FULL이고 진행 중 표시를 지운다', async () => {
-      queue.waitingCount.mockResolvedValue(10);
+    it('대기 자리를 잡지 못하면 503 VOICE_QUEUE_FULL이고 진행 중 표시를 지운다', async () => {
+      valkey.acquireSlot.mockResolvedValue(false);
 
       await expect(
         service.submit('user-1', audioFile(), {}),
@@ -165,14 +173,23 @@ describe('VoiceJobService', () => {
       });
       expect(queue.add).not.toHaveBeenCalled();
       expect(valkey.delete).toHaveBeenCalledWith(activeVoiceJobKey('user-1'));
+      expect(valkey.releaseSlot).not.toHaveBeenCalled();
     });
 
-    it('대기 작업이 9건이면 아직 받는다', async () => {
-      queue.waitingCount.mockResolvedValue(9);
+    it('대기 상한(기본 10)을 자리 수로 정하고, 환경변수로 바꿀 수 있다', async () => {
+      await service.submit('user-1', audioFile(), {});
+      await make({ VOICE_QUEUE_MAX_WAITING: '3' }).submit('user-2', audioFile(), {});
 
-      await expect(
-        service.submit('user-1', audioFile(), {}),
-      ).resolves.toMatchObject({ status: 'QUEUED' });
+      expect(valkey.acquireSlot).toHaveBeenNthCalledWith(1, VOICE_WAITING_SLOTS_KEY, 10, expect.any(Number));
+      expect(valkey.acquireSlot).toHaveBeenNthCalledWith(2, VOICE_WAITING_SLOTS_KEY, 3, expect.any(Number));
+    });
+
+    it('자리를 잡은 뒤 큐에 넣지 못하면 자리를 돌려준다', async () => {
+      queue.add.mockRejectedValue(new Error('ECONNRESET'));
+
+      await expect(service.submit('user-1', audioFile(), {})).rejects.toBeDefined();
+
+      expect(valkey.releaseSlot).toHaveBeenCalledWith(VOICE_WAITING_SLOTS_KEY);
     });
 
     it('큐에 넣다가 실패하면 503이고 진행 중 표시를 지워 바로 다시 시도할 수 있다', async () => {
