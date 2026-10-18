@@ -3,6 +3,7 @@ import { ChoiceSnapshot } from '../../../domain/subway/models/preference-model';
 import { UserMonthlySummary } from '../../../domain/notification/ports/notification-ports';
 import { Injectable } from '@nestjs/common';
 import {
+  DuplicateTravelLogError,
   ITravelLogRepository,
   RouteChoiceRecord,
   SaveTravelLogParams,
@@ -17,6 +18,45 @@ export class TravelLogRepository implements ITravelLogRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async saveTravelWithScores(
+    params: SaveTravelLogParams,
+  ): Promise<SaveTravelLogResult> {
+    try {
+      return await this.saveInTransaction(params);
+    } catch (error) {
+      if (
+        params.trackingSessionId &&
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === 'P2002'
+      ) {
+        throw new DuplicateTravelLogError();
+      }
+      throw error;
+    }
+  }
+
+  async findByTrackingSession(userId: string, trackingSessionId: string) {
+    return this.prisma.travelLog.findFirst({
+      where: { userId, trackingSessionId },
+    });
+  }
+
+  async findScoreTotals(userId: string, monthlyKey: string) {
+    const rows = await this.prisma.rankScore.findMany({
+      where: {
+        userId,
+        OR: [
+          { periodType: 'MONTHLY', periodKey: monthlyKey },
+          { periodType: 'ALL', periodKey: 'ALL' },
+        ],
+      },
+      select: { periodType: true, totalPoints: true },
+    });
+    const pointsOf = (type: string) =>
+      rows.find((row) => row.periodType === type)?.totalPoints ?? 0;
+    return { monthlyPoints: pointsOf('MONTHLY'), allPoints: pointsOf('ALL') };
+  }
+
+  private async saveInTransaction(
     params: SaveTravelLogParams,
   ): Promise<SaveTravelLogResult> {
     const [monthlyScore, allScore, createdLog] = await this.prisma.$transaction(
@@ -70,6 +110,7 @@ export class TravelLogRepository implements ITravelLogRepository {
             transferCount: params.transferCount,
             earnedPoints: params.earnedPoints,
             routeMode: params.routeMode ?? null,
+            trackingSessionId: params.trackingSessionId ?? null,
             ...(params.choiceSnapshot
               ? {
                   choiceSnapshot:

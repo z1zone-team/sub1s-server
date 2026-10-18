@@ -74,6 +74,7 @@ describe('Full User Journey (Mobile App ↔ Backend E2E)', () => {
       findUnique: jest.fn().mockResolvedValue(mockUser),
     },
     travelLog: {
+      findFirst: jest.fn().mockResolvedValue(null),
       create: jest.fn().mockImplementation((args) => {
         const item = {
           id: `log-journey-${mockLogs.length + 1}`,

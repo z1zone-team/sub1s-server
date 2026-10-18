@@ -38,6 +38,7 @@ describe('Travel log choice snapshot (e2e)', () => {
     $queryRaw: jest.fn().mockResolvedValue([{ 1: 1 }]),
     user: { upsert: jest.fn().mockResolvedValue({ id: 'u' }) },
     travelLog: {
+      findFirst: jest.fn().mockResolvedValue(null),
       create: jest.fn().mockImplementation((args) => {
         created.push(args);
         return Promise.resolve({ id: 'log-snapshot-1', ...args.data });

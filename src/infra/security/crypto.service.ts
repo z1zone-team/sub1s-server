@@ -14,9 +14,16 @@ export class CryptoService implements IPayloadEncryptor {
   private readonly masterKey: Buffer;
 
   constructor() {
+    const configured =
+      process.env.MASTER_ENCRYPTION_KEY || process.env.MASTER_3DES_KEY;
+    // 운영에서 키가 없으면 소스에 적힌 고정 키로 저장하지 않도록 기동을 막는다
+    if (!configured && process.env.NODE_ENV === 'production') {
+      throw new Error(
+        'MASTER_ENCRYPTION_KEY(또는 MASTER_3DES_KEY)가 없어 암호화 서비스를 시작할 수 없어요',
+      );
+    }
     const keyStr =
-      process.env.MASTER_ENCRYPTION_KEY ||
-      process.env.MASTER_3DES_KEY ||
+      configured ||
       '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef';
 
     this.masterKey = this.parseMasterKey(keyStr);

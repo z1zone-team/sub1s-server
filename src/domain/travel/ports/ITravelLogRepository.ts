@@ -27,6 +27,8 @@ export interface SaveTravelLogParams {
   routeMode?: string | null;
   choiceSnapshot?: ChoiceSnapshot;
   monthlyKey: string;
+  /** 확인된 주행 세션 ID. 같은 값으로 두 번 저장하면 DuplicateTravelLogError */
+  trackingSessionId?: string;
   encrypted: {
     ciphertext: string;
     iv: string;
@@ -48,7 +50,24 @@ export interface SaveTravelLogResult {
   createdLog: TravelLog;
 }
 
+/** 같은 주행 세션의 기록이 이미 있어 저장하지 않았다 */
+export class DuplicateTravelLogError extends Error {
+  constructor() {
+    super('travel log already exists for the tracking session');
+  }
+}
+
 export interface ITravelLogRepository {
+  /** 이 사용자가 이 주행 세션으로 이미 저장한 기록 */
+  findByTrackingSession(
+    userId: string,
+    trackingSessionId: string,
+  ): Promise<TravelLog | null>;
+  /** 이번 달과 전체 누적 점수. 점수가 없으면 0 */
+  findScoreTotals(
+    userId: string,
+    monthlyKey: string,
+  ): Promise<{ monthlyPoints: number; allPoints: number }>;
   saveTravelWithScores(
     params: SaveTravelLogParams,
   ): Promise<SaveTravelLogResult>;

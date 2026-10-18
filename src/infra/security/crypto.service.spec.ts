@@ -70,4 +70,25 @@ describe('CryptoService', () => {
     process.env.MASTER_ENCRYPTION_KEY = 'too-short';
     expect(() => new CryptoService()).toThrow();
   });
+
+  describe('without a configured key', () => {
+    const nodeEnv = process.env.NODE_ENV;
+
+    afterEach(() => {
+      process.env.NODE_ENV = nodeEnv;
+    });
+
+    it('refuses to start in production instead of using the key written in the source', () => {
+      process.env.NODE_ENV = 'production';
+
+      expect(() => new CryptoService()).toThrow('MASTER_ENCRYPTION_KEY');
+    });
+
+    it('starts in production once a key is configured', () => {
+      process.env.NODE_ENV = 'production';
+      process.env.MASTER_ENCRYPTION_KEY = 'a'.repeat(64);
+
+      expect(() => new CryptoService()).not.toThrow();
+    });
+  });
 });
