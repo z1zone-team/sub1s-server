@@ -34,6 +34,7 @@ import {
   CreateTravelLogDto,
   LineMapQueryDto,
   LineMapResponseDto,
+  LineMapLinkDto,
   LineMapStationDto,
   StatsBucketDto,
   TimelineQueryDto,
@@ -420,6 +421,7 @@ export class TravelLogService {
 
     const visitedSet = new Set<string>();
     const expressRuns: ExpressRun[] = [];
+    const passedPairs: Array<[string, string]> = [];
     for (const l of logs) {
       visitedSet.add(l.originStationId);
       visitedSet.add(l.destStationId);
@@ -439,6 +441,10 @@ export class TravelLogService {
             }
           }
           expressRuns.push(...parseExpressRuns(parsed));
+          const passed = parseStationIds(parsed) ?? [];
+          for (let i = 1; i < passed.length; i += 1) {
+            passedPairs.push([passed[i - 1], passed[i]]);
+          }
         } catch {
           // skip
         }
@@ -480,6 +486,22 @@ export class TravelLogService {
       }
     }
 
+    // 지난 역 쌍 중 같은 호선의 두 역만 링크로 둔다(환승은 호선이 달라 빠진다). 같은 쌍은 방향과 상관없이 하나로 합친다
+    const linksByLine = new Map<string, Map<string, LineMapLinkDto>>();
+    for (const [from, to] of passedPairs) {
+      const fromIndex = graph.indexOf(from);
+      const toIndex = graph.indexOf(to);
+      if (fromIndex === undefined || toIndex === undefined) continue;
+      const lineId = graph.station(fromIndex).lineId;
+      if (lineId !== graph.station(toIndex).lineId) continue;
+      const key = from < to ? `${from}|${to}` : `${to}|${from}`;
+      const links = linksByLine.get(lineId) ?? new Map<string, LineMapLinkDto>();
+      if (!links.has(key)) {
+        links.set(key, { fromStationId: from, toStationId: to });
+      }
+      linksByLine.set(lineId, links);
+    }
+
     const lines = Array.from(linesMap.entries()).map(([lineId, stations]) => {
       const meta = getLineMetadata(lineId);
       return {
@@ -487,6 +509,7 @@ export class TravelLogService {
         lineName: meta.lineName,
         colorHex: meta.colorHex,
         stations: stations.sort((a, b) => a.lineSeq - b.lineSeq),
+        links: [...(linksByLine.get(lineId)?.values() ?? [])],
       };
     });
 
