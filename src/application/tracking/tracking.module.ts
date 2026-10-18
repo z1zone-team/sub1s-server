@@ -6,8 +6,10 @@ import { AuthModule } from '../../infra/auth/auth.module';
 import { InMemoryTrackingRepository } from '../../infra/tracking/in-memory-tracking.repository';
 import { WebsocketModule } from '../../infra/websocket/websocket.module';
 import { WebsocketOffRouteNotifier } from '../../infra/websocket/websocket-off-route.notifier';
+import { WebsocketSmartAlertNotifier } from '../../infra/websocket/websocket-smart-alert.notifier';
 import { RouteModule } from '../route/route.module';
 import { OffRouteNotifier } from './off-route.notifier';
+import { SmartAlertNotifier } from './smart-alert.notifier';
 import { TrackingController } from './tracking.controller';
 import { TrackingService } from './tracking.service';
 
@@ -18,6 +20,7 @@ import { TrackingService } from './tracking.service';
     TrackingService,
     OffRouteDetector,
     { provide: OffRouteNotifier, useExisting: WebsocketOffRouteNotifier },
+    { provide: SmartAlertNotifier, useExisting: WebsocketSmartAlertNotifier },
     {
       provide: TRACKING_REPOSITORY,
       useClass: InMemoryTrackingRepository,

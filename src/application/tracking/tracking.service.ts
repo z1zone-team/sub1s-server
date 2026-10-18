@@ -19,6 +19,10 @@ import {
   TRACKING_REPOSITORY,
 } from '../../domain/tracking/ports/ITrackingRepository';
 import { OffRouteDetector } from '../../domain/tracking/services/offroute-detector.service';
+import {
+  PlannedSmartAlert,
+  planSmartAlerts,
+} from '../../domain/tracking/services/smart-alert-planner';
 import { PathSegmentDto } from '../route/dto/route-search-response.dto';
 import { RouteService } from '../route/route.service';
 import {
@@ -29,6 +33,7 @@ import {
   TrackingSessionDto,
 } from './dto';
 import { OffRouteNotifier } from './off-route.notifier';
+import { SmartAlertNotifier } from './smart-alert.notifier';
 
 /** 좌표가 이 거리 안의 역 근처일 때만 위치를 판단한다 */
 const POSITION_RADIUS_KM = 0.3;
@@ -49,6 +54,8 @@ export class TrackingService {
     private readonly walkingService: WalkingService,
     @Optional()
     private readonly offRouteNotifier?: OffRouteNotifier,
+    @Optional()
+    private readonly smartAlertNotifier?: SmartAlertNotifier,
   ) {}
 
   async startTracking(
@@ -146,6 +153,7 @@ export class TrackingService {
     // Case 1: User is still on route
     if (!deviationResult.shouldReroute) {
       this.advanceOnRoute(session, dto.detectedStationId);
+      this.notifySmartAlerts(session, graph);
       await this.trackingRepository.save(session);
       return this.toSessionDto(session, graph);
     }
@@ -181,6 +189,7 @@ export class TrackingService {
         session.expectedRemainingStationIds.includes(routeStationId)
       ) {
         this.advanceOnRoute(session, routeStationId);
+        this.notifySmartAlerts(session, graph);
       }
       await this.trackingRepository.save(session);
       return this.toSessionDto(session, graph);
@@ -213,6 +222,7 @@ export class TrackingService {
     }
 
     this.advanceOnRoute(session, currentStationId);
+    this.notifySmartAlerts(session, graph);
     await this.trackingRepository.save(session);
     return this.toSessionDto(session, graph);
   }
@@ -298,6 +308,41 @@ export class TrackingService {
         index !== undefined && graph.station(index).stationName === stationName
       );
     });
+  }
+
+  /** 환승, 하차 한 역 전이면 smart_alert를 보내고 보낸 키를 세션에 남긴다. 알림 실패가 위치 처리를 막으면 안 된다 */
+  private notifySmartAlerts(
+    session: TrackingSession,
+    graph: SubwayGraph,
+  ): void {
+    for (const planned of planSmartAlerts(session)) {
+      session.sentAlertKeys = [...(session.sentAlertKeys ?? []), planned.key];
+      try {
+        this.smartAlertNotifier?.sendSmartAlert(session.userId, {
+          type: planned.type,
+          message: this.smartAlertMessage(planned, graph),
+          recommendedDoor: planned.door,
+        });
+      } catch (error) {
+        this.logger.warn(
+          `smart_alert ${planned.type} failed for ${session.sessionId}: ${error}`,
+        );
+      }
+    }
+  }
+
+  private smartAlertMessage(
+    planned: PlannedSmartAlert,
+    graph: SubwayGraph,
+  ): string {
+    const index = graph.indexOf(planned.stationId);
+    const name = index === undefined ? '' : graph.station(index).stationName;
+    const station = name.endsWith('역') ? name : `${name}역`;
+    if (planned.type === 'TRANSFER_PREPARE') {
+      return `다음 역 ${station}에서 환승이에요`;
+    }
+    if (planned.type === 'TRANSFER_NOW') return `${station}에서 환승해요`;
+    return `다음 역 ${station}에서 내려요`;
   }
 
   private advanceOnRoute(

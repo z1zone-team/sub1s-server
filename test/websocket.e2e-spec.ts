@@ -1,4 +1,5 @@
 import { INestApplication, ValidationPipe } from '@nestjs/common';
+import * as request from 'supertest';
 import { Test } from '@nestjs/testing';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -173,6 +174,43 @@ describe('WebSocket SubwayEventsGateway (e2e)', () => {
         gateway.sendOffRouteAlert(MOCK_USER_ID, { sessionId: 's1', secret: 'x' });
 
         expect(await ownerGot).toMatchObject({ sessionId: 's1' });
+        expect(await publicGot).toBeUndefined();
+      } finally {
+        owner.close();
+        publicSocket.close();
+      }
+    });
+
+    it('delivers smart_alert to the owner when the reported position is one station before getting off', async () => {
+      const AUTH = { Authorization: 'Bearer mock_jwt_token' };
+      const owner = await open({ token: 'mock_jwt_token' });
+      const publicSocket = await open();
+      try {
+        // 교대 -> 강남 -> 역삼 (2호선). 강남이 하차(역삼) 한 역 전이다
+        const search = await request(app.getHttpServer())
+          .post('/api/v1/routes/search')
+          .set(AUTH)
+          .send({ originStationId: '02_223', destinationStationId: '02_221', routeMode: 'OPTIMAL' })
+          .expect(200);
+        const start = await request(app.getHttpServer())
+          .post('/api/v1/routes/track/start')
+          .set(AUTH)
+          .send({ routeOption: search.body.data.options[0] })
+          .expect(201);
+
+        const ownerGot = nextEvent(owner, 'smart_alert', 2000);
+        const publicGot = nextEvent(publicSocket, 'smart_alert', 500);
+
+        await request(app.getHttpServer())
+          .post('/api/v1/routes/track/location')
+          .set(AUTH)
+          .send({ sessionId: start.body.data.sessionId, currentStationId: '02_222' })
+          .expect(201);
+
+        expect(await ownerGot).toMatchObject({
+          type: 'ALIGHT_PREPARE',
+          message: expect.stringContaining('역삼'),
+        });
         expect(await publicGot).toBeUndefined();
       } finally {
         owner.close();
