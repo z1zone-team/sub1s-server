@@ -61,3 +61,12 @@ export function parseExpressRuns(payload: unknown): ExpressRun[] {
   }
   return runs;
 }
+
+// 경로 기록에 저장된 지난 역 ID 목록. 없거나 모양이 맞지 않으면 undefined
+export function parseStationIds(payload: unknown): string[] | undefined {
+  if (!isRecord(payload) || !Array.isArray(payload.stationIds)) return undefined;
+  const ids = payload.stationIds as unknown[];
+  return ids.every((id) => typeof id === 'string' && id.length > 0)
+    ? (ids as string[])
+    : undefined;
+}

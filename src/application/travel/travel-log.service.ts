@@ -48,6 +48,7 @@ import {
   RideSegment,
   parsePayloadDurationSec,
   parseRideSegments,
+  parseStationIds,
   parseExpressRuns,
 } from './route-payload';
 import {
@@ -279,6 +280,7 @@ export class TravelLogService {
           lineIds: route.lineIds,
           isExpress: route.isExpress,
           durationSec: route.durationSec,
+          stationIds: route.stationIds,
         };
       }),
     };
@@ -581,6 +583,7 @@ export class TravelLogService {
     lineIds: string[];
     isExpress: boolean;
     durationSec: number;
+    stationIds: string[];
   } {
     const payload = this.readRoutePayload(log);
     const segments = parseRideSegments(payload);
@@ -607,6 +610,10 @@ export class TravelLogService {
       lineIds,
       isExpress: segments?.some((s) => s.isExpress) ?? false,
       durationSec: Math.round(durationSec),
+      stationIds: parseStationIds(payload) ?? [
+        log.originStationId,
+        log.destStationId,
+      ],
     };
   }
 

@@ -1,4 +1,9 @@
-import { parseExpressRuns, parsePayloadDurationSec, parseRideSegments } from './route-payload';
+import {
+  parseExpressRuns,
+  parsePayloadDurationSec,
+  parseRideSegments,
+  parseStationIds,
+} from './route-payload';
 
 describe('route-payload', () => {
   const ride = (lineId: string, distanceKm: number, durationSec: number, isExpress = false) => ({
@@ -80,6 +85,20 @@ describe('route-payload', () => {
       expect(parseExpressRuns(undefined)).toEqual([]);
       expect(parseExpressRuns({ segments: 'nope' })).toEqual([]);
       expect(parseExpressRuns({ segments: [{ isExpress: true, lineId: '09' }] })).toEqual([]);
+    });
+  });
+
+  describe('parseStationIds', () => {
+    it('returns the saved station ids in order', () => {
+      expect(parseStationIds({ stationIds: ['02_222', '02_221'] })).toEqual(['02_222', '02_221']);
+    });
+
+    it('returns undefined when the list is missing or not all non-empty strings', () => {
+      expect(parseStationIds(undefined)).toBeUndefined();
+      expect(parseStationIds({})).toBeUndefined();
+      expect(parseStationIds({ stationIds: 'nope' })).toBeUndefined();
+      expect(parseStationIds({ stationIds: ['02_222', 3] })).toBeUndefined();
+      expect(parseStationIds({ stationIds: ['02_222', ''] })).toBeUndefined();
     });
   });
 });
