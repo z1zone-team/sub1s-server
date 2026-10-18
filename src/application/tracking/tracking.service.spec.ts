@@ -7,6 +7,7 @@ import { TRACKING_REPOSITORY } from '../../domain/tracking/ports/ITrackingReposi
 import { OffRouteDetector } from '../../domain/tracking/services/offroute-detector.service';
 import { InMemoryTrackingRepository } from '../../infra/tracking/in-memory-tracking.repository';
 import { OffRouteNotifier } from './off-route.notifier';
+import { SmartAlertNotifier } from './smart-alert.notifier';
 import { SubwayRouteOptionDto } from '../route/dto/route-search-response.dto';
 import { RouteService } from '../route/route.service';
 import { TrackingService } from './tracking.service';
@@ -19,6 +20,7 @@ describe('TrackingService', () => {
   let mockRouteService: { search: jest.Mock };
   let mockGraphService: { getGraph: jest.Mock };
   let mockGateway: { sendOffRouteAlert: jest.Mock };
+  let mockSmartAlerts: { sendSmartAlert: jest.Mock };
 
   const testGraph = new SubwayGraph({
     stations: [
@@ -153,6 +155,8 @@ describe('TrackingService', () => {
       sendOffRouteAlert: jest.fn(),
     };
 
+    mockSmartAlerts = { sendSmartAlert: jest.fn() };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         TrackingService,
@@ -173,6 +177,10 @@ describe('TrackingService', () => {
         {
           provide: OffRouteNotifier,
           useValue: mockGateway,
+        },
+        {
+          provide: SmartAlertNotifier,
+          useValue: mockSmartAlerts,
         },
       ],
     }).compile();
@@ -302,6 +310,75 @@ describe('TrackingService', () => {
 
       const fetched = await service.getSession(USER_ID, session.sessionId);
       expect(fetched.currentStationId).toBe('02_221');
+    });
+  });
+
+  describe('smart alerts', () => {
+    // 강남 -> 역삼 -> 선릉 한 구간. 역삼이 하차(선릉) 한 역 전이다
+    const start = () =>
+      service.startTracking(USER_ID, { routeOption: mockRouteOption });
+
+    it('sends ALIGHT_PREPARE to the session owner one station before getting off', async () => {
+      const session = await start();
+
+      await service.reportLocation(USER_ID, session.sessionId, '02_221');
+
+      expect(mockSmartAlerts.sendSmartAlert).toHaveBeenCalledTimes(1);
+      expect(mockSmartAlerts.sendSmartAlert).toHaveBeenCalledWith(USER_ID, {
+        type: 'ALIGHT_PREPARE',
+        message: '다음 역 선릉역에서 내려요',
+        recommendedDoor: '',
+      });
+    });
+
+    it('does not send before that station', async () => {
+      const session = await start();
+
+      await service.reportLocation(USER_ID, session.sessionId, '02_222');
+
+      expect(mockSmartAlerts.sendSmartAlert).not.toHaveBeenCalled();
+    });
+
+    it('sends each alert only once even when the same station is reported again', async () => {
+      const session = await start();
+
+      await service.reportLocation(USER_ID, session.sessionId, '02_221');
+      await service.reportLocation(USER_ID, session.sessionId, '02_221');
+      await service.checkDeviate(USER_ID, {
+        sessionId: session.sessionId,
+        detectedStationId: '02_221',
+      });
+
+      expect(mockSmartAlerts.sendSmartAlert).toHaveBeenCalledTimes(1);
+    });
+
+    it('also sends when the position comes through the deviation check', async () => {
+      const session = await start();
+
+      await service.checkDeviate(USER_ID, {
+        sessionId: session.sessionId,
+        detectedStationId: '02_221',
+      });
+
+      expect(mockSmartAlerts.sendSmartAlert).toHaveBeenCalledWith(
+        USER_ID,
+        expect.objectContaining({ type: 'ALIGHT_PREPARE' }),
+      );
+    });
+
+    it('still advances the position when sending the alert fails', async () => {
+      mockSmartAlerts.sendSmartAlert.mockImplementation(() => {
+        throw new Error('socket down');
+      });
+      const session = await start();
+
+      const result = await service.reportLocation(
+        USER_ID,
+        session.sessionId,
+        '02_221',
+      );
+
+      expect(result.currentStationId).toBe('02_221');
     });
   });
 

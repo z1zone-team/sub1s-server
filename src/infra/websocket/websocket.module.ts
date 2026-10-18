@@ -5,6 +5,7 @@ import { AuthModule } from '../auth/auth.module';
 import { SubwayEventsGateway } from './subway-events.gateway';
 import { WebsocketOffRouteNotifier } from './websocket-off-route.notifier';
 import { WebsocketRankingNotifier } from './websocket-ranking.notifier';
+import { WebsocketSmartAlertNotifier } from './websocket-smart-alert.notifier';
 import { WebsocketVoiceResultNotifier } from './websocket-voice-result.notifier';
 
 @Module({
@@ -14,12 +15,14 @@ import { WebsocketVoiceResultNotifier } from './websocket-voice-result.notifier'
     WebsocketVoiceResultNotifier,
     WebsocketRankingNotifier,
     WebsocketOffRouteNotifier,
+    WebsocketSmartAlertNotifier,
   ],
   exports: [
     SubwayEventsGateway,
     WebsocketVoiceResultNotifier,
     WebsocketRankingNotifier,
     WebsocketOffRouteNotifier,
+    WebsocketSmartAlertNotifier,
   ],
 })
 export class WebsocketModule {}
