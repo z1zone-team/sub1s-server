@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ENV_FILE_PATHS } from './common/config/env-files';
 import { ArrivalModule } from './application/arrival/arrival.module';
+import { TrainPositionModule } from './application/train-position/train-position.module';
 import { CongestionModule } from './application/congestion/congestion.module';
 import { FacilityModule } from './application/facility/facility.module';
 import { HealthModule } from './application/health/health.module';
@@ -41,6 +42,7 @@ import { DataUpdateBatchModule } from './infra/batch/data-update-batch.module';
     RouteModule,
     PlaceModule,
     ArrivalModule,
+    TrainPositionModule,
     FacilityModule,
     NotificationModule,
     CongestionModule,
