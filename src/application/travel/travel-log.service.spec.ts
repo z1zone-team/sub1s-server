@@ -1,3 +1,4 @@
+import { Logger } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BusinessException } from '../../common/exceptions/business.exception';
 import { SubwayGraph } from '../../domain/subway/models/subway-graph';
@@ -224,7 +225,7 @@ describe('TravelLogService', () => {
       expect(res.monthlyTotalPoints).toBe(10);
       expect(res.rideDurationSec).toBe(600);
       expect(res.arrivalDeltaSec).toBe(480);
-      expect(mockCryptoService.encrypt).toHaveBeenCalled();
+      expect(mockCryptoService.encrypt).toHaveBeenCalledWith(expect.any(String), 'travel_log:user-1');
       expect(mockTravelLogRepo.saveTravelWithScores).toHaveBeenCalled();
       expect(mockUserRepo.upsertPlaceholder).toHaveBeenCalledWith('user-1');
       expect(mockGateway.sendScoreUpdate).toHaveBeenCalledWith('user-1', {
@@ -1082,6 +1083,22 @@ describe('TravelLogService', () => {
 
       const stations = res.lines.find((l) => l.lineId === '02')?.stations ?? [];
       expect(stations.map((s) => s.visited)).toEqual([true, true]);
+    });
+
+    it('reads the payload with the owner of the map and logs the ones it cannot decrypt without their content', async () => {
+      const warn = jest.spyOn(Logger.prototype, 'warn').mockImplementation();
+      payloads['log-ok'] = { stationIds: ['02_222', '02_221'] };
+      mockTravelLogRepo.findLineMapLogs.mockResolvedValueOnce([
+        { originStationId: '02_222', destStationId: '02_221', encryptedRoutePayload: 'log-ok', iv: 'iv', authTag: 'tag', wrappedDek: 'dek' },
+        { originStationId: '02_222', destStationId: '02_221', encryptedRoutePayload: 'unknown', iv: 'iv', authTag: 'tag', wrappedDek: 'dek' },
+      ]);
+
+      await service.getLineMap('user-1', { period: 'ALL' });
+
+      expect(mockCryptoService.decrypt).toHaveBeenCalledWith(expect.anything(), 'travel_log:user-1');
+      expect(warn).toHaveBeenCalledWith(expect.stringContaining('1 of 2 travel logs could not be decrypted'));
+      expect(warn.mock.calls.flat().join(' ')).not.toContain('unknown');
+      warn.mockRestore();
     });
 
     describe('express segments', () => {
