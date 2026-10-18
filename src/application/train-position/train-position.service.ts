@@ -41,6 +41,21 @@ export function isOperatingHour(at: Date | number): boolean {
  * 서울시 열차 위치 API를 하루 예산 안에서 직접 폴링해 호선별로 마지막 결과를 들고 있다가 읽는 쪽에 돌려준다.
  * 호출은 한 번에 한 호선씩 설정한 호선을 돌아가며 한다. 서버가 하나라고 가정한다(캐시와 예산이 메모리에 있다)
  */
+/** 서울시가 지선 승강장이나 종착 열차의 역 이름 뒤에 붙이는 말(`성수지선`, `성수종착`) */
+const POSITION_NAME_SUFFIX = /(지선|종착)$/;
+
+function lookupStationId(
+  ids: Map<string, string>,
+  lineId: string,
+  stationName: string,
+): string | null {
+  return (
+    ids.get(`${lineId}|${stationName}`) ??
+    ids.get(`${lineId}|${stationName.replace(POSITION_NAME_SUFFIX, '')}`) ??
+    null
+  );
+}
+
 @Injectable()
 export class TrainPositionService implements OnApplicationBootstrap, OnApplicationShutdown {
   private readonly logger = new Logger(TrainPositionService.name);
@@ -158,7 +173,7 @@ export class TrainPositionService implements OnApplicationBootstrap, OnApplicati
       ageSec: Math.max(0, Math.round((now.getTime() - snapshot.observedAt.getTime()) / 1000)),
       trains: snapshot.trains.map((train) => ({
         ...train,
-        stationId: ids.get(`${lineId}|${train.stationName}`) ?? null,
+        stationId: lookupStationId(ids, lineId, train.stationName),
       })),
     };
   }
