@@ -1,4 +1,4 @@
-import { parsePayloadDurationSec, parseRideSegments } from './route-payload';
+import { parseExpressRuns, parsePayloadDurationSec, parseRideSegments } from './route-payload';
 
 describe('route-payload', () => {
   const ride = (lineId: string, distanceKm: number, durationSec: number, isExpress = false) => ({
@@ -57,6 +57,29 @@ describe('route-payload', () => {
       expect(parsePayloadDurationSec({ durationSec: '1980' })).toBeUndefined();
       expect(parsePayloadDurationSec({})).toBeUndefined();
       expect(parsePayloadDurationSec(null)).toBeUndefined();
+    });
+  });
+
+  describe('parseExpressRuns', () => {
+    const run = (lineId: string, fromStationId: string, toStationId: string, isExpress: boolean) => ({
+      lineId,
+      fromStationId,
+      toStationId,
+      isExpress,
+    });
+
+    it('returns only the express segments with their line and end stations', () => {
+      expect(
+        parseExpressRuns({
+          segments: [run('09', '09_915', '09_923', true), run('03', '03_330', '03_335', false)],
+        }),
+      ).toEqual([{ lineId: '09', fromStationId: '09_915', toStationId: '09_923' }]);
+    });
+
+    it('returns an empty list when there is no segment list or the segment is malformed', () => {
+      expect(parseExpressRuns(undefined)).toEqual([]);
+      expect(parseExpressRuns({ segments: 'nope' })).toEqual([]);
+      expect(parseExpressRuns({ segments: [{ isExpress: true, lineId: '09' }] })).toEqual([]);
     });
   });
 });

@@ -893,6 +893,63 @@ describe('TravelLogService', () => {
       expect(stations.map((s) => s.visited)).toEqual([true, true]);
     });
 
+    describe('express segments', () => {
+      const line09 = new SubwayGraph({
+        stations: [15, 16, 17, 18, 19].map((seq) => ({
+          id: `09_9${seq}`,
+          lineId: '09',
+          stationName: `s${seq}`,
+          lat: 37.5,
+          lng: 127 + seq / 100,
+          lineSeq: seq,
+        })),
+        edges: [],
+        transfers: [],
+      });
+      const visitedOf = async () => {
+        const res = await service.getLineMap('user-1', { period: 'ALL' });
+        const stations = res.lines.find((l) => l.lineId === '09')?.stations ?? [];
+        return stations.map((s) => s.visited);
+      };
+      const log = (payload: object) => {
+        payloads['log-9'] = payload;
+        mockTravelLogRepo.findLineMapLogs.mockResolvedValueOnce([
+          {
+            originStationId: '09_915',
+            destStationId: '09_919',
+            encryptedRoutePayload: 'log-9',
+            iv: 'iv',
+            authTag: 'tag',
+            wrappedDek: 'dek',
+          },
+        ]);
+      };
+
+      it('marks the stations an express train passed between its stops as visited', async () => {
+        mockGraphService.getGraph.mockReturnValue(line09);
+        log({
+          stationIds: ['09_915', '09_917', '09_919'],
+          segments: [
+            { lineId: '09', isExpress: true, fromStationId: '09_915', toStationId: '09_919' },
+          ],
+        });
+
+        expect(await visitedOf()).toEqual([true, true, true, true, true]);
+      });
+
+      it('leaves the stations between the stops of a local train alone', async () => {
+        mockGraphService.getGraph.mockReturnValue(line09);
+        log({
+          stationIds: ['09_915', '09_919'],
+          segments: [
+            { lineId: '09', isExpress: false, fromStationId: '09_915', toStationId: '09_919' },
+          ],
+        });
+
+        expect(await visitedOf()).toEqual([true, false, false, false, true]);
+      });
+    });
+
     it('returns subway lines with visited status for stations', async () => {
       mockTravelLogRepo.findLineMapLogs.mockResolvedValueOnce([
         {
