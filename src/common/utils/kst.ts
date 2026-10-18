@@ -17,6 +17,11 @@ export function toKstDate(at: Date | number): KstDate {
   };
 }
 
+/** KST의 시각(0~23) */
+export function kstHour(at: Date | number): number {
+  return new Date((typeof at === 'number' ? at : at.getTime()) + KST_OFFSET_MS).getUTCHours();
+}
+
 export function kstMidnight(year: number, month: number, day: number): Date {
   return new Date(Date.UTC(year, month - 1, day) - KST_OFFSET_MS);
 }

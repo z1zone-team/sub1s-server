@@ -2,6 +2,7 @@ import {
   KST_OFFSET_MS,
   kstAddDays,
   kstDayKey,
+  kstHour,
   kstDaysInMonth,
   kstMidnight,
   kstMonthKey,
@@ -115,5 +116,14 @@ describe('kst', () => {
       expect(parseIsoAsKst(' 2026-10-06T18:00:00 ').toISOString()).toBe('2026-10-06T09:00:00.000Z');
       expect(Number.isNaN(parseIsoAsKst('not-a-date').getTime())).toBe(true);
     });
+  });
+});
+
+describe('kstHour', () => {
+  it('returns the hour in KST regardless of the server time zone', () => {
+    expect(kstHour(new Date('2026-10-18T15:30:00Z'))).toBe(0);
+    expect(kstHour(new Date('2026-10-18T20:00:00Z'))).toBe(5);
+    expect(kstHour(new Date('2026-10-18T14:59:59Z'))).toBe(23);
+    expect(kstHour(Date.UTC(2026, 9, 18, 0, 0, 0))).toBe(9);
   });
 });
