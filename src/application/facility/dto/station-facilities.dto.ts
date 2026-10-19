@@ -51,6 +51,14 @@ export class StationFacilitiesResponseDto {
   })
   elevatorDoors!: string[];
 
+  @ApiProperty({
+    description:
+      '계단과 가까운 문 목록 (칸-문 번호). elevatorDoors와 같은 형식이다. 자료가 없으면 빈 배열',
+    type: [String],
+    example: ['2-4', '7-1'],
+  })
+  stairDoors!: string[];
+
   @ApiProperty({ type: [StationExitDto], description: '출구 번호 순' })
   exits!: StationExitDto[];
 }

@@ -4,6 +4,7 @@ import { StationFacilitiesFile } from '../domain/facility/models/station-facilit
 import {
   ElevatorSummary,
   GateSummary,
+  StairSummary,
   buildStationFacilities,
 } from './lib/station-facilities';
 import { OUT_DIR, RAW_DIR, readJson } from './lib/subway-common';
@@ -28,11 +29,12 @@ function main(): void {
   const stations = buildStationFacilities(
     load<GateSummary>('kric-gates.json'),
     load<ElevatorSummary>('kric-elevators.json'),
+    load<StairSummary>('kric-stairs.json'),
   );
 
   const values = Object.values(stations);
   console.log(
-    `[Facilities] ${values.length} stations, ${values.filter((s) => s.exits.length > 0).length} with exits, ${values.filter((s) => s.elevatorDoors.length > 0).length} with elevator doors`,
+    `[Facilities] ${values.length} stations, ${values.filter((s) => s.exits.length > 0).length} with exits, ${values.filter((s) => s.elevatorDoors.length > 0).length} with elevator doors, ${values.filter((s) => s.stairDoors.length > 0).length} with stair doors`,
   );
 
   const outPath = join(OUT_DIR, 'station-facilities.json');
