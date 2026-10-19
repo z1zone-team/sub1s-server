@@ -10,6 +10,7 @@ import { ArrivalModule } from '../arrival/arrival.module';
 import { RouteController } from './route.controller';
 import { OperationStatusService } from './operation-status.service';
 import { ServiceHoursService } from './service-hours.service';
+import { TrackPathService } from './track-path.service';
 import { RouteService } from './route.service';
 import { PreferenceModelService } from './preference-model.service';
 
@@ -21,6 +22,7 @@ import { PreferenceModelService } from './preference-model.service';
     PreferenceModelService,
     OperationStatusService,
     ServiceHoursService,
+    TrackPathService,
     { provide: OPERATION_NOTICE_PROVIDER, useClass: DataGoKrNoticeProvider },
     { provide: WALK_ROUTE_PROVIDER, useClass: OsrmWalkRouteProvider },
   ],

@@ -1,3 +1,5 @@
+import { sliceSegmentStations } from '../../domain/subway/services/track-path';
+import { TrackPathService } from './track-path.service';
 import { randomUUID } from 'node:crypto';
 import {
   ChoiceSnapshot,
@@ -158,6 +160,7 @@ export class RouteService {
     @Inject(WALK_ROUTE_PROVIDER)
     private readonly walkRoutes?: IWalkRouteProvider,
     @Optional() private readonly serviceHours?: ServiceHoursService,
+    @Optional() private readonly trackPaths?: TrackPathService,
   ) {}
 
   /**
@@ -701,8 +704,17 @@ export class RouteService {
     }
 
     // 2. 지하철 주행 세그먼트
+    let stationCursor = 0;
     for (let i = 0; i < result.segments.length; i += 1) {
       const seg = result.segments[i];
+      const covered = sliceSegmentStations(
+        result.stationIds,
+        seg.fromStationId,
+        seg.toStationId,
+        stationCursor,
+      );
+      if (covered) stationCursor = covered.next;
+      const trackPath = covered ? this.trackPaths?.pathFor(covered.ids) : undefined;
       const fromStation = graph.station(graph.indexOf(seg.fromStationId)!);
       const toStation = graph.station(graph.indexOf(seg.toStationId)!);
       const segmentDepartureEpoch = departureDate.getTime() + elapsedSec * 1000;
@@ -781,6 +793,7 @@ export class RouteService {
         durationSec: seg.durationSec,
         distanceKm: seg.distanceKm,
         boardingAt: toKstIso(segmentDepartureEpoch),
+        ...(trackPath ? { path: trackPath } : {}),
         recommendedCarNo,
         recommendedDoors: nextTransferDoors,
         isWeakAirConditioned: weakAc,
