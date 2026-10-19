@@ -26,5 +26,6 @@ import { ArrivalService } from './arrival.service';
     { provide: HOLIDAY_CALENDAR, useClass: PublicDataHolidayCalendar },
     { provide: NEXT_TRAIN_PROVIDER, useClass: TimetableNextTrainProvider },
   ],
+  exports: [TRAIN_SCHEDULE, HOLIDAY_CALENDAR],
 })
 export class ArrivalModule {}

@@ -21,6 +21,50 @@ export class OperationNoticeDto {
   occurredAt!: string;
 }
 
+export class ServiceHoursDto {
+  @ApiProperty({
+    description:
+      'BEFORE_FIRST_TRAIN 탑승역에 도착하는 시각이 이 방향 첫차보다 이름, AFTER_LAST_TRAIN 막차가 이미 떠난 뒤임',
+    enum: ['BEFORE_FIRST_TRAIN', 'AFTER_LAST_TRAIN'],
+  })
+  status!: 'BEFORE_FIRST_TRAIN' | 'AFTER_LAST_TRAIN';
+
+  @ApiProperty({ description: '탑승 시각이 속한 운행일의 첫차 출발 시각 (KST ISO)' })
+  firstTrainAt!: string;
+
+  @ApiProperty({ description: '탑승 시각이 속한 운행일의 막차 출발 시각 (KST ISO)' })
+  lastTrainAt!: string;
+
+  @ApiPropertyOptional({
+    description:
+      '다음에 탈 수 있는 첫차 출발 시각 (KST ISO). 첫차 전이면 그날 첫차, 막차 뒤이면 다음 운행일 첫차. 다음 운행일 시간표가 없으면 생략',
+  })
+  nextTrainAt?: string;
+}
+
+export class ServiceWarningDto {
+  @ApiProperty({ enum: ['BEFORE_FIRST_TRAIN', 'AFTER_LAST_TRAIN'] })
+  status!: 'BEFORE_FIRST_TRAIN' | 'AFTER_LAST_TRAIN';
+
+  @ApiProperty({ description: '열차가 없는 탑승 구간의 노선 ID', example: '02' })
+  lineId!: string;
+
+  @ApiProperty({ description: '열차가 없는 탑승역 ID', example: '02_222' })
+  stationId!: string;
+
+  @ApiProperty({ description: '열차가 없는 탑승역 이름', example: '강남' })
+  stationName!: string;
+
+  @ApiPropertyOptional({ description: '그 역에서 다음에 탈 수 있는 첫차 출발 시각 (KST ISO)' })
+  nextTrainAt?: string;
+
+  @ApiPropertyOptional({
+    description:
+      '그 역의 다음 첫차를 탈 수 있게 맞춘 출발 시각 (KST ISO). 이 값을 departureAt으로 다시 검색하면 된다',
+  })
+  suggestedDepartureAt?: string;
+}
+
 const OPERATION_STATUS_DESCRIPTION =
   'NORMAL 서울교통공사가 공지한 이상 상황이 없음, DISRUPTED 지연·무정차 등 진행 중인 공지가 이 구간에 걸림, UNKNOWN 공지로 알 수 없음(도보, 공지가 빠짐없이 오지 않는 노선, 공지를 가져오지 못함)';
 
@@ -90,6 +134,19 @@ export class PathSegmentDto {
     example: ['2-1', '4-4'],
   })
   recommendedDoors?: string[];
+
+  @ApiPropertyOptional({
+    description:
+      '이 구간 출발역에 도착하는 예상 시각 (KST ISO). 출발 시각에 앞 구간의 이동과 환승 걷기를 더한 값. 도보 구간에는 없음',
+  })
+  boardingAt?: string;
+
+  @ApiPropertyOptional({
+    description:
+      '그 시각에 탈 열차가 없을 때만 있음. 시간표가 없는 노선이나 요일은 알 수 없어 없음',
+    type: ServiceHoursDto,
+  })
+  serviceHours?: ServiceHoursDto;
 
   @ApiProperty({ description: '약냉방칸 여부', example: false })
   isWeakAirConditioned!: boolean;
@@ -231,6 +288,13 @@ export class SubwayRouteOptionDto {
     type: OperationNoticeDto,
   })
   operationNotice?: OperationNoticeDto;
+
+  @ApiPropertyOptional({
+    description:
+      '경로 중 가장 앞선, 탈 열차가 없는 탑승 구간의 경고와 다음 첫차에 맞춘 출발 시각. 모든 탑승 구간에 열차가 있거나 시간표를 알 수 없으면 없음',
+    type: ServiceWarningDto,
+  })
+  serviceWarning?: ServiceWarningDto;
 
   @ApiPropertyOptional({
     description: '총 도보 소요 시간 (초)',

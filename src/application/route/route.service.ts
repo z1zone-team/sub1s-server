@@ -68,6 +68,7 @@ import {
 } from '../../domain/congestion/ports/ICarCongestionPredictor';
 import { RouteSearchRequestDto } from './dto/route-search-request.dto';
 import { OperationStatusService } from './operation-status.service';
+import { ServiceHoursService } from './service-hours.service';
 import {
   PathSegmentDto,
   RouteSearchResultDto,
@@ -156,6 +157,7 @@ export class RouteService {
     @Optional()
     @Inject(WALK_ROUTE_PROVIDER)
     private readonly walkRoutes?: IWalkRouteProvider,
+    @Optional() private readonly serviceHours?: ServiceHoursService,
   ) {}
 
   /**
@@ -594,6 +596,7 @@ export class RouteService {
 
     this.applyHighlights(validOptions);
     await this.operationStatus.annotate(validOptions, graph);
+    await this.serviceHours?.annotate(validOptions, departureDate);
 
     // 선호 모드가 지정된 경우 우선 배치
     if (dto.routeMode) {
@@ -777,6 +780,7 @@ export class RouteService {
         stationCount: seg.stationCount,
         durationSec: seg.durationSec,
         distanceKm: seg.distanceKm,
+        boardingAt: toKstIso(segmentDepartureEpoch),
         recommendedCarNo,
         recommendedDoors: nextTransferDoors,
         isWeakAirConditioned: weakAc,
