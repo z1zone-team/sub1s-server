@@ -37,6 +37,7 @@ export function stationKey(name: string): string {
 export function classify(
   station: StationToCheck,
   places: KakaoPlace[],
+  okDistanceM: number = OK_DISTANCE_M,
 ): CheckResult {
   const wanted = stationKey(station.stationName);
   let best: CheckResult | undefined;
@@ -53,6 +54,6 @@ export function classify(
   if (!best) return { status: 'NOT_FOUND' };
   return {
     ...best,
-    status: (best.distanceM ?? Infinity) <= OK_DISTANCE_M ? 'OK' : 'FAR',
+    status: (best.distanceM ?? Infinity) <= okDistanceM ? 'OK' : 'FAR',
   };
 }

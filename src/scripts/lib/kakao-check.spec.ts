@@ -49,4 +49,12 @@ describe('classify', () => {
     expect(result.status).toBe('OK');
     expect(result.placeName).toBe('강남역 2호선');
   });
+
+  it('uses a stricter OK distance when one is given', () => {
+    const near = place('강남역 2호선', 37.4979, 127.0288);
+
+    expect(classify(station, [near]).status).toBe('OK');
+    expect(classify(station, [near], 50).status).toBe('FAR');
+    expect(classify(station, [near], 50).distanceM).toBeGreaterThan(50);
+  });
 });
