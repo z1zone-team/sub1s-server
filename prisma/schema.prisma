@@ -309,3 +309,37 @@ model RankScore {
   @@index([periodType, periodKey, totalPoints(sort: Desc)], map: "idx_rank_scores_ranking")
   @@map("rank_scores")
 }
+
+// 9. 서울시 열차 위치 관측. 폴링 응답에서 열차의 (역, 상태)가 바뀐 행만 쌓고 30일이 지나면 지운다
+model TrainObservation {
+  id              Int      @id @default(autoincrement())
+  lineId          String   @map("line_id") @db.VarChar(10)
+  trainNo         String   @map("train_no") @db.VarChar(20)
+  stationName     String   @map("station_name") @db.VarChar(50)
+  // 같은 호선에서 이 이름의 역 ID. 찾지 못하면 비어 있다
+  stationId       String?  @map("station_id") @db.VarChar(30)
+  status          String   @db.VarChar(20)
+  direction       String   @db.VarChar(10)
+  destinationName String   @map("destination_name") @db.VarChar(50)
+  isLastTrain     Boolean  @map("is_last_train")
+  observedAt      DateTime @map("observed_at") @db.Timestamptz
+
+  @@index([observedAt], map: "idx_train_observations_observed")
+  @@index([lineId, observedAt], map: "idx_train_observations_line")
+  @@map("train_observations")
+}
+
+// 10. 운행일(04:00~다음 날 04:00)마다 역과 방향별로 열차가 처음, 마지막으로 관측된 시각. 운행일 0시 기준 초(24시 이후는 24시간을 더한 값)다
+model TrainServiceDaily {
+  id          Int    @id @default(autoincrement())
+  serviceDate String @map("service_date") @db.VarChar(10)
+  stationId   String @map("station_id") @db.VarChar(30)
+  direction   String @db.VarChar(10)
+  firstSec    Int    @map("first_sec")
+  lastSec     Int    @map("last_sec")
+  samples     Int
+
+  @@unique([serviceDate, stationId, direction], map: "uq_train_service_daily")
+  @@index([stationId, direction], map: "idx_train_service_daily_station")
+  @@map("train_service_daily")
+}

@@ -10,12 +10,14 @@ import { MockTrainPositionProvider } from '../../infra/train-position/mock-train
 import { SeoulTrainPositionProvider } from '../../infra/train-position/seoul-train-position.provider';
 import { TrainPositionController } from './train-position.controller';
 import { TrainPositionService } from './train-position.service';
+import { TrainServiceAggregator } from './train-service-aggregator';
 
 @Module({
   imports: [SubwayModule],
   controllers: [TrainPositionController],
   providers: [
     TrainPositionService,
+    TrainServiceAggregator,
     {
       provide: TRAIN_POSITION_PROVIDER,
       inject: [ConfigService, SubwayGraphService],
