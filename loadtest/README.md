@@ -57,6 +57,8 @@ k6 run -e BASE_URL=https://서버주소 loadtest/route-search.k6.js ; ssh sub1s 
 
 - 응답 시간 p95가 **2초** 초과(`route_search_duration`, 200 응답만)
 - 서버 오류(5xx, 연결 실패)가 **2%** 초과(`server_error_rate`)
+- 예상 못 한 응답(`unexpected_rate`)이 **2%** 초과
+- 시작 전에 보낸 요청 10개 중 200 응답이 하나도 없으면 시작하지 않는다(주소 확인)
 
 서버 쪽에서는 사용 가능한 메모리가 500MB 아래로 내려가거나 스왑이 계속 늘면 사람이 멈춘다(`Ctrl+C`).
 
@@ -65,8 +67,8 @@ k6 run -e BASE_URL=https://서버주소 loadtest/route-search.k6.js ; ssh sub1s 
 - `route_search_duration`: 200 응답의 응답 시간(p50, p95, p99). `{kind:ids}`, `{kind:coords}`로 나뉜다.
 - `server_error_rate`: 5xx와 연결 실패 비율.
 - `rate_limited_429`: nginx가 429를 준 수. **0이어야 한다.** 0이 아니면 테스트 모드가 켜지지 않았거나 속도 제한이 남아 있는 것이다.
-- `route_not_found_404`: 경로가 없는 쌍(정상 응답으로 센다).
-- `bad_request_400`: 0이어야 한다. 0이 아니면 스크립트의 요청 형식이 틀린 것이다.
+- `route_not_found_404`: 우리 서버가 `ROUTE_NOT_FOUND`로 답한 쌍(정상 응답으로 센다).
+- `unexpected_rate`: 200, 우리 서버의 경로 없음(404), 429, 5xx가 아닌 응답의 비율. **0이어야 한다.** 0이 아니면 주소가 다른 서버를 가리키거나 요청 형식이 틀린 것이다(2%를 넘으면 10초 뒤 중단).
 - `dropped_iterations`: 서버가 느려 k6가 보내지 못한 요청. 0이 아니면 그 단계에서 서버가 한계에 닿은 것이다.
 - 한계 속도(초당 N건)를 구하면 "한 사람이 안내 중 평균 몇 분마다 검색하는지"로 나눠 동시에 활동하는 사용자 수를 역산한다.
 
