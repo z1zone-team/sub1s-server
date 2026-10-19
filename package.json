@@ -31,6 +31,7 @@
     "fetch:kric-timetables": "ts-node src/scripts/fetch-kric-timetables.ts",
     "fetch:seoul-timetables": "ts-node src/scripts/fetch-seoul-timetables.ts",
     "fetch:molit-fast-transfer": "ts-node src/scripts/fetch-molit-fast-transfer.ts",
+    "fetch:osm-railways": "ts-node src/scripts/fetch-osm-railways.ts",
     "apply:fast-transfer-doors": "ts-node src/scripts/apply-fast-transfer-doors.ts",
     "refine:edges": "ts-node src/scripts/refine-edges-timetable.ts",
     "seed:subway": "ts-node src/scripts/seed-subway-graph.ts",
