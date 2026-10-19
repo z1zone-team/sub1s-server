@@ -29,6 +29,7 @@
     "fetch:kric-raw": "ts-node src/scripts/fetch-kric-raw.ts",
     "fetch:kric-convenience": "ts-node src/scripts/fetch-kric-convenience.ts",
     "fetch:kric-timetables": "ts-node src/scripts/fetch-kric-timetables.ts",
+    "fetch:seoul-timetables": "ts-node src/scripts/fetch-seoul-timetables.ts",
     "refine:edges": "ts-node src/scripts/refine-edges-timetable.ts",
     "seed:subway": "ts-node src/scripts/seed-subway-graph.ts",
     "verify:subway-data": "ts-node src/scripts/verify-subway-data.ts",

@@ -113,13 +113,24 @@ describe('Next trains from the real timetable (e2e)', () => {
     expect(res.body.data.trains.length).toBeGreaterThan(0);
   });
 
-  it('has no holiday timetable for lines 2 and 7, so weekends are UNAVAILABLE', async () => {
+  it('uses the supplemented holiday timetable for lines 2 and 7 on weekends', async () => {
     atKst('2026-10-17T09:00:00');
 
     const line2 = await get('/api/v1/stations/02_222/next-trains').expect(200);
 
-    expect(line2.body.data).toMatchObject({ status: 'UNAVAILABLE', trains: [] });
-    expect(Object.keys(schedule.dayTypes.holiday).some((id) => id.startsWith('02_') || id.startsWith('07_'))).toBe(false);
+    expect(line2.body.data.status).toBe('OK');
+    expect(line2.body.data.trains.length).toBeGreaterThan(0);
+    expect(Object.keys(schedule.dayTypes.holiday).some((id) => id.startsWith('02_'))).toBe(true);
+    expect(Object.keys(schedule.dayTypes.holiday).some((id) => id.startsWith('07_'))).toBe(true);
+  });
+
+  it('is UNAVAILABLE on weekends for a station that has a weekday timetable but no holiday one', async () => {
+    atKst('2026-10-17T09:00:00');
+
+    const incheon = await get('/api/v1/stations/07_751/next-trains').expect(200);
+
+    expect(incheon.body.data).toMatchObject({ status: 'UNAVAILABLE', trains: [] });
+    expect(schedule.dayTypes.holiday['07_751']).toBeUndefined();
   });
 
   it('returns 404 for an unknown station', async () => {
