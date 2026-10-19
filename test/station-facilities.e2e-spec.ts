@@ -64,6 +64,8 @@ describe('Station facilities (e2e)', () => {
     expect(res.body.data).toMatchObject({ stationId: withElevator, available: true, hasElevator: true });
     expect(res.body.data.elevatorDoors).toEqual(facilities[withElevator].elevatorDoors);
     for (const door of res.body.data.elevatorDoors) expect(door).toMatch(/^\d+-\d+$/);
+    expect(res.body.data.stairDoors).toEqual(facilities[withElevator].stairDoors);
+    for (const door of res.body.data.stairDoors) expect(door).toMatch(/^\d+-\d+$/);
     expect(res.body.data.exits[0]).toEqual({
       exitNo: expect.any(String),
       facilities: expect.any(Array),
@@ -78,6 +80,7 @@ describe('Station facilities (e2e)', () => {
       available: false,
       hasElevator: null,
       elevatorDoors: [],
+      stairDoors: [],
       exits: [],
     });
   });

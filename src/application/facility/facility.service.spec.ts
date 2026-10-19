@@ -9,8 +9,9 @@ describe('FacilityService', () => {
     '02_222': {
       exits: [{ exitNo: '1', facilities: [{ name: '은행', address: null }] }],
       elevatorDoors: ['3-4', '8-1'],
+      stairDoors: ['2-4'],
     },
-    '01_147': { exits: [], elevatorDoors: [] },
+    '01_147': { exits: [], elevatorDoors: [], stairDoors: [] },
   };
   const repository: IStationFacilityRepository = { findByStationId: (id) => data[id] };
   const stations: Record<string, { lineId: string; stationName: string }> = {
@@ -35,6 +36,7 @@ describe('FacilityService', () => {
       available: true,
       hasElevator: true,
       elevatorDoors: ['3-4', '8-1'],
+      stairDoors: ['2-4'],
       exits: [{ exitNo: '1', facilities: [{ name: '은행', address: null }] }],
     });
   });
@@ -44,6 +46,7 @@ describe('FacilityService', () => {
       available: true,
       hasElevator: false,
       elevatorDoors: [],
+      stairDoors: [],
       exits: [],
     });
   });
@@ -56,6 +59,7 @@ describe('FacilityService', () => {
       available: false,
       hasElevator: null,
       elevatorDoors: [],
+      stairDoors: [],
       exits: [],
     });
   });

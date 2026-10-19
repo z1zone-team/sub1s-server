@@ -13,6 +13,8 @@ export interface ElevatorSummary {
   doors: string[];
 }
 
+export type StairSummary = ElevatorSummary;
+
 function exitOrder(a: string, b: string): number {
   const [aMain, aSub = '0'] = a.split('-');
   const [bMain, bSub = '0'] = b.split('-');
@@ -51,6 +53,7 @@ export function buildExits(gates: KricGateRow[]): StationExit[] {
 export function buildStationFacilities(
   gates: Record<string, GateSummary>,
   elevators: Record<string, ElevatorSummary>,
+  stairs: Record<string, StairSummary> = {},
 ): Record<string, StationFacilities> {
   const result: Record<string, StationFacilities> = {};
   const stationIds = [...new Set([...Object.keys(gates), ...Object.keys(elevators)])].sort();
@@ -59,7 +62,11 @@ export function buildStationFacilities(
     const exits = buildExits(gates[stationId]?.gates ?? []);
     const elevatorDoors = [...(elevators[stationId]?.doors ?? [])];
     if (exits.length === 0 && elevatorDoors.length === 0) continue;
-    result[stationId] = { exits, elevatorDoors };
+    result[stationId] = {
+      exits,
+      elevatorDoors,
+      stairDoors: [...(stairs[stationId]?.doors ?? [])],
+    };
   }
   return result;
 }

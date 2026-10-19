@@ -34,13 +34,21 @@ export class FacilityService {
 
     const facilities = this.repository.findByStationId(stationId);
     if (!facilities) {
-      return { ...base, available: false, hasElevator: null, elevatorDoors: [], exits: [] };
+      return {
+        ...base,
+        available: false,
+        hasElevator: null,
+        elevatorDoors: [],
+        stairDoors: [],
+        exits: [],
+      };
     }
     return {
       ...base,
       available: true,
       hasElevator: facilities.elevatorDoors.length > 0,
       elevatorDoors: facilities.elevatorDoors,
+      stairDoors: facilities.stairDoors,
       exits: facilities.exits,
     };
   }

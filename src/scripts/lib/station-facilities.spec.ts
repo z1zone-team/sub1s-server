@@ -56,12 +56,26 @@ describe('station facilities', () => {
       const result = buildStationFacilities(
         { '02_222': { gates: [gate('1', '은행')] } },
         { '02_222': { doors: ['1-1', '6-2'] } },
+        { '02_222': { doors: ['3-3'] } },
       );
 
       expect(result['02_222']).toEqual({
         exits: [{ exitNo: '1', facilities: [{ name: '은행', address: null }] }],
         elevatorDoors: ['1-1', '6-2'],
+        stairDoors: ['3-3'],
       });
+    });
+
+    it('gives an empty stair door list when the station has no stair data', () => {
+      const result = buildStationFacilities({}, { '01_161': { doors: ['1-1'] } });
+
+      expect(result['01_161'].stairDoors).toEqual([]);
+    });
+
+    it('does not report a station that has only stair doors', () => {
+      const result = buildStationFacilities({}, {}, { '01_147': { doors: ['2-1'] } });
+
+      expect(result).toEqual({});
     });
 
     it('includes a station that appears in only one of the sources', () => {
@@ -70,8 +84,8 @@ describe('station facilities', () => {
         { '01_161': { doors: ['1-1'] } },
       );
 
-      expect(result['01_147']).toEqual({ exits: expect.any(Array), elevatorDoors: [] });
-      expect(result['01_161']).toEqual({ exits: [], elevatorDoors: ['1-1'] });
+      expect(result['01_147']).toEqual({ exits: expect.any(Array), elevatorDoors: [], stairDoors: [] });
+      expect(result['01_161']).toEqual({ exits: [], elevatorDoors: ['1-1'], stairDoors: [] });
     });
 
     it('leaves out a station whose sources are both empty, so it is reported as having no data', () => {
