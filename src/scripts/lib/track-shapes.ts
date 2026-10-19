@@ -5,6 +5,8 @@ export interface TrackGraph {
   points: LatLng[];
   adjacency: { to: number; meters: number }[][];
   grid: Map<string, number[]>;
+  /** 이어져 있는 선로 조각의 번호. 같은 선로(한 방향의 한 노선)의 점은 같은 번호다 */
+  component: number[];
 }
 
 const CELL_DEG = 0.002;
@@ -54,11 +56,38 @@ export function buildTrackGraph(ways: OsmWay[]): TrackGraph {
     if (list) list.push(i);
     else grid.set(key, [i]);
   });
-  return { points, adjacency, grid };
+
+  const component = new Array<number>(points.length).fill(-1);
+  let count = 0;
+  for (let start = 0; start < points.length; start += 1) {
+    if (component[start] >= 0) continue;
+    component[start] = count;
+    const stack = [start];
+    while (stack.length > 0) {
+      const node = stack.pop() as number;
+      for (const edge of adjacency[node]) {
+        if (component[edge.to] >= 0) continue;
+        component[edge.to] = count;
+        stack.push(edge.to);
+      }
+    }
+    count += 1;
+  }
+  return { points, adjacency, grid, component };
 }
 
-/** 가까운 선로 점 후보. 상하행 선로가 따로 그려진 역을 위해 거리순으로 여러 개를 준다 */
-export function nearestNodes(graph: TrackGraph, at: LatLng, maxMeters: number, limit: number): number[] {
+/**
+ * 가까운 선로 점 후보. 선로 조각(연결 요소)을 가까운 순서로 limit개까지 고르고, 조각마다 가장 가까운 점 perComponent개를 준다.
+ * 환승역에서는 다른 노선 선로가 더 가까울 수 있어서 점 수가 아니라 조각 수로 후보를 늘리고,
+ * 경부선처럼 여러 선로가 한 조각으로 이어진 곳에서는 한 조각 안에서도 여러 점을 후보로 둔다
+ */
+export function nearestNodes(
+  graph: TrackGraph,
+  at: LatLng,
+  maxMeters: number,
+  limit: number,
+  perComponent = 1,
+): number[] {
   const ci = Math.floor(at.lat / CELL_DEG);
   const cj = Math.floor(at.lng / CELL_DEG);
   const found: { index: number; meters: number }[] = [];
@@ -70,14 +99,47 @@ export function nearestNodes(graph: TrackGraph, at: LatLng, maxMeters: number, l
       }
     }
   }
-  return found
-    .sort((a, b) => a.meters - b.meters)
-    .slice(0, limit)
-    .map((f) => f.index);
+  const byComponent = new Map<number, number[]>();
+  for (const f of found.sort((a, b) => a.meters - b.meters)) {
+    const list = byComponent.get(graph.component[f.index]) ?? [];
+    if (list.length < perComponent) list.push(f.index);
+    byComponent.set(graph.component[f.index], list);
+  }
+  return [...byComponent.values()].slice(0, limit).flat();
 }
 
-/** 최단 선로 경로(점 번호 목록). maxMeters보다 멀면 찾지 않는다 */
-export function shortestPath(graph: TrackGraph, from: number, to: number, maxMeters: number): number[] | undefined {
+/** 경로 끝점이 역에서 떨어진 거리에 곱하는 값. 클수록 역 가까운 선로 점을 끝점으로 고른다 */
+const END_PENALTY = 3;
+
+/** OSM에서 선로가 끊긴 틈을 건널 때 거리에 곱하는 값(틈은 실제 선로보다 덜 믿는다) */
+const BRIDGE_PENALTY = 3;
+
+/** 다른 선로 조각에 있고 bridgeMeters 안에 있는 점들. 끊긴 선로의 틈을 건너는 가상 간선에 쓴다 */
+function bridgeNeighbors(graph: TrackGraph, node: number, bridgeMeters: number): { to: number; meters: number }[] {
+  const at = graph.points[node];
+  const ci = Math.floor(at.lat / CELL_DEG);
+  const cj = Math.floor(at.lng / CELL_DEG);
+  const out: { to: number; meters: number }[] = [];
+  for (let di = -1; di <= 1; di += 1) {
+    for (let dj = -1; dj <= 1; dj += 1) {
+      for (const other of graph.grid.get(`${ci + di},${cj + dj}`) ?? []) {
+        if (graph.component[other] === graph.component[node]) continue;
+        const m = meters(at, graph.points[other]);
+        if (m <= bridgeMeters) out.push({ to: other, meters: m * BRIDGE_PENALTY });
+      }
+    }
+  }
+  return out;
+}
+
+/** 최단 선로 경로(점 번호 목록). maxMeters보다 멀면 찾지 않는다. bridgeMeters가 있으면 끊긴 틈(그 거리 이하)을 건널 수 있다 */
+export function shortestPath(
+  graph: TrackGraph,
+  from: number,
+  to: number,
+  maxMeters: number,
+  bridgeMeters = 0,
+): number[] | undefined {
   const dist = new Map<number, number>([[from, 0]]);
   const prev = new Map<number, number>();
   const heap: [number, number][] = [[0, from]];
@@ -119,7 +181,8 @@ export function shortestPath(graph: TrackGraph, from: number, to: number, maxMet
       while (path[0] !== from) path.unshift(prev.get(path[0]) as number);
       return path;
     }
-    for (const edge of graph.adjacency[node]) {
+    const edges = bridgeMeters > 0 ? [...graph.adjacency[node], ...bridgeNeighbors(graph, node, bridgeMeters)] : graph.adjacency[node];
+    for (const edge of edges) {
       const next = d + edge.meters;
       if (next > maxMeters || next >= (dist.get(edge.to) ?? Infinity)) continue;
       dist.set(edge.to, next);
@@ -176,8 +239,10 @@ export function pathLength(points: LatLng[]): number {
 export interface ShapeLimits {
   /** 역에서 이 거리 안의 선로 점만 후보로 본다 */
   snapMeters: number;
-  /** 역마다 후보로 보는 선로 점 수 */
+  /** 역마다 후보로 보는 선로 조각 수 */
   candidates: number;
+  /** 조각마다 후보로 보는 선로 점 수 */
+  nodesPerComponent: number;
   /** 선로 길이는 직선 거리의 이 배수 이하여야 한다 */
   maxRatio: number;
   /** 직선 거리에 더해 허용하는 여유(m) */
@@ -186,20 +251,24 @@ export interface ShapeLimits {
   maxDeviationRatio: number;
   deviationSlackMeters: number;
   simplifyMeters: number;
+  /** 일반 방식으로 못 찾은 쌍에만 건너 보는 선로 틈의 최대 크기(m). 0이면 건너지 않는다 */
+  bridgeMeters: number;
 }
 
 export const DEFAULT_LIMITS: ShapeLimits = {
-  snapMeters: 120,
-  candidates: 4,
+  snapMeters: 150,
+  candidates: 6,
+  nodesPerComponent: 4,
   maxRatio: 1.6,
   slackMeters: 300,
   maxDeviationRatio: 0.5,
   deviationSlackMeters: 150,
   simplifyMeters: 3,
+  bridgeMeters: 60,
 };
 
 /**
- * 두 역 사이 선로를 따라가는 좌표열. 양 끝에 역 좌표를 붙여 이어 붙였을 때 역 점에서 연결되게 한다.
+ * 두 역 사이 선로를 따라가는 좌표열. 양 끝은 두 역에서 가까운 선로 위의 점이다(역 좌표는 붙이지 않는다).
  * 선로를 찾지 못하거나 직선 거리와 너무 다르면(다른 노선 선로로 샌 경우) undefined다
  */
 export function trackShape(
@@ -210,26 +279,35 @@ export function trackShape(
 ): LatLng[] | undefined {
   const straight = meters(a, b);
   if (straight === 0) return undefined;
-  const fromNodes = nearestNodes(graph, a, limits.snapMeters, limits.candidates);
-  const toNodes = nearestNodes(graph, b, limits.snapMeters, limits.candidates);
+  const fromNodes = nearestNodes(graph, a, limits.snapMeters, limits.candidates, limits.nodesPerComponent);
+  const toNodes = nearestNodes(graph, b, limits.snapMeters, limits.candidates, limits.nodesPerComponent);
   const maxPath = straight * limits.maxRatio + limits.slackMeters;
 
-  let best: LatLng[] | undefined;
-  let bestLength = Infinity;
-  for (const from of fromNodes) {
-    for (const to of toNodes) {
-      if (from === to) continue;
-      const path = shortestPath(graph, from, to, maxPath);
-      if (!path) continue;
-      const points = path.map((i) => graph.points[i]);
-      const length = pathLength(points);
-      if (length >= bestLength) continue;
-      const deviation = Math.max(...points.map((p) => distanceToSegment(p, a, b)));
-      if (deviation > straight * limits.maxDeviationRatio + limits.deviationSlackMeters) continue;
-      best = points;
-      bestLength = length;
+  const search = (bridgeMeters: number): LatLng[] | undefined => {
+    let best: LatLng[] | undefined;
+    let bestLength = Infinity;
+    for (const from of fromNodes) {
+      for (const to of toNodes) {
+        if (from === to) continue;
+        // 틈을 건널 때만 다른 조각의 점끼리도 짝지을 수 있다
+        if (bridgeMeters === 0 && graph.component[from] !== graph.component[to]) continue;
+        const path = shortestPath(graph, from, to, maxPath, bridgeMeters);
+        if (!path) continue;
+        const points = path.map((i) => graph.points[i]);
+        // 길이만 보면 역에서 먼 점을 끝점으로 골라 경로를 줄이므로, 끝점이 역에서 떨어진 만큼 비용을 더한다
+        const length = pathLength(points) + END_PENALTY * (meters(a, graph.points[from]) + meters(b, graph.points[to]));
+        if (length >= bestLength) continue;
+        const deviation = Math.max(...points.map((p) => distanceToSegment(p, a, b)));
+        if (deviation > straight * limits.maxDeviationRatio + limits.deviationSlackMeters) continue;
+        best = points;
+        bestLength = length;
+      }
     }
-  }
+    return best;
+  };
+
+  const best = search(0) ?? (limits.bridgeMeters > 0 ? search(limits.bridgeMeters) : undefined);
   if (!best) return undefined;
-  return simplify([a, ...best, b], limits.simplifyMeters);
+  // 양 끝은 역 좌표가 아니라 선로 위의 점이다. 역 좌표는 선로에서 수십 m 떨어져 있어 붙이면 선이 삐져나온다
+  return simplify(best, limits.simplifyMeters);
 }
