@@ -1,3 +1,4 @@
+import { decodePolyline } from '../src/common/utils/polyline';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { readFileSync } from 'node:fs';
@@ -90,6 +91,24 @@ describe('Route Search (e2e)', () => {
     expect(segment.recommendedCarNo).toBeLessThanOrEqual(10);
     expect(['여유', '보통', '혼잡']).toContain(segment.congestionLevel);
     expect(['STATISTICS', 'MOCK']).toContain(segment.congestionSource);
+  });
+
+  it('POST /api/v1/routes/search gives a ride segment the path of the real track between its stations', async () => {
+    const res = await request(app.getHttpServer())
+      .post('/api/v1/routes/search')
+      .send({
+        originStationId: '02_222', // 강남
+        destinationStationId: '02_221', // 역삼
+      })
+      .expect(200);
+
+    const segment = res.body.data.options[0].segments[0];
+    expect(typeof segment.path).toBe('string');
+    const points = decodePolyline(segment.path);
+    expect(points.length).toBeGreaterThanOrEqual(2);
+    // 양 끝은 두 역의 좌표이고 사이에 선로를 따라가는 점이 있다
+    expect(Math.abs(points[0].lat - 37.4979)).toBeLessThan(0.002);
+    expect(Math.abs(points[points.length - 1].lat - 37.5006)).toBeLessThan(0.002);
   });
 
   it('POST /api/v1/routes/search validates bad request (same origin/dest)', async () => {
