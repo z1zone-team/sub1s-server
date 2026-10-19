@@ -12,6 +12,8 @@ import { FRIEND_REPOSITORY } from '../../domain/friend/ports/IFriendRepository';
 import { USER_REPOSITORY } from '../../domain/user/ports/IUserRepository';
 import { RANK_SCORE_REPOSITORY } from '../../domain/ranking/ports/IRankScoreRepository';
 import { TRAVEL_LOG_REPOSITORY } from '../../domain/travel/ports/ITravelLogRepository';
+import { TRAIN_OBSERVATION_REPOSITORY } from '../../domain/train-position/ports/ITrainObservationRepository';
+import { TrainObservationRepository } from './repositories/train-observation.repository';
 import { PrismaModule } from '../prisma/prisma.module';
 import { SubwayGraphRepository } from './repositories/subway-graph.repository';
 import { SubwayLineRepository } from './repositories/subway-line.repository';
@@ -48,6 +50,7 @@ import { TravelLogRepository } from './repositories/travel-log.repository';
       useClass: NotificationSettingsRepository,
     },
     { provide: SETTLEMENT_LOG_REPOSITORY, useClass: SettlementLogRepository },
+    { provide: TRAIN_OBSERVATION_REPOSITORY, useClass: TrainObservationRepository },
   ],
   exports: [
     SUBWAY_GRAPH_REPOSITORY,
@@ -61,6 +64,7 @@ import { TravelLogRepository } from './repositories/travel-log.repository';
     PUSH_TOKEN_REPOSITORY,
     NOTIFICATION_SETTINGS_REPOSITORY,
     SETTLEMENT_LOG_REPOSITORY,
+    TRAIN_OBSERVATION_REPOSITORY,
   ],
 })
 export class DatabaseModule {}

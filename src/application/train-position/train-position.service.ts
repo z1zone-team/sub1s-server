@@ -4,10 +4,16 @@ import {
   Logger,
   OnApplicationBootstrap,
   OnApplicationShutdown,
+  Optional,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { kstDayKey, kstHour, toKstIso } from '../../common/utils/kst';
+import { newObservations } from '../../domain/train-position/models/train-observation';
 import { LineTrainPositions } from '../../domain/train-position/models/train-position';
+import {
+  ITrainObservationRepository,
+  TRAIN_OBSERVATION_REPOSITORY,
+} from '../../domain/train-position/ports/ITrainObservationRepository';
 import {
   ITrainPositionProvider,
   TRAIN_POSITION_PROVIDER,
@@ -67,12 +73,17 @@ export class TrainPositionService implements OnApplicationBootstrap, OnApplicati
   private usage = { day: '', count: 0 };
   /** 역 이름으로 같은 호선의 역 ID를 찾는 표 */
   private stationIds?: Map<string, string>;
+  /** 열차별로 마지막에 저장한 `역|상태`. 바뀐 관측만 저장하려고 쓴다 */
+  private readonly lastStored = new Map<string, string>();
 
   constructor(
     @Inject(TRAIN_POSITION_PROVIDER)
     private readonly provider: ITrainPositionProvider,
     private readonly graphService: SubwayGraphService,
     config: ConfigService,
+    @Optional()
+    @Inject(TRAIN_OBSERVATION_REPOSITORY)
+    private readonly observations?: ITrainObservationRepository,
   ) {
     this.settings = TrainPositionService.readSettings(config, provider.source);
   }
@@ -139,13 +150,36 @@ export class TrainPositionService implements OnApplicationBootstrap, OnApplicati
     this.running = true;
     try {
       const positions = await this.provider.fetchLine(lineId);
-      if (positions) this.latest.set(lineId, positions);
+      if (positions) {
+        this.latest.set(lineId, positions);
+        await this.record(lineId, positions);
+      }
     } catch (error) {
       this.logger.warn(
         `Train position poll failed for ${lineId}: ${error instanceof Error ? error.message : 'unknown'}`,
       );
     } finally {
       this.running = false;
+    }
+  }
+
+  /**
+   * 서울시에서 받은 실제 위치만 DB에 쌓는다(가짜 열차는 쌓지 않는다). 시간표가 없는 곳의 첫차, 막차를 가늠하려고 모으는 것이라
+   * 저장에 실패해도 폴링과 응답에는 영향이 없다
+   */
+  private async record(lineId: string, positions: LineTrainPositions): Promise<void> {
+    if (!this.observations || positions.source !== 'REALTIME') return;
+    try {
+      const ids = this.stationIdsByName();
+      const trains = positions.trains.map((train) => ({
+        ...train,
+        stationId: lookupStationId(ids, lineId, train.stationName),
+      }));
+      await this.observations.saveMany(newObservations(lineId, trains, positions.observedAt, this.lastStored));
+    } catch (error) {
+      this.logger.warn(
+        `Train observation save failed for ${lineId}: ${error instanceof Error ? error.name : 'unknown'}`,
+      );
     }
   }
 
