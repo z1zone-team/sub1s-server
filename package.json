@@ -42,6 +42,7 @@
     "build:station-facilities": "ts-node src/scripts/build-station-facilities.ts",
     "refine:congestion": "ts-node src/scripts/refine-congestion.ts",
     "verify:stations-kakao": "ts-node src/scripts/verify-stations-kakao.ts",
+    "verify:stations-vworld": "ts-node src/scripts/verify-stations-vworld.ts",
     "verify:routes-odsay": "ts-node src/scripts/verify-routes-odsay.ts",
     "batch:data-check": "ts-node src/scripts/batch-data-check.ts"
   },
