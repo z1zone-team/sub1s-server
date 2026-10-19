@@ -38,7 +38,8 @@ const serverErrorRate = new Rate('server_error_rate');
 const okRate = new Rate('route_ok_rate');
 const rateLimited = new Counter('rate_limited_429');
 const notFound = new Counter('route_not_found_404');
-const badRequest = new Counter('bad_request_400');
+// 200, 우리 서버의 ROUTE_NOT_FOUND(404), 429, 5xx 중 어느 것도 아닌 응답. 주소가 틀렸거나 요청 형식이 틀렸다는 뜻이다
+const unexpectedRate = new Rate('unexpected_rate');
 
 function stage(target, seconds) {
   return [
@@ -66,12 +67,15 @@ export const options = {
   thresholds: {
     route_search_duration: [{ threshold: 'p(95)<2000', abortOnFail: true, delayAbortEval: '30s' }],
     server_error_rate: [{ threshold: 'rate<0.02', abortOnFail: true, delayAbortEval: '30s' }],
+    unexpected_rate: [{ threshold: 'rate<0.02', abortOnFail: true, delayAbortEval: '10s' }],
     'route_search_duration{kind:ids}': ['p(95)<2000'],
     'route_search_duration{kind:coords}': ['p(95)<2000'],
   },
 };
 
 http.setResponseCallback(http.expectedStatuses(200, 404, 429));
+
+const isRouteNotFound = (res) => res.status === 404 && String(res.body).includes('ROUTE_NOT_FOUND');
 
 randomSeed(SEED);
 
@@ -116,13 +120,22 @@ function chooseKind() {
 
 const params = { headers: { 'Content-Type': 'application/json' }, timeout: '30s' };
 
-// 시작 전에 한 번 보내 보고 응답이 이상하면 바로 중단한다(주소나 요청 형식이 틀린 채로 몇 분 돌리지 않게)
+// 시작 전에 여러 쌍을 보내 보고, 200과 options가 실제로 나오는 응답이 하나도 없으면 바로 중단한다.
+// (주소나 요청 형식이 틀린 채로 몇 분 돌리지 않게. 다른 서버가 404를 돌려줘도 통과시키지 않는다)
 export function setup() {
-  const res = http.post(`${BASE_URL}/api/v1/routes/search`, JSON.stringify(build(SCENARIO === 'coords' ? 'coords' : 'ids')), params);
-  if (res.status !== 200 && res.status !== 404) {
-    exec.test.abort(`setup 요청이 ${res.status}를 받았다. BASE_URL과 요청 형식을 확인한다: ${String(res.body).slice(0, 200)}`);
+  let last = null;
+  for (let i = 0; i < 10; i += 1) {
+    const res = http.post(`${BASE_URL}/api/v1/routes/search`, JSON.stringify(build(SCENARIO === 'coords' ? 'coords' : 'ids')), params);
+    last = res;
+    if (res.status === 200) {
+      const json = res.json();
+      const options = (json && (json.options || (json.data && json.data.options))) || [];
+      if (Array.isArray(options) && options.length > 0) return { startedAt: new Date().toISOString() };
+    }
   }
-  return { startedAt: new Date().toISOString() };
+  exec.test.abort(
+    `setup: ${BASE_URL}에서 경로 검색 200 응답을 받지 못했다(마지막 응답 ${last && last.status}). BASE_URL과 요청 형식을 확인한다: ${String(last && last.body).slice(0, 200)}`,
+  );
 }
 
 export default function () {
@@ -135,15 +148,18 @@ export default function () {
   const serverError = res.status === 0 || res.status >= 500;
   serverErrorRate.add(serverError, { kind });
 
+  const expected = res.status === 200 || res.status === 429 || isRouteNotFound(res) || serverError;
+  unexpectedRate.add(!expected, { kind });
+
   if (res.status === 429) {
     rateLimited.add(1, { kind });
     return;
   }
-  if (res.status === 404) {
+  if (isRouteNotFound(res)) {
     notFound.add(1, { kind });
     return;
   }
-  if (res.status === 400) badRequest.add(1, { kind });
+  if (!expected) return;
 
   let valid = false;
   if (res.status === 200) {
