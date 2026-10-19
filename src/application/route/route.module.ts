@@ -6,18 +6,21 @@ import { DataGoKrNoticeProvider } from '../../infra/operation/data-go-kr-notice.
 import { OsrmWalkRouteProvider } from '../../infra/walking/osrm-walk-route.provider';
 import { AuthModule as InfraAuthModule } from '../../infra/auth/auth.module';
 import { RoutingModule } from '../../infra/routing/routing.module';
+import { ArrivalModule } from '../arrival/arrival.module';
 import { RouteController } from './route.controller';
 import { OperationStatusService } from './operation-status.service';
+import { ServiceHoursService } from './service-hours.service';
 import { RouteService } from './route.service';
 import { PreferenceModelService } from './preference-model.service';
 
 @Module({
-  imports: [SubwayModule, RoutingModule, InfraAuthModule],
+  imports: [SubwayModule, RoutingModule, InfraAuthModule, ArrivalModule],
   controllers: [RouteController],
   providers: [
     RouteService,
     PreferenceModelService,
     OperationStatusService,
+    ServiceHoursService,
     { provide: OPERATION_NOTICE_PROVIDER, useClass: DataGoKrNoticeProvider },
     { provide: WALK_ROUTE_PROVIDER, useClass: OsrmWalkRouteProvider },
   ],
