@@ -70,7 +70,7 @@ describe('refined transfers.json', () => {
     });
   });
 
-  it('populates recommendedDoors from KRIC stairs data on transfer edges', () => {
+  it('populates recommendedDoors on transfer edges, preferring the MOLIT fast transfer data', () => {
     const withDoors = transfers.filter(
       (t) => t.recommendedDoors && t.recommendedDoors.length > 0,
     );
@@ -79,7 +79,6 @@ describe('refined transfers.json', () => {
     const cityHall = transfers.find(
       (t) => t.fromStationId === '02_201' && t.toStationId === '01_132',
     );
-    expect(cityHall?.recommendedDoors).toBeDefined();
-    expect(cityHall?.recommendedDoors).toContain('2-1');
+    expect(cityHall?.recommendedDoors).toEqual(['1-1', '10-4']);
   });
 });
