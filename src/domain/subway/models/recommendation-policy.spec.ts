@@ -54,3 +54,29 @@ it('checks the axis contract, version, finite values and observation counts', ()
     false,
   );
 });
+it('prefers the route with elevator access only for users who chose the elevator preference', () => {
+  const stairs = { ...fast, elevatorAccess: 0 };
+  const lift = {
+    ...cheap,
+    totalDurationSec: 620,
+    totalFare: 1750,
+    elevatorAccess: 1,
+  };
+  expect(routeFeatures(lift).elevator).toBe(1);
+  expect(routeFeatures(fast).elevator).toBeUndefined();
+  expect(chooseRecommendation([stairs, lift])).toBe(stairs);
+  expect(
+    chooseRecommendation([stairs, lift], surveyPreference(['ELEVATOR'])),
+  ).toBe(lift);
+});
+it('ignores the elevator axis when any candidate lacks facility data', () => {
+  const lift = {
+    ...cheap,
+    totalDurationSec: 620,
+    totalFare: 1750,
+    elevatorAccess: 1,
+  };
+  expect(
+    chooseRecommendation([fast, lift], surveyPreference(['ELEVATOR'])),
+  ).toBe(fast);
+});

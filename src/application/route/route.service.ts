@@ -14,6 +14,10 @@ import {
 } from '../../domain/subway/models/recommendation-policy';
 import { PreferenceModelService } from './preference-model.service';
 import {
+  IStationFacilityRepository,
+  STATION_FACILITY_REPOSITORY,
+} from '../../domain/facility/ports/IStationFacilityRepository';
+import {
   HttpStatus,
   Inject,
   Injectable,
@@ -160,6 +164,9 @@ export class RouteService {
     @Inject(WALK_ROUTE_PROVIDER)
     private readonly walkRoutes?: IWalkRouteProvider,
     @Optional() private readonly serviceHours?: ServiceHoursService,
+    @Optional()
+    @Inject(STATION_FACILITY_REPOSITORY)
+    private readonly facilities?: IStationFacilityRepository,
     @Optional() private readonly trackPaths?: TrackPathService,
   ) {}
 
@@ -498,6 +505,11 @@ export class RouteService {
           : 0;
       });
     }
+    if (personalization && this.facilities) {
+      pool.forEach((option) => {
+        option.elevatorAccess = this.elevatorAccess(option);
+      });
+    }
     const publicPool = pool.filter(
       (option) => option.mode !== 'PERSONAL' && option.mode !== 'ONLY_WALK',
     );
@@ -564,7 +576,9 @@ export class RouteService {
     const unsupportedPreferences =
       personalization?.routePrefs.filter(
         (code) =>
-          ['SEAT', 'ELEVATOR', 'AVOID_STAIRS'].includes(code) ||
+          ['SEAT', 'AVOID_STAIRS'].includes(code) ||
+          (code === 'ELEVATOR' &&
+            pool.some((option) => option.elevatorAccess === undefined)) ||
           (code === 'FAMILIAR_ROUTE' &&
             !personalization?.fingerprints.length) ||
           (code === 'WEAK_AC' &&
@@ -635,6 +649,24 @@ export class RouteService {
           }
         : {}),
     };
+  }
+
+  /**
+   * 타고 내리는 역(승차, 하차, 환승) 중 엘리베이터에서 가까운 문 자료가 있는 역의 비율.
+   * 한 역이라도 편의시설 자료가 없으면 비교할 수 없으므로 undefined로 둔다
+   */
+  private elevatorAccess(option: SubwayRouteOptionDto): number | undefined {
+    const stops = option.segments
+      .filter((segment) => segment.lineId !== 'WALK')
+      .flatMap((segment) => [segment.fromStationId, segment.toStationId]);
+    if (!stops.length || !this.facilities) return undefined;
+    let withElevator = 0;
+    for (const stationId of stops) {
+      const facilities = this.facilities.findByStationId(stationId);
+      if (!facilities) return undefined;
+      if (facilities.elevatorDoors.length > 0) withElevator++;
+    }
+    return withElevator / stops.length;
   }
 
   private applyHighlights(options: SubwayRouteOptionDto[]): void {
@@ -714,7 +746,9 @@ export class RouteService {
         stationCursor,
       );
       if (covered) stationCursor = covered.next;
-      const trackPath = covered ? this.trackPaths?.pathFor(covered.ids) : undefined;
+      const trackPath = covered
+        ? this.trackPaths?.pathFor(covered.ids)
+        : undefined;
       const fromStation = graph.station(graph.indexOf(seg.fromStationId)!);
       const toStation = graph.station(graph.indexOf(seg.toStationId)!);
       const segmentDepartureEpoch = departureDate.getTime() + elapsedSec * 1000;

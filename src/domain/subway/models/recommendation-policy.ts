@@ -6,6 +6,8 @@ import {
 } from './preference-model';
 export interface ComparableOption {
   familiarity?: number;
+  /** 승하차·환승 역 중 엘리베이터 인접 문 자료가 있는 역의 비율(0~1). 자료가 없으면 undefined */
+  elevatorAccess?: number;
   mode: string;
   stationIds?: string[];
   totalDurationSec: number;
@@ -36,6 +38,9 @@ export function routeFeatures(option: ComparableOption): ChoiceFeatures {
       : {}),
     ...(option.familiarity !== undefined
       ? { familiarRoute: option.familiarity }
+      : {}),
+    ...(option.elevatorAccess !== undefined
+      ? { elevator: option.elevatorAccess }
       : {}),
     ...(rides.length && rides.every((segment) => segment.cars?.length)
       ? {
@@ -73,7 +78,15 @@ const FACTORS = [
   'express',
   'familiarRoute',
   'weakAc',
+  'elevator',
 ] as const;
+/** 값이 클수록 좋은 축. 0.5를 넘는 선호만 가중치로 쓴다 */
+const HIGHER_IS_BETTER = new Set<string>([
+  'express',
+  'familiarRoute',
+  'weakAc',
+  'elevator',
+]);
 const BASE = {
   time: 1,
   fare: 0.3,
@@ -83,6 +96,7 @@ const BASE = {
   express: 0,
   familiarRoute: 0,
   weakAc: 0,
+  elevator: 0,
 };
 const SPANS = {
   time: 180,
@@ -93,6 +107,7 @@ const SPANS = {
   express: 1,
   familiarRoute: 1,
   weakAc: 1,
+  elevator: 1,
 };
 /** Shared candidates, separate public and personal importance. Unsupported data never means a good zero cost. */
 export function chooseRecommendation<T extends ComparableOption>(
@@ -106,16 +121,14 @@ export function chooseRecommendation<T extends ComparableOption>(
   );
   const weights = supported.map((axis) =>
     preference
-      ? axis === 'express' || axis === 'familiarRoute' || axis === 'weakAc'
+      ? HIGHER_IS_BETTER.has(axis)
         ? Math.max(0, importance(preference, axis) - 0.5)
         : BASE[axis] * 2 * importance(preference, axis)
       : BASE[axis],
   );
   const values = supported.map((axis) => {
     const xs = raw.map((features) =>
-      axis === 'express' || axis === 'familiarRoute' || axis === 'weakAc'
-        ? 1 - features[axis]!
-        : features[axis]!,
+      HIGHER_IS_BETTER.has(axis) ? 1 - features[axis]! : features[axis]!,
     );
     const min = Math.min(...xs);
     const scale = Math.max(Math.max(...xs) - min, SPANS[axis]);
