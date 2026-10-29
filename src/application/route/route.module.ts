@@ -7,6 +7,7 @@ import { OsrmWalkRouteProvider } from '../../infra/walking/osrm-walk-route.provi
 import { AuthModule as InfraAuthModule } from '../../infra/auth/auth.module';
 import { RoutingModule } from '../../infra/routing/routing.module';
 import { ArrivalModule } from '../arrival/arrival.module';
+import { FacilityModule } from '../facility/facility.module';
 import { RouteController } from './route.controller';
 import { OperationStatusService } from './operation-status.service';
 import { ServiceHoursService } from './service-hours.service';
@@ -15,7 +16,7 @@ import { RouteService } from './route.service';
 import { PreferenceModelService } from './preference-model.service';
 
 @Module({
-  imports: [SubwayModule, RoutingModule, InfraAuthModule, ArrivalModule],
+  imports: [SubwayModule, RoutingModule, InfraAuthModule, ArrivalModule, FacilityModule],
   controllers: [RouteController],
   providers: [
     RouteService,

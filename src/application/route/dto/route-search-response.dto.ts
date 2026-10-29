@@ -212,6 +212,7 @@ export class PathSegmentDto {
 
 export class SubwayRouteOptionDto {
   familiarity?: number;
+  elevatorAccess?: number;
   @ApiPropertyOptional({ description: '서버 선택 기록 식별자' })
   routeId?: string;
 

@@ -15,5 +15,6 @@ import { FacilityService } from './facility.service';
       useClass: FileStationFacilityRepository,
     },
   ],
+  exports: [STATION_FACILITY_REPOSITORY],
 })
 export class FacilityModule {}
