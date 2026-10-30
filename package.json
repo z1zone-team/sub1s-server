@@ -29,6 +29,7 @@
     "fetch:kric-raw": "ts-node src/scripts/fetch-kric-raw.ts",
     "fetch:kric-convenience": "ts-node src/scripts/fetch-kric-convenience.ts",
     "fetch:kric-timetables": "ts-node src/scripts/fetch-kric-timetables.ts",
+    "fetch:kric-transfer-movement": "ts-node src/scripts/fetch-kric-transfer-movement.ts",
     "fetch:seoul-timetables": "ts-node src/scripts/fetch-seoul-timetables.ts",
     "fetch:molit-fast-transfer": "ts-node src/scripts/fetch-molit-fast-transfer.ts",
     "fetch:osm-railways": "ts-node src/scripts/fetch-osm-railways.ts",
