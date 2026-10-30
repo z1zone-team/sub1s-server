@@ -25,6 +25,8 @@ export interface PreferenceModel {
   observationCounts: number[];
   confidence: number[];
   source: 'SURVEY' | 'AI';
+  /** 이웃 평균 선호를 섞었을 때의 이웃 수. 저장하지 않고 검색 때만 붙는다 */
+  neighbors?: number;
 }
 export const PREFERENCE_CODES: Partial<Record<PreferenceAxis, string>> = {
   time: 'FAST',

@@ -1,3 +1,4 @@
+import { parseVector } from '../../../domain/subway/models/neighbor-preference';
 import {
   PreferenceModel,
   validPreference,
@@ -61,6 +62,24 @@ export class UserRepository implements IUserRepository {
     const metadata = JSON.stringify({ model, inputKey });
     await this.prisma
       .$executeRaw`INSERT INTO user_preferences (user_id, preference_vector_v2, preference_model_v2, updated_at) VALUES (${userId}::uuid, ${vector}::vector, ${metadata}::jsonb, NOW()) ON CONFLICT (user_id) DO UPDATE SET preference_vector_v2 = EXCLUDED.preference_vector_v2, preference_model_v2 = EXCLUDED.preference_model_v2, updated_at = NOW()`;
+  }
+
+  async findNeighborPreferenceVectors(
+    userId: string,
+    vector: readonly number[],
+    limit: number,
+  ): Promise<number[][]> {
+    const query = `[${vector.join(',')}]`;
+    const rows = await this.prisma.$queryRaw<{ vector: string }[]>`
+      SELECT up.preference_vector_v2::text AS vector
+      FROM user_preferences up
+      JOIN users u ON u.id = up.user_id
+      WHERE up.user_id <> ${userId}::uuid
+        AND up.preference_vector_v2 IS NOT NULL
+        AND u.ranking_visibility <> 'PRIVATE'
+      ORDER BY up.preference_vector_v2 <-> ${query}::vector, up.user_id
+      LIMIT ${limit}`;
+    return rows.map((row) => parseVector(row.vector));
   }
 
   async findById(id: string): Promise<User | null> {

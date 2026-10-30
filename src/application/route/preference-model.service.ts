@@ -6,6 +6,11 @@ import {
   IUserRepository,
 } from '../../domain/user/ports/IUserRepository';
 import {
+  NEIGHBOR_LIMIT,
+  applyNeighborPrior,
+  meanNeighborVector,
+} from '../../domain/subway/models/neighbor-preference';
+import {
   ChoiceSnapshot,
   PreferenceModel,
   surveyPreference,
@@ -20,6 +25,36 @@ export class PreferenceModelService {
   ) {}
 
   async compute(
+    userId: string,
+    routePrefs: string[],
+    choices: ChoiceSnapshot[],
+  ): Promise<PreferenceModel> {
+    const model = await this.computeModel(userId, routePrefs, choices);
+    return this.withNeighborPrior(userId, routePrefs, model);
+  }
+
+  // 저장한 모델은 이웃 평균을 섞기 전 값이다. 섞은 값이 다시 이웃 평균에 들어가는 순환을 막는다
+  private async withNeighborPrior(
+    userId: string,
+    routePrefs: string[],
+    model: PreferenceModel,
+  ): Promise<PreferenceModel> {
+    try {
+      const vectors = await this.users.findNeighborPreferenceVectors?.(
+        userId,
+        model.vector,
+        NEIGHBOR_LIMIT,
+      );
+      const neighbors = vectors && meanNeighborVector(vectors);
+      return neighbors
+        ? applyNeighborPrior(model, routePrefs, neighbors.mean, neighbors.count)
+        : model;
+    } catch {
+      return model;
+    }
+  }
+
+  private async computeModel(
     userId: string,
     routePrefs: string[],
     choices: ChoiceSnapshot[],

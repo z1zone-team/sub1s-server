@@ -29,6 +29,12 @@ export interface IUserRepository {
     model: PreferenceModel,
     inputKey: string,
   ): Promise<void>;
+  /** 벡터에 가까운 사용자(본인과 공개 범위 PRIVATE 제외)의 저장된 10축 벡터를 가까운 순으로 돌려준다 */
+  findNeighborPreferenceVectors?(
+    userId: string,
+    vector: readonly number[],
+    limit: number,
+  ): Promise<number[][]>;
   findById(id: string): Promise<User | null>;
   findByIdWithLatestRank(id: string): Promise<UserWithLatestRank | null>;
   findByClerkId(clerkId: string): Promise<User | null>;
