@@ -1,5 +1,7 @@
 import { randomUUID } from 'node:crypto';
+import { ConfigService } from '@nestjs/config';
 import { RankingVisibility } from '@prisma/client';
+import { PreferenceModelService } from '../src/application/route/preference-model.service';
 import {
   PREFERENCE_AXES,
   PREFERENCE_VERSION,
@@ -22,6 +24,8 @@ describe('Neighbor preference vectors (e2e)', () => {
     hidden: { value: 0.402, visibility: 'PRIVATE' },
     near: { value: 0.411, visibility: 'PUBLIC' },
     anonymous: { value: 0.421, visibility: 'ANONYMOUS' },
+    extraA: { value: 0.431, visibility: 'PUBLIC' },
+    extraB: { value: 0.441, visibility: 'PUBLIC' },
     mid: { value: 0.601, visibility: 'PUBLIC' },
     far: { value: 0.911, visibility: 'PUBLIC' },
   };
@@ -68,11 +72,11 @@ describe('Neighbor preference vectors (e2e)', () => {
     const found = vectors
       .map((vector) => vector[0])
       .filter((value) => [...mine].some((m) => Math.abs(m - value) < 1e-4));
-    expect(found).toHaveLength(4);
-    expect(found[0]).toBeCloseTo(fixtures.near.value, 4);
-    expect(found[1]).toBeCloseTo(fixtures.anonymous.value, 4);
-    expect(found[2]).toBeCloseTo(fixtures.mid.value, 4);
-    expect(found[3]).toBeCloseTo(fixtures.far.value, 4);
+    const expected = ['near', 'anonymous', 'extraA', 'extraB', 'mid', 'far'];
+    expect(found).toHaveLength(expected.length);
+    expected.forEach((name, index) =>
+      expect(found[index]).toBeCloseTo(fixtures[name].value, 4),
+    );
     expect(vectors.every((vector) => vector.length === 10)).toBe(true);
   });
 
@@ -83,5 +87,19 @@ describe('Neighbor preference vectors (e2e)', () => {
       2,
     );
     expect(vectors).toHaveLength(2);
+  });
+
+  it('mixes the neighbor mean through the real service and stores the model without it', async () => {
+    const service = new PreferenceModelService(
+      new ConfigService({}),
+      repository,
+    );
+    const result = await service.compute(ids.me, [], []);
+    expect(result.neighbors).toBeGreaterThanOrEqual(5);
+    expect(result.vector.some((x) => x !== 0.5)).toBe(true);
+    expect(result.vector.every((x) => x >= 0 && x <= 1)).toBe(true);
+    const stored = await repository.findPreferenceModel(ids.me);
+    expect(stored!.model.vector).toEqual(filled(0.5));
+    expect(stored!.model.neighbors).toBeUndefined();
   });
 });
