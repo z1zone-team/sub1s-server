@@ -294,8 +294,8 @@ model TravelLog {
 model RankScore {
   id              String   @id @default(uuid()) @db.Uuid
   userId          String   @map("user_id") @db.Uuid
-  periodType      String   @map("period_type") @db.VarChar(20) // 'WEEKLY', 'MONTHLY'
-  periodKey       String   @map("period_key") @db.VarChar(20) // '2026-W40', '2026-10'
+  periodType      String   @map("period_type") @db.VarChar(20) // 'MONTHLY', 'ALL'
+  periodKey       String   @map("period_key") @db.VarChar(20) // '2026-10', 'ALL'
   totalPoints     Int      @default(0) @map("total_points")
   totalDistanceKm Float    @default(0) @map("total_distance_km") // 리더보드 노출용 누적 이동 거리(km)
   rankPosition    Int?     @map("rank_position")
