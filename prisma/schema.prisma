@@ -68,14 +68,12 @@ model User {
   @@map("users")
 }
 
-// 2. 사용자 취향 벡터 모델 (6차원 도메인 행동 피처 벡터)
+// 2. 사용자 취향 벡터 모델 (10축 취향 벡터)
 model UserPreference {
   userId String @id @map("user_id") @db.Uuid
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  // 6차원 도메인 행동 피처: [v_time, v_transfer, v_crowd, v_walk, v_ac, v_regular]
-  preferenceVector Unsupported("vector(6)")? @map("preference_vector")
-  // Versioned ten-axis model; never pad legacy behavioral values into importance.
+  // 10축 취향 벡터와 산출 근거 모델
   preferenceVectorV2 Unsupported("vector(10)")? @map("preference_vector_v2")
   preferenceModelV2 Json? @map("preference_model_v2")
 
@@ -280,7 +278,7 @@ model TravelLog {
   encryptedRoutePayload String? @map("encrypted_route_payload") @db.Text // Base64 AES-256-GCM 암호문 (상세 이동 궤적/정차역 로그)
   iv                    String? @map("iv") @db.VarChar(32) // Base64 Nonce/IV (12 bytes)
   authTag               String? @map("auth_tag") @db.VarChar(32) // Base64 GCM Auth Tag (16 bytes)
-  wrappedDek            String? @map("wrapped_dek") @db.VarChar(128) // Base64 3DES-CBC로 래핑된 DEK
+  wrappedDek            String? @map("wrapped_dek") @db.VarChar(128) // Base64 AES-256-CBC로 래핑된 DEK
 
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
 
