@@ -6,6 +6,7 @@ import { IUserRepository } from '../../domain/user/ports/IUserRepository';
 const users = {
   findPreferenceModel: jest.fn().mockResolvedValue(null),
   savePreferenceModel: jest.fn().mockResolvedValue(undefined),
+  findNeighborPreferenceVectors: jest.fn(),
 };
 const service = () =>
   new PreferenceModelService(
@@ -16,6 +17,7 @@ afterEach(() => {
   jest.restoreAllMocks();
   users.findPreferenceModel.mockClear();
   users.savePreferenceModel.mockClear();
+  users.findNeighborPreferenceVectors.mockReset();
 });
 it('sends only quantitative choices, validates the version and persists the model', async () => {
   const model = { ...surveyPreference(['LOW_FARE']), source: 'AI' };
@@ -66,4 +68,42 @@ it('keeps search available when AI is unavailable', async () => {
   expect(await service().compute('user', ['FAST'], [])).toEqual(
     surveyPreference(['FAST']),
   );
+});
+describe('neighbor prior', () => {
+  const neighbors = (count: number, value: number) =>
+    Array.from({ length: count }, () => Array(10).fill(value));
+
+  it('mixes the neighbor mean into the search model but stores the model without it', async () => {
+    jest.spyOn(global, 'fetch').mockRejectedValue(new Error('offline'));
+    users.findNeighborPreferenceVectors.mockResolvedValue(neighbors(5, 1));
+    const result = await service().compute('user', [], []);
+    expect(result.neighbors).toBe(5);
+    expect(result.vector).toEqual(Array(10).fill(0.75));
+    expect(users.findNeighborPreferenceVectors).toHaveBeenCalledWith(
+      'user',
+      surveyPreference([]).vector,
+      20,
+    );
+    expect(users.savePreferenceModel).toHaveBeenCalledWith(
+      'user',
+      surveyPreference([]),
+      expect.any(String),
+    );
+  });
+
+  it('does not use too few neighbors', async () => {
+    jest.spyOn(global, 'fetch').mockRejectedValue(new Error('offline'));
+    users.findNeighborPreferenceVectors.mockResolvedValue(neighbors(4, 1));
+    expect(await service().compute('user', [], [])).toEqual(
+      surveyPreference([]),
+    );
+  });
+
+  it('keeps search available when the neighbor query fails', async () => {
+    jest.spyOn(global, 'fetch').mockRejectedValue(new Error('offline'));
+    users.findNeighborPreferenceVectors.mockRejectedValue(new Error('db'));
+    expect(await service().compute('user', ['FAST'], [])).toEqual(
+      surveyPreference(['FAST']),
+    );
+  });
 });
