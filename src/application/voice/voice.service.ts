@@ -23,7 +23,7 @@ import {
   VoiceResultDto,
   VoiceRouteRecommendRequestDto,
 } from './dto';
-import { AiServiceAdapter, TtsStream } from './services/ai-service.adapter';
+import { AiServiceAdapter } from './services/ai-service.adapter';
 import {
   CURRENT_LOCATION,
   HOME_PLACE,
@@ -91,11 +91,6 @@ export class VoiceService {
     private readonly placeRepo: IUserPlaceRepository,
     private readonly placeService: PlaceService,
   ) {}
-
-  /** 브리핑 문장을 음성(MP3) 스트림으로 만든다 */
-  openTtsStream(text: string): Promise<TtsStream> {
-    return this.aiServiceAdapter.openTtsStream(text);
-  }
 
   /**
    * 전사문에서 의도 분석, 경로 탐색, 브리핑까지 처리합니다. 큐 작업(서버 워커)이 STT 이후에 부릅니다.
@@ -186,7 +181,7 @@ export class VoiceService {
       );
     }
 
-    // 7. AI 자연어 브리핑 및 TTS 음성 URL 생성
+    // 7. AI 자연어 브리핑 생성
     const briefing = await this.aiServiceAdapter.generateBriefing(
       intent,
       recommendedRoute,
@@ -199,7 +194,6 @@ export class VoiceService {
       interpretedIntent: intent,
       recommendedRoute,
       briefingText: briefing.briefingText,
-      audioTtsUrl: briefing.audioTtsUrl,
     };
   }
 

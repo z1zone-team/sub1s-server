@@ -27,7 +27,6 @@ const RECOMMENDATION = {
   },
   recommendedRoute: { mode: 'OPTIMAL' },
   briefingText: '안내합니다',
-  audioTtsUrl: '/api/v1/voice/tts/stream?text=a',
 };
 
 describe('VoicePipelineProcessor', () => {

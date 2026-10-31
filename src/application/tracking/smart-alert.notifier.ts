@@ -3,7 +3,6 @@ export interface SmartAlert {
   type: 'TRANSFER_PREPARE' | 'TRANSFER_NOW' | 'ALIGHT_PREPARE';
   message: string;
   recommendedDoor: string;
-  audioUrl?: string;
 }
 
 /**

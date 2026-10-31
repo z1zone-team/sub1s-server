@@ -219,8 +219,6 @@ describe('TravelLogService', () => {
       expect(res.logId).toBe('log-123');
       expect(res.totalDistanceKm).toBe(1.0);
       expect(res.earnedPoints).toBe(10); // 1.0 km * 10 = 10 pts
-      expect(res.distancePoints).toBe(10);
-      expect(res.onTimeBonus).toBe(0);
       expect(res.currentTotalPoints).toBe(10);
       expect(res.monthlyTotalPoints).toBe(10);
       expect(res.rideDurationSec).toBe(600);
@@ -326,7 +324,7 @@ describe('TravelLogService', () => {
       );
     });
 
-    it('awards 20 points bonus when sessionId is verified on-time', async () => {
+    it('gives only distance points even when the ride was on schedule', async () => {
       mockTrackingRepo.findById.mockResolvedValueOnce({
         sessionId: 'sess-abc',
         userId: 'user-1',
@@ -339,10 +337,7 @@ describe('TravelLogService', () => {
         sessionId: 'sess-abc',
       });
 
-      // 10 distance points + 20 on-time bonus = 30 pts
-      expect(res.earnedPoints).toBe(30);
-      expect(res.distancePoints).toBe(10);
-      expect(res.onTimeBonus).toBe(20);
+      expect(res.earnedPoints).toBe(10);
       expect(res.rideDurationSec).toBeGreaterThanOrEqual(110);
       expect(res.rideDurationSec).toBeLessThanOrEqual(112);
       expect(res.arrivalDeltaSec).toBeGreaterThanOrEqual(-10);
@@ -422,7 +417,7 @@ describe('TravelLogService', () => {
       });
     });
 
-    it('reports a positive arrival delta and no bonus when the ride ran late', async () => {
+    it('reports a positive arrival delta when the ride ran late', async () => {
       mockTrackingRepo.findById.mockResolvedValueOnce({
         sessionId: 'sess-late',
         userId: 'user-1',
@@ -435,7 +430,6 @@ describe('TravelLogService', () => {
         sessionId: 'sess-late',
       });
 
-      expect(res.onTimeBonus).toBe(0);
       expect(res.earnedPoints).toBe(10);
       expect(res.rideDurationSec).toBeGreaterThanOrEqual(720);
       expect(res.arrivalDeltaSec).toBeGreaterThanOrEqual(600);
@@ -453,7 +447,6 @@ describe('TravelLogService', () => {
 
       expect(res.rideDurationSec).toBeUndefined();
       expect(res.arrivalDeltaSec).toBeUndefined();
-      expect(res.onTimeBonus).toBe(0);
     });
 
     it('returns the monthly and all-time totals after the trip', async () => {
@@ -472,7 +465,7 @@ describe('TravelLogService', () => {
       expect(res.currentTotalPoints).toBe(9120);
     });
 
-    it("does not award the on-time bonus from another user's session", async () => {
+    it("does not award points from another user's session", async () => {
       mockTrackingRepo.findById.mockResolvedValueOnce({
         sessionId: 'sess-other',
         userId: 'user-2',
@@ -494,11 +487,7 @@ describe('TravelLogService', () => {
         destStationId: '02_221',
       });
 
-      expect(res).toMatchObject({
-        earnedPoints: 0,
-        distancePoints: 0,
-        onTimeBonus: 0,
-      });
+      expect(res).toMatchObject({ earnedPoints: 0 });
       expect(mockTravelLogRepo.saveTravelWithScores).toHaveBeenCalledWith(
         expect.objectContaining({
           earnedPoints: 0,
@@ -566,8 +555,6 @@ describe('TravelLogService', () => {
       expect(res).toMatchObject({
         logId: 'log-first',
         earnedPoints: 30,
-        distancePoints: 10,
-        onTimeBonus: 20,
         currentTotalPoints: 90,
         monthlyTotalPoints: 40,
       });
