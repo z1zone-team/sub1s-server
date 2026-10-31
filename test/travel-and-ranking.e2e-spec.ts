@@ -5,6 +5,7 @@ import { resolve } from 'node:path';
 import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { GlobalExceptionFilter } from '../src/common/filters/global-exception.filter';
+import { kstMonthKey } from '../src/common/utils/kst';
 import { ClerkAuthGuard } from '../src/infra/auth/clerk-auth.guard';
 import {
   ISubwayGraphRepository,
@@ -13,6 +14,8 @@ import {
 import { PrismaService } from '../src/infra/prisma/prisma.service';
 
 describe('Travel and Ranking (e2e)', () => {
+  // 점수는 현재 달(KST)의 키로 저장되므로 테스트도 실행하는 달로 조회한다
+  const nowMonth = () => kstMonthKey(Date.now());
   let app: INestApplication;
 
   const mockGraphRepository: ISubwayGraphRepository = {
@@ -193,7 +196,9 @@ describe('Travel and Ranking (e2e)', () => {
 
   it('GET /api/v1/travel/timeline returns timeline logs', async () => {
     const res = await request(app.getHttpServer())
-      .get('/api/v1/travel/timeline?year=2026&month=10')
+      .get(
+        `/api/v1/travel/timeline?year=${nowMonth().slice(0, 4)}&month=${Number(nowMonth().slice(5))}`,
+      )
       .expect(200);
 
     expect(res.body.success).toBe(true);
@@ -204,7 +209,7 @@ describe('Travel and Ranking (e2e)', () => {
 
   it('GET /api/v1/ranking returns leaderboard and user rank', async () => {
     const res = await request(app.getHttpServer())
-      .get('/api/v1/ranking?periodType=MONTHLY&periodKey=2026-10')
+      .get(`/api/v1/ranking?periodType=MONTHLY&periodKey=${nowMonth()}`)
       .expect(200);
 
     expect(res.body.success).toBe(true);
