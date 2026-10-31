@@ -15,15 +15,6 @@ describe('VoiceController', () => {
   };
 
   const mockVoiceService = {
-    openTtsStream: jest.fn().mockResolvedValue({
-      body: new ReadableStream<Uint8Array>({
-        start(controller) {
-          controller.enqueue(new Uint8Array([1, 2, 3]));
-          controller.close();
-        },
-      }),
-      contentType: 'audio/mpeg',
-    }),
   };
 
   const mockVoiceJobService = {
