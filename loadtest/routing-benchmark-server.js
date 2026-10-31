@@ -1,5 +1,6 @@
 // 서버 이미지의 컴파일된 엔진으로 다익스트라와 A*를 재는 일회용 스크립트. benchmark-routing.spec.ts와 같은 방식
 // (같은 난수, 질의 선택, 웜업 후 반복 평균)이다. 서버 컨테이너는 건드리지 않고 같은 이미지의 일회용 컨테이너에서 돌린다.
+// 시간은 프로세스의 CPU 사용 시간(avgMs)이다. CPU 0.4코어 제한 아래의 벽시계(wallAvgMs)는 대기 시간이 섞여 약 2.5배 부풀려진다.
 //
 //   scp loadtest/routing-benchmark-server.js sub1s:/tmp/
 //   ssh sub1s "sudo docker run --rm --cpus 0.4 --memory 768m --network none --entrypoint node -e REPEAT=100 -e WARM_UP=30 -v /tmp/routing-benchmark-server.js:/bench.js:ro ghcr.io/z1zone-team/sub1s-server:latest --expose-gc /bench.js"
@@ -71,8 +72,11 @@ for (const mode of ['OPTIMAL', 'COMFORTABLE']) {
       let visited = 0, relaxed = 0;
       for (const q of withMode) { const { stats } = engine.findRouteWithStatsSync(q); visited += stats.visitedNodes; relaxed += stats.relaxedEdges; }
       const t0 = process.hrtime.bigint();
+      const c0 = process.cpuUsage();
       for (let r = 0; r < REPEAT; r += 1) for (const q of withMode) engine.findRouteWithStatsSync(q);
-      const ms = Number(process.hrtime.bigint() - t0) / 1e6;
+      const wallMs = Number(process.hrtime.bigint() - t0) / 1e6;
+      const cu = process.cpuUsage(c0);
+      const ms = (cu.user + cu.system) / 1000;
       let heap = 'n/a';
       if (global.gc) {
         global.gc();
@@ -80,7 +84,7 @@ for (const mode of ['OPTIMAL', 'COMFORTABLE']) {
         for (let i = 0; i < ALLOCATION_SAMPLE; i += 1) engine.findRouteWithStatsSync(withMode[i % withMode.length]);
         heap = Math.round((process.memoryUsage().heapUsed - before) / 1024 / ALLOCATION_SAMPLE);
       }
-      rows.push({ mode, queryClass: label, engine: name, queries: withMode.length, avgMs: Number((ms / (REPEAT * withMode.length)).toFixed(4)),
+      rows.push({ mode, queryClass: label, engine: name, queries: withMode.length, avgMs: Number((ms / (REPEAT * withMode.length)).toFixed(4)), wallAvgMs: Number((wallMs / (REPEAT * withMode.length)).toFixed(4)),
         avgVisited: Number((visited / withMode.length).toFixed(1)), avgRelaxed: Number((relaxed / withMode.length).toFixed(1)), heapKb: heap });
     }
   }
