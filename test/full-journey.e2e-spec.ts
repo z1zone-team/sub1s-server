@@ -69,6 +69,7 @@ describe('Full User Journey (Mobile App ↔ Backend E2E)', () => {
     $connect: jest.fn().mockResolvedValue(undefined),
     $disconnect: jest.fn().mockResolvedValue(undefined),
     $queryRaw: jest.fn().mockResolvedValue([{ 1: 1 }]),
+    friendship: { findMany: jest.fn().mockResolvedValue([]) },
     user: {
       upsert: jest.fn().mockResolvedValue(mockUser),
       findUnique: jest.fn().mockResolvedValue(mockUser),
