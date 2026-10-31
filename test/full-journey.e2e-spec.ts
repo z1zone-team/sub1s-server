@@ -5,6 +5,7 @@ import { resolve } from 'node:path';
 import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { GlobalExceptionFilter } from '../src/common/filters/global-exception.filter';
+import { kstMonthKey } from '../src/common/utils/kst';
 import { ClerkAuthGuard } from '../src/infra/auth/clerk-auth.guard';
 import {
   ISubwayGraphRepository,
@@ -14,6 +15,8 @@ import { PrismaService } from '../src/infra/prisma/prisma.service';
 import { DataUpdateBatchService } from '../src/infra/batch/data-update-batch.service';
 
 describe('Full User Journey (Mobile App ↔ Backend E2E)', () => {
+  // 점수는 현재 달(KST)의 키로 저장되므로 테스트도 실행하는 달로 조회한다
+  const nowMonth = () => kstMonthKey(Date.now());
   let app: INestApplication;
   let batchService: DataUpdateBatchService;
 
@@ -337,7 +340,10 @@ describe('Full User Journey (Mobile App ↔ Backend E2E)', () => {
   it('Step 6-A: User Travel Timeline Inquiry (GET /api/v1/travel/timeline)', async () => {
     const res = await request(app.getHttpServer())
       .get('/api/v1/travel/timeline')
-      .query({ year: 2026, month: 10 })
+      .query({
+        year: Number(nowMonth().slice(0, 4)),
+        month: Number(nowMonth().slice(5)),
+      })
       .expect(200);
 
     expect(res.body.success).toBe(true);
@@ -373,7 +379,7 @@ describe('Full User Journey (Mobile App ↔ Backend E2E)', () => {
   it('Step 7: Community Leaderboard & Ranking Inquiry (GET /api/v1/ranking)', async () => {
     const res = await request(app.getHttpServer())
       .get('/api/v1/ranking')
-      .query({ periodType: 'MONTHLY', periodKey: '2026-10' })
+      .query({ periodType: 'MONTHLY', periodKey: nowMonth() })
       .expect(200);
 
     expect(res.body.success).toBe(true);
