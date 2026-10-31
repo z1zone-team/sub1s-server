@@ -2,7 +2,7 @@
 // (같은 난수, 질의 선택, 웜업 후 반복 평균)이다. 서버 컨테이너는 건드리지 않고 같은 이미지의 일회용 컨테이너에서 돌린다.
 //
 //   scp loadtest/routing-benchmark-server.js sub1s:/tmp/
-//   ssh sub1s "sudo docker run --rm --cpus 0.4 --memory 768m --network none --entrypoint node //     -e REPEAT=100 -e WARM_UP=30 -v /tmp/routing-benchmark-server.js:/bench.js:ro //     ghcr.io/z1zone-team/sub1s-server:latest --expose-gc /bench.js"
+//   ssh sub1s "sudo docker run --rm --cpus 0.4 --memory 768m --network none --entrypoint node -e REPEAT=100 -e WARM_UP=30 -v /tmp/routing-benchmark-server.js:/bench.js:ro ghcr.io/z1zone-team/sub1s-server:latest --expose-gc /bench.js"
 //
 // 한 줄 JSON(rows: 모드, 질의 종류, 엔진별 평균 ms, 방문 역, 완화 간선)을 출력한다. costMismatches가 0이어야 한다.
 // 사용자가 없는 시간에 돌리고, 끝나면 /tmp의 복사본을 지운다.
