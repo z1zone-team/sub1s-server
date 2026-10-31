@@ -168,21 +168,21 @@ describe('Friends and friends-only ranking (e2e)', () => {
       const res = await ranking(false).expect(200);
 
       expect(res.body.data.friendsOnly).toBe(false);
-      expect(res.body.data.totalUsers).toBe(4);
+      expect(res.body.data.totalUsers).toBe(5);
       expect(res.body.data.leaderboard.some((item: { userId?: string }) => item.userId === stranger.id)).toBe(true);
     });
 
-    it('keeps only me and my friends, shows an anonymous friend by nickname and hides a private friend', async () => {
+    it('keeps only me and my friends and shows an anonymous and a private friend by nickname', async () => {
       const res = await ranking(true).expect(200);
       const board = res.body.data.leaderboard as { userId?: string; nickname: string; isMe: boolean }[];
 
       expect(res.body.data.friendsOnly).toBe(true);
-      expect(board.map((item) => item.userId)).toEqual([friend.id, me.id, anonFriend.id]);
+      expect(board.map((item) => item.userId)).toEqual([friend.id, me.id, anonFriend.id, privateFriend.id]);
       expect(board[2].nickname).toBe(anonFriend.nickname);
+      expect(board[3].nickname).toBe(privateFriend.nickname);
       expect(res.body.data.myRank).toBe(2);
-      expect(res.body.data.totalUsers).toBe(3);
+      expect(res.body.data.totalUsers).toBe(4);
       expect(JSON.stringify(res.body)).not.toContain(stranger.id);
-      expect(JSON.stringify(res.body)).not.toContain(privateFriend.id);
     });
 
     it('shows the anonymous user as anonymous to a non-friend in the full ranking', async () => {

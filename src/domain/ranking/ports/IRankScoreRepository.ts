@@ -19,15 +19,17 @@ export interface VisibleRankingPageParams {
   periodKey: string;
   /** 보는 사람. 비공개여도 본인은 항상 순위에 들어간다 */
   viewerId: string;
-  /** 있으면 이 사용자들과 본인만 순위에 들어간다 */
-  friendIds?: string[];
+  /** 보는 사람의 친구. 공개 범위와 상관없이 항상 순위에 들어간다 */
+  friendIds: string[];
+  /** true면 본인과 친구만 순위에 들어간다. false면 친구가 아닌 사람은 공개 범위(비공개 제외)를 따른다 */
+  friendsOnly: boolean;
   offset: number;
   limit: number;
 }
 
 export interface VisibleRankingPage {
   items: RankScoreWithRankingUser[];
-  /** 순위에 들어가는 사용자 수(비공개 제외) */
+  /** 순위에 들어가는 사용자 수(친구가 아닌 비공개 제외) */
   total: number;
   /** 보는 사람의 순위와 점수. 이 기간에 점수가 없으면 없다 */
   mine?: { rank: number; points: number };
@@ -35,7 +37,7 @@ export interface VisibleRankingPage {
 
 export interface IRankScoreRepository {
   /**
-   * 점수, 거리, 사용자 ID 순으로 정렬한 순위의 한 쪽. 비공개 사용자는 빼고(본인은 포함) 순위를 매기며
+   * 점수, 거리, 사용자 ID 순으로 정렬한 순위의 한 쪽. 친구가 아닌 비공개 사용자는 빼고(본인과 친구는 포함) 순위를 매기며
    * 전체를 읽지 않고 DB에서 자르고 센다
    */
   findVisibleRankingPage(

@@ -8,11 +8,12 @@ import { RankingService } from './ranking.service';
 
 /** 저장소가 DB에서 하는 일(비공개 제외, 본인 포함, 친구만, 자르기, 순위 세기)을 메모리에서 흉내 낸다 */
 const fakePage = (scores: any[]) => async (params: any) => {
-  const friends = params.friendIds ? new Set<string>(params.friendIds) : undefined;
+  const friends = new Set<string>(params.friendIds);
   const visible = scores.filter(
     (item) =>
       item.userId === params.viewerId ||
-      (item.user?.rankingVisibility !== 'PRIVATE' && (!friends || friends.has(item.userId))),
+      friends.has(item.userId) ||
+      (!params.friendsOnly && item.user?.rankingVisibility !== 'PRIVATE'),
   );
   const mineIndex = visible.findIndex((item) => item.userId === params.viewerId);
   return {
@@ -59,35 +60,45 @@ describe('RankingService friendsOnly', () => {
 
   const friends = ['friend-a', 'friend-anon', 'friend-private', 'friend-b'];
 
-  it('ranks only me and my friends', async () => {
+  it('ranks me and all my friends, including a private one', async () => {
     const { service } = build(friends);
 
     const res = await service.getRanking('me', query(true));
 
     expect(res.friendsOnly).toBe(true);
-    expect(res.leaderboard.map((item) => item.rank)).toEqual([1, 2, 3, 4]);
-    expect(res.leaderboard.map((item) => item.isMe)).toEqual([false, true, false, false]);
+    expect(res.leaderboard.map((item) => item.rank)).toEqual([1, 2, 3, 4, 5]);
+    expect(res.leaderboard.map((item) => item.isMe)).toEqual([false, true, false, false, false]);
     expect(res.myRank).toBe(2);
-    expect(res.totalUsers).toBe(4);
+    expect(res.totalUsers).toBe(5);
     expect(JSON.stringify(res)).not.toContain('stranger');
   });
 
-  it('shows the nickname of an anonymous friend and hides a private friend', async () => {
+  it('shows an anonymous friend and a private friend by nickname', async () => {
     const { service } = build(friends);
 
     const res = await service.getRanking('me', query(true));
 
     const anon = res.leaderboard.find((item) => item.userId === 'friend-anon');
     expect(anon).toMatchObject({ nickname: 'nick-friend-anon', isAnonymous: false });
-    expect(JSON.stringify(res)).not.toContain('friend-private');
+    const priv = res.leaderboard.find((item) => item.userId === 'friend-private');
+    expect(priv).toMatchObject({ nickname: 'nick-friend-private', isAnonymous: false });
   });
 
-  it('keeps hiding an anonymous stranger in the full ranking', async () => {
-    const { service, friendRepo } = build([]);
+  it('keeps friends visible in the full ranking and applies the setting to strangers only', async () => {
+    const { service } = build(friends);
 
     const res = await service.getRanking('me', query(false));
 
-    expect(friendRepo.findFriendIds).not.toHaveBeenCalled();
+    expect(res.leaderboard.find((item) => item.userId === 'friend-anon')).toMatchObject({ isAnonymous: false });
+    expect(res.leaderboard.find((item) => item.userId === 'friend-private')).toBeDefined();
+    expect(res.leaderboard.find((item) => item.userId === 'stranger')).toBeDefined();
+  });
+
+  it('keeps hiding an anonymous stranger in the full ranking', async () => {
+    const { service } = build([]);
+
+    const res = await service.getRanking('me', query(false));
+
     expect(res.friendsOnly).toBe(false);
     expect(res.leaderboard.find((item) => item.rank === 3)).toMatchObject({ isMe: true });
     expect(res.leaderboard.find((item) => item.nickname === '익명')).toBeDefined();

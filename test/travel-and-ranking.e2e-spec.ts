@@ -56,6 +56,7 @@ describe('Travel and Ranking (e2e)', () => {
   const mockPrisma = {
     $connect: jest.fn().mockResolvedValue(undefined),
     $disconnect: jest.fn().mockResolvedValue(undefined),
+    friendship: { findMany: jest.fn().mockResolvedValue([]) },
     user: {
       upsert: jest
         .fn()

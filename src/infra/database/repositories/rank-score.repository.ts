@@ -22,16 +22,16 @@ export class RankScoreRepository implements IRankScoreRepository {
   async findVisibleRankingPage(
     params: VisibleRankingPageParams,
   ): Promise<VisibleRankingPage> {
-    const { periodType, periodKey, viewerId, friendIds } = params;
+    const { periodType, periodKey, viewerId, friendIds, friendsOnly } = params;
     const visible: Prisma.RankScoreWhereInput = {
       periodType,
       periodKey,
       OR: [
         { userId: viewerId },
-        {
-          user: { rankingVisibility: { not: 'PRIVATE' } },
-          ...(friendIds ? { userId: { in: friendIds } } : {}),
-        },
+        { userId: { in: friendIds } },
+        ...(friendsOnly
+          ? []
+          : [{ user: { rankingVisibility: { not: 'PRIVATE' as const } } }]),
       ],
     };
 
