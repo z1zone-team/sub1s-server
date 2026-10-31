@@ -153,8 +153,6 @@ export class TravelLogService {
     const totalDistanceKm = route.totalDistanceKm;
     const transferCount = route.transferCount;
 
-    // Check on-time completion bonus if sessionId is provided
-    let isOnTime = false;
     let rideDurationSec: number | undefined;
     let arrivalDeltaSec: number | undefined;
     let routeMode: RouteMode | undefined;
@@ -168,10 +166,6 @@ export class TravelLogService {
           const chosenMode = session.routeOption?.mode;
           if (isRouteMode(chosenMode)) routeMode = chosenMode;
           arrivalDeltaSec = Math.round(actualSec - plannedSec);
-          // Within +-5 minutes (+-300 seconds)
-          if (Math.abs(actualSec - plannedSec) <= 300) {
-            isOnTime = true;
-          }
         }
       } catch (err) {
         this.logger.warn(`Could not verify session ${dto.sessionId}: ${err}`);
@@ -183,9 +177,9 @@ export class TravelLogService {
       dto.sessionId && session && session.userId === userId
         ? dto.sessionId
         : undefined;
-    const { distancePoints, onTimeBonus, earnedPoints } = verifiedSessionId
-      ? ScorePolicy.calculateBreakdown(totalDistanceKm, isOnTime)
-      : { distancePoints: 0, onTimeBonus: 0, earnedPoints: 0 };
+    const earnedPoints = verifiedSessionId
+      ? ScorePolicy.calculateEarnedPoints(totalDistanceKm)
+      : 0;
 
     // 3-Tier Hybrid Encryption of detailed route trajectory
     const sensitivePayload = JSON.stringify({
@@ -262,8 +256,6 @@ export class TravelLogService {
       totalDistanceKm,
       transferCount,
       earnedPoints,
-      distancePoints,
-      onTimeBonus,
       currentTotalPoints: allScore.totalPoints,
       monthlyTotalPoints: monthlyScore.totalPoints,
       rideDurationSec,
@@ -291,18 +283,11 @@ export class TravelLogService {
       userId,
       kstMonthKey(Date.now()),
     );
-    const { distancePoints } = ScorePolicy.calculateBreakdown(
-      log.totalDistanceKm,
-      false,
-    );
-    const distanceShare = Math.min(distancePoints, log.earnedPoints);
     return {
       logId: log.id,
       totalDistanceKm: log.totalDistanceKm,
       transferCount: log.transferCount,
       earnedPoints: log.earnedPoints,
-      distancePoints: distanceShare,
-      onTimeBonus: log.earnedPoints - distanceShare,
       currentTotalPoints: totals.allPoints,
       monthlyTotalPoints: totals.monthlyPoints,
     };
