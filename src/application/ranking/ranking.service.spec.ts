@@ -5,11 +5,12 @@ import { RankingService } from './ranking.service';
 
 /** 저장소가 DB에서 하는 일(비공개 제외, 본인 포함, 친구만, 자르기, 순위 세기)을 메모리에서 흉내 낸다 */
 const fakePage = (scores: any[]) => async (params: any) => {
-  const friends = params.friendIds ? new Set<string>(params.friendIds) : undefined;
+  const friends = new Set<string>(params.friendIds);
   const visible = scores.filter(
     (item) =>
       item.userId === params.viewerId ||
-      (item.user?.rankingVisibility !== 'PRIVATE' && (!friends || friends.has(item.userId))),
+      friends.has(item.userId) ||
+      (!params.friendsOnly && item.user?.rankingVisibility !== 'PRIVATE'),
   );
   const mineIndex = visible.findIndex((item) => item.userId === params.viewerId);
   return {
@@ -104,7 +105,8 @@ describe('RankingService', () => {
       periodType: 'MONTHLY',
       periodKey: '2026-10',
       viewerId: 'user-me',
-      friendIds: undefined,
+      friendIds: [],
+      friendsOnly: false,
       offset: 40,
       limit: 20,
     });

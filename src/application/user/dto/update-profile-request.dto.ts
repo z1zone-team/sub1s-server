@@ -43,7 +43,7 @@ export class UpdateProfileRequestDto {
   nickname?: string;
 
   @ApiPropertyOptional({
-    description: '이동 기록 공개 범위. PUBLIC 전체, ANONYMOUS 익명, PRIVATE 비공개',
+    description: '이동 기록 공개 범위. 친구에게는 항상 공개하고, 친구가 아닌 사람에게 PUBLIC 전체, ANONYMOUS 익명, PRIVATE 비공개',
     enum: RankingVisibility,
   })
   @IsOptional()

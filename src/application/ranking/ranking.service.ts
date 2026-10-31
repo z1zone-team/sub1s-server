@@ -24,10 +24,9 @@ export class RankingService {
     userId: string,
     query: RankingQueryDto,
   ): Promise<RankingResponseDto> {
-    const friendIds = query.friendsOnly
-      ? await this.friendRepo.findFriendIds(userId)
-      : undefined;
-    const friendSet = friendIds ? new Set(friendIds) : undefined;
+    // 친구는 공개 범위와 상관없이 항상 보이고, 공개 범위는 친구가 아닌 사람에게만 적용한다
+    const friendIds = await this.friendRepo.findFriendIds(userId);
+    const friendSet = new Set(friendIds);
 
     const page = query.page ?? 1;
     const limit = query.limit ?? 20;
@@ -38,6 +37,7 @@ export class RankingService {
         periodKey: query.periodKey,
         viewerId: userId,
         friendIds,
+        friendsOnly: query.friendsOnly ?? false,
         offset: startIndex,
         limit,
       });
@@ -51,7 +51,7 @@ export class RankingService {
         isMe,
       };
 
-      const isFriend = friendSet?.has(item.userId) ?? false;
+      const isFriend = friendSet.has(item.userId);
       if (!isMe && !isFriend && item.user?.rankingVisibility === 'ANONYMOUS') {
         return { ...base, nickname: ANONYMOUS_NICKNAME, isAnonymous: true };
       }
