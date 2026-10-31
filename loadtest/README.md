@@ -77,3 +77,57 @@ k6 run -e BASE_URL=https://서버주소 loadtest/route-search.k6.js ; ssh sub1s 
 - 테스트 모드는 외부 API를 끄므로 공휴일 확인을 건너뛰고(평일 취급) 운행 공지가 `UNKNOWN`이다. 두 데이터는 서버 안에 캐시가 있어 영향은 작지만 결과가 실제보다 **약간 낙관적**일 수 있다.
 - PC에서 보내므로 인터넷 지연이 섞인다(서버 안의 처리 시간보다 크게 보인다).
 - 부하 테스트는 경로 검색만 잰다. 음성 검색(Whisper), 안내 중 웹소켓, 로그인은 따로 해야 한다.
+
+## CPU 용량 근거 측정
+
+호스트는 1 vCPU인데 컨테이너 CPU 한도의 합은 2.0이다(server 0.40, ai 0.60, osrm 0.30, postgres 0.30, server-mock 0.20, nginx 0.10, valkey 0.10). "한도가 동시에 차는 일이 드물다"는 짐작을 수치로 바꾸려고 두 가지를 잰다.
+
+1. **평상시(`PHASE=normal`)**: 경로 검색을 낮은 속도로, 음성 인식을 가끔 걸었을 때 컨테이너 실사용 CPU의 합이 1 vCPU 안에 머무는가.
+2. **피크 겹침(`PHASE=peak`)**: 경로 검색을 단계적으로 올리면서 음성 인식(Whisper)을 쉬지 않고 걸었을 때 어디서 한계가 오는가(응답 지연, 오류, 호스트 CPU 포화, 스왑).
+
+스크립트는 `capacity.k6.js`(부하), `../../sub1s-deploy/loadtest.sh observe`(서버 CPU 기록), `analyze-observe.py`(집계)다.
+
+### 준비
+
+- 위 [준비](#준비)의 1~3과 같다(k6 설치, 테스트 모드 켜기, 사용자가 없는 시간).
+- 음성 시나리오를 함께 돌리려면 로그인 토큰(`TOKEN`)과 음성 시료(`AUDIO_FILE`, m4a 2MB 이하)가 필요하다. 없으면 경로 검색만 돈다. 토큰 값은 기록이나 화면에 남기지 않는다.
+- `loadtest.sh observe`가 호스트 CPU와 steal 열을 함께 기록하려면 서버의 `sub1s-deploy`에 이 변경이 반영돼 있어야 한다. 옛 버전이면 컨테이너 열만 기록된다.
+
+### 실행
+
+```bash
+# 1) 서버: 테스트 모드와 기록 시작 (평상시 10분이면 기록 15m이면 충분)
+ssh sub1s "cd ~/sub1s-deploy && ./loadtest.sh on 60m"
+ssh sub1s "cd ~/sub1s-deploy && nohup ./loadtest.sh observe 15m > ~/observe-normal.tsv 2>&1 &"
+
+# 2) PC: 평상시 부하
+k6 run --summary-export results/capacity-normal.json -e PHASE=normal -e DURATION_MINUTES=10 \
+  -e BASE_URL=https://서버주소 -e TOKEN=$TOKEN -e AUDIO_FILE=sample.m4a loadtest/capacity.k6.js
+
+# 3) 기록이 끝나면 받아서 집계
+scp sub1s:~/observe-normal.tsv results/
+python loadtest/analyze-observe.py results/observe-normal.tsv
+```
+
+피크는 같은 순서로 `PHASE=peak`, 기록 파일은 `observe-peak.tsv`로 한다(기록 시간은 `PEAK_STEPS`와 `STEP_SECONDS`로 정해지는 시간보다 넉넉히, 기본값이면 10분 안팎이라 `15m`). 끝나면 서버를 되돌린다(`./loadtest.sh off`).
+
+피크에서 서버가 한계를 넘으면 스왑을 쓰거나 응답이 느려질 수 있으니 처음에는 `PEAK_STEPS=5,10`처럼 낮게 시작하고 `observe`의 사용 가능 메모리 경고(500MB 미만)를 본다.
+
+### 결과 읽기와 문서에 쓰는 법
+
+`analyze-observe.py`가 보여 주는 것:
+
+- 컨테이너별 평균, p95, 최대 CPU와 한도 대비 최대 비율. 한도를 넘는 컨테이너가 있으면 한도가 실제로 병목이다.
+- **컨테이너 CPU 합**의 평균, p95, 최대와 호스트 1 vCPU를 넘은 기록의 비율. 평상시에 이 비율이 0에 가깝고 합의 p95가 1.0보다 충분히 작으면 "한도 합이 2.0이어도 동시에 차지 않는다"의 근거가 된다.
+- 호스트 전체 CPU 사용률과 포화(95% 이상) 비율, steal. 피크에서 포화 비율이 높으면 겹쳤을 때 서로 느려진다는 근거다.
+- 합이 가장 컸던 시각의 컨테이너 구성: 어떤 조합이 겹치면 한계가 오는지.
+
+문서의 "드물다고 생각해서" 문장은 측정 결과로 바꾼다. 예: "평상시 부하(경로 검색 초당 3건, 음성 10분당 5건)에서 컨테이너 CPU 합은 평균 0.xx, p95 0.xx vCPU로 1 vCPU를 넘은 기록이 x%였고, 경로 검색 초당 N건과 음성 인식을 겹친 피크에서는 합이 최대 x.xx vCPU, 호스트 CPU 포화 x%, 경로 검색 p95 xxx ms였다."
+
+### 해석할 때 알아둘 것
+
+- `docker stats`의 CPU%는 코어 하나가 100%다. 합이 1.0을 넘는 기록은 컨테이너 한도가 겹쳐 호스트 1 vCPU를 나눠 쓴 구간이다(한도는 상한일 뿐 보장이 아니다).
+- 음성 인식(Whisper small)은 시료 길이에 따라 CPU 시간이 달라진다. 실제 사용 길이에 가까운 시료(5~10초 발화)를 쓴다.
+- 테스트 모드에서는 열차 위치 폴링과 푸시 스케줄러가 꺼져 있어 실제 서비스보다 서버 컨테이너의 평상시 CPU가 **약간 낮게** 나올 수 있다. 문서에 이 점을 함께 적는다.
+- 같은 조건으로 다시 재면 결과가 조금 다르다. `SEED`를 고정하고, 근거로 쓸 때는 두 번 이상 재서 범위를 적는다.
+- 웹소켓(안내 중 실시간 위치), 로그인, 랭킹 조회는 이 스크립트에 없다. 이 부하는 경로 검색과 음성 인식 대비 작다고 보지만 측정한 것은 아니다.
