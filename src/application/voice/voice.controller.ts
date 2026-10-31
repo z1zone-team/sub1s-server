@@ -6,15 +6,11 @@ import {
   HttpStatus,
   Param,
   Post,
-  Query,
-  StreamableFile,
   UploadedFile,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { Readable } from 'node:stream';
-import type { ReadableStream as NodeReadableStream } from 'node:stream/web';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -28,7 +24,6 @@ import { kstNowIso } from '../../common/utils/kst';
 import { AuthUser, CurrentUser } from '../../infra/auth/current-user.decorator';
 import { ClerkAuthGuard } from '../../infra/auth/clerk-auth.guard';
 import {
-  TtsStreamQueryDto,
   VoiceJobIdParamDto,
   VoiceJobStatusResponseDto,
   VoiceJobSubmitResponseDto,
@@ -45,30 +40,6 @@ export class VoiceController {
     private readonly voiceService: VoiceService,
     private readonly voiceJobService: VoiceJobService,
   ) {}
-
-  @Get('tts/stream')
-  @UseGuards(ClerkAuthGuard)
-  @ApiOperation({
-    summary: '브리핑 문장을 음성(MP3)으로 스트리밍',
-    description:
-      '음성 경로 추천 응답의 `audioTtsUrl`이 가리키는 경로입니다. AI 서비스의 음성 합성을 서버가 중계하며 AI 서비스는 외부에 공개하지 않습니다. 로그인이 필요하고 문장은 1~500자입니다.',
-  })
-  @SwaggerResponse({ status: 200, description: 'audio/mpeg 스트림' })
-  @SwaggerResponse({ status: 400, description: '문장이 비었거나 500자 초과' })
-  @SwaggerResponse({ status: 401, description: '로그인 필요' })
-  @SwaggerResponse({
-    status: 503,
-    description: 'AI 서비스를 쓸 수 없음 (AI_SERVICE_UNAVAILABLE)',
-  })
-  async streamTts(@Query() query: TtsStreamQueryDto): Promise<StreamableFile> {
-    const { body, contentType } = await this.voiceService.openTtsStream(
-      query.text,
-    );
-    return new StreamableFile(
-      Readable.fromWeb(body as unknown as NodeReadableStream<Uint8Array>),
-      { type: contentType, disposition: 'inline; filename="speech.mp3"' },
-    );
-  }
 
   @Post('jobs')
   @HttpCode(HttpStatus.ACCEPTED)

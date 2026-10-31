@@ -71,7 +71,6 @@ describe('VoiceService', () => {
             generateBriefing: jest.fn().mockResolvedValue({
               briefingText:
                 '강남역에서 을지로입구역까지 최적 경로로 안내합니다.',
-              audioTtsUrl: '/api/v1/voice/tts/stream?text=test',
             }),
           },
         },
@@ -138,7 +137,6 @@ describe('VoiceService', () => {
     expect(result.interpretedIntent.destStationName).toBe('을지로입구');
     expect(result.recommendedRoute.mode).toBe('OPTIMAL');
     expect(result.briefingText).toContain('강남역에서 을지로입구역');
-    expect(result.audioTtsUrl).toBeDefined();
   });
 
   it('should throw BadRequestException if file is missing or empty', () => {

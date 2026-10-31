@@ -6,7 +6,6 @@ import { VoiceJobService } from './voice-job.service';
 
 describe('VoiceController', () => {
   let controller: VoiceController;
-  let voiceService: VoiceService;
   let voiceJobService: VoiceJobService;
 
   const mockUser: AuthUser = {
@@ -52,16 +51,7 @@ describe('VoiceController', () => {
     }).compile();
 
     controller = module.get<VoiceController>(VoiceController);
-    voiceService = module.get<VoiceService>(VoiceService);
     voiceJobService = module.get<VoiceJobService>(VoiceJobService);
-  });
-
-  it('streamTts는 AI 서비스의 오디오를 audio/mpeg 스트림으로 돌려준다', async () => {
-    const file = await controller.streamTts({ text: '안내합니다' });
-
-    expect(voiceService.openTtsStream).toHaveBeenCalledWith('안내합니다');
-    expect(file.getHeaders().type).toBe('audio/mpeg');
-    expect(file.getHeaders().disposition).toContain('inline');
   });
 
   it('submitJob은 큐에 넣고 작업 ID를 봉투에 담아 돌려준다', async () => {

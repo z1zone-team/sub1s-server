@@ -15,7 +15,6 @@ export interface VoiceRouteRecommendResponseDto {
   interpretedIntent: InterpretedIntentDto;
   recommendedRoute: SubwayRouteOptionDto;
   briefingText: string;
-  audioTtsUrl?: string;
 }
 
 /** 해석한 출발지나 도착지. 앱이 후보를 고른 뒤 경로를 검색할 때 그대로 쓴다. 역이면 `stationId`, 현재 위치나 장소면 좌표 */
