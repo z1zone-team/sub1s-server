@@ -10,6 +10,8 @@ import { LineMapController } from './line-map.controller';
 import { TravelLogController } from './travel-log.controller';
 import { RankingNotifier } from './ranking.notifier';
 import { TravelLogService } from './travel-log.service';
+import { UserTravelController } from './user-travel.controller';
+import { UserTravelService } from './user-travel.service';
 
 @Module({
   imports: [
@@ -20,9 +22,10 @@ import { TravelLogService } from './travel-log.service';
     TrackingModule,
     WebsocketModule,
   ],
-  controllers: [TravelLogController, LineMapController],
+  controllers: [TravelLogController, LineMapController, UserTravelController],
   providers: [
     TravelLogService,
+    UserTravelService,
     { provide: RankingNotifier, useExisting: WebsocketRankingNotifier },
   ],
   exports: [TravelLogService],
