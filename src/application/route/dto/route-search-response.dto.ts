@@ -272,7 +272,7 @@ export class SubwayRouteOptionDto {
 
   @ApiProperty({
     description:
-      '이 옵션의 객관적 장점. 같은 응답의 다른 옵션과 비교해 정해진다. FASTEST 가장 빠름, FEWEST_TRANSFERS 환승 최소, NO_TRANSFER 환승 없음, LEAST_CROWDED 가장 한산함, LEAST_WALK 걷기 최소, CHEAPEST 최저 요금, WEAK_AC_CAR 약냉방칸이 있는 노선(1, 3~8호선)을 탑승 시간의 절반 이상 이용. 직접 도보 옵션은 빈 배열',
+      '이 옵션의 객관적 장점. 같은 응답의 다른 옵션과 비교해 정해진다. FASTEST 가장 빠름, FEWEST_TRANSFERS 환승 최소, NO_TRANSFER 환승 없음, LEAST_CROWDED 가장 한산함, LEAST_WALK 걷기 최소, CHEAPEST 최저 요금, WEAK_AC_CAR 약냉방칸이 있는 노선(1, 3~8호선)을 탑승 시간의 절반 이상 이용. LEAST_VERTICAL 오르내리는 높이 최소(후보 간 차이 6m 이상), BEST_ELEVATOR_ACCESS 승하차·환승 역의 엘리베이터 인접 문 자료 비율 최고(시설 운행·무계단 동선 보장 아님). 두 태그는 로그인 검색의 전체 후보에 해당 축 자료가 있을 때만 비교하며 동률 최상위 모두에 부여. 직접 도보 옵션은 빈 배열',
     enum: ROUTE_HIGHLIGHTS,
     isArray: true,
     example: ['FEWEST_TRANSFERS', 'WEAK_AC_CAR'],
