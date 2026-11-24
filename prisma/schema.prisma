@@ -74,8 +74,11 @@ model UserPreference {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   // 10축 취향 벡터와 산출 근거 모델
-  preferenceVectorV2 Unsupported("vector(10)")? @map("preference_vector_v2")
-  preferenceModelV2 Json? @map("preference_model_v2")
+  preferenceVectorV2     Unsupported("vector(10)")?  @map("preference_vector_v2")
+  preferenceModelV2      Json?                       @map("preference_model_v2")
+  // 취향 문장 임베딩(AI 서버 e5-small)과 입력 해시. 이웃 선호 검색에서 10축 L2 후보를 다시 정렬하는 데 쓴다
+  preferenceEmbedding    Unsupported("vector(384)")? @map("preference_embedding")
+  preferenceEmbeddingKey String?                     @map("preference_embedding_key") @db.VarChar(64)
 
   preferredMode String   @default("OPTIMAL") @map("preferred_mode") @db.VarChar(20) // OPTIMAL, COMFORTABLE, PERSONAL
   purposes      String[] @default([])

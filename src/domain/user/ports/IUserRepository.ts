@@ -29,12 +29,26 @@ export interface IUserRepository {
     model: PreferenceModel,
     inputKey: string,
   ): Promise<void>;
-  /** 벡터에 가까운 사용자(본인과 공개 범위 PRIVATE 제외)의 저장된 10축 벡터를 가까운 순으로 돌려준다 */
+  /**
+   * 벡터에 가까운 사용자(본인과 공개 범위 PRIVATE 제외)의 저장된 10축 벡터를 가까운 순으로 돌려준다.
+   * embedding을 주면 10축 L2 거리로 NEIGHBOR_CANDIDATE_LIMIT명을 먼저 뽑고, 그 안에서 취향 문장 임베딩의
+   * 코사인 거리 순(임베딩이 없는 사용자는 뒤, 같으면 L2 순)으로 limit명을 고른다
+   */
   findNeighborPreferenceVectors?(
     userId: string,
     vector: readonly number[],
     limit: number,
+    embedding?: readonly number[],
   ): Promise<number[][]>;
+  /** 취향 문장 임베딩과 그 입력 해시. 없으면 null */
+  findPreferenceEmbedding?(
+    userId: string,
+  ): Promise<{ embedding: number[]; inputKey: string } | null>;
+  savePreferenceEmbedding?(
+    userId: string,
+    embedding: readonly number[],
+    inputKey: string,
+  ): Promise<void>;
   findById(id: string): Promise<User | null>;
   findByIdWithLatestRank(id: string): Promise<UserWithLatestRank | null>;
   findByClerkId(clerkId: string): Promise<User | null>;

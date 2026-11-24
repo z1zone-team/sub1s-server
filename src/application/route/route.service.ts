@@ -196,6 +196,12 @@ export class RouteService {
             history.flatMap((record) =>
               record.choiceSnapshot ? [record.choiceSnapshot] : [],
             ),
+            {
+              purposes: preferences.purposes,
+              recentModes: history.flatMap((record) =>
+                isRouteMode(record.routeMode) ? [record.routeMode] : [],
+              ),
+            },
           )
         : surveyPreference(preferences.routePrefs);
       return {

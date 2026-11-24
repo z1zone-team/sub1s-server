@@ -7,6 +7,8 @@ const users = {
   findPreferenceModel: jest.fn().mockResolvedValue(null),
   savePreferenceModel: jest.fn().mockResolvedValue(undefined),
   findNeighborPreferenceVectors: jest.fn(),
+  findPreferenceEmbedding: jest.fn().mockResolvedValue(null),
+  savePreferenceEmbedding: jest.fn().mockResolvedValue(undefined),
 };
 const service = () =>
   new PreferenceModelService(
@@ -18,6 +20,8 @@ afterEach(() => {
   users.findPreferenceModel.mockClear();
   users.savePreferenceModel.mockClear();
   users.findNeighborPreferenceVectors.mockReset();
+  users.findPreferenceEmbedding.mockReset().mockResolvedValue(null);
+  users.savePreferenceEmbedding.mockClear();
 });
 it('sends only quantitative choices, validates the version and persists the model', async () => {
   const model = { ...surveyPreference(['LOW_FARE']), source: 'AI' };
@@ -48,12 +52,10 @@ it('sends only quantitative choices, validates the version and persists the mode
   );
 });
 it('rejects wrong axes and nonfinite values instead of using a corrupt stored model', async () => {
-  jest
-    .spyOn(global, 'fetch')
-    .mockResolvedValue({
-      ok: true,
-      json: async () => ({ ...surveyPreference([]), axisKeys: ['fare'] }),
-    } as Response);
+  jest.spyOn(global, 'fetch').mockResolvedValue({
+    ok: true,
+    json: async () => ({ ...surveyPreference([]), axisKeys: ['fare'] }),
+  } as Response);
   expect(await service().compute('user', ['LOW_FARE'], [])).toEqual(
     surveyPreference(['LOW_FARE']),
   );
@@ -105,5 +107,118 @@ describe('neighbor prior', () => {
     expect(await service().compute('user', ['FAST'], [])).toEqual(
       surveyPreference(['FAST']),
     );
+  });
+});
+
+describe('preference embedding for neighbor selection', () => {
+  const embedding = Array.from({ length: 384 }, (_, i) => (i === 0 ? 1 : 0));
+  const neighbors = Array.from({ length: 5 }, () => Array(10).fill(1));
+  const context = {
+    purposes: ['TRAVEL', 'COMMUTE'],
+    recentModes: ['FEWEST_TRANSFERS', 'COMFORTABLE'],
+  };
+  const respond = (embeddingBody: unknown) =>
+    jest
+      .spyOn(global, 'fetch')
+      .mockImplementation((async (url: string) =>
+        String(url).endsWith('/preference-embedding')
+          ? { ok: true, json: async () => embeddingBody }
+          : Promise.reject(new Error('offline'))) as unknown as typeof fetch);
+
+  it('sends sorted survey codes and recent modes, stores the embedding and ranks neighbors with it', async () => {
+    const fetcher = respond({ embedding });
+    users.findNeighborPreferenceVectors.mockResolvedValue(neighbors);
+    const result = await service().compute(
+      'user',
+      ['FAST', 'EXPRESS'],
+      [],
+      context,
+    );
+
+    const call = fetcher.mock.calls.find(([url]) =>
+      String(url).endsWith('/preference-embedding'),
+    )!;
+    expect(call[0]).toBe('http://ai.test/api/v1/ai/preference-embedding');
+    expect(JSON.parse(call[1]!.body as string)).toEqual({
+      purposes: ['COMMUTE', 'TRAVEL'],
+      routePrefs: ['EXPRESS', 'FAST'],
+      recentModes: ['FEWEST_TRANSFERS', 'COMFORTABLE'],
+    });
+    expect(users.savePreferenceEmbedding).toHaveBeenCalledWith(
+      'user',
+      embedding,
+      expect.stringMatching(/^[0-9a-f]{64}$/),
+    );
+    expect(users.findNeighborPreferenceVectors).toHaveBeenCalledWith(
+      'user',
+      surveyPreference(['FAST', 'EXPRESS']).vector,
+      20,
+      embedding,
+    );
+    // 10축 이웃 보정 식은 그대로다
+    expect(result.neighbors).toBe(5);
+  });
+
+  it('reuses the stored embedding when the input is unchanged', async () => {
+    const fetcher = respond({ embedding });
+    users.findNeighborPreferenceVectors.mockResolvedValue(neighbors);
+    await service().compute('user', ['FAST'], [], context);
+    const key = users.savePreferenceEmbedding.mock.calls[0][2];
+    fetcher.mockClear();
+    users.findPreferenceEmbedding.mockResolvedValue({
+      embedding,
+      inputKey: key,
+    });
+
+    await service().compute('user', ['FAST'], [], context);
+
+    expect(
+      fetcher.mock.calls.some(([url]) =>
+        String(url).endsWith('/preference-embedding'),
+      ),
+    ).toBe(false);
+    expect(users.findNeighborPreferenceVectors).toHaveBeenLastCalledWith(
+      'user',
+      expect.any(Array),
+      20,
+      embedding,
+    );
+  });
+
+  it.each([
+    ['a wrong dimension', { embedding: [1, 0, 0] }],
+    ['a nonfinite value', { embedding: [...embedding.slice(1), null] }],
+  ])('falls back to L2-only neighbors for %s', async (_, body) => {
+    respond(body);
+    users.findNeighborPreferenceVectors.mockResolvedValue(neighbors);
+    await service().compute('user', [], [], context);
+    expect(users.savePreferenceEmbedding).not.toHaveBeenCalled();
+    expect(users.findNeighborPreferenceVectors).toHaveBeenCalledWith(
+      'user',
+      surveyPreference([]).vector,
+      20,
+    );
+  });
+
+  it('keeps search available when the embedding service is down', async () => {
+    jest.spyOn(global, 'fetch').mockRejectedValue(new Error('offline'));
+    users.findNeighborPreferenceVectors.mockResolvedValue(neighbors);
+    const result = await service().compute('user', [], [], context);
+    expect(result.neighbors).toBe(5);
+    expect(users.findNeighborPreferenceVectors).toHaveBeenCalledWith(
+      'user',
+      surveyPreference([]).vector,
+      20,
+    );
+  });
+
+  it('does not call the embedding service without a context', async () => {
+    const fetcher = respond({ embedding });
+    await service().compute('user', [], []);
+    expect(
+      fetcher.mock.calls.some(([url]) =>
+        String(url).endsWith('/preference-embedding'),
+      ),
+    ).toBe(false);
   });
 });

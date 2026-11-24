@@ -1,4 +1,8 @@
-import { parseVector } from '../../../domain/subway/models/neighbor-preference';
+import {
+  NEIGHBOR_CANDIDATE_LIMIT,
+  parseVector,
+  validEmbedding,
+} from '../../../domain/subway/models/neighbor-preference';
 import {
   PreferenceModel,
   validPreference,
@@ -68,18 +72,75 @@ export class UserRepository implements IUserRepository {
     userId: string,
     vector: readonly number[],
     limit: number,
+    embedding?: readonly number[],
   ): Promise<number[][]> {
     const query = `[${vector.join(',')}]`;
+    if (!embedding || !validEmbedding(embedding)) {
+      const rows = await this.prisma.$queryRaw<{ vector: string }[]>`
+        SELECT up.preference_vector_v2::text AS vector
+        FROM user_preferences up
+        JOIN users u ON u.id = up.user_id
+        WHERE up.user_id <> ${userId}::uuid
+          AND up.preference_vector_v2 IS NOT NULL
+          AND u.ranking_visibility <> 'PRIVATE'
+        ORDER BY up.preference_vector_v2 <-> ${query}::vector, up.user_id
+        LIMIT ${limit}`;
+      return rows.map((row) => parseVector(row.vector));
+    }
+    // 1단계: 10축 L2 거리로 후보를 넉넉히 뽑는다. 2단계: 그 안에서 취향 문장 임베딩의 코사인 거리(<=>) 순으로 고른다
+    const target = `[${embedding.join(',')}]`;
     const rows = await this.prisma.$queryRaw<{ vector: string }[]>`
-      SELECT up.preference_vector_v2::text AS vector
-      FROM user_preferences up
-      JOIN users u ON u.id = up.user_id
-      WHERE up.user_id <> ${userId}::uuid
-        AND up.preference_vector_v2 IS NOT NULL
-        AND u.ranking_visibility <> 'PRIVATE'
-      ORDER BY up.preference_vector_v2 <-> ${query}::vector, up.user_id
+      WITH candidates AS (
+        SELECT up.user_id,
+               up.preference_vector_v2,
+               up.preference_embedding,
+               up.preference_vector_v2 <-> ${query}::vector AS l2
+        FROM user_preferences up
+        JOIN users u ON u.id = up.user_id
+        WHERE up.user_id <> ${userId}::uuid
+          AND up.preference_vector_v2 IS NOT NULL
+          AND u.ranking_visibility <> 'PRIVATE'
+        ORDER BY l2, up.user_id
+        LIMIT ${NEIGHBOR_CANDIDATE_LIMIT}
+      )
+      SELECT preference_vector_v2::text AS vector
+      FROM candidates
+      ORDER BY preference_embedding IS NULL,
+               preference_embedding <=> ${target}::vector,
+               l2,
+               user_id
       LIMIT ${limit}`;
     return rows.map((row) => parseVector(row.vector));
+  }
+
+  async findPreferenceEmbedding(
+    userId: string,
+  ): Promise<{ embedding: number[]; inputKey: string } | null> {
+    const rows = await this.prisma.$queryRaw<
+      { embedding: string | null; inputKey: string | null }[]
+    >`
+      SELECT preference_embedding::text AS embedding,
+             preference_embedding_key AS "inputKey"
+      FROM user_preferences
+      WHERE user_id = ${userId}::uuid`;
+    const row = rows[0];
+    if (!row?.embedding || !row.inputKey) return null;
+    const embedding = parseVector(row.embedding);
+    return validEmbedding(embedding)
+      ? { embedding, inputKey: row.inputKey }
+      : null;
+  }
+
+  async savePreferenceEmbedding(
+    userId: string,
+    embedding: readonly number[],
+    inputKey: string,
+  ): Promise<void> {
+    if (!validEmbedding(embedding))
+      throw new Error('Invalid preference embedding');
+    const value = `[${embedding.join(',')}]`;
+    await this.prisma
+      .$executeRaw`INSERT INTO user_preferences (user_id, preference_embedding, preference_embedding_key, updated_at) VALUES (${userId}::uuid, ${value}::vector, ${inputKey}, NOW()) ON CONFLICT (user_id) DO UPDATE SET preference_embedding = EXCLUDED.preference_embedding, preference_embedding_key = EXCLUDED.preference_embedding_key, updated_at = NOW()`;
   }
 
   async findById(id: string): Promise<User | null> {
