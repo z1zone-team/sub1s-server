@@ -213,6 +213,8 @@ export class PathSegmentDto {
 export class SubwayRouteOptionDto {
   familiarity?: number;
   elevatorAccess?: number;
+  /** 승차, 하차, 환승에서 오르내리는 높이(m). 계단 축(stairs) 근거. 자료가 없는 역이 있으면 undefined */
+  verticalTravelM?: number;
   @ApiPropertyOptional({ description: '서버 선택 기록 식별자' })
   routeId?: string;
 

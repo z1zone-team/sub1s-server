@@ -8,6 +8,8 @@ export interface ComparableOption {
   familiarity?: number;
   /** 승하차·환승 역 중 엘리베이터 인접 문 자료가 있는 역의 비율(0~1). 자료가 없으면 undefined */
   elevatorAccess?: number;
+  /** 승차, 하차, 환승에서 오르내리는 높이(m). 계단 축 근거. 자료가 없으면 undefined */
+  verticalTravelM?: number;
   mode: string;
   stationIds?: string[];
   totalDurationSec: number;
@@ -41,6 +43,9 @@ export function routeFeatures(option: ComparableOption): ChoiceFeatures {
       : {}),
     ...(option.elevatorAccess !== undefined
       ? { elevator: option.elevatorAccess }
+      : {}),
+    ...(option.verticalTravelM !== undefined
+      ? { stairs: option.verticalTravelM }
       : {}),
     ...(rides.length && rides.every((segment) => segment.cars?.length)
       ? {
@@ -79,8 +84,20 @@ const FACTORS = [
   'familiarRoute',
   'weakAc',
   'elevator',
+  'stairs',
 ] as const;
-/** 값이 클수록 좋은 축. 0.5를 넘는 선호만 가중치로 쓴다 */
+/**
+ * 고른 사용자에게만 반영하는 축(공통 기본 가중치 0). 0.5를 넘는 선호만 가중치(중요도 - 0.5)로 쓴다.
+ * 값이 클수록 좋은 축과, 계단(작을수록 좋음)이 여기에 든다
+ */
+const PERSONAL_ONLY = new Set<string>([
+  'express',
+  'familiarRoute',
+  'weakAc',
+  'elevator',
+  'stairs',
+]);
+/** 값이 클수록 좋은 축 */
 const HIGHER_IS_BETTER = new Set<string>([
   'express',
   'familiarRoute',
@@ -97,6 +114,7 @@ const BASE = {
   familiarRoute: 0,
   weakAc: 0,
   elevator: 0,
+  stairs: 0,
 };
 const SPANS = {
   time: 180,
@@ -108,6 +126,8 @@ const SPANS = {
   familiarRoute: 1,
   weakAc: 1,
   elevator: 1,
+  /** 약 한 층 높이(m). 후보 사이 차이가 한 층보다 작으면 점수 차이도 작게 한다 */
+  stairs: 6,
 };
 /** Shared candidates, separate public and personal importance. Unsupported data never means a good zero cost. */
 export function chooseRecommendation<T extends ComparableOption>(
@@ -121,7 +141,7 @@ export function chooseRecommendation<T extends ComparableOption>(
   );
   const weights = supported.map((axis) =>
     preference
-      ? HIGHER_IS_BETTER.has(axis)
+      ? PERSONAL_ONLY.has(axis)
         ? Math.max(0, importance(preference, axis) - 0.5)
         : BASE[axis] * 2 * importance(preference, axis)
       : BASE[axis],

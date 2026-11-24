@@ -13,10 +13,15 @@ import {
   routeFingerprint,
 } from '../../domain/subway/models/recommendation-policy';
 import { PreferenceModelService } from './preference-model.service';
+import { verticalTravelOf } from './vertical-travel';
 import {
   IStationFacilityRepository,
   STATION_FACILITY_REPOSITORY,
 } from '../../domain/facility/ports/IStationFacilityRepository';
+import {
+  IStationVerticalRepository,
+  STATION_VERTICAL_REPOSITORY,
+} from '../../domain/facility/ports/IStationVerticalRepository';
 import {
   HttpStatus,
   Inject,
@@ -168,6 +173,9 @@ export class RouteService {
     @Inject(STATION_FACILITY_REPOSITORY)
     private readonly facilities?: IStationFacilityRepository,
     @Optional() private readonly trackPaths?: TrackPathService,
+    @Optional()
+    @Inject(STATION_VERTICAL_REPOSITORY)
+    private readonly vertical?: IStationVerticalRepository,
   ) {}
 
   /**
@@ -516,6 +524,12 @@ export class RouteService {
         option.elevatorAccess = this.elevatorAccess(option);
       });
     }
+    const vertical = this.vertical;
+    if (personalization && vertical) {
+      pool.forEach((option) => {
+        option.verticalTravelM = verticalTravelOf(option.segments, vertical);
+      });
+    }
     const publicPool = pool.filter(
       (option) => option.mode !== 'PERSONAL' && option.mode !== 'ONLY_WALK',
     );
@@ -582,7 +596,10 @@ export class RouteService {
     const unsupportedPreferences =
       personalization?.routePrefs.filter(
         (code) =>
-          ['SEAT', 'AVOID_STAIRS'].includes(code) ||
+          code === 'SEAT' ||
+          (code === 'AVOID_STAIRS' &&
+            (!this.vertical ||
+              pool.some((option) => option.verticalTravelM === undefined))) ||
           (code === 'ELEVATOR' &&
             pool.some((option) => option.elevatorAccess === undefined)) ||
           (code === 'FAMILIAR_ROUTE' &&
