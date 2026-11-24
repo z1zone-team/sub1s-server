@@ -1,0 +1,5308 @@
+{
+  "version": 1,
+  "defaultLevelHeightM": 5.8,
+  "stations": {
+    "01_P148": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "01_P150": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "01_147": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "01_161": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "01_160": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "01_158": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "01_156": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "01_154": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "01_153": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "01_152": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "01_144": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "01_143": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "01_P169": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "01_P167": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "01_P166": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "01_P161": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "01_P155": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "01_P154": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "01_116": {
+      "exitMeters": 7.2,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "01_134": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "01_135": {
+      "exitMeters": 23.2,
+      "exitLevels": 4,
+      "heightSource": "DEFAULT"
+    },
+    "01_136": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "01_137": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "01_139": {
+      "exitMeters": 17.4,
+      "exitLevels": 3,
+      "heightSource": "DEFAULT"
+    },
+    "01_140": {
+      "exitMeters": 4.6,
+      "exitLevels": 1,
+      "heightSource": "SEOUL_METRO"
+    },
+    "01_P170": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "01_P171": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "01_P172": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "01_P173": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "01_P174": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "01_122": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "01_121": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "01_P176": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "01_P177": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "01_127": {
+      "exitMeters": 15.6,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "01_124": {
+      "exitMeters": 18.39,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "01_125": {
+      "exitMeters": 9.25,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "01_126": {
+      "exitMeters": 9.36,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "01_128": {
+      "exitMeters": 11.54,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "01_129": {
+      "exitMeters": 11.1,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "01_130": {
+      "exitMeters": 10.98,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "01_131": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "01_132": {
+      "exitMeters": 12.6,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "01_133": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "01_104": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "01_150": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "01_148": {
+      "exitMeters": 23.2,
+      "exitLevels": 4,
+      "heightSource": "DEFAULT"
+    },
+    "01_146": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "01_112": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "01_120": {
+      "exitMeters": 7,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "01_119": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "01_118": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "01_115": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "01_P144-1": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "01_P157-1": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "01_P142": {
+      "exitMeters": 15.85,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "01_P144": {
+      "exitMeters": 23.2,
+      "exitLevels": 4,
+      "heightSource": "DEFAULT"
+    },
+    "01_P151": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "01_117": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "01_P145": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "01_P146": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "01_P165": {
+      "exitMeters": 8.7,
+      "exitLevels": 1.5,
+      "heightSource": "DEFAULT"
+    },
+    "01_P164": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "01_P163": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "01_141": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "01_103": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "01_101": {
+      "exitMeters": 23.2,
+      "exitLevels": 4,
+      "heightSource": "DEFAULT"
+    },
+    "01_100-1": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "01_100-2": {
+      "exitMeters": 23.2,
+      "exitLevels": 4,
+      "heightSource": "DEFAULT"
+    },
+    "01_P153": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "01_P162": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "01_P160": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "01_P159": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "01_P158": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "01_P156": {
+      "exitMeters": 23.2,
+      "exitLevels": 4,
+      "heightSource": "DEFAULT"
+    },
+    "01_P143": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "01_P147": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "01_100-3": {
+      "exitMeters": 23.2,
+      "exitLevels": 4,
+      "heightSource": "DEFAULT"
+    },
+    "01_111": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "01_110": {
+      "exitMeters": 23.2,
+      "exitLevels": 4,
+      "heightSource": "DEFAULT"
+    },
+    "01_109": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "01_108": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "01_107": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "01_106": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "01_105": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "01_102": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "01_123": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "01_P149": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "01_138": {
+      "exitMeters": 0,
+      "exitLevels": 0,
+      "heightSource": "SEOUL_METRO"
+    },
+    "01_157": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "01_149": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "01_145": {
+      "exitMeters": 17.2,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "01_159": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "01_155": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "02_214": {
+      "exitMeters": 5.84,
+      "exitLevels": 1,
+      "heightSource": "SEOUL_METRO"
+    },
+    "02_207": {
+      "exitMeters": 8.9,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "02_221": {
+      "exitMeters": 12.38,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "02_224": {
+      "exitMeters": 13.74,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "02_211": {
+      "exitMeters": 18.65,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "02_211-3": {
+      "exitMeters": 18.09,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "02_234-3": {
+      "exitMeters": 19.31,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "02_234-2": {
+      "exitMeters": 11.46,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "02_234-1": {
+      "exitMeters": 14.6,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "02_211-4": {
+      "exitMeters": 10.17,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "02_211-2": {
+      "exitMeters": 11.82,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "02_211-1": {
+      "exitMeters": 17.92,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "02_205": {
+      "exitMeters": 11.8,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "02_202": {
+      "exitMeters": 12.11,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "02_223": {
+      "exitMeters": 14.95,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "02_201": {
+      "exitMeters": 21.3,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "02_243": {
+      "exitMeters": 15.32,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "02_242": {
+      "exitMeters": 12.73,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "02_241": {
+      "exitMeters": 50.87,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "02_240": {
+      "exitMeters": 10.73,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "02_239": {
+      "exitMeters": 9,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "02_208": {
+      "exitMeters": 12.4,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "02_209": {
+      "exitMeters": 10.2,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "02_210": {
+      "exitMeters": 16.22,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "02_230": {
+      "exitMeters": 11.26,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "02_215": {
+      "exitMeters": 9.26,
+      "exitLevels": 1,
+      "heightSource": "SEOUL_METRO"
+    },
+    "02_206": {
+      "exitMeters": 9.8,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "02_238": {
+      "exitMeters": 14.94,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "02_237": {
+      "exitMeters": 11.07,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "02_204": {
+      "exitMeters": 7.65,
+      "exitLevels": 1.5,
+      "heightSource": "SEOUL_METRO"
+    },
+    "02_216": {
+      "exitMeters": 11.4,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "02_217": {
+      "exitMeters": 9.25,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "02_222": {
+      "exitMeters": 11.7,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "02_234-4": {
+      "exitMeters": 30.89,
+      "exitLevels": 5,
+      "heightSource": "SEOUL_METRO"
+    },
+    "02_236": {
+      "exitMeters": 13.57,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "02_235": {
+      "exitMeters": 12.9,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "02_234": {
+      "exitMeters": 11.57,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "02_233": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "02_227": {
+      "exitMeters": 12.4,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "02_232": {
+      "exitMeters": 11.77,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "02_226": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "02_229": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "02_228": {
+      "exitMeters": 9.42,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "02_212": {
+      "exitMeters": 7.87,
+      "exitLevels": 1.5,
+      "heightSource": "SEOUL_METRO"
+    },
+    "02_225": {
+      "exitMeters": 13.28,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "02_218": {
+      "exitMeters": 12.36,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "02_219": {
+      "exitMeters": 11.52,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "02_220": {
+      "exitMeters": 15.04,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "02_203": {
+      "exitMeters": 15.64,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "02_231": {
+      "exitMeters": 8.41,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "02_213": {
+      "exitMeters": 13.98,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "03_311": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "03_315": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "03_345": {
+      "exitMeters": 23.75,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "03_309": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "03_310": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "03_350": {
+      "exitMeters": 23.3,
+      "exitLevels": 4,
+      "heightSource": "SEOUL_METRO"
+    },
+    "03_337": {
+      "exitMeters": 11.76,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "03_336": {
+      "exitMeters": 13.43,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "03_318": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "03_333": {
+      "exitMeters": 14.8,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "03_334": {
+      "exitMeters": 10.29,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "03_339": {
+      "exitMeters": 29.31,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "03_330": {
+      "exitMeters": 19.36,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "03_344": {
+      "exitMeters": 18.3,
+      "exitLevels": 4,
+      "heightSource": "SEOUL_METRO"
+    },
+    "03_343": {
+      "exitMeters": 14.71,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "03_342": {
+      "exitMeters": 15.41,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "03_329": {
+      "exitMeters": 22.56,
+      "exitLevels": 4,
+      "heightSource": "SEOUL_METRO"
+    },
+    "03_349": {
+      "exitMeters": 15.5,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "03_348": {
+      "exitMeters": 17.21,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "03_316": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "03_347": {
+      "exitMeters": 13.86,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "03_335": {
+      "exitMeters": 20.25,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "03_346": {
+      "exitMeters": 26.46,
+      "exitLevels": 5,
+      "heightSource": "SEOUL_METRO"
+    },
+    "03_317": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "03_341": {
+      "exitMeters": 19.4,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "03_340": {
+      "exitMeters": 22.17,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "03_328": {
+      "exitMeters": 18,
+      "exitLevels": 4,
+      "heightSource": "SEOUL_METRO"
+    },
+    "03_326": {
+      "exitMeters": 17.45,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "03_325": {
+      "exitMeters": 14.7,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "03_324": {
+      "exitMeters": 9.98,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "03_352": {
+      "exitMeters": 24.15,
+      "exitLevels": 4,
+      "heightSource": "SEOUL_METRO"
+    },
+    "03_321": {
+      "exitMeters": 13.8,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "03_320": {
+      "exitMeters": 12.12,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "03_319": {
+      "exitMeters": 8.85,
+      "exitLevels": 1,
+      "heightSource": "SEOUL_METRO"
+    },
+    "03_332": {
+      "exitMeters": 14.33,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "03_331": {
+      "exitMeters": 22.49,
+      "exitLevels": 4,
+      "heightSource": "SEOUL_METRO"
+    },
+    "03_338": {
+      "exitMeters": 13.57,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "03_312": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "03_323": {
+      "exitMeters": 12.23,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "03_322": {
+      "exitMeters": 13.22,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "03_327": {
+      "exitMeters": 18.1,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "03_313": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "03_314": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "03_351": {
+      "exitMeters": 26.5,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "04_425": {
+      "exitMeters": 18,
+      "exitLevels": 4,
+      "heightSource": "SEOUL_METRO"
+    },
+    "04_456": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "04_455": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "04_433": {
+      "exitMeters": 18,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "04_434": {
+      "exitMeters": 36.07,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "04_443": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "04_442": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "04_441": {
+      "exitMeters": 17.4,
+      "exitLevels": 3,
+      "heightSource": "DEFAULT"
+    },
+    "04_440": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "04_432": {
+      "exitMeters": 16.34,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "04_431": {
+      "exitMeters": 8.5,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "04_430": {
+      "exitMeters": 11.52,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "04_429": {
+      "exitMeters": 12.49,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "04_405": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "04_406": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "04_408": {
+      "exitMeters": 17.4,
+      "exitLevels": 3,
+      "heightSource": "DEFAULT"
+    },
+    "04_409": {
+      "exitMeters": 11.9,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "04_435": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "04_436": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "04_437": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "04_438": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "04_450": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "04_449": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "04_448": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "04_447": {
+      "exitMeters": 23.2,
+      "exitLevels": 4,
+      "heightSource": "DEFAULT"
+    },
+    "04_410": {
+      "exitMeters": 8.92,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "04_446": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "04_439": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "04_444": {
+      "exitMeters": 17.4,
+      "exitLevels": 3,
+      "heightSource": "DEFAULT"
+    },
+    "04_411": {
+      "exitMeters": 5.9,
+      "exitLevels": 1,
+      "heightSource": "SEOUL_METRO"
+    },
+    "04_412": {
+      "exitMeters": 10.14,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "04_413": {
+      "exitMeters": 12.75,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "04_414": {
+      "exitMeters": 10.79,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "04_415": {
+      "exitMeters": 12.9,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "04_416": {
+      "exitMeters": 12.52,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "04_417": {
+      "exitMeters": 15.52,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "04_454": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "04_445": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "04_453": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "04_452": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "04_451": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "04_428": {
+      "exitMeters": 12.25,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "04_418": {
+      "exitMeters": 12.3,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "04_419": {
+      "exitMeters": 14.35,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "04_420": {
+      "exitMeters": 13.37,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "04_421": {
+      "exitMeters": 13.26,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "04_422": {
+      "exitMeters": 17.92,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "04_423": {
+      "exitMeters": 15.2,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "04_424": {
+      "exitMeters": 21.82,
+      "exitLevels": 4,
+      "heightSource": "SEOUL_METRO"
+    },
+    "04_426": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "04_427": {
+      "exitMeters": 13.11,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "05_P550": {
+      "exitMeters": 9.12,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "05_511": {
+      "exitMeters": 9.19,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "05_P549": {
+      "exitMeters": 22.2,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "05_544": {
+      "exitMeters": 14.1,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "05_545": {
+      "exitMeters": 26.1,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "05_522": {
+      "exitMeters": 32.77,
+      "exitLevels": 5,
+      "heightSource": "SEOUL_METRO"
+    },
+    "05_521": {
+      "exitMeters": 21.17,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "05_520": {
+      "exitMeters": 9.14,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "05_540": {
+      "exitMeters": 30.39,
+      "exitLevels": 5,
+      "heightSource": "SEOUL_METRO"
+    },
+    "05_P554": {
+      "exitMeters": 17.19,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "05_512": {
+      "exitMeters": 13.8,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "05_513": {
+      "exitMeters": 21.62,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "05_550": {
+      "exitMeters": 14.52,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "05_551": {
+      "exitMeters": 15.45,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "05_552": {
+      "exitMeters": 16.66,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "05_549": {
+      "exitMeters": 13.15,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "05_547": {
+      "exitMeters": 20.58,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "05_542": {
+      "exitMeters": 20.08,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "05_546": {
+      "exitMeters": 18,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "05_553": {
+      "exitMeters": 13.1,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "05_541": {
+      "exitMeters": 16.52,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "05_538": {
+      "exitMeters": 37.33,
+      "exitLevels": 8,
+      "heightSource": "SEOUL_METRO"
+    },
+    "05_P555": {
+      "exitMeters": 24.45,
+      "exitLevels": 4,
+      "heightSource": "SEOUL_METRO"
+    },
+    "05_554": {
+      "exitMeters": 25,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "05_558": {
+      "exitMeters": 24.09,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "05_514": {
+      "exitMeters": 14.63,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "05_515": {
+      "exitMeters": 11.91,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "05_516": {
+      "exitMeters": 13.17,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "05_518": {
+      "exitMeters": 20.12,
+      "exitLevels": 4,
+      "heightSource": "SEOUL_METRO"
+    },
+    "05_519": {
+      "exitMeters": 34.62,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "05_525": {
+      "exitMeters": 20.83,
+      "exitLevels": 4,
+      "heightSource": "SEOUL_METRO"
+    },
+    "05_535": {
+      "exitMeters": 21.3,
+      "exitLevels": 5,
+      "heightSource": "SEOUL_METRO"
+    },
+    "05_537": {
+      "exitMeters": 28.38,
+      "exitLevels": 4,
+      "heightSource": "SEOUL_METRO"
+    },
+    "05_536": {
+      "exitMeters": 27.92,
+      "exitLevels": 5,
+      "heightSource": "SEOUL_METRO"
+    },
+    "05_533": {
+      "exitMeters": 28.19,
+      "exitLevels": 4,
+      "heightSource": "SEOUL_METRO"
+    },
+    "05_532": {
+      "exitMeters": 21.82,
+      "exitLevels": 4,
+      "heightSource": "SEOUL_METRO"
+    },
+    "05_531": {
+      "exitMeters": 28.42,
+      "exitLevels": 5,
+      "heightSource": "SEOUL_METRO"
+    },
+    "05_530": {
+      "exitMeters": 24.82,
+      "exitLevels": 4,
+      "heightSource": "SEOUL_METRO"
+    },
+    "05_529": {
+      "exitMeters": 26.72,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "05_548": {
+      "exitMeters": 23.22,
+      "exitLevels": 4,
+      "heightSource": "SEOUL_METRO"
+    },
+    "05_534": {
+      "exitMeters": 30.48,
+      "exitLevels": 5,
+      "heightSource": "SEOUL_METRO"
+    },
+    "05_528": {
+      "exitMeters": 28.97,
+      "exitLevels": 5,
+      "heightSource": "SEOUL_METRO"
+    },
+    "05_526": {
+      "exitMeters": 20.9,
+      "exitLevels": 4,
+      "heightSource": "SEOUL_METRO"
+    },
+    "05_524": {
+      "exitMeters": 30.34,
+      "exitLevels": 6,
+      "heightSource": "SEOUL_METRO"
+    },
+    "05_523": {
+      "exitMeters": 27.91,
+      "exitLevels": 5,
+      "heightSource": "SEOUL_METRO"
+    },
+    "05_510": {
+      "exitMeters": 11.32,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "05_543": {
+      "exitMeters": 21.47,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "05_517": {
+      "exitMeters": 9.93,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "05_539": {
+      "exitMeters": 30.76,
+      "exitLevels": 5,
+      "heightSource": "SEOUL_METRO"
+    },
+    "05_P553": {
+      "exitMeters": 14.72,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "05_P552": {
+      "exitMeters": 13.02,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "05_527": {
+      "exitMeters": 32.5,
+      "exitLevels": 5,
+      "heightSource": "SEOUL_METRO"
+    },
+    "05_557": {
+      "exitMeters": 18.9,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "05_556": {
+      "exitMeters": 16.93,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "05_555": {
+      "exitMeters": 15.15,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "05_P551": {
+      "exitMeters": 19.85,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "06_619": {
+      "exitMeters": 26,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "06_610": {
+      "exitMeters": 13.4,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "06_622": {
+      "exitMeters": 24.14,
+      "exitLevels": 4,
+      "heightSource": "SEOUL_METRO"
+    },
+    "06_612": {
+      "exitMeters": 24,
+      "exitLevels": 4,
+      "heightSource": "SEOUL_METRO"
+    },
+    "06_613": {
+      "exitMeters": 36.97,
+      "exitLevels": 6,
+      "heightSource": "SEOUL_METRO"
+    },
+    "06_616": {
+      "exitMeters": 14.2,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "06_617": {
+      "exitMeters": 14.35,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "06_618": {
+      "exitMeters": 11.88,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "06_621": {
+      "exitMeters": 9.84,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "06_623": {
+      "exitMeters": 29.16,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "06_624": {
+      "exitMeters": 21.8,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "06_627": {
+      "exitMeters": 27.21,
+      "exitLevels": 5,
+      "heightSource": "SEOUL_METRO"
+    },
+    "06_628": {
+      "exitMeters": 21.32,
+      "exitLevels": 4,
+      "heightSource": "SEOUL_METRO"
+    },
+    "06_629": {
+      "exitMeters": 28.15,
+      "exitLevels": 5,
+      "heightSource": "SEOUL_METRO"
+    },
+    "06_630": {
+      "exitMeters": 33.19,
+      "exitLevels": 5,
+      "heightSource": "SEOUL_METRO"
+    },
+    "06_631": {
+      "exitMeters": 31.97,
+      "exitLevels": 4,
+      "heightSource": "SEOUL_METRO"
+    },
+    "06_632": {
+      "exitMeters": 59.49,
+      "exitLevels": 4,
+      "heightSource": "SEOUL_METRO"
+    },
+    "06_644": {
+      "exitMeters": 13.24,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "06_645": {
+      "exitMeters": 14.48,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "06_648": {
+      "exitMeters": 16.8,
+      "exitLevels": 4,
+      "heightSource": "SEOUL_METRO"
+    },
+    "06_640": {
+      "exitMeters": 25,
+      "exitLevels": 4,
+      "heightSource": "SEOUL_METRO"
+    },
+    "06_641": {
+      "exitMeters": 14.77,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "06_646": {
+      "exitMeters": 15.71,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "06_647": {
+      "exitMeters": 11.21,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "06_614": {
+      "exitMeters": 29.22,
+      "exitLevels": 5,
+      "heightSource": "SEOUL_METRO"
+    },
+    "06_615": {
+      "exitMeters": 26.17,
+      "exitLevels": 4,
+      "heightSource": "SEOUL_METRO"
+    },
+    "06_633": {
+      "exitMeters": 21.8,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "06_634": {
+      "exitMeters": 18.16,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "06_635": {
+      "exitMeters": 14.6,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "06_636": {
+      "exitMeters": 20.7,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "06_637": {
+      "exitMeters": 24.64,
+      "exitLevels": 4,
+      "heightSource": "SEOUL_METRO"
+    },
+    "06_638": {
+      "exitMeters": 14.42,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "06_639": {
+      "exitMeters": 24.82,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "06_642": {
+      "exitMeters": 8.57,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "06_643": {
+      "exitMeters": 16.54,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "06_620": {
+      "exitMeters": 19.91,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "06_625": {
+      "exitMeters": 24.83,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "06_626": {
+      "exitMeters": 17.85,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "06_611": {
+      "exitMeters": 24.6,
+      "exitLevels": 4,
+      "heightSource": "SEOUL_METRO"
+    },
+    "07_710": {
+      "exitMeters": 9.73,
+      "exitLevels": 1.5,
+      "heightSource": "SEOUL_METRO"
+    },
+    "07_721": {
+      "exitMeters": 37.88,
+      "exitLevels": 4,
+      "heightSource": "SEOUL_METRO"
+    },
+    "07_722": {
+      "exitMeters": 26.41,
+      "exitLevels": 4,
+      "heightSource": "SEOUL_METRO"
+    },
+    "07_723": {
+      "exitMeters": 21.76,
+      "exitLevels": 4,
+      "heightSource": "SEOUL_METRO"
+    },
+    "07_724": {
+      "exitMeters": 14.92,
+      "exitLevels": 2.5,
+      "heightSource": "SEOUL_METRO"
+    },
+    "07_726": {
+      "exitMeters": 26.4,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "07_752": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "07_740": {
+      "exitMeters": 22.1,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "07_733": {
+      "exitMeters": 19.67,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "07_745": {
+      "exitMeters": 30.31,
+      "exitLevels": 5,
+      "heightSource": "SEOUL_METRO"
+    },
+    "07_709": {
+      "exitMeters": 15,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "07_739": {
+      "exitMeters": 22.92,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "07_738": {
+      "exitMeters": 41.07,
+      "exitLevels": 6,
+      "heightSource": "SEOUL_METRO"
+    },
+    "07_720": {
+      "exitMeters": 31.26,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "07_719": {
+      "exitMeters": 22.26,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "07_718": {
+      "exitMeters": 19.12,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "07_717": {
+      "exitMeters": 24.48,
+      "exitLevels": 4,
+      "heightSource": "SEOUL_METRO"
+    },
+    "07_716": {
+      "exitMeters": 22.12,
+      "exitLevels": 4,
+      "heightSource": "SEOUL_METRO"
+    },
+    "07_715": {
+      "exitMeters": 27.75,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "07_712": {
+      "exitMeters": 20.25,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "07_759": {
+      "exitMeters": 17.4,
+      "exitLevels": 3,
+      "heightSource": "DEFAULT"
+    },
+    "07_750": {
+      "exitMeters": 14.6,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "07_725": {
+      "exitMeters": 23,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "07_747": {
+      "exitMeters": 15.64,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "07_746": {
+      "exitMeters": 31.85,
+      "exitLevels": 4,
+      "heightSource": "SEOUL_METRO"
+    },
+    "07_711": {
+      "exitMeters": 55.8,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "07_734": {
+      "exitMeters": 13.3,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "07_735": {
+      "exitMeters": 20.43,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "07_736": {
+      "exitMeters": 22.9,
+      "exitLevels": 4,
+      "heightSource": "SEOUL_METRO"
+    },
+    "07_741": {
+      "exitMeters": 20.7,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "07_749": {
+      "exitMeters": 19.12,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "07_748": {
+      "exitMeters": 15.84,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "07_737": {
+      "exitMeters": 21.69,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "07_742": {
+      "exitMeters": 15.32,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "07_754": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "07_714": {
+      "exitMeters": 19.77,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "07_713": {
+      "exitMeters": 26.2,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "07_732": {
+      "exitMeters": 21.84,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "07_731": {
+      "exitMeters": 14.82,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "07_730": {
+      "exitMeters": 17.52,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "07_729": {
+      "exitMeters": 15.15,
+      "exitLevels": 4,
+      "heightSource": "SEOUL_METRO"
+    },
+    "07_728": {
+      "exitMeters": 14.48,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "07_727": {
+      "exitMeters": 14.49,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "07_743": {
+      "exitMeters": 15.57,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "07_744": {
+      "exitMeters": 16.4,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "07_761": {
+      "exitMeters": 29,
+      "exitLevels": 5,
+      "heightSource": "DEFAULT"
+    },
+    "07_760": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "07_758": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "07_757": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "07_756": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "07_751": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "07_755": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "07_753": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "08_820": {
+      "exitMeters": 13.97,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "08_818": {
+      "exitMeters": 15.27,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "08_816": {
+      "exitMeters": 14.2,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "08_808": {
+      "exitMeters": 17.4,
+      "exitLevels": 3,
+      "heightSource": "DEFAULT"
+    },
+    "08_817": {
+      "exitMeters": 14.8,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "08_819": {
+      "exitMeters": 17.12,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "08_806": {
+      "exitMeters": 23.2,
+      "exitLevels": 4,
+      "heightSource": "DEFAULT"
+    },
+    "08_807": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "08_805": {
+      "exitMeters": 17.4,
+      "exitLevels": 3,
+      "heightSource": "DEFAULT"
+    },
+    "08_804": {
+      "exitMeters": 17.4,
+      "exitLevels": 3,
+      "heightSource": "DEFAULT"
+    },
+    "08_814": {
+      "exitMeters": 19.7,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "08_813": {
+      "exitMeters": 18.32,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "08_812": {
+      "exitMeters": 18.27,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "08_811": {
+      "exitMeters": 16.11,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "08_810": {
+      "exitMeters": 14.22,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "08_809": {
+      "exitMeters": 20.1,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "08_827": {
+      "exitMeters": 23.6,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "08_826": {
+      "exitMeters": 19.35,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "08_825": {
+      "exitMeters": 9.8,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "08_824": {
+      "exitMeters": 24.05,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "08_823": {
+      "exitMeters": 15.83,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "08_822": {
+      "exitMeters": 43.6,
+      "exitLevels": 3,
+      "heightSource": "SEOUL_METRO"
+    },
+    "08_815": {
+      "exitMeters": 14.78,
+      "exitLevels": 2,
+      "heightSource": "SEOUL_METRO"
+    },
+    "09_909": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "09_930": {
+      "exitMeters": 23.2,
+      "exitLevels": 4,
+      "heightSource": "DEFAULT"
+    },
+    "09_929": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "09_928": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "09_924": {
+      "exitMeters": 17.4,
+      "exitLevels": 3,
+      "heightSource": "DEFAULT"
+    },
+    "09_923": {
+      "exitMeters": 29,
+      "exitLevels": 5,
+      "heightSource": "DEFAULT"
+    },
+    "09_922": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "09_921": {
+      "exitMeters": 17.4,
+      "exitLevels": 3,
+      "heightSource": "DEFAULT"
+    },
+    "09_918": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "09_919": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "09_920": {
+      "exitMeters": 17.4,
+      "exitLevels": 3,
+      "heightSource": "DEFAULT"
+    },
+    "09_933": {
+      "exitMeters": 23.2,
+      "exitLevels": 4,
+      "heightSource": "DEFAULT"
+    },
+    "09_934": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "09_935": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "09_925": {
+      "exitMeters": 23.2,
+      "exitLevels": 4,
+      "heightSource": "DEFAULT"
+    },
+    "09_926": {
+      "exitMeters": 29,
+      "exitLevels": 5,
+      "heightSource": "DEFAULT"
+    },
+    "09_927": {
+      "exitMeters": 17.4,
+      "exitLevels": 3,
+      "heightSource": "DEFAULT"
+    },
+    "09_916": {
+      "exitMeters": 14.5,
+      "exitLevels": 2.5,
+      "heightSource": "DEFAULT"
+    },
+    "09_936": {
+      "exitMeters": 17.4,
+      "exitLevels": 3,
+      "heightSource": "DEFAULT"
+    },
+    "09_917": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "09_901": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "09_902": {
+      "exitMeters": 20.3,
+      "exitLevels": 3.5,
+      "heightSource": "DEFAULT"
+    },
+    "09_903": {
+      "exitMeters": 23.2,
+      "exitLevels": 4,
+      "heightSource": "DEFAULT"
+    },
+    "09_904": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "09_912": {
+      "exitMeters": 17.4,
+      "exitLevels": 3,
+      "heightSource": "DEFAULT"
+    },
+    "09_913": {
+      "exitMeters": 17.4,
+      "exitLevels": 3,
+      "heightSource": "DEFAULT"
+    },
+    "09_938": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "09_937": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "09_932": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "09_911": {
+      "exitMeters": 17.4,
+      "exitLevels": 3,
+      "heightSource": "DEFAULT"
+    },
+    "09_910": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "09_931": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "09_908": {
+      "exitMeters": 17.4,
+      "exitLevels": 3,
+      "heightSource": "DEFAULT"
+    },
+    "09_907": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "09_906": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "09_905": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "09_915": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "09_914": {
+      "exitMeters": 17.4,
+      "exitLevels": 3,
+      "heightSource": "DEFAULT"
+    },
+    "GA_X106": {
+      "exitMeters": 17.4,
+      "exitLevels": 3,
+      "heightSource": "DEFAULT"
+    },
+    "GA_X110": {
+      "exitMeters": 23.2,
+      "exitLevels": 4,
+      "heightSource": "DEFAULT"
+    },
+    "GA_X105": {
+      "exitMeters": 46.4,
+      "exitLevels": 8,
+      "heightSource": "DEFAULT"
+    },
+    "GA_X102": {
+      "exitMeters": 40.6,
+      "exitLevels": 7,
+      "heightSource": "DEFAULT"
+    },
+    "GA_X103": {
+      "exitMeters": 46.4,
+      "exitLevels": 8,
+      "heightSource": "DEFAULT"
+    },
+    "GA_X111": {
+      "exitMeters": 34.8,
+      "exitLevels": 6,
+      "heightSource": "DEFAULT"
+    },
+    "GA_X108": {
+      "exitMeters": 23.2,
+      "exitLevels": 4,
+      "heightSource": "DEFAULT"
+    },
+    "GA_X109": {
+      "exitMeters": 29,
+      "exitLevels": 5,
+      "heightSource": "DEFAULT"
+    },
+    "GA_X101": {
+      "exitMeters": 52.2,
+      "exitLevels": 9,
+      "heightSource": "DEFAULT"
+    },
+    "GG_K415": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "GG_K413": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "GG_K420": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "GG_K410": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "GG_K416": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "GG_K414": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "GG_K409": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "GG_K411": {
+      "exitMeters": 23.2,
+      "exitLevels": 4,
+      "heightSource": "DEFAULT"
+    },
+    "GG_K419": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "GG_K418": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "GG_K412": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "GG_K417": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "GJ_K135": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "GJ_K314": {
+      "exitMeters": 17.4,
+      "exitLevels": 3,
+      "heightSource": "DEFAULT"
+    },
+    "GJ_K136": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "GJ_K117": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "GJ_K113": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "GJ_K114": {
+      "exitMeters": 23.2,
+      "exitLevels": 4,
+      "heightSource": "DEFAULT"
+    },
+    "GJ_K110": {
+      "exitMeters": 23.2,
+      "exitLevels": 4,
+      "heightSource": "DEFAULT"
+    },
+    "GJ_K137": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "GJ_K138": {
+      "exitMeters": 17.4,
+      "exitLevels": 3,
+      "heightSource": "DEFAULT"
+    },
+    "GJ_K121": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "GJ_K120": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "GJ_K119": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "GJ_K315": {
+      "exitMeters": 17.4,
+      "exitLevels": 3,
+      "heightSource": "DEFAULT"
+    },
+    "GJ_K316": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "GJ_K317": {
+      "exitMeters": 23.2,
+      "exitLevels": 4,
+      "heightSource": "DEFAULT"
+    },
+    "GJ_K318": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "GJ_K319": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "GJ_K320": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "GJ_K325": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "GJ_K326": {
+      "exitMeters": 23.2,
+      "exitLevels": 4,
+      "heightSource": "DEFAULT"
+    },
+    "GJ_K327": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "GJ_K328": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "GJ_K329": {
+      "exitMeters": 23.2,
+      "exitLevels": 4,
+      "heightSource": "DEFAULT"
+    },
+    "GJ_K330": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "GJ_K331": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "GJ_K334": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "GJ_K335": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "GJ_K123": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "GJ_K122": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "GJ_K321": {
+      "exitMeters": 17.4,
+      "exitLevels": 3,
+      "heightSource": "DEFAULT"
+    },
+    "GJ_K333": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "GJ_K324": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "GJ_K118": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "GJ_K322": {
+      "exitMeters": 17.4,
+      "exitLevels": 3,
+      "heightSource": "DEFAULT"
+    },
+    "GJ_K111": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "GJ_K323": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "GJ_K115": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "GJ_K116": {
+      "exitMeters": 8.7,
+      "exitLevels": 1.5,
+      "heightSource": "DEFAULT"
+    },
+    "GJ_K112": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "GJ_K130": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "GJ_K127": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "GJ_K126": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "GJ_K125": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "GJ_K128": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "GJ_K132": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "GJ_K129": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "GJ_K131": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "GJ_P313": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "GJ_K133": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "GJ_P312": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "GJ_K826": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "GJ_K312": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "GJ_K134": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "GJ_K124": {
+      "exitMeters": 23.2,
+      "exitLevels": 4,
+      "heightSource": "DEFAULT"
+    },
+    "GJ_K313": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "GC_P126": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "GC_P116": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "GC_P117": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "GC_P128": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "GC_P129": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "GC_P130": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "GC_P131": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "GC_P132": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "GC_P133": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "GC_P134": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "GC_P140": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "GC_P139": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "GC_P138": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "GC_P135": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "GC_P127": {
+      "exitMeters": 17.4,
+      "exitLevels": 3,
+      "heightSource": "DEFAULT"
+    },
+    "GC_P125": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "GC_P124": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "GC_P123": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "GC_P122": {
+      "exitMeters": 23.2,
+      "exitLevels": 4,
+      "heightSource": "DEFAULT"
+    },
+    "GC_P121": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "GC_P120": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "GC_P119": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "GC_P137": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "GC_P118": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "GC_P136": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "AR_A042": {
+      "exitMeters": 17.4,
+      "exitLevels": 3,
+      "heightSource": "DEFAULT"
+    },
+    "AR_A04": {
+      "exitMeters": 17.4,
+      "exitLevels": 3,
+      "heightSource": "DEFAULT"
+    },
+    "AR_A072": {
+      "exitMeters": 17.4,
+      "exitLevels": 3,
+      "heightSource": "DEFAULT"
+    },
+    "AR_A03": {
+      "exitMeters": 23.2,
+      "exitLevels": 4,
+      "heightSource": "DEFAULT"
+    },
+    "AR_A11": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "AR_A10": {
+      "exitMeters": 29,
+      "exitLevels": 5,
+      "heightSource": "DEFAULT"
+    },
+    "AR_A09": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "AR_A08": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "AR_A02": {
+      "exitMeters": 29,
+      "exitLevels": 5,
+      "heightSource": "DEFAULT"
+    },
+    "AR_A01": {
+      "exitMeters": 40.6,
+      "exitLevels": 7,
+      "heightSource": "DEFAULT"
+    },
+    "AR_A06": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "AR_A07": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "AR_A05": {
+      "exitMeters": 20.3,
+      "exitLevels": 3.5,
+      "heightSource": "DEFAULT"
+    },
+    "AR_A071": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "GM_696": {
+      "exitMeters": 29,
+      "exitLevels": 5,
+      "heightSource": "DEFAULT"
+    },
+    "GM_699": {
+      "exitMeters": 23.2,
+      "exitLevels": 4,
+      "heightSource": "DEFAULT"
+    },
+    "GM_698": {
+      "exitMeters": 23.2,
+      "exitLevels": 4,
+      "heightSource": "DEFAULT"
+    },
+    "GM_697": {
+      "exitMeters": 23.2,
+      "exitLevels": 4,
+      "heightSource": "DEFAULT"
+    },
+    "GM_695": {
+      "exitMeters": 29,
+      "exitLevels": 5,
+      "heightSource": "DEFAULT"
+    },
+    "GM_694": {
+      "exitMeters": 17.4,
+      "exitLevels": 3,
+      "heightSource": "DEFAULT"
+    },
+    "GM_693": {
+      "exitMeters": 17.4,
+      "exitLevels": 3,
+      "heightSource": "DEFAULT"
+    },
+    "GM_692": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "GM_691": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "GM_690": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "SH_S23": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "SH_S12": {
+      "exitMeters": 17.4,
+      "exitLevels": 3,
+      "heightSource": "DEFAULT"
+    },
+    "SH_S10": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "SH_S15": {
+      "exitMeters": 29,
+      "exitLevels": 5,
+      "heightSource": "DEFAULT"
+    },
+    "SH_S14": {
+      "exitMeters": 23.2,
+      "exitLevels": 4,
+      "heightSource": "DEFAULT"
+    },
+    "SH_S09": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "SH_S08": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "SH_S07": {
+      "exitMeters": 23.2,
+      "exitLevels": 4,
+      "heightSource": "DEFAULT"
+    },
+    "SH_S28": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "SH_S27": {
+      "exitMeters": 17.4,
+      "exitLevels": 3,
+      "heightSource": "DEFAULT"
+    },
+    "SH_S26": {
+      "exitMeters": 23.2,
+      "exitLevels": 4,
+      "heightSource": "DEFAULT"
+    },
+    "SH_S17": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "SH_S25": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "SH_S24": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "SH_S11": {
+      "exitMeters": 17.4,
+      "exitLevels": 3,
+      "heightSource": "DEFAULT"
+    },
+    "SH_S20": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "SH_S16": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "SH_S19": {
+      "exitMeters": 17.4,
+      "exitLevels": 3,
+      "heightSource": "DEFAULT"
+    },
+    "SH_S13": {
+      "exitMeters": 29,
+      "exitLevels": 5,
+      "heightSource": "DEFAULT"
+    },
+    "SH_S18": {
+      "exitMeters": 17.4,
+      "exitLevels": 3,
+      "heightSource": "DEFAULT"
+    },
+    "SH_S22": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "SD_K272": {
+      "exitMeters": 17.4,
+      "exitLevels": 3,
+      "heightSource": "DEFAULT"
+    },
+    "SD_K246": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "SD_K250": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "SD_K209": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "SD_K257": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "SD_K226": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "SD_K255": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "SD_K259": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "SD_K260": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "SD_K256": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "SD_K245": {
+      "exitMeters": 23.2,
+      "exitLevels": 4,
+      "heightSource": "DEFAULT"
+    },
+    "SD_K224": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "SD_K262": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "SD_K229": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "SD_K230": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "SD_K231": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "SD_K232": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "SD_K227": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "SD_K234": {
+      "exitMeters": 17.4,
+      "exitLevels": 3,
+      "heightSource": "DEFAULT"
+    },
+    "SD_K236": {
+      "exitMeters": 23.2,
+      "exitLevels": 4,
+      "heightSource": "DEFAULT"
+    },
+    "SD_K242": {
+      "exitMeters": 17.4,
+      "exitLevels": 3,
+      "heightSource": "DEFAULT"
+    },
+    "SD_K243": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "SD_K261": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "SD_K248": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "SD_K223": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "SD_K214": {
+      "exitMeters": 29,
+      "exitLevels": 5,
+      "heightSource": "DEFAULT"
+    },
+    "SD_K213": {
+      "exitMeters": 29,
+      "exitLevels": 5,
+      "heightSource": "DEFAULT"
+    },
+    "SD_K212": {
+      "exitMeters": 17.4,
+      "exitLevels": 3,
+      "heightSource": "DEFAULT"
+    },
+    "SD_K211": {
+      "exitMeters": 23.2,
+      "exitLevels": 4,
+      "heightSource": "DEFAULT"
+    },
+    "SD_K247": {
+      "exitMeters": 17.4,
+      "exitLevels": 3,
+      "heightSource": "DEFAULT"
+    },
+    "SD_K269": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "SD_K271": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "SD_K225": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "SD_K263": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "SD_K216": {
+      "exitMeters": 23.2,
+      "exitLevels": 4,
+      "heightSource": "DEFAULT"
+    },
+    "SD_K237": {
+      "exitMeters": 17.4,
+      "exitLevels": 3,
+      "heightSource": "DEFAULT"
+    },
+    "SD_K249": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "SD_K215": {
+      "exitMeters": 17.4,
+      "exitLevels": 3,
+      "heightSource": "DEFAULT"
+    },
+    "SD_K238": {
+      "exitMeters": 17.4,
+      "exitLevels": 3,
+      "heightSource": "DEFAULT"
+    },
+    "SD_K239": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "SD_K240": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "SD_K217": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "SD_K218": {
+      "exitMeters": 34.8,
+      "exitLevels": 6,
+      "heightSource": "DEFAULT"
+    },
+    "SD_K219": {
+      "exitMeters": 23.2,
+      "exitLevels": 4,
+      "heightSource": "DEFAULT"
+    },
+    "SD_K220": {
+      "exitMeters": 29,
+      "exitLevels": 5,
+      "heightSource": "DEFAULT"
+    },
+    "SD_K210": {
+      "exitMeters": 8.7,
+      "exitLevels": 1.5,
+      "heightSource": "DEFAULT"
+    },
+    "SD_K221": {
+      "exitMeters": 23.2,
+      "exitLevels": 4,
+      "heightSource": "DEFAULT"
+    },
+    "SD_K222": {
+      "exitMeters": 17.4,
+      "exitLevels": 3,
+      "heightSource": "DEFAULT"
+    },
+    "SD_K241": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "SD_K244": {
+      "exitMeters": 17.4,
+      "exitLevels": 3,
+      "heightSource": "DEFAULT"
+    },
+    "SD_K265": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "SD_K266": {
+      "exitMeters": 23.2,
+      "exitLevels": 4,
+      "heightSource": "DEFAULT"
+    },
+    "SD_K267": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "SD_K270": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "SD_K252": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "SD_K258": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "SD_K233": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "SD_K254": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "SD_K253": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "SD_K251": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "SD_K264": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "SD_K235": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "SD_K228": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "SL_S404": {
+      "exitMeters": 17.4,
+      "exitLevels": 3,
+      "heightSource": "DEFAULT"
+    },
+    "SL_S403": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "SL_S408": {
+      "exitMeters": 17.4,
+      "exitLevels": 3,
+      "heightSource": "DEFAULT"
+    },
+    "SL_S407": {
+      "exitMeters": 17.4,
+      "exitLevels": 3,
+      "heightSource": "DEFAULT"
+    },
+    "SL_S406": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "SL_S405": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "SL_S411": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "SL_S410": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "SL_S409": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "SL_S402": {
+      "exitMeters": 23.2,
+      "exitLevels": 4,
+      "heightSource": "DEFAULT"
+    },
+    "SL_S401": {
+      "exitMeters": 23.2,
+      "exitLevels": 4,
+      "heightSource": "DEFAULT"
+    },
+    "SB_D14": {
+      "exitMeters": 17.4,
+      "exitLevels": 3,
+      "heightSource": "DEFAULT"
+    },
+    "SB_D8": {
+      "exitMeters": 23.2,
+      "exitLevels": 4,
+      "heightSource": "DEFAULT"
+    },
+    "SB_D7": {
+      "exitMeters": 23.2,
+      "exitLevels": 4,
+      "heightSource": "DEFAULT"
+    },
+    "SB_D4": {
+      "exitMeters": 23.2,
+      "exitLevels": 4,
+      "heightSource": "DEFAULT"
+    },
+    "SB_D9": {
+      "exitMeters": 17.4,
+      "exitLevels": 3,
+      "heightSource": "DEFAULT"
+    },
+    "SB_D11": {
+      "exitMeters": 17.4,
+      "exitLevels": 3,
+      "heightSource": "DEFAULT"
+    },
+    "SB_D12": {
+      "exitMeters": 17.4,
+      "exitLevels": 3,
+      "heightSource": "DEFAULT"
+    },
+    "SB_D5": {
+      "exitMeters": 23.2,
+      "exitLevels": 4,
+      "heightSource": "DEFAULT"
+    },
+    "SB_D13": {
+      "exitMeters": 29,
+      "exitLevels": 5,
+      "heightSource": "DEFAULT"
+    },
+    "SB_D15": {
+      "exitMeters": 17.4,
+      "exitLevels": 3,
+      "heightSource": "DEFAULT"
+    },
+    "SB_D16": {
+      "exitMeters": 17.4,
+      "exitLevels": 3,
+      "heightSource": "DEFAULT"
+    },
+    "SB_D17": {
+      "exitMeters": 17.4,
+      "exitLevels": 3,
+      "heightSource": "DEFAULT"
+    },
+    "SB_D18": {
+      "exitMeters": 17.4,
+      "exitLevels": 3,
+      "heightSource": "DEFAULT"
+    },
+    "SB_D6": {
+      "exitMeters": 29,
+      "exitLevels": 5,
+      "heightSource": "DEFAULT"
+    },
+    "SB_D19": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "SB_D10": {
+      "exitMeters": 17.4,
+      "exitLevels": 3,
+      "heightSource": "DEFAULT"
+    },
+    "EV_Y121": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "EV_Y110": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "EV_Y126": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "EV_Y116": {
+      "exitMeters": 17.4,
+      "exitLevels": 3,
+      "heightSource": "DEFAULT"
+    },
+    "EV_Y117": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "EV_Y114": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "EV_Y112": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "EV_Y123": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "EV_Y125": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "EV_Y115": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "EV_Y113": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "EV_Y111": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "EV_Y119": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "EV_Y120": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "EV_Y118": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "UI_952": {
+      "exitMeters": 23.2,
+      "exitLevels": 4,
+      "heightSource": "DEFAULT"
+    },
+    "UI_945": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "UI_953": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "UI_941": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "UI_942": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "UI_943": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "UI_944": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "UI_946": {
+      "exitMeters": 17.4,
+      "exitLevels": 3,
+      "heightSource": "DEFAULT"
+    },
+    "UI_947": {
+      "exitMeters": 17.4,
+      "exitLevels": 3,
+      "heightSource": "DEFAULT"
+    },
+    "UI_948": {
+      "exitMeters": 23.2,
+      "exitLevels": 4,
+      "heightSource": "DEFAULT"
+    },
+    "UI_949": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "UI_950": {
+      "exitMeters": 17.4,
+      "exitLevels": 3,
+      "heightSource": "DEFAULT"
+    },
+    "UI_951": {
+      "exitMeters": 23.2,
+      "exitLevels": 4,
+      "heightSource": "DEFAULT"
+    },
+    "UJ_U113": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "UJ_U115": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "UJ_U112": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "UJ_U111": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "UJ_U110": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "UJ_U117": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "UJ_U118": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "UJ_U119": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "UJ_U120": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "UJ_U121": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "UJ_U122": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "UJ_U123": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "UJ_U124": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "UJ_U125": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "UJ_U114": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "I2_I218": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "I2_I207": {
+      "exitMeters": 17.4,
+      "exitLevels": 3,
+      "heightSource": "DEFAULT"
+    },
+    "I1_I130": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "I1_I128": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "I1_I123": {
+      "exitMeters": 23.2,
+      "exitLevels": 4,
+      "heightSource": "DEFAULT"
+    },
+    "I1_I125": {
+      "exitMeters": 20.3,
+      "exitLevels": 3.5,
+      "heightSource": "DEFAULT"
+    },
+    "I1_I129": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "I1_I124": {
+      "exitMeters": 23.2,
+      "exitLevels": 4,
+      "heightSource": "DEFAULT"
+    },
+    "I1_I122": {
+      "exitMeters": 23.2,
+      "exitLevels": 4,
+      "heightSource": "DEFAULT"
+    },
+    "I1_I139": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "I1_I110": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "I1_I121": {
+      "exitMeters": 23.2,
+      "exitLevels": 4,
+      "heightSource": "DEFAULT"
+    },
+    "I1_I112": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "I1_I137": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "I1_I136": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "I1_I113": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "I1_I118": {
+      "exitMeters": 5.8,
+      "exitLevels": 1,
+      "heightSource": "DEFAULT"
+    },
+    "I1_I117": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "I1_I116": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "I1_I115": {
+      "exitMeters": 17.4,
+      "exitLevels": 3,
+      "heightSource": "DEFAULT"
+    },
+    "I1_I119": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "I1_I111": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "I1_I114": {
+      "exitMeters": 17.4,
+      "exitLevels": 3,
+      "heightSource": "DEFAULT"
+    },
+    "I1_I120": {
+      "exitMeters": 23.2,
+      "exitLevels": 4,
+      "heightSource": "DEFAULT"
+    },
+    "I1_I127": {
+      "exitMeters": 17.4,
+      "exitLevels": 3,
+      "heightSource": "DEFAULT"
+    },
+    "I1_I126": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "I1_I138": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "I1_I135": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "I1_I134": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "I1_I133": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "I1_I132": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    },
+    "I1_I131": {
+      "exitMeters": 11.6,
+      "exitLevels": 2,
+      "heightSource": "DEFAULT"
+    }
+  },
+  "transfers": {
+    "01_111>UJ_U111": {
+      "meters": 5.8,
+      "levels": 1,
+      "matchedLine": true
+    },
+    "01_113>07_710": {
+      "meters": 8.48,
+      "levels": 1,
+      "matchedLine": true
+    },
+    "01_116>04_412": {
+      "meters": 22.57,
+      "levels": 4,
+      "matchedLine": true
+    },
+    "01_120>06_644": {
+      "meters": 13.24,
+      "levels": 3,
+      "matchedLine": true
+    },
+    "01_123>GC_P118": {
+      "meters": 11.6,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "01_123>GJ_K118": {
+      "meters": 11.6,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "01_124>GC_P117": {
+      "meters": 0,
+      "levels": 0,
+      "matchedLine": false
+    },
+    "01_124>GJ_K117": {
+      "meters": 0,
+      "levels": 0,
+      "matchedLine": true
+    },
+    "01_124>SD_K209": {
+      "meters": 0,
+      "levels": 0,
+      "matchedLine": false
+    },
+    "01_126>02_211-4": {
+      "meters": 19.53,
+      "levels": 4,
+      "matchedLine": true
+    },
+    "01_126>UI_953": {
+      "meters": 6.3,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "01_127>06_636": {
+      "meters": 5.1,
+      "levels": 1,
+      "matchedLine": true
+    },
+    "01_128>04_421": {
+      "meters": 13.26,
+      "levels": 3,
+      "matchedLine": true
+    },
+    "01_130>03_329": {
+      "meters": 17.82,
+      "levels": 3.5,
+      "matchedLine": true
+    },
+    "01_130>05_534": {
+      "meters": 23.46,
+      "levels": 4,
+      "matchedLine": true
+    },
+    "01_132>02_201": {
+      "meters": 12.6,
+      "levels": 2,
+      "matchedLine": false
+    },
+    "01_133>04_426": {
+      "meters": 11.6,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "01_133>AR_A01": {
+      "meters": 63.8,
+      "levels": 11,
+      "matchedLine": true
+    },
+    "01_133>GA_X106": {
+      "meters": 11.6,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "01_133>GJ_P313": {
+      "meters": 23.2,
+      "levels": 4,
+      "matchedLine": true
+    },
+    "01_135>GJ_K110": {
+      "meters": 23.2,
+      "levels": 4,
+      "matchedLine": false
+    },
+    "01_136>09_917": {
+      "meters": 11.6,
+      "levels": 2,
+      "matchedLine": false
+    },
+    "01_140>02_234": {
+      "meters": 4.84,
+      "levels": 1,
+      "matchedLine": false
+    },
+    "01_145>07_750": {
+      "meters": 23.2,
+      "levels": 3,
+      "matchedLine": false
+    },
+    "01_152>I1_I120": {
+      "meters": 17.4,
+      "levels": 3,
+      "matchedLine": false
+    },
+    "01_156>I2_I218": {
+      "meters": 17.4,
+      "levels": 3,
+      "matchedLine": false
+    },
+    "01_161>SD_K272": {
+      "meters": 17.4,
+      "levels": 3,
+      "matchedLine": false
+    },
+    "01_P142>07_746": {
+      "meters": 39.78,
+      "levels": 5,
+      "matchedLine": false
+    },
+    "01_P155>SD_K245": {
+      "meters": 23.2,
+      "levels": 4,
+      "matchedLine": true
+    },
+    "02_201>01_132": {
+      "meters": 12.2,
+      "levels": 2,
+      "matchedLine": false
+    },
+    "02_203>03_330": {
+      "meters": 8.79,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "02_204>05_535": {
+      "meters": 18.75,
+      "levels": 5,
+      "matchedLine": true
+    },
+    "02_205>04_422": {
+      "meters": 18.88,
+      "levels": 4,
+      "matchedLine": true
+    },
+    "02_205>05_536": {
+      "meters": 23.88,
+      "levels": 5,
+      "matchedLine": true
+    },
+    "02_206>06_635": {
+      "meters": 15.4,
+      "levels": 3,
+      "matchedLine": true
+    },
+    "02_208>05_540": {
+      "meters": 18.4,
+      "levels": 4,
+      "matchedLine": true
+    },
+    "02_208>GJ_K116": {
+      "meters": 12.4,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "02_208>SD_K210": {
+      "meters": 12.4,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "02_211-4>01_126": {
+      "meters": 18.73,
+      "levels": 4,
+      "matchedLine": false
+    },
+    "02_211-4>UI_953": {
+      "meters": 18.73,
+      "levels": 4,
+      "matchedLine": true
+    },
+    "02_211>02_211": {
+      "meters": 25.7,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "02_212>07_727": {
+      "meters": 28.99,
+      "levels": 6,
+      "matchedLine": true
+    },
+    "02_216>08_814": {
+      "meters": 15.7,
+      "levels": 3,
+      "matchedLine": true
+    },
+    "02_218>09_930": {
+      "meters": 23.63,
+      "levels": 4,
+      "matchedLine": true
+    },
+    "02_220>SD_K215": {
+      "meters": 7.52,
+      "levels": 1,
+      "matchedLine": true
+    },
+    "02_222>SB_D7": {
+      "meters": 11.45,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "02_223>03_340": {
+      "meters": 16.38,
+      "levels": 3,
+      "matchedLine": true
+    },
+    "02_226>04_433": {
+      "meters": 10.2,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "02_230>SL_S408": {
+      "meters": 17.11,
+      "levels": 3,
+      "matchedLine": true
+    },
+    "02_233>07_744": {
+      "meters": 4.6,
+      "levels": 1,
+      "matchedLine": true
+    },
+    "02_234-4>05_518": {
+      "meters": 20.12,
+      "levels": 4,
+      "matchedLine": true
+    },
+    "02_234>01_140": {
+      "meters": 11.57,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "02_234>02_234": {
+      "meters": 10.62,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "02_236>05_523": {
+      "meters": 41.48,
+      "levels": 7,
+      "matchedLine": true
+    },
+    "02_237>09_913": {
+      "meters": 28.1,
+      "levels": 5,
+      "matchedLine": true
+    },
+    "02_238>06_622": {
+      "meters": 26.6,
+      "levels": 4,
+      "matchedLine": true
+    },
+    "02_239>AR_A03": {
+      "meters": 16.06,
+      "levels": 3.5,
+      "matchedLine": true
+    },
+    "02_239>GJ_K314": {
+      "meters": 16.06,
+      "levels": 3.5,
+      "matchedLine": true
+    },
+    "02_243>05_531": {
+      "meters": 20.2,
+      "levels": 4,
+      "matchedLine": true
+    },
+    "03_321>06_614": {
+      "meters": 24.62,
+      "levels": 5,
+      "matchedLine": true
+    },
+    "03_321>GA_X105": {
+      "meters": 24.62,
+      "levels": 5,
+      "matchedLine": false
+    },
+    "03_322>06_612": {
+      "meters": 9.95,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "03_329>01_130": {
+      "meters": 12.18,
+      "levels": 3,
+      "matchedLine": true
+    },
+    "03_329>05_534": {
+      "meters": 23.43,
+      "levels": 3,
+      "matchedLine": true
+    },
+    "03_330>02_203": {
+      "meters": 6.48,
+      "levels": 1.5,
+      "matchedLine": true
+    },
+    "03_331>04_423": {
+      "meters": 10.3,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "03_333>06_633": {
+      "meters": 18,
+      "levels": 3,
+      "matchedLine": true
+    },
+    "03_335>GJ_K114": {
+      "meters": 20.25,
+      "levels": 3,
+      "matchedLine": true
+    },
+    "03_337>SB_D4": {
+      "meters": 12.84,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "03_339>07_734": {
+      "meters": 9,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "03_339>09_923": {
+      "meters": 18,
+      "levels": 4,
+      "matchedLine": true
+    },
+    "03_340>02_223": {
+      "meters": 37.12,
+      "levels": 5,
+      "matchedLine": false
+    },
+    "03_342>SB_D8": {
+      "meters": 9.6,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "03_344>SD_K217": {
+      "meters": 9.15,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "03_349>GA_X108": {
+      "meters": 21.8,
+      "levels": 2,
+      "matchedLine": false
+    },
+    "03_349>SD_K221": {
+      "meters": 21.8,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "03_350>08_817": {
+      "meters": 17.8,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "03_352>05_P552": {
+      "meters": 11,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "04_411>07_713": {
+      "meters": 14.2,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "04_412>01_116": {
+      "meters": 16.03,
+      "levels": 3,
+      "matchedLine": true
+    },
+    "04_418>UI_951": {
+      "meters": 15.23,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "04_421>01_128": {
+      "meters": 17.4,
+      "levels": 4,
+      "matchedLine": true
+    },
+    "04_422>02_205": {
+      "meters": 13.88,
+      "levels": 3,
+      "matchedLine": true
+    },
+    "04_422>05_536": {
+      "meters": 10,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "04_423>03_331": {
+      "meters": 10.3,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "04_426>01_133": {
+      "meters": 11.6,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "04_426>AR_A01": {
+      "meters": 40.6,
+      "levels": 7,
+      "matchedLine": true
+    },
+    "04_426>GA_X106": {
+      "meters": 17.4,
+      "levels": 3,
+      "matchedLine": false
+    },
+    "04_426>GJ_P313": {
+      "meters": 23.2,
+      "levels": 4,
+      "matchedLine": true
+    },
+    "04_428>06_628": {
+      "meters": 9.3,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "04_430>GJ_K111": {
+      "meters": 11.52,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "04_431>09_920": {
+      "meters": 21.25,
+      "levels": 5,
+      "matchedLine": true
+    },
+    "04_432>07_736": {
+      "meters": 27.9,
+      "levels": 3,
+      "matchedLine": true
+    },
+    "04_433>02_226": {
+      "meters": 10.2,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "04_451>SD_K253": {
+      "meters": 5.8,
+      "levels": 1,
+      "matchedLine": true
+    },
+    "04_452>SD_K254": {
+      "meters": 5.8,
+      "levels": 1,
+      "matchedLine": true
+    },
+    "04_452>SH_S26": {
+      "meters": 23.2,
+      "levels": 4,
+      "matchedLine": true
+    },
+    "05_512>09_902": {
+      "meters": 13.8,
+      "levels": 3,
+      "matchedLine": true
+    },
+    "05_512>AR_A05": {
+      "meters": 13.8,
+      "levels": 3,
+      "matchedLine": true
+    },
+    "05_512>GM_699": {
+      "meters": 13.8,
+      "levels": 3,
+      "matchedLine": true
+    },
+    "05_512>SH_S13": {
+      "meters": 18.4,
+      "levels": 4,
+      "matchedLine": true
+    },
+    "05_518>02_234-4": {
+      "meters": 20.12,
+      "levels": 4,
+      "matchedLine": true
+    },
+    "05_523>02_236": {
+      "meters": 44.37,
+      "levels": 7,
+      "matchedLine": true
+    },
+    "05_525>01_138": {
+      "meters": 32.6,
+      "levels": 4,
+      "matchedLine": true
+    },
+    "05_526>09_915": {
+      "meters": 10,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "05_529>06_626": {
+      "meters": 13.86,
+      "levels": 3,
+      "matchedLine": true
+    },
+    "05_529>AR_A02": {
+      "meters": 14.85,
+      "levels": 3,
+      "matchedLine": true
+    },
+    "05_529>GJ_K312": {
+      "meters": 13.86,
+      "levels": 3,
+      "matchedLine": true
+    },
+    "05_531>02_243": {
+      "meters": 20.2,
+      "levels": 4,
+      "matchedLine": true
+    },
+    "05_534>01_130": {
+      "meters": 23.46,
+      "levels": 4,
+      "matchedLine": true
+    },
+    "05_534>03_329": {
+      "meters": 23.43,
+      "levels": 3,
+      "matchedLine": true
+    },
+    "05_535>02_204": {
+      "meters": 16.35,
+      "levels": 4,
+      "matchedLine": true
+    },
+    "05_536>02_205": {
+      "meters": 23.88,
+      "levels": 5,
+      "matchedLine": true
+    },
+    "05_536>04_422": {
+      "meters": 16.94,
+      "levels": 3.5,
+      "matchedLine": true
+    },
+    "05_537>06_634": {
+      "meters": 10.17,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "05_540>02_208": {
+      "meters": 18.4,
+      "levels": 4,
+      "matchedLine": true
+    },
+    "05_540>GJ_K116": {
+      "meters": 26.2,
+      "levels": 5,
+      "matchedLine": true
+    },
+    "05_540>SD_K210": {
+      "meters": 26.2,
+      "levels": 5,
+      "matchedLine": true
+    },
+    "05_544>07_725": {
+      "meters": 5.9,
+      "levels": 1,
+      "matchedLine": true
+    },
+    "05_547>08_811": {
+      "meters": 14.29,
+      "levels": 3,
+      "matchedLine": true
+    },
+    "05_P550>09_936": {
+      "meters": 13.68,
+      "levels": 3,
+      "matchedLine": true
+    },
+    "05_P552>03_352": {
+      "meters": 11,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "06_612>03_322": {
+      "meters": 9.95,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "06_614>03_321": {
+      "meters": 24.62,
+      "levels": 5,
+      "matchedLine": true
+    },
+    "06_614>GA_X105": {
+      "meters": 24.62,
+      "levels": 5,
+      "matchedLine": false
+    },
+    "06_618>AR_A04": {
+      "meters": 14.55,
+      "levels": 3,
+      "matchedLine": true
+    },
+    "06_618>GJ_K316": {
+      "meters": 11.88,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "06_622>02_238": {
+      "meters": 26.6,
+      "levels": 4,
+      "matchedLine": true
+    },
+    "06_626>05_529": {
+      "meters": 9.24,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "06_626>AR_A02": {
+      "meters": 10.23,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "06_626>GJ_K312": {
+      "meters": 9.24,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "06_627>GJ_K826": {
+      "meters": 9.34,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "06_628>04_428": {
+      "meters": 9.3,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "06_633>03_333": {
+      "meters": 18,
+      "levels": 3,
+      "matchedLine": true
+    },
+    "06_634>05_537": {
+      "meters": 10.17,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "06_635>02_206": {
+      "meters": 10.4,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "06_636>01_127": {
+      "meters": 8.3,
+      "levels": 1,
+      "matchedLine": true
+    },
+    "06_638>UI_952": {
+      "meters": 14.42,
+      "levels": 3,
+      "matchedLine": true
+    },
+    "06_644>01_120": {
+      "meters": 18,
+      "levels": 4,
+      "matchedLine": true
+    },
+    "06_645>07_717": {
+      "meters": 19.24,
+      "levels": 4,
+      "matchedLine": true
+    },
+    "06_648>GC_P122": {
+      "meters": 8.4,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "07_710>01_113": {
+      "meters": 8.48,
+      "levels": 1,
+      "matchedLine": true
+    },
+    "07_713>04_411": {
+      "meters": 14.2,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "07_717>06_645": {
+      "meters": 19.24,
+      "levels": 4,
+      "matchedLine": true
+    },
+    "07_720>GC_P120": {
+      "meters": 31.26,
+      "levels": 3,
+      "matchedLine": true
+    },
+    "07_720>GJ_K120": {
+      "meters": 31.26,
+      "levels": 3,
+      "matchedLine": true
+    },
+    "07_725>05_544": {
+      "meters": 5.9,
+      "levels": 1,
+      "matchedLine": true
+    },
+    "07_727>02_212": {
+      "meters": 24.28,
+      "levels": 5,
+      "matchedLine": true
+    },
+    "07_730>SD_K213": {
+      "meters": 12.8,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "07_732>SB_D5": {
+      "meters": 5.6,
+      "levels": 1,
+      "matchedLine": true
+    },
+    "07_734>03_339": {
+      "meters": 13.5,
+      "levels": 3,
+      "matchedLine": true
+    },
+    "07_734>09_923": {
+      "meters": 18,
+      "levels": 4,
+      "matchedLine": true
+    },
+    "07_736>04_432": {
+      "meters": 14.6,
+      "levels": 3,
+      "matchedLine": true
+    },
+    "07_742>SL_S404": {
+      "meters": 24.62,
+      "levels": 3,
+      "matchedLine": true
+    },
+    "07_744>02_233": {
+      "meters": 22.2,
+      "levels": 4,
+      "matchedLine": true
+    },
+    "07_746>01_P142": {
+      "meters": 31.85,
+      "levels": 4,
+      "matchedLine": true
+    },
+    "07_750>01_145": {
+      "meters": 14.6,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "07_759>I1_I118": {
+      "meters": 5.8,
+      "levels": 1,
+      "matchedLine": true
+    },
+    "08_804>GC_P124": {
+      "meters": 23.2,
+      "levels": 4,
+      "matchedLine": true
+    },
+    "08_807>GJ_K123": {
+      "meters": 23.2,
+      "levels": 4,
+      "matchedLine": true
+    },
+    "08_811>05_547": {
+      "meters": 14.29,
+      "levels": 3,
+      "matchedLine": true
+    },
+    "08_814>02_216": {
+      "meters": 15.7,
+      "levels": 3,
+      "matchedLine": true
+    },
+    "08_815>09_933": {
+      "meters": 9.24,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "08_817>03_350": {
+      "meters": 11.1,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "08_820>SD_K222": {
+      "meters": 6.99,
+      "levels": 1,
+      "matchedLine": true
+    },
+    "08_827>SD_K225": {
+      "meters": 19.31,
+      "levels": 3,
+      "matchedLine": true
+    },
+    "09_902>05_512": {
+      "meters": 8.7,
+      "levels": 1.5,
+      "matchedLine": true
+    },
+    "09_902>AR_A05": {
+      "meters": 5.8,
+      "levels": 1,
+      "matchedLine": true
+    },
+    "09_902>GM_699": {
+      "meters": 20.3,
+      "levels": 3.5,
+      "matchedLine": true
+    },
+    "09_902>SH_S13": {
+      "meters": 8.7,
+      "levels": 1.5,
+      "matchedLine": false
+    },
+    "09_905>AR_A042": {
+      "meters": 17.4,
+      "levels": 3,
+      "matchedLine": true
+    },
+    "09_913>02_237": {
+      "meters": 23.2,
+      "levels": 4,
+      "matchedLine": false
+    },
+    "09_915>05_526": {
+      "meters": 8.7,
+      "levels": 1.5,
+      "matchedLine": true
+    },
+    "09_916>SL_S401": {
+      "meters": 17.4,
+      "levels": 3,
+      "matchedLine": false
+    },
+    "09_920>04_431": {
+      "meters": 23.2,
+      "levels": 4,
+      "matchedLine": true
+    },
+    "09_923>03_339": {
+      "meters": 11.6,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "09_923>07_734": {
+      "meters": 11.6,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "09_927>SD_K214": {
+      "meters": 11.6,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "09_930>02_218": {
+      "meters": 23.2,
+      "levels": 4,
+      "matchedLine": true
+    },
+    "09_933>08_815": {
+      "meters": 11.6,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "09_936>05_P550": {
+      "meters": 11.6,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "AR_A01>01_133": {
+      "meters": 40.6,
+      "levels": 7,
+      "matchedLine": true
+    },
+    "AR_A01>04_426": {
+      "meters": 40.6,
+      "levels": 7,
+      "matchedLine": true
+    },
+    "AR_A01>GA_X106": {
+      "meters": 40.6,
+      "levels": 7,
+      "matchedLine": false
+    },
+    "AR_A01>GJ_P313": {
+      "meters": 52.2,
+      "levels": 9,
+      "matchedLine": true
+    },
+    "AR_A02>05_529": {
+      "meters": 23.2,
+      "levels": 4,
+      "matchedLine": true
+    },
+    "AR_A02>06_626": {
+      "meters": 20.3,
+      "levels": 3.5,
+      "matchedLine": true
+    },
+    "AR_A02>GJ_K312": {
+      "meters": 17.4,
+      "levels": 3,
+      "matchedLine": true
+    },
+    "AR_A03>02_239": {
+      "meters": 23.2,
+      "levels": 4,
+      "matchedLine": true
+    },
+    "AR_A03>GJ_K314": {
+      "meters": 17.4,
+      "levels": 3,
+      "matchedLine": true
+    },
+    "AR_A04>06_618": {
+      "meters": 23.2,
+      "levels": 4,
+      "matchedLine": true
+    },
+    "AR_A04>GJ_K316": {
+      "meters": 29,
+      "levels": 5,
+      "matchedLine": true
+    },
+    "AR_A042>09_905": {
+      "meters": 17.4,
+      "levels": 3,
+      "matchedLine": true
+    },
+    "AR_A05>05_512": {
+      "meters": 8.7,
+      "levels": 1.5,
+      "matchedLine": true
+    },
+    "AR_A05>09_902": {
+      "meters": 2.9,
+      "levels": 0.5,
+      "matchedLine": true
+    },
+    "AR_A05>GM_699": {
+      "meters": 20.3,
+      "levels": 3.5,
+      "matchedLine": true
+    },
+    "AR_A05>SH_S13": {
+      "meters": 5.8,
+      "levels": 1,
+      "matchedLine": false
+    },
+    "AR_A06>I1_I110": {
+      "meters": 11.6,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "AR_A07>I2_I207": {
+      "meters": 17.4,
+      "levels": 3,
+      "matchedLine": true
+    },
+    "EV_Y110>SD_K237": {
+      "meters": 5.8,
+      "levels": 1,
+      "matchedLine": true
+    },
+    "GA_X103>03_314": {
+      "meters": 58,
+      "levels": 10,
+      "matchedLine": true
+    },
+    "GA_X103>GJ_K322": {
+      "meters": 58,
+      "levels": 10,
+      "matchedLine": true
+    },
+    "GA_X103>SH_S11": {
+      "meters": 58,
+      "levels": 10,
+      "matchedLine": true
+    },
+    "GA_X105>03_321": {
+      "meters": 46.4,
+      "levels": 8,
+      "matchedLine": true
+    },
+    "GA_X105>06_614": {
+      "meters": 23.2,
+      "levels": 4,
+      "matchedLine": true
+    },
+    "GA_X106>01_133": {
+      "meters": 11.6,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "GA_X106>04_426": {
+      "meters": 11.6,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "GA_X106>AR_A01": {
+      "meters": 11.6,
+      "levels": 2,
+      "matchedLine": false
+    },
+    "GA_X106>GJ_P313": {
+      "meters": 11.6,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "GA_X108>03_349": {
+      "meters": 5.8,
+      "levels": 1,
+      "matchedLine": true
+    },
+    "GA_X108>SD_K221": {
+      "meters": 5.8,
+      "levels": 1,
+      "matchedLine": true
+    },
+    "GA_X110>SD_K235": {
+      "meters": 5.8,
+      "levels": 1,
+      "matchedLine": true
+    },
+    "GC_P116>01_119": {
+      "meters": 11.6,
+      "levels": 2,
+      "matchedLine": false
+    },
+    "GC_P117>01_124": {
+      "meters": 11.6,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "GC_P117>GJ_K117": {
+      "meters": 11.6,
+      "levels": 2,
+      "matchedLine": false
+    },
+    "GC_P117>SD_K209": {
+      "meters": 11.6,
+      "levels": 2,
+      "matchedLine": false
+    },
+    "GC_P118>01_123": {
+      "meters": 11.6,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "GC_P118>GJ_K118": {
+      "meters": 0,
+      "levels": 0,
+      "matchedLine": true
+    },
+    "GC_P119>GJ_K119": {
+      "meters": 5.8,
+      "levels": 1,
+      "matchedLine": true
+    },
+    "GC_P120>07_720": {
+      "meters": 17.4,
+      "levels": 3,
+      "matchedLine": true
+    },
+    "GC_P120>GJ_K120": {
+      "meters": 11.6,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "GC_P121>GJ_K121": {
+      "meters": 11.6,
+      "levels": 2,
+      "matchedLine": false
+    },
+    "GC_P122>06_648": {
+      "meters": 11.6,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "GC_P124>08_804": {
+      "meters": 23.2,
+      "levels": 4,
+      "matchedLine": true
+    },
+    "GJ_K110>01_135": {
+      "meters": 23.2,
+      "levels": 4,
+      "matchedLine": false
+    },
+    "GJ_K111>04_430": {
+      "meters": 11.6,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "GJ_K114>03_335": {
+      "meters": 17.4,
+      "levels": 3,
+      "matchedLine": true
+    },
+    "GJ_K116>02_208": {
+      "meters": 20.3,
+      "levels": 3.5,
+      "matchedLine": true
+    },
+    "GJ_K116>05_540": {
+      "meters": 29,
+      "levels": 5,
+      "matchedLine": true
+    },
+    "GJ_K116>SD_K210": {
+      "meters": 11.6,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "GJ_K117>01_124": {
+      "meters": 11.6,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "GJ_K117>GC_P117": {
+      "meters": 11.6,
+      "levels": 2,
+      "matchedLine": false
+    },
+    "GJ_K117>SD_K209": {
+      "meters": 11.6,
+      "levels": 2,
+      "matchedLine": false
+    },
+    "GJ_K118>01_123": {
+      "meters": 11.6,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "GJ_K118>GC_P118": {
+      "meters": 11.6,
+      "levels": 2,
+      "matchedLine": false
+    },
+    "GJ_K119>GC_P119": {
+      "meters": 11.6,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "GJ_K120>07_720": {
+      "meters": 17.4,
+      "levels": 3,
+      "matchedLine": true
+    },
+    "GJ_K120>GC_P120": {
+      "meters": 11.6,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "GJ_K121>GC_P121": {
+      "meters": 11.6,
+      "levels": 2,
+      "matchedLine": false
+    },
+    "GJ_K123>08_807": {
+      "meters": 11.6,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "GJ_K312>05_529": {
+      "meters": 17.4,
+      "levels": 3,
+      "matchedLine": true
+    },
+    "GJ_K312>06_626": {
+      "meters": 14.5,
+      "levels": 2.5,
+      "matchedLine": true
+    },
+    "GJ_K312>AR_A02": {
+      "meters": 11.6,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "GJ_K314>02_239": {
+      "meters": 17.4,
+      "levels": 3,
+      "matchedLine": true
+    },
+    "GJ_K314>AR_A03": {
+      "meters": 11.6,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "GJ_K316>06_618": {
+      "meters": 20.3,
+      "levels": 3.5,
+      "matchedLine": true
+    },
+    "GJ_K316>AR_A04": {
+      "meters": 29,
+      "levels": 5,
+      "matchedLine": true
+    },
+    "GJ_K322>03_314": {
+      "meters": 23.2,
+      "levels": 4,
+      "matchedLine": true
+    },
+    "GJ_K322>GA_X103": {
+      "meters": 23.2,
+      "levels": 4,
+      "matchedLine": false
+    },
+    "GJ_K322>SH_S11": {
+      "meters": 23.2,
+      "levels": 4,
+      "matchedLine": false
+    },
+    "GJ_K826>06_627": {
+      "meters": 11.6,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "GJ_P313>01_133": {
+      "meters": 23.2,
+      "levels": 4,
+      "matchedLine": true
+    },
+    "GJ_P313>04_426": {
+      "meters": 23.2,
+      "levels": 4,
+      "matchedLine": true
+    },
+    "GJ_P313>AR_A01": {
+      "meters": 29,
+      "levels": 5,
+      "matchedLine": true
+    },
+    "GJ_P313>GA_X106": {
+      "meters": 23.2,
+      "levels": 4,
+      "matchedLine": false
+    },
+    "GM_699>05_512": {
+      "meters": 20.3,
+      "levels": 3.5,
+      "matchedLine": true
+    },
+    "GM_699>09_902": {
+      "meters": 20.3,
+      "levels": 3.5,
+      "matchedLine": true
+    },
+    "GM_699>AR_A05": {
+      "meters": 20.3,
+      "levels": 3.5,
+      "matchedLine": true
+    },
+    "GM_699>SH_S13": {
+      "meters": 20.3,
+      "levels": 3.5,
+      "matchedLine": false
+    },
+    "I1_I110>AR_A06": {
+      "meters": 5.8,
+      "levels": 1,
+      "matchedLine": true
+    },
+    "I1_I124>I2_I221": {
+      "meters": 5.8,
+      "levels": 1,
+      "matchedLine": true
+    },
+    "I1_I130>SD_K265": {
+      "meters": 11.6,
+      "levels": 2,
+      "matchedLine": false
+    },
+    "I2_I221>I1_I124": {
+      "meters": 5.8,
+      "levels": 1,
+      "matchedLine": true
+    },
+    "SB_D11>GG_K409": {
+      "meters": 5.8,
+      "levels": 1,
+      "matchedLine": true
+    },
+    "SB_D12>SD_K230": {
+      "meters": 5.8,
+      "levels": 1,
+      "matchedLine": true
+    },
+    "SB_D13>SD_K231": {
+      "meters": 23.2,
+      "levels": 4,
+      "matchedLine": true
+    },
+    "SB_D4>03_337": {
+      "meters": 11.6,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "SB_D5>07_732": {
+      "meters": 5.8,
+      "levels": 1,
+      "matchedLine": true
+    },
+    "SB_D6>09_925": {
+      "meters": 17.4,
+      "levels": 3,
+      "matchedLine": true
+    },
+    "SB_D7>02_222": {
+      "meters": 11.6,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "SB_D8>03_342": {
+      "meters": 11.6,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "SD_K210>02_208": {
+      "meters": 20.3,
+      "levels": 3.5,
+      "matchedLine": true
+    },
+    "SD_K210>05_540": {
+      "meters": 29,
+      "levels": 5,
+      "matchedLine": true
+    },
+    "SD_K210>GJ_K116": {
+      "meters": 11.6,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "SD_K213>07_730": {
+      "meters": 34.8,
+      "levels": 6,
+      "matchedLine": true
+    },
+    "SD_K214>09_927": {
+      "meters": 11.6,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "SD_K221>03_349": {
+      "meters": 11.6,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "SD_K221>GA_X108": {
+      "meters": 11.6,
+      "levels": 2,
+      "matchedLine": false
+    },
+    "SD_K225>08_827": {
+      "meters": 11.6,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "SD_K230>SB_D12": {
+      "meters": 5.8,
+      "levels": 1,
+      "matchedLine": true
+    },
+    "SD_K231>SB_D13": {
+      "meters": 11.6,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "SD_K237>EV_Y110": {
+      "meters": 29,
+      "levels": 5,
+      "matchedLine": true
+    },
+    "SD_K245>01_P155": {
+      "meters": 23.2,
+      "levels": 4,
+      "matchedLine": true
+    },
+    "SD_K253>04_451": {
+      "meters": 5.8,
+      "levels": 1,
+      "matchedLine": true
+    },
+    "SD_K265>I1_I130": {
+      "meters": 17.4,
+      "levels": 3,
+      "matchedLine": false
+    },
+    "SD_K272>01_161": {
+      "meters": 17.4,
+      "levels": 3,
+      "matchedLine": false
+    },
+    "SH_S11>03_314": {
+      "meters": 23.2,
+      "levels": 4,
+      "matchedLine": true
+    },
+    "SH_S11>GA_X103": {
+      "meters": 23.2,
+      "levels": 4,
+      "matchedLine": false
+    },
+    "SH_S11>GJ_K322": {
+      "meters": 23.2,
+      "levels": 4,
+      "matchedLine": true
+    },
+    "SH_S16>01_147": {
+      "meters": 17.4,
+      "levels": 3,
+      "matchedLine": true
+    },
+    "SH_S26>04_452": {
+      "meters": 17.4,
+      "levels": 3,
+      "matchedLine": true
+    },
+    "SH_S26>SD_K254": {
+      "meters": 17.4,
+      "levels": 3,
+      "matchedLine": false
+    },
+    "SL_S401>09_916": {
+      "meters": 29,
+      "levels": 5,
+      "matchedLine": true
+    },
+    "SL_S402>01_137": {
+      "meters": 34.8,
+      "levels": 6,
+      "matchedLine": true
+    },
+    "SL_S404>07_742": {
+      "meters": 17.4,
+      "levels": 3,
+      "matchedLine": true
+    },
+    "SL_S408>02_230": {
+      "meters": 17.4,
+      "levels": 3,
+      "matchedLine": true
+    },
+    "UI_951>04_418": {
+      "meters": 11.6,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "UI_952>06_638": {
+      "meters": 17.4,
+      "levels": 3,
+      "matchedLine": true
+    },
+    "UI_953>01_126": {
+      "meters": 11.6,
+      "levels": 2,
+      "matchedLine": true
+    },
+    "UI_953>02_211-4": {
+      "meters": 11.6,
+      "levels": 2,
+      "matchedLine": true
+    }
+  }
+}

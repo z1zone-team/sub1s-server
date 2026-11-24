@@ -80,3 +80,46 @@ it('ignores the elevator axis when any candidate lacks facility data', () => {
     chooseRecommendation([fast, lift], surveyPreference(['ELEVATOR'])),
   ).toBe(fast);
 });
+it('prefers the route that climbs less only for users who chose avoiding stairs', () => {
+  const deep = { ...fast, verticalTravelM: 40 };
+  const shallow = {
+    ...cheap,
+    totalDurationSec: 620,
+    totalFare: 1750,
+    verticalTravelM: 12,
+  };
+  expect(routeFeatures(shallow).stairs).toBe(12);
+  expect(routeFeatures(fast).stairs).toBeUndefined();
+  // 고르지 않은 사용자와 공통 추천은 그대로 빠른 경로
+  expect(chooseRecommendation([deep, shallow])).toBe(deep);
+  expect(chooseRecommendation([deep, shallow], surveyPreference([]))).toBe(
+    deep,
+  );
+  expect(
+    chooseRecommendation([deep, shallow], surveyPreference(['AVOID_STAIRS'])),
+  ).toBe(shallow);
+});
+it('treats differences smaller than about one level as small', () => {
+  const a = { ...fast, verticalTravelM: 12 };
+  const b = {
+    ...cheap,
+    totalDurationSec: 780,
+    totalFare: 1750,
+    verticalTravelM: 10,
+  };
+  // 2m(한 층보다 작은) 차이로 3분 늦은 경로를 고르지 않는다
+  expect(chooseRecommendation([a, b], surveyPreference(['AVOID_STAIRS']))).toBe(
+    a,
+  );
+});
+it('ignores the stairs axis when any candidate lacks vertical data', () => {
+  const shallow = {
+    ...cheap,
+    totalDurationSec: 620,
+    totalFare: 1750,
+    verticalTravelM: 12,
+  };
+  expect(
+    chooseRecommendation([fast, shallow], surveyPreference(['AVOID_STAIRS'])),
+  ).toBe(fast);
+});

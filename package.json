@@ -34,6 +34,7 @@
     "fetch:molit-fast-transfer": "ts-node src/scripts/fetch-molit-fast-transfer.ts",
     "fetch:osm-railways": "ts-node src/scripts/fetch-osm-railways.ts",
     "build:edge-shapes": "ts-node src/scripts/build-edge-shapes.ts",
+    "build:station-vertical": "ts-node src/scripts/build-station-vertical.ts",
     "apply:fast-transfer-doors": "ts-node src/scripts/apply-fast-transfer-doors.ts",
     "refine:edges": "ts-node src/scripts/refine-edges-timetable.ts",
     "seed:subway": "ts-node src/scripts/seed-subway-graph.ts",
