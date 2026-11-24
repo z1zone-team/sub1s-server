@@ -6,3 +6,5 @@ export * from './travel-stats-query.dto';
 export * from './travel-stats-response.dto';
 export * from './line-map-query.dto';
 export * from './line-map-response.dto';
+export * from './user-travel-query.dto';
+export * from './user-travel-response.dto';

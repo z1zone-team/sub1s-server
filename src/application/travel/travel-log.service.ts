@@ -263,7 +263,7 @@ export class TravelLogService {
     };
   }
 
-  /** 이동 통계와 노선도는 본인 것만 본다. 다른 사용자의 이동 이력을 볼 정책이 아직 없다 */
+  /** /v1/travel의 통계와 노선도는 본인 것만 본다. 다른 사용자 것은 /v1/users/:userId/travel로 본다 */
   private resolveTargetUser(currentUserId: string, requested?: string): string {
     if (requested && requested !== currentUserId) {
       throw new BusinessException(
@@ -309,6 +309,7 @@ export class TravelLogService {
     );
   }
 
+  /** 공개 범위는 확인하지 않는다. 다른 사용자 것을 볼 때는 호출하는 쪽이 먼저 확인한다 */
   async getTimeline(
     userId: string,
     query: TimelineQueryDto,
@@ -353,8 +354,16 @@ export class TravelLogService {
     query: TravelStatsQueryDto,
   ): Promise<TravelStatsResponseDto> {
     const targetUserId = this.resolveTargetUser(currentUserId, query.userId);
+    return this.aggregateTravelStats(targetUserId, query.period);
+  }
+
+  /** 공개 범위는 확인하지 않는다. 다른 사용자 것을 볼 때는 호출하는 쪽이 먼저 확인한다 */
+  async aggregateTravelStats(
+    targetUserId: string,
+    period: TravelStatsQueryDto['period'],
+  ): Promise<TravelStatsResponseDto> {
     const nowMs = Date.now();
-    const startDate = this.calculateStartDate(query.period, nowMs);
+    const startDate = this.calculateStartDate(period, nowMs);
 
     const logs = await this.travelLogRepo.findStatsLogs(
       targetUserId,
@@ -456,14 +465,14 @@ export class TravelLogService {
 
     return {
       userId: targetUserId,
-      period: query.period,
+      period,
       totalDistanceKm,
       totalTravelCount,
       transferCount,
       totalRideDurationSec,
       mostVisitedStations,
       mostUsedLineId,
-      buckets: this.buildBuckets(query.period, logs, nowMs),
+      buckets: this.buildBuckets(period, logs, nowMs),
       lineBreakdown,
     };
   }
@@ -473,7 +482,15 @@ export class TravelLogService {
     query: LineMapQueryDto,
   ): Promise<LineMapResponseDto> {
     const targetUserId = this.resolveTargetUser(currentUserId, query.userId);
-    const startDate = this.calculateStartDate(query.period);
+    return this.buildLineMap(targetUserId, query.period);
+  }
+
+  /** 공개 범위는 확인하지 않는다. 다른 사용자 것을 볼 때는 호출하는 쪽이 먼저 확인한다 */
+  async buildLineMap(
+    targetUserId: string,
+    period: LineMapQueryDto['period'],
+  ): Promise<LineMapResponseDto> {
+    const startDate = this.calculateStartDate(period);
 
     const logs = await this.travelLogRepo.findLineMapLogs(
       targetUserId,
@@ -587,7 +604,7 @@ export class TravelLogService {
 
     return {
       userId: targetUserId,
-      period: query.period,
+      period,
       lines,
     };
   }
