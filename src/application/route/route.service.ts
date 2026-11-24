@@ -634,7 +634,7 @@ export class RouteService {
       );
     }
 
-    this.applyHighlights(validOptions);
+    this.applyHighlights(validOptions, pool);
     await this.operationStatus.annotate(validOptions, graph);
     await this.serviceHours?.annotate(validOptions, departureDate);
 
@@ -692,9 +692,21 @@ export class RouteService {
     return withElevator / stops.length;
   }
 
-  private applyHighlights(options: SubwayRouteOptionDto[]): void {
+  private applyHighlights(
+    options: SubwayRouteOptionDto[],
+    candidates: SubwayRouteOptionDto[],
+  ): void {
     const comparable = options.filter((option) => option.mode !== 'ONLY_WALK');
-    const tags = computeRouteHighlights(comparable.map(toHighlightInput));
+    // 표시 전에 후보를 추리므로 표시되지 않는 후보의 자료 누락도 포함한다.
+    const verticalKnown = candidates.every((o) => o.verticalTravelM !== undefined);
+    const elevatorKnown = candidates.every((o) => o.elevatorAccess !== undefined);
+    const tags = computeRouteHighlights(
+      comparable.map((option) => ({
+        ...toHighlightInput(option),
+        verticalTravelM: verticalKnown ? option.verticalTravelM : null,
+        elevatorAccess: elevatorKnown ? option.elevatorAccess : null,
+      })),
+    );
     comparable.forEach((option, index) => {
       option.highlights = tags[index];
     });
