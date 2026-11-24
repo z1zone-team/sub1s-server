@@ -191,9 +191,11 @@ export class StationNameMatcher {
     if (compact.length < 1) return null;
 
     const maxDrop = soundsLikeYeok(compact[compact.length - 1]) ? 1 : 0;
-    const scored: StationMatch[] = [];
+    // start, end: 입력에서 이 역과 비교해 가장 가까웠던 구간
+    const scored: Array<StationMatch & { start: number; end: number }> = [];
     for (const entry of this.entries) {
       let best = Infinity;
+      let span = { start: 0, end: 0 };
       const length = entry.compact.length;
       for (let drop = 0; drop <= maxDrop; drop++) {
         const end = compact.length - drop;
@@ -203,31 +205,43 @@ export class StationNameMatcher {
           if (start < 0) continue;
           const distance = jamoDistance(toJamo(compact.slice(start, end)), entry.jamo);
           // 끝의 한 글자를 버린 경우는 그만큼 조금 더 의심스러우니 가산한다
-          best = Math.min(best, distance + drop * 0.25);
+          const total = distance + drop * 0.25;
+          if (total < best) {
+            best = total;
+            span = { start, end };
+          }
         }
       }
-      if (best <= entry.threshold) scored.push({ name: entry.name, distance: best });
+      if (best <= entry.threshold)
+        scored.push({ name: entry.name, distance: best, ...span });
     }
     if (scored.length === 0) return null;
 
     scored.sort((x, y) => x.distance - y.distance || y.name.length - x.name.length);
+    const result = ({ name, distance }: StationMatch): StationMatch => ({
+      name,
+      distance,
+    });
     // 이름이 그대로 일치하면 다른 역이 비슷해도 그 역이다
-    if (scored[0].distance === 0) return scored[0];
+    if (scored[0].distance === 0) return result(scored[0]);
 
-    // 더 긴 이름 안에 들어 있는 짧은 이름은 따로 센 후보가 아니라 그 긴 이름의 일부로 본다.
-    // 예: `선정능`은 `선정릉`과 거리 1이고 `정릉`도 끝부분이 거리 1인데, `정릉`은 `선정릉`에 포함되므로 경쟁자가 아니다
+    // 더 긴 이름의 일부로 설명되는 짧은 이름은 따로 센 후보가 아니라 그 긴 이름의 일부로 본다.
+    // - 이름이 포함될 때: `선정능`은 `선정릉`과 거리 1이고 `정릉`도 끝부분이 거리 1인데, `정릉`은 `선정릉`에 포함된다
+    // - 입력 구간이 포함될 때: `명시대`는 `명지대`와 거리 1이고 끝의 `시대`가 `이대`와 거리 1인데,
+    //   `이대`가 맞은 구간(`시대`)은 `명지대`가 맞은 구간(`명시대`) 안에 있어 같은 말의 일부다
     const candidates = scored.filter(
       (candidate) =>
         !scored.some(
           (other) =>
             other !== candidate &&
             other.name.length > candidate.name.length &&
-            other.name.includes(candidate.name) &&
-            other.distance <= candidate.distance + MIN_MARGIN,
+            other.distance <= candidate.distance + MIN_MARGIN &&
+            (other.name.includes(candidate.name) ||
+              (other.start <= candidate.start && candidate.end <= other.end)),
         ),
     );
     const [first, second] = candidates;
     if (second && second.distance - first.distance < MIN_MARGIN) return null;
-    return first;
+    return result(first);
   }
 }

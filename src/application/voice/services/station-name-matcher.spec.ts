@@ -83,6 +83,8 @@ describe('StationNameMatcher', () => {
     '강남',
     '사당',
     '고색',
+    '명지대',
+    '이대',
   ]);
 
   describe('isExact', () => {
@@ -133,6 +135,24 @@ describe('StationNameMatcher', () => {
       const result = matcher.closestAtEnd('선정능');
 
       expect(result?.name).toBe('선정릉');
+    });
+
+    it.each(['명시대', '영지대'])(
+      '짧은 역이 맞은 입력 구간이 긴 역이 맞은 구간 안에 있으면 경쟁자로 세지 않는다 (%s → 명지대, 끝의 `시대`/`지대`는 이대와도 거리 1)',
+      (heard) => {
+        expect(matcher.closestAtEnd(heard)).toEqual({
+          name: '명지대',
+          distance: 1,
+        });
+      },
+    );
+
+    it('짧은 역 이름만 말하면 그 역이다 (이대, 시대)', () => {
+      expect(matcher.closestAtEnd('이대')).toEqual({
+        name: '이대',
+        distance: 0,
+      });
+      expect(matcher.closestAtEnd('시대')?.name).toBe('이대');
     });
 
     it('가장 가까운 역이 둘 이상 비슷하면 보정하지 않는다 (섬남은 석남인지 성남인지 모른다)', () => {
