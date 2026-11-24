@@ -79,10 +79,12 @@ export interface ITravelLogRepository {
   findStatsLogs(
     userId: string,
     startDate?: Date,
+    endDate?: Date,
   ): Promise<TravelLogWithStations[]>;
   findLineMapLogs(
     userId: string,
     startDate?: Date,
+    endDate?: Date,
   ): Promise<TravelLogLineMapItem[]>;
   /** 모드가 저장된 최근 이동의 {모드, 시각}. 최신순이고 limit건까지 */
   findRecentRouteChoices(
