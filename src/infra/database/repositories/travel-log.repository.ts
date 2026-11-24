@@ -153,11 +153,19 @@ export class TravelLogRepository implements ITravelLogRepository {
   async findStatsLogs(
     userId: string,
     startDate?: Date,
+    endDate?: Date,
   ): Promise<TravelLogWithStations[]> {
     return this.prisma.travelLog.findMany({
       where: {
         userId,
-        ...(startDate ? { createdAt: { gte: startDate } } : {}),
+        ...(startDate || endDate
+          ? {
+              createdAt: {
+                ...(startDate ? { gte: startDate } : {}),
+                ...(endDate ? { lt: endDate } : {}),
+              },
+            }
+          : {}),
       },
       include: {
         originStation: true,
@@ -170,11 +178,19 @@ export class TravelLogRepository implements ITravelLogRepository {
   async findLineMapLogs(
     userId: string,
     startDate?: Date,
+    endDate?: Date,
   ): Promise<TravelLogLineMapItem[]> {
     return this.prisma.travelLog.findMany({
       where: {
         userId,
-        ...(startDate ? { createdAt: { gte: startDate } } : {}),
+        ...(startDate || endDate
+          ? {
+              createdAt: {
+                ...(startDate ? { gte: startDate } : {}),
+                ...(endDate ? { lt: endDate } : {}),
+              },
+            }
+          : {}),
       },
       select: {
         originStationId: true,

@@ -354,21 +354,27 @@ export class TravelLogService {
     query: TravelStatsQueryDto,
   ): Promise<TravelStatsResponseDto> {
     const targetUserId = this.resolveTargetUser(currentUserId, query.userId);
-    return this.aggregateTravelStats(targetUserId, query.period);
+    return this.aggregateTravelStats(
+      targetUserId,
+      query.period,
+      query.periodKey,
+    );
   }
 
   /** 공개 범위는 확인하지 않는다. 다른 사용자 것을 볼 때는 호출하는 쪽이 먼저 확인한다 */
   async aggregateTravelStats(
     targetUserId: string,
     period: TravelStatsQueryDto['period'],
+    periodKey?: string,
   ): Promise<TravelStatsResponseDto> {
-    const nowMs = Date.now();
-    const startDate = this.calculateStartDate(period, nowMs);
-
-    const logs = await this.travelLogRepo.findStatsLogs(
-      targetUserId,
+    const {
+      referenceMs: nowMs,
       startDate,
-    );
+      endDate,
+    } = this.periodRange(period, periodKey);
+    const logs = endDate
+      ? await this.travelLogRepo.findStatsLogs(targetUserId, startDate, endDate)
+      : await this.travelLogRepo.findStatsLogs(targetUserId, startDate);
 
     const totalDistanceRaw = logs.reduce(
       (sum, l) => sum + l.totalDistanceKm,
@@ -482,20 +488,23 @@ export class TravelLogService {
     query: LineMapQueryDto,
   ): Promise<LineMapResponseDto> {
     const targetUserId = this.resolveTargetUser(currentUserId, query.userId);
-    return this.buildLineMap(targetUserId, query.period);
+    return this.buildLineMap(targetUserId, query.period, query.periodKey);
   }
 
   /** 공개 범위는 확인하지 않는다. 다른 사용자 것을 볼 때는 호출하는 쪽이 먼저 확인한다 */
   async buildLineMap(
     targetUserId: string,
     period: LineMapQueryDto['period'],
+    periodKey?: string,
   ): Promise<LineMapResponseDto> {
-    const startDate = this.calculateStartDate(period);
-
-    const logs = await this.travelLogRepo.findLineMapLogs(
-      targetUserId,
-      startDate,
-    );
+    const { startDate, endDate } = this.periodRange(period, periodKey);
+    const logs = endDate
+      ? await this.travelLogRepo.findLineMapLogs(
+          targetUserId,
+          startDate,
+          endDate,
+        )
+      : await this.travelLogRepo.findLineMapLogs(targetUserId, startDate);
 
     const visitedSet = new Set<string>();
     const expressRuns: ExpressRun[] = [];
@@ -606,6 +615,36 @@ export class TravelLogService {
       userId: targetUserId,
       period,
       lines,
+    };
+  }
+
+  private periodRange(
+    period: TravelStatsQueryDto['period'],
+    periodKey?: string,
+  ) {
+    if (periodKey !== undefined) {
+      const match = /^(20\d{2}|2100)-(0[1-9]|1[0-2])$/.exec(periodKey);
+      if (period !== 'MONTH' || !match) {
+        throw new BusinessException(
+          'INVALID_PERIOD_KEY',
+          'periodKey는 MONTH 조회에서 YYYY-MM 형식으로 지정하세요.',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      const year = Number(match[1]);
+      const month = Number(match[2]);
+      const startDate = kstStartOfMonth(year, month);
+      return {
+        referenceMs: startDate.getTime(),
+        startDate,
+        endDate: kstStartOfMonth(year, month + 1),
+      };
+    }
+    const referenceMs = Date.now();
+    return {
+      referenceMs,
+      startDate: this.calculateStartDate(period, referenceMs),
+      endDate: undefined,
     };
   }
 

@@ -1,4 +1,5 @@
-import { IsEnum, IsOptional, IsUUID } from 'class-validator';
+import { IsEnum, IsOptional, IsUUID, Matches } from 'class-validator';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class TravelStatsQueryDto {
   @IsEnum(['WEEK', 'MONTH', 'YEAR', 'ALL'], {
@@ -9,4 +10,12 @@ export class TravelStatsQueryDto {
   @IsOptional()
   @IsUUID('4', { message: 'userId must be a valid UUID' })
   userId?: string;
+
+  @ApiPropertyOptional({
+    description: 'MONTH 조회 대상 월(YYYY-MM, 2000~2100년). 생략하면 이번 달',
+    example: '2026-10',
+  })
+  @IsOptional()
+  @Matches(/^(20\d{2}|2100)-(0[1-9]|1[0-2])$/)
+  periodKey?: string;
 }
