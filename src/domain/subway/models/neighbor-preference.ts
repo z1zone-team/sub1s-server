@@ -7,6 +7,22 @@ import {
 export const NEIGHBOR_LIMIT = 20;
 /** 이웃이 이보다 적으면 평균이 취향이 아니라 우연이라 쓰지 않는다 */
 export const MIN_NEIGHBORS = 5;
+/**
+ * 이웃 고르기 1단계에서 10축 L2 거리로 먼저 뽑는 후보 수.
+ * 2단계에서 이 후보들을 취향 문장 임베딩의 코사인 유사도로 다시 정렬해 NEIGHBOR_LIMIT명을 고른다
+ */
+export const NEIGHBOR_CANDIDATE_LIMIT = 50;
+/** AI 서버 취향 문장 임베딩(multilingual-e5-small)의 차원 */
+export const PREFERENCE_EMBEDDING_DIMENSIONS = 384;
+
+/** 길이가 맞고 모든 값이 유한한 임베딩만 저장하고 검색에 쓴다 */
+export function validEmbedding(value: unknown): value is number[] {
+  return (
+    Array.isArray(value) &&
+    value.length === PREFERENCE_EMBEDDING_DIMENSIONS &&
+    value.every((x) => typeof x === 'number' && Number.isFinite(x))
+  );
+}
 
 const validVector = (vector: readonly number[]): boolean =>
   vector.length === PREFERENCE_AXES.length &&
