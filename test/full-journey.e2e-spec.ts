@@ -364,9 +364,9 @@ describe('Full User Journey (Mobile App ↔ Backend E2E)', () => {
     expect(res.body.data.totalTravelCount).toBeGreaterThanOrEqual(1);
   });
 
-  it('Step 6-C: Subway Line Map Coverage Inquiry (GET /api/v1/line-map)', async () => {
+  it('Step 6-C: Subway Line Map Coverage Inquiry (GET /api/v1/travel/line-map)', async () => {
     const res = await request(app.getHttpServer())
-      .get('/api/v1/line-map')
+      .get('/api/v1/travel/line-map')
       .query({ period: 'MONTH' })
       .expect(200);
 

@@ -164,7 +164,7 @@ describe('Other user travel history (e2e)', () => {
     ).body.data;
     const ownMap = (
       await http()
-        .get('/api/v1/line-map')
+        .get('/api/v1/travel/line-map')
         .query({ period: 'MONTH' })
         .expect(200)
     ).body.data;

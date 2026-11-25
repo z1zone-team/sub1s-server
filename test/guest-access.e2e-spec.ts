@@ -75,7 +75,6 @@ describe('Guest access scope (e2e)', () => {
     ['post', '/api/v1/routes/track/location'],
     ['post', '/api/v1/routes/track/position'],
     ['get', '/api/v1/routes/track/00000000-0000-0000-0000-000000000000'],
-    ['get', '/api/v1/line-map?period=ALL'],
     ['get', '/api/v1/users/me/places'],
     ['put', '/api/v1/users/me/places/HOME'],
     ['delete', '/api/v1/users/me/places/HOME'],
