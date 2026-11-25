@@ -10,6 +10,8 @@ import { AuthUser, CurrentUser } from '../../infra/auth/current-user.decorator';
 import { ClerkAuthGuard } from '../../infra/auth/clerk-auth.guard';
 import {
   CreateTravelLogDto,
+  FrequentRoutesQueryDto,
+  FrequentRoutesResponseDto,
   LineMapQueryDto,
   LineMapResponseDto,
   TimelineQueryDto,
@@ -46,6 +48,24 @@ export class TravelLogController {
       data,
       timestamp: kstNowIso(),
     };
+  }
+
+  @Get('frequent-routes')
+  @ApiOperation({
+    summary: '자주 다닌 경로 (출발·도착 역 쌍)',
+    description:
+      '최근 days일(KST, 기본 30) 동안 2번 이상 이동을 완료한 출발·도착 역 쌍을 횟수가 많은 순(같으면 최근 순)으로 limit개(기본 3) 돌려줍니다. 검색 화면의 추천 경로에 씁니다.',
+  })
+  @SwaggerResponse({
+    status: 200,
+    description: '자주 다닌 경로 목록 (없으면 빈 배열)',
+  })
+  async getFrequentRoutes(
+    @CurrentUser() user: AuthUser,
+    @Query() query: FrequentRoutesQueryDto,
+  ): Promise<ApiResponse<FrequentRoutesResponseDto>> {
+    const data = await this.travelLogService.getFrequentRoutes(user.id, query);
+    return { success: true, data, timestamp: kstNowIso() };
   }
 
   @Get('timeline')

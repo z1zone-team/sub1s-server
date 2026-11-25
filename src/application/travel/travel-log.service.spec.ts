@@ -25,6 +25,7 @@ describe('TravelLogService', () => {
     findStatsLogs: jest.Mock;
     findLineMapLogs: jest.Mock;
     findRecentRouteChoices: jest.Mock;
+    findFrequentRoutes: jest.Mock;
   };
   let mockUserRepo: {
     upsertPlaceholder: jest.Mock;
@@ -89,6 +90,7 @@ describe('TravelLogService', () => {
       findStatsLogs: jest.fn().mockResolvedValue([]),
       findLineMapLogs: jest.fn().mockResolvedValue([]),
       findRecentRouteChoices: jest.fn().mockResolvedValue([]),
+      findFrequentRoutes: jest.fn().mockResolvedValue([]),
     };
 
     mockUserRepo = {
@@ -660,6 +662,73 @@ describe('TravelLogService', () => {
       expect(mockTravelLogRepo.findRecentRouteChoices).toHaveBeenCalledWith(
         'user-1',
         5,
+      );
+    });
+  });
+
+  describe('getFrequentRoutes', () => {
+    // KST 2026-11-26 09:00
+    const now = new Date('2026-11-26T00:00:00Z');
+
+    it('looks back the requested days from KST midnight and asks for at least two trips', async () => {
+      mockTravelLogRepo.findFrequentRoutes.mockResolvedValueOnce([
+        {
+          originStationId: '09_909',
+          originStationName: '가양',
+          destStationId: '09_925',
+          destStationName: '신논현',
+          tripCount: 6,
+          lastTraveledAt: new Date('2026-11-24T23:41:00Z'),
+        },
+      ]);
+
+      const result = await service.getFrequentRoutes(
+        'user-1',
+        { days: 30, limit: 3 },
+        now,
+      );
+
+      expect(mockTravelLogRepo.findFrequentRoutes).toHaveBeenCalledWith(
+        'user-1',
+        new Date('2026-10-27T15:00:00Z'),
+        2,
+        3,
+      );
+      expect(result).toEqual({
+        since: '2026-10-28T00:00:00.000+09:00',
+        routes: [
+          {
+            originStationId: '09_909',
+            originStationName: '가양',
+            destStationId: '09_925',
+            destStationName: '신논현',
+            tripCount: 6,
+            lastTraveledAt: '2026-11-25T08:41:00.000+09:00',
+          },
+        ],
+      });
+    });
+
+    it('uses 30 days and 3 routes by default and returns an empty list without history', async () => {
+      const result = await service.getFrequentRoutes('user-1', {}, now);
+
+      expect(mockTravelLogRepo.findFrequentRoutes).toHaveBeenCalledWith(
+        'user-1',
+        new Date('2026-10-27T15:00:00Z'),
+        2,
+        3,
+      );
+      expect(result.routes).toEqual([]);
+    });
+
+    it('counts only today with days=1', async () => {
+      await service.getFrequentRoutes('user-1', { days: 1 }, now);
+
+      expect(mockTravelLogRepo.findFrequentRoutes).toHaveBeenCalledWith(
+        'user-1',
+        new Date('2026-11-25T15:00:00Z'),
+        2,
+        3,
       );
     });
   });
