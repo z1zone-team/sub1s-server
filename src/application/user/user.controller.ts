@@ -29,6 +29,14 @@ import {
   SavePlaceRequestDto,
 } from './dto/place.dto';
 import { UpdateProfileRequestDto } from './dto/update-profile-request.dto';
+import {
+  FavoritePlaceIdParamDto,
+  FavoritePlacesResponseDto,
+  RemoveFavoritePlaceResponseDto,
+  SaveFavoritePlaceRequestDto,
+  SaveFavoritePlaceResponseDto,
+} from './dto/favorite-place.dto';
+import { FavoritePlaceService } from './favorite-place.service';
 import { FavoriteRouteService } from './favorite-route.service';
 import { UserPlaceService } from './user-place.service';
 import { UserService } from './user.service';
@@ -42,6 +50,7 @@ export class UserController {
     private readonly userService: UserService,
     private readonly userPlaceService: UserPlaceService,
     private readonly favoriteRouteService: FavoriteRouteService,
+    private readonly favoritePlaceService: FavoritePlaceService,
   ) {}
 
   @Patch('me')
@@ -176,6 +185,52 @@ export class UserController {
     @Param() params: FavoriteRouteIdParamDto,
   ): Promise<ApiResponse<RemoveFavoriteRouteResponseDto>> {
     const data = await this.favoriteRouteService.remove(user.id, params.id);
+    return { success: true, data, timestamp: kstNowIso() };
+  }
+
+  @Get('me/favorites/places')
+  @ApiOperation({
+    summary: '장소 즐겨찾기 조회',
+    description:
+      '저장한 장소(역 또는 좌표)를 최근에 저장한 순서로 돌려줍니다. 하나도 없으면 빈 배열입니다. 집, 학교(`me/places`)와 경로 즐겨찾기와는 별개입니다.',
+  })
+  @SwaggerResponse({ status: 200, description: '저장된 장소 즐겨찾기와 저장 한도' })
+  async getFavoritePlaces(
+    @CurrentUser() user: AuthUser,
+  ): Promise<ApiResponse<FavoritePlacesResponseDto>> {
+    const data = await this.favoritePlaceService.list(user.id);
+    return { success: true, data, timestamp: kstNowIso() };
+  }
+
+  @Put('me/favorites/places')
+  @ApiOperation({
+    summary: '장소 즐겨찾기 저장',
+    description:
+      '역이면 stationId, 장소면 lat과 lng를 보냅니다(둘 다 보내면 역이 우선). 같은 곳(역 ID, 또는 소수 넷째 자리 좌표)이 이미 있으면 새로 만들지 않고 그 항목을 alreadySaved true로 돌려줍니다. 사용자당 20곳까지입니다.',
+  })
+  @SwaggerResponse({ status: 200, description: '저장된 장소 즐겨찾기' })
+  @SwaggerResponse({ status: 400, description: '형식 오류, 역과 좌표 둘 다 없음' })
+  @SwaggerResponse({ status: 404, description: '없는 역 ID (STATION_NOT_FOUND)' })
+  @SwaggerResponse({ status: 409, description: '저장 한도 초과 (FAVORITE_PLACE_LIMIT)' })
+  async saveFavoritePlace(
+    @CurrentUser() user: AuthUser,
+    @Body() dto: SaveFavoritePlaceRequestDto,
+  ): Promise<ApiResponse<SaveFavoritePlaceResponseDto>> {
+    const data = await this.favoritePlaceService.save(user.id, dto);
+    return { success: true, data, timestamp: kstNowIso() };
+  }
+
+  @Delete('me/favorites/places/:id')
+  @ApiOperation({
+    summary: '장소 즐겨찾기 삭제',
+    description: '없거나 다른 사용자의 것이어도 200이고 removed가 false입니다.',
+  })
+  @SwaggerResponse({ status: 200, description: '삭제 결과' })
+  async removeFavoritePlace(
+    @CurrentUser() user: AuthUser,
+    @Param() params: FavoritePlaceIdParamDto,
+  ): Promise<ApiResponse<RemoveFavoritePlaceResponseDto>> {
+    const data = await this.favoritePlaceService.remove(user.id, params.id);
     return { success: true, data, timestamp: kstNowIso() };
   }
 }

@@ -64,6 +64,7 @@ model User {
   settlementNotifications SettlementNotification[]
   places                  UserPlace[]
   favoriteRoutes          UserFavoriteRoute[]
+  favoritePlaces          UserFavoritePlace[]
 
   @@map("users")
 }
@@ -128,6 +129,24 @@ model UserFavoriteRoute {
 }
 
 // 친구 관계는 양방향으로 두 행을 저장한다
+// 장소 하나를 즐겨찾기로 저장한다(집, 학교와 별개, 사용자당 20곳). 역이면 stationId, 장소면 좌표
+model UserFavoritePlace {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  placeKey  String   @map("place_key") @db.VarChar(60)
+  name      String   @db.VarChar(100)
+  stationId String?  @map("station_id") @db.VarChar(30)
+  lat       Float?
+  lng       Float?
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, placeKey])
+  @@index([userId, createdAt(sort: Desc)], map: "idx_favorite_places_user")
+  @@map("user_favorite_places")
+}
+
 model Friendship {
   userId    String   @map("user_id") @db.Uuid
   friendId  String   @map("friend_id") @db.Uuid

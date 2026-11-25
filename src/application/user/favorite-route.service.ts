@@ -5,7 +5,6 @@ import { SubwayGraphService } from '../../domain/subway/services/subway-graph.se
 import {
   endpointKey,
   FAVORITE_ROUTE_LIMIT,
-  FavoriteEndpoint,
   FavoriteRoute,
   routeKeyOf,
 } from '../../domain/user/models/favorite-route';
@@ -13,8 +12,8 @@ import {
   FAVORITE_ROUTE_REPOSITORY,
   IFavoriteRouteRepository,
 } from '../../domain/user/ports/IFavoriteRouteRepository';
+import { toFavoriteEndpoint } from './favorite-endpoint';
 import {
-  FavoriteEndpointDto,
   FavoriteRouteResponseDto,
   FavoriteRoutesResponseDto,
   RemoveFavoriteRouteResponseDto,
@@ -47,8 +46,8 @@ export class FavoriteRouteService {
     userId: string,
     dto: SaveFavoriteRouteRequestDto,
   ): Promise<SaveFavoriteRouteResponseDto> {
-    const origin = this.toEndpoint(dto.origin, 'origin');
-    const destination = this.toEndpoint(dto.destination, 'destination');
+    const origin = toFavoriteEndpoint(dto.origin, 'origin', this.graphService);
+    const destination = toFavoriteEndpoint(dto.destination, 'destination', this.graphService);
 
     if (endpointKey(origin) === endpointKey(destination)) {
       throw new BusinessException(
@@ -83,37 +82,5 @@ export class FavoriteRouteService {
     id: string,
   ): Promise<RemoveFavoriteRouteResponseDto> {
     return { id, removed: await this.favoriteRepo.remove(userId, id) };
-  }
-
-  private toEndpoint(
-    dto: FavoriteEndpointDto,
-    field: 'origin' | 'destination',
-  ): FavoriteEndpoint {
-    const hasStation = dto.stationId !== undefined;
-    const hasCoords = dto.lat !== undefined && dto.lng !== undefined;
-
-    if (!hasStation && !hasCoords) {
-      throw new BusinessException(
-        'INVALID_REQUEST_PAYLOAD',
-        `${field}: stationId or lat and lng is required`,
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-    if (
-      hasStation &&
-      this.graphService.getGraph().indexOf(dto.stationId!) === undefined
-    ) {
-      throw new BusinessException(
-        'STATION_NOT_FOUND',
-        `station id not found: ${dto.stationId}`,
-        HttpStatus.NOT_FOUND,
-      );
-    }
-    return {
-      name: dto.name,
-      stationId: hasStation ? dto.stationId! : null,
-      lat: hasStation ? null : dto.lat!,
-      lng: hasStation ? null : dto.lng!,
-    };
   }
 }

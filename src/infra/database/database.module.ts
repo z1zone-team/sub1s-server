@@ -7,6 +7,7 @@ import {
   SETTLEMENT_LOG_REPOSITORY,
 } from '../../domain/notification/ports/notification-ports';
 import { FAVORITE_ROUTE_REPOSITORY } from '../../domain/user/ports/IFavoriteRouteRepository';
+import { FAVORITE_PLACE_REPOSITORY } from '../../domain/user/ports/IFavoritePlaceRepository';
 import { USER_PLACE_REPOSITORY } from '../../domain/user/ports/IUserPlaceRepository';
 import { FRIEND_REPOSITORY } from '../../domain/friend/ports/IFriendRepository';
 import { USER_REPOSITORY } from '../../domain/user/ports/IUserRepository';
@@ -19,6 +20,7 @@ import { SubwayGraphRepository } from './repositories/subway-graph.repository';
 import { SubwayLineRepository } from './repositories/subway-line.repository';
 import { UserRepository } from './repositories/user.repository';
 import { FavoriteRouteRepository } from './repositories/favorite-route.repository';
+import { FavoritePlaceRepository } from './repositories/favorite-place.repository';
 import { UserPlaceRepository } from './repositories/user-place.repository';
 import { RankScoreRepository } from './repositories/rank-score.repository';
 import { FriendRepository } from './repositories/friend.repository';
@@ -41,6 +43,7 @@ import { TravelLogRepository } from './repositories/travel-log.repository';
     { provide: USER_REPOSITORY, useClass: UserRepository },
     { provide: USER_PLACE_REPOSITORY, useClass: UserPlaceRepository },
     { provide: FAVORITE_ROUTE_REPOSITORY, useClass: FavoriteRouteRepository },
+    { provide: FAVORITE_PLACE_REPOSITORY, useClass: FavoritePlaceRepository },
     { provide: RANK_SCORE_REPOSITORY, useClass: RankScoreRepository },
     { provide: TRAVEL_LOG_REPOSITORY, useClass: TravelLogRepository },
     { provide: FRIEND_REPOSITORY, useClass: FriendRepository },
@@ -58,6 +61,7 @@ import { TravelLogRepository } from './repositories/travel-log.repository';
     USER_REPOSITORY,
     USER_PLACE_REPOSITORY,
     FAVORITE_ROUTE_REPOSITORY,
+    FAVORITE_PLACE_REPOSITORY,
     RANK_SCORE_REPOSITORY,
     TRAVEL_LOG_REPOSITORY,
     FRIEND_REPOSITORY,
