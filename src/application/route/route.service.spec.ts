@@ -910,6 +910,35 @@ describe('RouteService', () => {
       ]);
     });
 
+    it('approximates sitting (SEAT) with avoiding crowds', async () => {
+      mockUserRepo.findPreferences.mockResolvedValueOnce({
+        purposes: [],
+        routePrefs: ['SEAT'],
+      });
+
+      const result = await service.search(request, 'user-1');
+
+      expect(personalCall()?.weights).toEqual({
+        congestion: 2.5,
+        transferSec: 240,
+      });
+      expect(result.recommendation?.reasons).toEqual(['PREF_SEAT']);
+    });
+
+    it('reports SEAT as unsupported only under the same condition as UNCROWDED', async () => {
+      mockUserRepo.findPreferences.mockResolvedValueOnce({
+        purposes: [],
+        routePrefs: ['SEAT', 'UNCROWDED'],
+      });
+
+      const result = await service.search(request, 'user-1');
+      const unsupported = result.recommendation?.unsupportedPreferences ?? [];
+
+      expect(unsupported.includes('SEAT')).toBe(
+        unsupported.includes('UNCROWDED'),
+      );
+    });
+
     it('leans on the departure time: a rush hour ride avoids crowds more', async () => {
       await service.search(
         { ...request, departureAt: '2026-10-12T08:00:00+09:00' },
