@@ -389,11 +389,6 @@ describe('SubwayEventsGateway', () => {
     });
 
     it('sends personal events only to the owner user room, never to everyone', () => {
-      gateway.sendEtaTick('user-1', {
-        sessionId: 'sess-1',
-        etaTimestamp: '2026-10-06T15:00:00Z',
-        remainingSec: 180,
-      });
       gateway.sendSmartAlert('user-1', {
         type: 'TRANSFER_PREPARE',
         message: '잠시 후 환승역입니다.',
@@ -405,11 +400,10 @@ describe('SubwayEventsGateway', () => {
         currentPoints: 2480,
       });
 
-      expect(mockServer.to).toHaveBeenCalledTimes(4);
+      expect(mockServer.to).toHaveBeenCalledTimes(3);
       expect(mockServer.to).toHaveBeenCalledWith('user:user-1');
       expect(mockServer.emit).not.toHaveBeenCalled();
       expect(mockEmitToRoom.mock.calls.map(([event]) => event)).toEqual([
-        'eta_tick',
         'smart_alert',
         'offroute_alert',
         'ranking_update',
