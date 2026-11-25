@@ -34,3 +34,12 @@ export interface UserPreferences {
 export function dedupe<T>(values: readonly T[]): T[] {
   return [...new Set(values)];
 }
+
+/**
+ * 점수 계산에 쓰는 취향. 좌석 데이터가 없어 앉아서 가기(SEAT)는 덜 붐비는 경로(UNCROWDED)로 근사한다
+ */
+export function scoringRoutePrefs(routePrefs: readonly string[]): string[] {
+  return routePrefs.includes('SEAT') && !routePrefs.includes('UNCROWDED')
+    ? [...routePrefs, 'UNCROWDED']
+    : [...routePrefs];
+}

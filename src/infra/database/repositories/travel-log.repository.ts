@@ -5,6 +5,7 @@ import { Injectable } from '@nestjs/common';
 import {
   DuplicateTravelLogError,
   ITravelLogRepository,
+  FrequentRouteRecord,
   RouteChoiceRecord,
   SaveTravelLogParams,
   SaveTravelLogResult,
@@ -229,6 +230,43 @@ export class TravelLogRepository implements ITravelLogRepository {
           ]
         : [],
     );
+  }
+
+  async findFrequentRoutes(
+    userId: string,
+    since: Date,
+    minTrips: number,
+    limit: number,
+  ): Promise<FrequentRouteRecord[]> {
+    const groups = await this.prisma.travelLog.groupBy({
+      by: ['originStationId', 'destStationId'],
+      where: { userId, createdAt: { gte: since } },
+      _count: { _all: true },
+      _max: { createdAt: true },
+      having: { originStationId: { _count: { gte: minTrips } } },
+      orderBy: [
+        { _count: { originStationId: 'desc' } },
+        { _max: { createdAt: 'desc' } },
+      ],
+      take: limit,
+    });
+    if (groups.length === 0) return [];
+    const ids = [
+      ...new Set(groups.flatMap((g) => [g.originStationId, g.destStationId])),
+    ];
+    const stations = await this.prisma.station.findMany({
+      where: { id: { in: ids } },
+      select: { id: true, stationName: true },
+    });
+    const names = new Map(stations.map((s) => [s.id, s.stationName]));
+    return groups.map((g) => ({
+      originStationId: g.originStationId,
+      originStationName: names.get(g.originStationId) ?? g.originStationId,
+      destStationId: g.destStationId,
+      destStationName: names.get(g.destStationId) ?? g.destStationId,
+      tripCount: g._count._all,
+      lastTraveledAt: g._max.createdAt ?? since,
+    }));
   }
 
   async summarizeByUser(start: Date, end: Date): Promise<UserMonthlySummary[]> {

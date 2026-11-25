@@ -8,3 +8,4 @@ export * from './line-map-query.dto';
 export * from './line-map-response.dto';
 export * from './user-travel-query.dto';
 export * from './user-travel-response.dto';
+export * from './frequent-routes.dto';

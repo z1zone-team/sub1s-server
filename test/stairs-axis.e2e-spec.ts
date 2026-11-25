@@ -168,14 +168,18 @@ describe('Stairs axis in route search (e2e)', () => {
     }
   });
 
-  it('keeps reporting SEAT as unsupported', async () => {
+  it('treats SEAT like UNCROWDED instead of always reporting it unsupported', async () => {
     await prisma.userPreference.update({
       where: { userId: user.id },
-      data: { routePrefs: ['AVOID_STAIRS', 'SEAT'] },
+      data: { routePrefs: ['AVOID_STAIRS', 'SEAT', 'UNCROWDED'] },
     });
     const res = await search('02_222', '02_221');
-    const unsupported = res.body.data.recommendation.unsupportedPreferences;
-    expect(unsupported).toContain('SEAT');
+    const { unsupportedPreferences: unsupported, reasons } =
+      res.body.data.recommendation;
+    expect(unsupported.includes('SEAT')).toBe(
+      unsupported.includes('UNCROWDED'),
+    );
+    expect(reasons.includes('PREF_SEAT')).toBe(!unsupported.includes('SEAT'));
     expect(unsupported).not.toContain('AVOID_STAIRS');
   });
 });

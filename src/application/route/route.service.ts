@@ -1,3 +1,4 @@
+import { scoringRoutePrefs } from '../../domain/user/models/preferences';
 import { sliceSegmentStations } from '../../domain/subway/services/track-path';
 import { TrackPathService } from './track-path.service';
 import { randomUUID } from 'node:crypto';
@@ -197,10 +198,11 @@ export class RouteService {
         this.userRepo.findPreferences(userId),
         this.travelLogRepo.findRecentRouteChoices(userId, HISTORY_LIMIT),
       ]);
+      const scoringPrefs = scoringRoutePrefs(preferences.routePrefs);
       const model = this.preferenceModels
         ? await this.preferenceModels.compute(
             userId,
-            preferences.routePrefs,
+            scoringPrefs,
             history.flatMap((record) =>
               record.choiceSnapshot ? [record.choiceSnapshot] : [],
             ),
@@ -211,10 +213,10 @@ export class RouteService {
               ),
             },
           )
-        : surveyPreference(preferences.routePrefs);
+        : surveyPreference(scoringPrefs);
       return {
         ...personalize({
-          routePrefs: preferences.routePrefs,
+          routePrefs: scoringPrefs,
           purposes: preferences.purposes,
           history: history.flatMap((record) =>
             isRouteMode(record.routeMode)
@@ -596,7 +598,6 @@ export class RouteService {
     const unsupportedPreferences =
       personalization?.routePrefs.filter(
         (code) =>
-          code === 'SEAT' ||
           (code === 'AVOID_STAIRS' &&
             (!this.vertical ||
               pool.some((option) => option.verticalTravelM === undefined))) ||
@@ -611,7 +612,7 @@ export class RouteService {
                 (segment) =>
                   segment.lineId !== 'WALK' && !segment.isWeakAirConditioned,
               )) ||
-          (code === 'UNCROWDED' &&
+          ((code === 'UNCROWDED' || code === 'SEAT') &&
             publicPool.some((option) =>
               option.segments.some(
                 (segment) =>

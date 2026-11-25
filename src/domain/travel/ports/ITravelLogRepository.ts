@@ -44,6 +44,16 @@ export interface RouteChoiceRecord {
   createdAt: Date;
 }
 
+/** 같은 출발역과 도착역 쌍으로 다닌 횟수 */
+export interface FrequentRouteRecord {
+  originStationId: string;
+  originStationName: string;
+  destStationId: string;
+  destStationName: string;
+  tripCount: number;
+  lastTraveledAt: Date;
+}
+
 export interface SaveTravelLogResult {
   monthlyScore: RankScore;
   allScore: RankScore;
@@ -91,6 +101,13 @@ export interface ITravelLogRepository {
     userId: string,
     limit: number,
   ): Promise<RouteChoiceRecord[]>;
+  /** since 이후 minTrips번 이상 다닌 출발·도착 역 쌍. 횟수가 많은 순, 같으면 최근 순이고 limit개까지 */
+  findFrequentRoutes(
+    userId: string,
+    since: Date,
+    minTrips: number,
+    limit: number,
+  ): Promise<FrequentRouteRecord[]>;
   /** [start, end) 기간에 이동 기록이 있는 사용자별 횟수와 거리 */
   summarizeByUser(start: Date, end: Date): Promise<UserMonthlySummary[]>;
 }

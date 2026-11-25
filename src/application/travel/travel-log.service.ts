@@ -35,6 +35,11 @@ import { RankingNotifier } from './ranking.notifier';
 import { RouteService } from '../route/route.service';
 import {
   CreateTravelLogDto,
+  DEFAULT_FREQUENT_DAYS,
+  DEFAULT_FREQUENT_LIMIT,
+  FrequentRoutesQueryDto,
+  FrequentRoutesResponseDto,
+  MIN_FREQUENT_TRIPS,
   LineMapQueryDto,
   LineMapResponseDto,
   LineMapLinkDto,
@@ -63,6 +68,7 @@ import {
   kstMonthKey,
   kstNowIso,
   kstStartOfMonth,
+  kstStartOfDay,
   kstStartOfYear,
   kstYearKey,
   toKstDate,
@@ -480,6 +486,29 @@ export class TravelLogService {
       mostUsedLineId,
       buckets: this.buildBuckets(period, logs, nowMs),
       lineBreakdown,
+    };
+  }
+
+  /** 최근 며칠 동안 자주 다닌 출발·도착 역 쌍(검색 화면의 추천 경로) */
+  async getFrequentRoutes(
+    userId: string,
+    query: FrequentRoutesQueryDto,
+    now: Date = new Date(),
+  ): Promise<FrequentRoutesResponseDto> {
+    const days = query.days ?? DEFAULT_FREQUENT_DAYS;
+    const since = kstAddDays(kstStartOfDay(now), -(days - 1));
+    const routes = await this.travelLogRepo.findFrequentRoutes(
+      userId,
+      since,
+      MIN_FREQUENT_TRIPS,
+      query.limit ?? DEFAULT_FREQUENT_LIMIT,
+    );
+    return {
+      since: toKstIso(since),
+      routes: routes.map((route) => ({
+        ...route,
+        lastTraveledAt: toKstIso(route.lastTraveledAt),
+      })),
     };
   }
 

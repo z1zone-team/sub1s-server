@@ -84,6 +84,7 @@ describe('Guest access scope (e2e)', () => {
     ['delete', '/api/v1/users/me/favorites/routes/00000000-0000-0000-0000-000000000000'],
     ['post', '/api/v1/travel/log'],
     ['get', '/api/v1/travel/timeline'],
+    ['get', '/api/v1/travel/frequent-routes'],
     ['get', '/api/v1/travel/stats'],
     ['get', '/api/v1/travel/line-map?period=ALL'],
     ['get', '/api/v1/users/00000000-0000-0000-0000-000000000000/travel/timeline?year=2026&month=11'],
