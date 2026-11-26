@@ -279,7 +279,7 @@ model TransferEdge {
   @@map("transfer_edges")
 }
 
-// 7. 이동 완료 기록 모델 (민감 궤적 3DES+AES 암호화 필드 적용)
+// 7. 이동 완료 기록 모델 (민감 궤적 AES-256-GCM 암호화, 데이터 키는 AES-256-CBC로 래핑)
 model TravelLog {
   id              String @id @default(uuid()) @db.Uuid
   userId          String @map("user_id") @db.Uuid
