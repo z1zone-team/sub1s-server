@@ -85,6 +85,28 @@ describe('VoiceJobService', () => {
       expect(valkey.delete).not.toHaveBeenCalled();
     });
 
+    it('앱이 받아 적은 문장만 보내면 오디오 없이 큐에 넣는다', async () => {
+      const result = await service.submit('user-1', undefined, {
+        transcriptHint: '강남에서 사당까지 빠른 길',
+      });
+
+      expect(result).toEqual({ jobId: 'job-uuid', status: 'QUEUED' });
+      expect(voiceService.validateAudioFile).not.toHaveBeenCalled();
+      const data = queue.add.mock.calls[0][0] as VoiceJobData;
+      expect(data.audioBase64).toBe('');
+      expect(data.options.transcriptHint).toBe('강남에서 사당까지 빠른 길');
+    });
+
+    it('오디오도 문장도 없으면 오디오 검증 오류다', async () => {
+      voiceService.validateAudioFile.mockImplementation(() => {
+        throw new NotFoundException('audio required');
+      });
+      await expect(
+        service.submit('user-1', undefined, { transcriptHint: '   ' }),
+      ).rejects.toBeInstanceOf(NotFoundException);
+      expect(queue.add).not.toHaveBeenCalled();
+    });
+
     it('진행 중 표시를 사용자별 키로 120초 동안 건다', async () => {
       await service.submit('user-1', audioFile(), {});
 
@@ -178,16 +200,32 @@ describe('VoiceJobService', () => {
 
     it('대기 상한(기본 10)을 자리 수로 정하고, 환경변수로 바꿀 수 있다', async () => {
       await service.submit('user-1', audioFile(), {});
-      await make({ VOICE_QUEUE_MAX_WAITING: '3' }).submit('user-2', audioFile(), {});
+      await make({ VOICE_QUEUE_MAX_WAITING: '3' }).submit(
+        'user-2',
+        audioFile(),
+        {},
+      );
 
-      expect(valkey.acquireSlot).toHaveBeenNthCalledWith(1, VOICE_WAITING_SLOTS_KEY, 10, expect.any(Number));
-      expect(valkey.acquireSlot).toHaveBeenNthCalledWith(2, VOICE_WAITING_SLOTS_KEY, 3, expect.any(Number));
+      expect(valkey.acquireSlot).toHaveBeenNthCalledWith(
+        1,
+        VOICE_WAITING_SLOTS_KEY,
+        10,
+        expect.any(Number),
+      );
+      expect(valkey.acquireSlot).toHaveBeenNthCalledWith(
+        2,
+        VOICE_WAITING_SLOTS_KEY,
+        3,
+        expect.any(Number),
+      );
     });
 
     it('자리를 잡은 뒤 큐에 넣지 못하면 자리를 돌려준다', async () => {
       queue.add.mockRejectedValue(new Error('ECONNRESET'));
 
-      await expect(service.submit('user-1', audioFile(), {})).rejects.toBeDefined();
+      await expect(
+        service.submit('user-1', audioFile(), {}),
+      ).rejects.toBeDefined();
 
       expect(valkey.releaseSlot).toHaveBeenCalledWith(VOICE_WAITING_SLOTS_KEY);
     });
@@ -249,10 +287,12 @@ describe('VoiceJobService', () => {
         .mockResolvedValueOnce(jobIn('completed'))
         .mockResolvedValueOnce(undefined);
 
-      await expect(service.getStatus('user-1', 'job-1')).resolves.toMatchObject({
-        status: 'FAILED',
-        error: { code: 'VOICE_JOB_FAILED' },
-      });
+      await expect(service.getStatus('user-1', 'job-1')).resolves.toMatchObject(
+        {
+          status: 'FAILED',
+          error: { code: 'VOICE_JOB_FAILED' },
+        },
+      );
     });
 
     it('다른 사용자의 작업은 없는 것과 똑같이 404이다', async () => {
@@ -318,23 +358,23 @@ describe('VoiceJobService', () => {
     it('BullMQ가 실패로 표시한 작업은 FAILED VOICE_JOB_FAILED이다', async () => {
       queue.getJob.mockResolvedValue(jobIn('failed'));
 
-      await expect(
-        service.getStatus('user-1', 'job-1'),
-      ).resolves.toMatchObject({
-        status: 'FAILED',
-        error: { code: 'VOICE_JOB_FAILED', status: 500 },
-      });
+      await expect(service.getStatus('user-1', 'job-1')).resolves.toMatchObject(
+        {
+          status: 'FAILED',
+          error: { code: 'VOICE_JOB_FAILED', status: 500 },
+        },
+      );
     });
 
     it('결과 값이 없는 완료 작업도 FAILED로 안전하게 처리한다', async () => {
       queue.getJob.mockResolvedValue(jobIn('completed'));
 
-      await expect(
-        service.getStatus('user-1', 'job-1'),
-      ).resolves.toMatchObject({
-        status: 'FAILED',
-        error: { code: 'VOICE_JOB_FAILED' },
-      });
+      await expect(service.getStatus('user-1', 'job-1')).resolves.toMatchObject(
+        {
+          status: 'FAILED',
+          error: { code: 'VOICE_JOB_FAILED' },
+        },
+      );
     });
 
     it('큐를 쓸 수 없으면 503이다', async () => {

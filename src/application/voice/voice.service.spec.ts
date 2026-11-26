@@ -1,8 +1,6 @@
-import {
-  BadRequestException,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { BusinessException } from '../../common/exceptions/business.exception';
 import { SubwayGraphService } from '../../domain/subway/services/subway-graph.service';
 import { USER_PLACE_REPOSITORY } from '../../domain/user/ports/IUserPlaceRepository';
 import { PlaceService } from '../place/place.service';
@@ -21,7 +19,7 @@ describe('VoiceService', () => {
   let intentParser: { parseIntent: jest.Mock };
   let placeRepo: { findAll: jest.Mock };
   let placeService: { search: jest.Mock };
-  let ai: { generateBriefing: jest.Mock };
+  let ai: { generateBriefing: jest.Mock; intentHint: jest.Mock };
 
   // 경로 결과이면 그대로, 확인 요청이면 테스트를 실패시킨다
   const asRoute = (result: VoiceResultDto): VoiceRouteRecommendResponseDto => {
@@ -72,6 +70,7 @@ describe('VoiceService', () => {
               briefingText:
                 '강남역에서 을지로입구역까지 최적 경로로 안내합니다.',
             }),
+            intentHint: jest.fn().mockResolvedValue(null),
           },
         },
         {
@@ -178,7 +177,10 @@ describe('VoiceService', () => {
     jest.spyOn(service, 'findStationIdByName').mockReturnValueOnce(null);
 
     await expect(
-      service.recommendFromTranscript('user-6', '강남역에서 을지로입구역까지 최적 경로로 안내해줘'),
+      service.recommendFromTranscript(
+        'user-6',
+        '강남역에서 을지로입구역까지 최적 경로로 안내해줘',
+      ),
     ).rejects.toThrow(NotFoundException);
   });
 
@@ -193,10 +195,14 @@ describe('VoiceService', () => {
       reason: '최적 경로 추천',
     });
 
-    await service.recommendFromTranscript('user-loc', '강남역에서 을지로입구역까지 최적 경로로 안내해줘', {
-      lat: 37.5,
-      lng: 127.03,
-    });
+    await service.recommendFromTranscript(
+      'user-loc',
+      '강남역에서 을지로입구역까지 최적 경로로 안내해줘',
+      {
+        lat: 37.5,
+        lng: 127.03,
+      },
+    );
 
     expect(routeService.search).toHaveBeenCalledWith(
       expect.objectContaining({ originLat: 37.5, originLng: 127.03 }),
@@ -205,7 +211,11 @@ describe('VoiceService', () => {
   });
 
   it('passes the signed-in user to the route search so the recommendation is personalized', async () => {
-    await service.recommendFromTranscript('user-personal', '강남역에서 을지로입구역까지 최적 경로로 안내해줘', {});
+    await service.recommendFromTranscript(
+      'user-personal',
+      '강남역에서 을지로입구역까지 최적 경로로 안내해줘',
+      {},
+    );
 
     expect(routeService.search).toHaveBeenCalledWith(
       expect.any(Object),
@@ -225,7 +235,10 @@ describe('VoiceService', () => {
     });
 
     await expect(
-      service.recommendFromTranscript('user-noloc', '강남역에서 을지로입구역까지 최적 경로로 안내해줘'),
+      service.recommendFromTranscript(
+        'user-noloc',
+        '강남역에서 을지로입구역까지 최적 경로로 안내해줘',
+      ),
     ).rejects.toMatchObject({
       errorCode: 'VOICE_ORIGIN_REQUIRED',
     });
@@ -247,7 +260,10 @@ describe('VoiceService', () => {
       ...extra,
     });
     const searchArg = () =>
-      (routeService.search as jest.Mock).mock.calls[0][0] as Record<string, unknown>;
+      (routeService.search as jest.Mock).mock.calls[0][0] as Record<
+        string,
+        unknown
+      >;
 
     it('도착이 집이고 역으로 저장했으면 그 역으로 현재 위치에서 검색한다', async () => {
       intentParser.parseIntent.mockReturnValue(intent('현재 위치', '집'));
@@ -328,7 +344,10 @@ describe('VoiceService', () => {
     });
 
     it('집이나 학교가 아니면 저장한 장소를 읽지 않는다', async () => {
-      await service.recommendFromTranscript('user-1', '강남에서 을지로입구까지');
+      await service.recommendFromTranscript(
+        'user-1',
+        '강남에서 을지로입구까지',
+      );
 
       expect(placeRepo.findAll).not.toHaveBeenCalled();
       expect(searchArg()).toMatchObject({
@@ -769,6 +788,164 @@ describe('VoiceService', () => {
       await service.recommendFromTranscript('user-1', '강남에서 집으로');
 
       expect(labels()).toEqual({ origin: '강남역', destination: '집' });
+    });
+  });
+  describe('Gemini 의도 힌트', () => {
+    const notUnderstood = () =>
+      new BusinessException(
+        'VOICE_INTENT_NOT_UNDERSTOOD',
+        '출발역을 알아듣지 못했어요. 역 이름을 또박또박 말씀해 주세요.',
+        422,
+      );
+    const searchedMode = () =>
+      (routeService.search as jest.Mock).mock.calls.at(-1)[0].routeMode;
+
+    it('규칙이 조건을 못 찾아 OPTIMAL이면 음성 인식이 준 Gemini 모드를 쓴다', async () => {
+      const result = asRoute(
+        await service.recommendFromTranscript(
+          'user-1',
+          '강남에서 을지로입구까지 얼른',
+          undefined,
+          {
+            origin: '강남',
+            destination: '을지로입구',
+            mode: 'FASTEST',
+          },
+        ),
+      );
+      expect(searchedMode()).toBe('FASTEST');
+      expect(result.interpretedIntent.preferredMode).toBe('FASTEST');
+      expect(result.interpretedIntent.reason).toContain('Gemini');
+      expect(ai.intentHint).not.toHaveBeenCalled();
+    });
+
+    it('사용자가 고른 모드와 규칙이 찾은 조건은 힌트로 바꾸지 않는다', async () => {
+      await service.recommendFromTranscript(
+        'user-1',
+        '강남에서 을지로입구까지',
+        { preferredMode: 'CHEAPEST' },
+        {
+          destination: '을지로입구',
+          mode: 'FASTEST',
+        },
+      );
+      expect(searchedMode()).toBe('OPTIMAL');
+
+      intentParser.parseIntent.mockReturnValueOnce({
+        originStationName: '강남',
+        destStationName: '을지로입구',
+        preferredMode: 'COMFORTABLE',
+        reason: '혼잡',
+      });
+      await service.recommendFromTranscript(
+        'user-1',
+        '강남에서 을지로입구까지 덜 붐비는 길',
+        undefined,
+        {
+          destination: '을지로입구',
+          mode: 'FASTEST',
+        },
+      );
+      expect(searchedMode()).toBe('COMFORTABLE');
+    });
+
+    it('규칙이 풀지 못하면 AI 의도 힌트로 문장을 다시 만들어 한 번 더 푼다', async () => {
+      intentParser.parseIntent.mockImplementationOnce(() => {
+        throw notUnderstood();
+      });
+      (ai.intentHint as jest.Mock).mockResolvedValueOnce({
+        origin: '강남',
+        destination: '을지로입구',
+        mode: 'FEWEST_TRANSFERS',
+      });
+
+      const result = asRoute(
+        await service.recommendFromTranscript(
+          'user-1',
+          '감남에서 을지로 이북까지 환승 덜',
+        ),
+      );
+
+      expect(ai.intentHint).toHaveBeenCalledWith(
+        '감남에서 을지로 이북까지 환승 덜',
+      );
+      expect(intentParser.parseIntent).toHaveBeenLastCalledWith(
+        '강남에서 을지로입구까지 가는 길',
+        'FEWEST_TRANSFERS',
+      );
+      expect(result.transcript).toBe('감남에서 을지로 이북까지 환승 덜');
+      expect(result.interpretedIntent.reason).toContain('Gemini');
+    });
+
+    it('음성 인식이 준 힌트에 도착지가 있으면 AI를 다시 부르지 않는다', async () => {
+      intentParser.parseIntent.mockImplementationOnce(() => {
+        throw notUnderstood();
+      });
+      await service.recommendFromTranscript(
+        'user-1',
+        '알 수 없는 말',
+        undefined,
+        {
+          destination: '을지로입구',
+        },
+      );
+      expect(ai.intentHint).not.toHaveBeenCalled();
+      expect(intentParser.parseIntent).toHaveBeenLastCalledWith(
+        '을지로입구 가는 길',
+        undefined,
+      );
+    });
+
+    it('역을 찾지 못한 404도 힌트로 다시 풀어 본다', async () => {
+      jest.spyOn(service, 'findStationIdByName').mockReturnValueOnce(null);
+      (ai.intentHint as jest.Mock).mockResolvedValueOnce({
+        origin: '강남',
+        destination: '을지로입구',
+      });
+
+      const result = asRoute(
+        await service.recommendFromTranscript(
+          'user-1',
+          '신돌이 멱에서 을지로입구까지',
+        ),
+      );
+      expect(result.kind).toBe('ROUTE');
+      expect(ai.intentHint).toHaveBeenCalledTimes(1);
+    });
+
+    it('힌트가 없으면 처음 오류를 그대로 알린다', async () => {
+      const original = notUnderstood();
+      intentParser.parseIntent.mockImplementationOnce(() => {
+        throw original;
+      });
+      await expect(
+        service.recommendFromTranscript('user-1', '음'),
+      ).rejects.toBe(original);
+    });
+
+    it('다시 풀어도 역을 못 찾으면 처음 오류를 알린다', async () => {
+      const spy = jest
+        .spyOn(service, 'findStationIdByName')
+        .mockReturnValue(null);
+      (ai.intentHint as jest.Mock).mockResolvedValueOnce({
+        destination: '없는역',
+      });
+      const error = await service
+        .recommendFromTranscript('user-1', '없는 곳에서 없는 곳까지')
+        .catch((e: unknown) => e as Error);
+      expect(error).toBeInstanceOf(NotFoundException);
+      expect((error as Error).message).toContain('강남');
+      spy.mockRestore();
+    });
+
+    it('그 밖의 오류는 힌트를 쓰지 않고 그대로 올린다', async () => {
+      (routeService.search as jest.Mock).mockRejectedValueOnce(
+        new Error('db down'),
+      );
+      await expect(
+        service.recommendFromTranscript('user-1', '강남에서 을지로입구까지'),
+      ).rejects.toThrow('db down');
+      expect(ai.intentHint).not.toHaveBeenCalled();
     });
   });
 });

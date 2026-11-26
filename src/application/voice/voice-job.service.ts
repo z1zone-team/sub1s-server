@@ -72,8 +72,10 @@ export class VoiceJobService {
   ): Promise<VoiceJobSubmitResponseDto> {
     if (!this.queue.enabled) throw this.queueUnavailable();
 
-    this.voiceService.validateAudioFile(file);
-    if (file!.buffer.length > this.maxAudioBytes) {
+    // 앱이 기기에서 받아 적은 문장만 보내면 오디오가 없어도 된다(서버 음성 인식을 건너뜀)
+    const transcriptOnly = !file && !!dto?.transcriptHint?.trim();
+    if (!transcriptOnly) this.voiceService.validateAudioFile(file);
+    if (file && file.buffer.length > this.maxAudioBytes) {
       throw new BusinessException(
         'VOICE_AUDIO_TOO_LARGE',
         `오디오 파일 크기는 최대 ${Math.floor(this.maxAudioBytes / 1024 / 1024)}MB까지 가능합니다.`,
@@ -116,8 +118,8 @@ export class VoiceJobService {
       }
       const jobId = await this.queue.add({
         userId,
-        filename: file!.originalname,
-        audioBase64: file!.buffer.toString('base64'),
+        filename: file?.originalname ?? 'transcript.txt',
+        audioBase64: file ? file.buffer.toString('base64') : '',
         options: {
           preferredMode: dto?.preferredMode,
           transcriptHint: dto?.transcriptHint,

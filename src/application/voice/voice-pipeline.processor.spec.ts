@@ -139,7 +139,11 @@ describe('VoicePipelineProcessor', () => {
 
       make().notify('user-1', 'job-1', { ok: false, error });
 
-      expect(notifier.sendFailed).toHaveBeenCalledWith('user-1', 'job-1', error);
+      expect(notifier.sendFailed).toHaveBeenCalledWith(
+        'user-1',
+        'job-1',
+        error,
+      );
       expect(notifier.sendResult).not.toHaveBeenCalled();
     });
 
@@ -171,6 +175,7 @@ describe('VoicePipelineProcessor', () => {
         'user-1',
         '강남에서 사당까지',
         { preferredMode: 'OPTIMAL', lat: 37.5, lng: 127 },
+        undefined,
       );
       // 알림은 작업이 완료로 기록된 뒤(완료 훅)에 보내므로 process 안에서는 보내지 않는다
       expect(notifier.sendResult).not.toHaveBeenCalled();
@@ -222,6 +227,28 @@ describe('VoicePipelineProcessor', () => {
         'user-1',
         '홍대에서 신촌까지',
         { transcriptHint: '  홍대에서 신촌까지  ' },
+        undefined,
+      );
+    });
+
+    it('Gemini가 음성 인식과 함께 준 의도 힌트를 넘긴다', async () => {
+      sttQueue.transcribe.mockResolvedValue({
+        transcript: '신도림역에서 왕십리역까지 덜 붐비는 길',
+        provider: 'gemini',
+        intent: {
+          origin: '신도림',
+          destination: '왕십리',
+          mode: 'COMFORTABLE',
+        },
+      });
+
+      await make().process(jobWith());
+
+      expect(voiceService.recommendFromTranscript).toHaveBeenCalledWith(
+        'user-1',
+        '신도림역에서 왕십리역까지 덜 붐비는 길',
+        { preferredMode: 'OPTIMAL', lat: 37.5, lng: 127 },
+        { origin: '신도림', destination: '왕십리', mode: 'COMFORTABLE' },
       );
     });
 
