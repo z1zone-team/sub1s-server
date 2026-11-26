@@ -39,7 +39,18 @@ const JONG = [
   'ㅎ',
 ];
 
-const SINO_DIGITS = ['영', '일', '이', '삼', '사', '오', '육', '칠', '팔', '구'];
+const SINO_DIGITS = [
+  '영',
+  '일',
+  '이',
+  '삼',
+  '사',
+  '오',
+  '육',
+  '칠',
+  '팔',
+  '구',
+];
 
 /** 자주 혼동하는 자모 묶음. 같은 묶음 안에서 바뀐 것은 반만 틀린 것으로 센다 */
 const CONFUSABLE_GROUPS = [
@@ -103,6 +114,71 @@ function soundsLikeYeok(syllable: string | undefined): boolean {
   return !final || ['ㄱ', 'ㄴ', 'ㅇ', 'ㄹ'].includes(final.value);
 }
 
+/** 받침으로도 초성으로도 쓰이는 홑자음. 연음으로 자리를 옮길 수 있는 것만 다룬다 */
+const MOVABLE_FINALS = new Set([
+  'ㄱ',
+  'ㄲ',
+  'ㄴ',
+  'ㄷ',
+  'ㄹ',
+  'ㅁ',
+  'ㅂ',
+  'ㅅ',
+  'ㅆ',
+  'ㅈ',
+  'ㅊ',
+  'ㅋ',
+  'ㅌ',
+  'ㅍ',
+]);
+
+const isHangul = (char: string): boolean => {
+  const code = char.codePointAt(0) as number;
+  return code >= HANGUL_START && code <= HANGUL_END;
+};
+const decompose = (char: string): [number, number, number] => {
+  const offset = (char.codePointAt(0) as number) - HANGUL_START;
+  return [
+    Math.floor(offset / 28 / 21),
+    Math.floor(offset / 28) % 21,
+    offset % 28,
+  ];
+};
+const compose = (cho: number, jung: number, jong: number): string =>
+  String.fromCodePoint(HANGUL_START + (cho * 21 + jung) * 28 + jong);
+
+/**
+ * 소리 나는 대로 받침을 다음 글자로 넘긴다(`돌이` → `도리`, `목우` → `모구`).
+ * 전사는 같은 소리를 다르게 적기도 해서(`신도리멱`을 `신돌이 멱`으로) 비교 전에 양쪽을 같은 꼴로 맞춘다
+ */
+export function carryOverFinals(text: string): string {
+  const chars = [...text];
+  for (let i = 0; i + 1 < chars.length; i++) {
+    if (!isHangul(chars[i]) || !isHangul(chars[i + 1])) continue;
+    const [cho, jung, jong] = decompose(chars[i]);
+    const [nextCho, nextJung, nextJong] = decompose(chars[i + 1]);
+    const final = JONG[jong];
+    if (jong === 0 || CHO[nextCho] !== 'ㅇ' || !MOVABLE_FINALS.has(final))
+      continue;
+    chars[i] = compose(cho, jung, 0);
+    chars[i + 1] = compose(CHO.indexOf(final), nextJung, nextJong);
+  }
+  return chars.join('');
+}
+
+/**
+ * 끝의 `역`처럼 들리는 글자를 버릴 때, 그 글자의 첫 소리가 앞 글자의 받침이 넘어온 것이면 받침으로 되돌린다
+ * (`신도리` + `멱` → `신도림`, `발고` + `격` → `발곡`). 되돌릴 수 없으면 null
+ */
+function restoreCarriedFinal(text: string, dropped: string): string | null {
+  const last = text[text.length - 1];
+  if (!last || !isHangul(last) || !isHangul(dropped)) return null;
+  const [cho, jung, jong] = decompose(last);
+  const carried = CHO[decompose(dropped)[0]];
+  if (jong !== 0 || !MOVABLE_FINALS.has(carried)) return null;
+  return text.slice(0, -1) + compose(cho, jung, JONG.indexOf(carried));
+}
+
 const INDEL_FINAL = 0.7; // 받침이 붙거나 빠지는 것은 흔한 오인식이라 싸게 친다
 const INDEL = 1;
 const CONFUSABLE_COST = 0.5;
@@ -126,7 +202,8 @@ export function jamoDistance(a: readonly Jamo[], b: readonly Jamo[]): number {
   const cols = b.length + 1;
   let previous = new Array<number>(cols);
   previous[0] = 0;
-  for (let j = 1; j < cols; j++) previous[j] = previous[j - 1] + indelCost(b[j - 1]);
+  for (let j = 1; j < cols; j++)
+    previous[j] = previous[j - 1] + indelCost(b[j - 1]);
 
   for (let i = 1; i < rows; i++) {
     const current = new Array<number>(cols);
@@ -152,6 +229,8 @@ interface Entry {
   name: string;
   compact: string;
   jamo: Jamo[];
+  /** 받침을 소리 나는 대로 넘긴 꼴(`carryOverFinals`)의 자모 */
+  spokenJamo: Jamo[];
   threshold: number;
 }
 
@@ -170,7 +249,13 @@ export class StationNameMatcher {
       .map((name) => {
         const compact = compactForMatching(name);
         const jamo = toJamo(compact);
-        return { name, compact, jamo, threshold: maxDistanceFor(jamo.length) };
+        return {
+          name,
+          compact,
+          jamo,
+          spokenJamo: toJamo(carryOverFinals(compact)),
+          threshold: maxDistanceFor(jamo.length),
+        };
       })
       .filter((entry) => entry.compact.length >= 2);
   }
@@ -178,7 +263,9 @@ export class StationNameMatcher {
   /** 이 이름이 역 이름 그대로인지(공백과 기호는 무시) */
   isExact(candidate: string): string | null {
     const compact = compactForMatching(candidate);
-    return this.entries.find((entry) => entry.compact === compact)?.name ?? null;
+    return (
+      this.entries.find((entry) => entry.compact === compact)?.name ?? null
+    );
   }
 
   /**
@@ -191,6 +278,26 @@ export class StationNameMatcher {
     if (compact.length < 1) return null;
 
     const maxDrop = soundsLikeYeok(compact[compact.length - 1]) ? 1 : 0;
+    // 같은 구간을 역마다 다시 자모로 나누지 않게 구간별 비교 꼴을 모아 둔다
+    const forms = new Map<string, Array<{ jamo: Jamo[]; spoken: boolean }>>();
+    const formsOf = (start: number, end: number, drop: number) => {
+      const key = `${start}:${end}`;
+      let list = forms.get(key);
+      if (!list) {
+        const slice = compact.slice(start, end);
+        const texts = [slice];
+        // 버린 `역` 글자의 첫 소리가 앞 글자 받침이 넘어온 것이면 되돌린 꼴도 본다(`신돌이멱` → `신돌임`)
+        const restored =
+          drop === 1 ? restoreCarriedFinal(slice, compact[end]) : null;
+        if (restored) texts.push(restored);
+        list = texts.flatMap((text) => [
+          { jamo: toJamo(text), spoken: false },
+          { jamo: toJamo(carryOverFinals(text)), spoken: true },
+        ]);
+        forms.set(key, list);
+      }
+      return list;
+    };
     // start, end: 입력에서 이 역과 비교해 가장 가까웠던 구간
     const scored: Array<StationMatch & { start: number; end: number }> = [];
     for (const entry of this.entries) {
@@ -203,7 +310,15 @@ export class StationNameMatcher {
         for (let size = Math.max(1, length - 1); size <= length + 1; size++) {
           const start = end - size;
           if (start < 0) continue;
-          const distance = jamoDistance(toJamo(compact.slice(start, end)), entry.jamo);
+          // 적힌 꼴끼리, 소리 나는 꼴끼리 비교해 가까운 쪽을 쓴다
+          const distance = Math.min(
+            ...formsOf(start, end, drop).map((form) =>
+              jamoDistance(
+                form.jamo,
+                form.spoken ? entry.spokenJamo : entry.jamo,
+              ),
+            ),
+          );
           // 끝의 한 글자를 버린 경우는 그만큼 조금 더 의심스러우니 가산한다
           const total = distance + drop * 0.25;
           if (total < best) {
@@ -217,7 +332,9 @@ export class StationNameMatcher {
     }
     if (scored.length === 0) return null;
 
-    scored.sort((x, y) => x.distance - y.distance || y.name.length - x.name.length);
+    scored.sort(
+      (x, y) => x.distance - y.distance || y.name.length - x.name.length,
+    );
     const result = ({ name, distance }: StationMatch): StationMatch => ({
       name,
       distance,

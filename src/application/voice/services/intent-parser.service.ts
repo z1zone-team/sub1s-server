@@ -21,9 +21,33 @@ const SAVED_PLACE_WORD =
   /(?<![가-힣])(?:우리\s*|내\s*)?(집|학교)(?:(에서|부터|으로|로|까지|가는|가자|갈래|가고|에)|(?![가-힣]))/g;
 const PLACE_ORIGIN_MARKERS = ['에서', '부터'];
 
+// 경로 조건을 말하는 표현. 앞에 있는 것부터 본다(`환승 적고 빠른 길`은 환승 적은 경로)
+const COMFORTABLE_WORDS =
+  /(여유|편한|편하게|자리|앉아|쾌적|덜\s*붐비|안\s*붐비|한산|덜\s*혼잡|혼잡하지\s*않|사람(?:이)?\s*(?:적|없|별로\s*없))/;
+const CHEAPEST_WORDS =
+  /(최소\s*비용|저렴|제일\s*싼|가장\s*싼|알뜰|요금\s*절약)/;
+const PERSONAL_WORDS = /(취향|맞춤|내\s*스타일|평소|자주\s*가던)/;
+const FEWEST_TRANSFERS_WORDS =
+  /(환승\s*(?:을|이)?\s*(?:적|없|덜|안\s*하|최소|한\s*번)|갈아타(?:지\s*않|는\s*거\s*(?:적|싫)|기\s*(?:적|싫))|덜\s*갈아타|안\s*갈아타|한\s*번에\s*가)/;
+const LEAST_WALK_WORDS =
+  /(덜\s*걷|적게\s*걷|조금\s*걷|안\s*걷|걷기\s*(?:싫|적)|걷는\s*(?:거|게|길)\s*(?:적|싫|짧)|도보\s*(?:가\s*)?(?:적|최소|짧))/;
+const FASTEST_WORDS =
+  /(빠른|빠르게|빨리|최단\s*시간|시간\s*(?:이\s*)?(?:적게|짧게|덜)|급해|급하게|서둘러)/;
+
 // 장소 이름이 아니라 경로 조건을 말한 구절("편한 길로")은 도착지로 넘기지 않는다
-const MODE_WORDS =
-  /(여유|편한|편하게|자리|앉아|쾌적|덜\s*붐비|최소\s*비용|저렴|싼|알뜰|요금|취향|맞춤|평소|자주\s*가던)/;
+const MODE_WORDS = new RegExp(
+  [
+    COMFORTABLE_WORDS,
+    /(싼|요금)/,
+    CHEAPEST_WORDS,
+    PERSONAL_WORDS,
+    FEWEST_TRANSFERS_WORDS,
+    LEAST_WALK_WORDS,
+    FASTEST_WORDS,
+  ]
+    .map((pattern) => pattern.source)
+    .join('|'),
+);
 
 // 역 이름으로 풀리지 않는 출발 구절이 이 길이 이상이어야 장소 이름으로 본다(짧은 것은 역 이름을 잘못 알아들은 것으로 보고 알린다)
 const MIN_PLACE_ORIGIN = 4;
@@ -233,7 +257,9 @@ export class IntentParserService {
   /** 출발 표지("에서", "부터")가 있는데 그 앞이 현재 위치를 뜻하는 말이 아닌지 */
   private saidUnresolvedOrigin(text: string): boolean {
     if (!/(?:에서|부터)/.test(text)) return false;
-    return !/(?:여기|지금|현재|이곳|내\s*위치)\s*(?:에서|부터)?/.test(text.split(/에서|부터/)[0] + '에서');
+    return !/(?:여기|지금|현재|이곳|내\s*위치)\s*(?:에서|부터)?/.test(
+      text.split(/에서|부터/)[0] + '에서',
+    );
   }
 
   /**
@@ -385,23 +411,41 @@ export class IntentParserService {
    * 자연어 텍스트에서 모드와 판단 사유를 추론합니다.
    */
   private detectMode(text: string): { mode: RouteMode; reason: string } {
-    if (/(여유|편한|편하게|자리|앉아|쾌적|덜\s*붐비)/.test(text)) {
+    if (COMFORTABLE_WORDS.test(text)) {
       return {
         mode: 'COMFORTABLE',
         reason: '혼잡도가 낮고 여유로운 좌석 우선 경로를 감지했습니다.',
       };
     }
-    if (/(최소\s*비용|저렴|제일\s*싼|가장\s*싼|알뜰|요금\s*절약)/.test(text)) {
+    if (CHEAPEST_WORDS.test(text)) {
       return {
         mode: 'CHEAPEST',
         reason:
           '환승 및 요금 기준 가장 경제적인 최소 비용 경로를 감지했습니다.',
       };
     }
-    if (/(취향|맞춤|내\s*스타일|평소|자주\s*가던)/.test(text)) {
+    if (PERSONAL_WORDS.test(text)) {
       return {
         mode: 'PERSONAL',
         reason: '사용자 통근 성향 및 개인 맞춤형 경로를 감지했습니다.',
+      };
+    }
+    if (FEWEST_TRANSFERS_WORDS.test(text)) {
+      return {
+        mode: 'FEWEST_TRANSFERS',
+        reason: '환승 횟수가 가장 적은 경로를 감지했습니다.',
+      };
+    }
+    if (LEAST_WALK_WORDS.test(text)) {
+      return {
+        mode: 'LEAST_WALK',
+        reason: '걷는 거리가 가장 짧은 경로를 감지했습니다.',
+      };
+    }
+    if (FASTEST_WORDS.test(text)) {
+      return {
+        mode: 'FASTEST',
+        reason: '소요 시간이 가장 짧은 경로를 감지했습니다.',
       };
     }
     return {

@@ -1,4 +1,5 @@
 import {
+  carryOverFinals,
   compactForMatching,
   jamoDistance,
   StationNameMatcher,
@@ -17,6 +18,19 @@ describe('compactForMatching', () => {
     expect(compactForMatching('1진로')).toBe('일진로');
     expect(compactForMatching('을지로4가')).toBe('을지로사가');
     expect(compactForMatching('3호선')).toBe('삼호선');
+  });
+});
+
+describe('carryOverFinals', () => {
+  it('받침 뒤에 ㅇ으로 시작하는 글자가 오면 받침을 넘긴다', () => {
+    expect(carryOverFinals('신돌이')).toBe('신도리');
+    expect(carryOverFinals('발곡역')).toBe('발고격');
+  });
+
+  it('ㅇ 받침과 겹받침, ㅇ이 아닌 초성 앞의 받침은 그대로 둔다', () => {
+    expect(carryOverFinals('강남역')).toBe('강나멱');
+    expect(carryOverFinals('상왕십리')).toBe('상왕십리');
+    expect(carryOverFinals('신도림')).toBe('신도림');
   });
 });
 
@@ -85,6 +99,9 @@ describe('StationNameMatcher', () => {
     '고색',
     '명지대',
     '이대',
+    '신도림',
+    '신림',
+    '도림천',
   ]);
 
   describe('isExact', () => {
@@ -99,15 +116,24 @@ describe('StationNameMatcher', () => {
 
   describe('closestAtEnd', () => {
     it('정확히 일치하면 거리 0이다', () => {
-      expect(matcher.closestAtEnd('강남')).toEqual({ name: '강남', distance: 0 });
+      expect(matcher.closestAtEnd('강남')).toEqual({
+        name: '강남',
+        distance: 0,
+      });
     });
 
     it('이름 안의 공백은 무시한다', () => {
-      expect(matcher.closestAtEnd('광흥 창')).toEqual({ name: '광흥창', distance: 0 });
+      expect(matcher.closestAtEnd('광흥 창')).toEqual({
+        name: '광흥창',
+        distance: 0,
+      });
     });
 
     it('앞쪽의 군더더기 말은 무시하고 끝의 이름을 찾는다', () => {
-      expect(matcher.closestAtEnd('지금 강남')).toEqual({ name: '강남', distance: 0 });
+      expect(matcher.closestAtEnd('지금 강남')).toEqual({
+        name: '강남',
+        distance: 0,
+      });
     });
 
     it('받침을 잘못 들은 이름을 가장 가까운 역으로 보정한다', () => {
@@ -124,6 +150,14 @@ describe('StationNameMatcher', () => {
 
     it('앞 글자의 받침이 이어져 `역`이 `격`으로 들린 것도 버리고 비교한다 (발곡역 → 발고격)', () => {
       expect(matcher.closestAtEnd('발고격')?.name).toBe('발곡');
+    });
+
+    it('받침이 소리 나는 대로 옮겨 적힌 것도 고친다 (신도림역 → 신돌이 멱, 2026-11-26 운영 전사)', () => {
+      expect(matcher.closestAtEnd('신돌이 멱')).toEqual({
+        name: '신도림',
+        distance: 0.25,
+      });
+      expect(matcher.closestAtEnd('신도리멱')?.name).toBe('신도림');
     });
 
     it('`역`처럼 들리지 않는 끝 글자는 버리지 않는다', () => {
@@ -165,7 +199,10 @@ describe('StationNameMatcher', () => {
 
     it('이름이 정확히 일치하면 다른 역이 비슷해도 그 역이다', () => {
       // `성남`은 `석남`과 한 글자 차이지만 그대로 일치한다
-      expect(matcher.closestAtEnd('성남')).toEqual({ name: '성남', distance: 0 });
+      expect(matcher.closestAtEnd('성남')).toEqual({
+        name: '성남',
+        distance: 0,
+      });
     });
 
     it('빈 입력은 null이다', () => {
