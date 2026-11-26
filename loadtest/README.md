@@ -139,7 +139,7 @@ k6 두 스크립트는 인증 없이 돌아 개인화 계산(선호 모델, 취�
 | 스크립트 | 실행 위치 | 하는 일 |
 | :--- | :--- | :--- |
 | `gen-pairs.js` | PC(서버 저장소 루트) | 역 120쌍(씨앗 고정), 출발역의 같은 노선 이웃 역, 환승 묶음을 `pairs.json`으로 만든다 |
-| `mint-session.js` | `sub1s-server` 컨테이너 | 지정한 Clerk 사용자로 측정용 세션을 만들고 40초마다 세션 토큰을 stdout으로 내보낸다. 끝나면 세션을 폐기한다 |
+| `mint-session.js` | `sub1s-server` 컨테이너 | 지정한 Clerk 사용자로 측정용 세션을 만들고 40초마다 세션 토큰을 stdout으로 내보낸다. 측정 뒤 `mint-session.js revoke`로 세션을 폐기한다 |
 | `measure-search-reroute.js` | `sub1s-server-mock` 컨테이너 | 같은 역 쌍을 비로그인, 로그인으로 번갈아 검색해 비교(search), 안내 시작 후 반대 방향 역 보고로 재탐색 성공을 센다(reroute) |
 | `measure-voice.js` | `sub1s-server-mock` 컨테이너 | WAV 발화로 `POST /voice/jobs`를 넣고 `GET /voice/jobs/:id`가 끝날 때까지 시간을 잰다 |
 
@@ -160,10 +160,11 @@ ssh sub1s 'sudo -n docker exec -i sub1s-server-mock sh -c "cat > /tmp/pairs.json
 # 2) 서버: 검색 비교와 재탐색(약 4분). USER는 Clerk 사용자 ID(user_...)
 ssh sub1s 'sudo -n docker exec -i sub1s-server node /tmp/mint-session.js USER 15 2>/tmp/mint.log \
   | sudo -n docker exec -i sub1s-server-mock node /tmp/measure-search-reroute.js /tmp/pairs.json all \
-  > /tmp/service-measure.json 2>/tmp/service-measure.log; cat /tmp/mint.log'
+  > /tmp/service-measure.json 2>/tmp/service-measure.log; \
+  sudo -n docker exec sub1s-server node /tmp/mint-session.js revoke; cat /tmp/mint.log'
 scp sub1s:/tmp/service-measure.json results/
 ```
 
-`mint.log` 마지막 줄이 `revoke <세션 ID> 200`이어야 한다. 없으면 Clerk Backend API로 그 세션을 폐기하고(`POST /v1/sessions/<id>/revoke`) 컨테이너에 남은 `mint-session.js` 프로세스를 끝낸다.
+측정이 끝나면 **반드시 `mint-session.js revoke`를 실행한다**(위 명령의 마지막 줄). ssh 한 줄로 측정하면 ssh가 닫힐 때 토큰 내보내기 프로세스가 폐기 단계 없이 끝나거나 남는다(2026-11-26 두 번 확인). `revoke`는 `/tmp/mint-session.id`에 남긴 세션을 폐기하고 남은 프로세스를 끝낸다. 출력에 `revoke <세션 ID> 200`이 있어야 한다.
 
 음성은 발화 WAV(16kHz 모노)를 `v0.wav`, `v1.wav` ...로, 문장을 같은 순서로 `phrases.txt`에 한 줄씩 두고 폴더째 `server-mock`의 `/tmp/v/voice`에 올린 뒤 같은 방식으로 돌린다(`measure-voice.js /tmp/v/voice /tmp/v/voice/phrases.txt 2`). 2026-11-26 측정은 Windows 한국어 음성(Microsoft Heami)으로 만든 7문장을 썼다(`System.Speech`, 16kHz 16bit 모노). 개인 녹음은 서버에 올리지 않는다.
