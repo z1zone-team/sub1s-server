@@ -143,6 +143,7 @@ k6 두 스크립트는 인증 없이 돌아 개인화 계산(선호 모델, 취�
 | `measure-search-reroute.js` | `sub1s-server-mock` 컨테이너 | 같은 역 쌍을 비로그인, 로그인으로 번갈아 검색해 비교(search), 안내 시작 후 반대 방향 역 보고로 재탐색 성공을 센다(reroute) |
 | `measure-voice.js` | `sub1s-server-mock` 컨테이너 | WAV 발화로 `POST /voice/jobs`를 넣고 `GET /voice/jobs/:id`가 끝날 때까지 시간을 잰다 |
 | `load-search-auth.js` | `sub1s-server-mock` 컨테이너 | 경로 검색에 단계별 일정 속도로 요청해 비로그인(`guest-ids`, `guest-coords`)과 로그인(`auth-ids`, `auth-coords`, 개인화 포함)의 한계를 같은 역 쌍으로 비교한다. 테스트 모드(`loadtest.sh on`)에서 돌린다 |
+| `ride-load.js` | PC(서버 저장소 루트) | 안내 중 사용자 N명: 로그인 경로 검색, 안내 시작, 소켓(`/ws/subway`) 연결, 15초마다 경로 위 다음 역 좌표로 위치 보고. 운영 주소(nginx 경유)로 보낸다 |
 
 - 요청은 같은 Docker 네트워크의 `http://server:3000/api/v1`로 보낸다. 인터넷과 nginx 시간은 빠지므로 k6(PC에서 인터넷 경유) 수치와 바로 비교하지 않는다. `server-mock`은 CPU 한도가 따로 있어 측정 스크립트가 서버 CPU를 쓰지 않는다
 - **토큰은 화면에 찍지 않는다.** `mint-session.js`의 stdout을 측정 스크립트의 stdin으로 바로 잇는다. 운영 Clerk는 live 인스턴스라 mock 토큰이 안 되고, `CLERK_SECRET_KEY`는 서버 컨테이너 안에서만 쓴다
@@ -180,3 +181,13 @@ ssh sub1s 'cd ~/sub1s-deploy && ./loadtest.sh off'
 
 - 비로그인 시나리오는 토큰이 필요 없어 stdin을 `< /dev/null`로 준다
 - `server-mock`은 테스트 모드를 끌 때 다시 만들어져 `/tmp`의 스크립트가 지워진다. 테스트 모드를 켠 뒤에 올린다
+
+안내 중 부하 예(테스트 모드 없이 운영 그대로, 토큰은 ssh 파이프로만 넘긴다):
+
+```bash
+ssh sub1s 'sudo -n docker exec -i sub1s-server node /tmp/mint-session.js USER 20 2>/dev/null'   | node loadtest/service/ride-load.js results/pairs.json 50,100,200,300 90 > results/ride-load.json
+ssh sub1s 'sudo -n docker exec sub1s-server node /tmp/mint-session.js revoke'
+```
+
+- 측정 계정이 하나라 모든 소켓이 같은 사용자 방에 들어간다. `smart_alert`가 사용자의 모든 소켓으로 가서 N명이면 알림이 N배로 퍼진다(실제 사용자는 소켓 1개). 실제보다 무거운 조건이다
+- 끝난 안내 세션은 서버 메모리에 6시간 남았다가 지워진다(이동 기록은 만들지 않음)
