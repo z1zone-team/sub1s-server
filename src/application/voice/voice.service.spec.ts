@@ -63,9 +63,6 @@ describe('VoiceService', () => {
         {
           provide: AiServiceAdapter,
           useValue: {
-            transcribeAudio: jest.fn().mockResolvedValue({
-              transcript: '강남역에서 을지로입구역까지 최적 경로로 안내해줘',
-            }),
             generateBriefing: jest.fn().mockResolvedValue({
               briefingText:
                 '강남역에서 을지로입구역까지 최적 경로로 안내합니다.',

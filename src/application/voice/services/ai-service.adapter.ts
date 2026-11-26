@@ -1,6 +1,5 @@
-import { HttpStatus, Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { BusinessException } from '../../../common/exceptions/business.exception';
 import { RouteMode } from '../../../domain/subway/models/route';
 import { SubwayRouteOptionDto } from '../../route/dto/route-search-response.dto';
 import {
@@ -8,11 +7,6 @@ import {
   VoiceIntentHint,
 } from '../../../infra/queue/stt-queue.client';
 import { CURRENT_LOCATION, SAVED_PLACE_NAMES } from './intent-parser.service';
-
-export interface SttResult {
-  transcript: string;
-  confidence?: number;
-}
 
 export interface BriefingResult {
   briefingText: string;
@@ -29,8 +23,6 @@ function placeLabel(name: string): string {
 export class AiServiceAdapter {
   private readonly logger = new Logger(AiServiceAdapter.name);
   private readonly aiServiceUrl?: string;
-  private readonly timeoutMs: number = 2000; // 브리핑 2초 SLA
-  private readonly sttTimeoutMs: number = 15000; // CPU 환경 Whisper 전사 시간 고려
   // AI 서버 intent-hint 제한(3초)보다 조금 길게. 규칙으로 풀지 못한 문장에만 부른다
   private readonly intentHintTimeoutMs: number = 3500;
 
@@ -39,44 +31,7 @@ export class AiServiceAdapter {
   }
 
   /**
-   * 오디오 파일로부터 STT 음성 전사 결과를 획득합니다.
-   * AI 워커 연결 실패 또는 타임아웃 시 안전한 Fallback 전사 텍스트를 반환합니다.
-   */
-  async transcribeAudio(
-    audioBuffer: Buffer,
-    filename: string,
-    transcriptHint?: string,
-  ): Promise<SttResult> {
-    if (transcriptHint && transcriptHint.trim().length > 0) {
-      return { transcript: transcriptHint.trim(), confidence: 1.0 };
-    }
-
-    if (!this.aiServiceUrl) {
-      this.logger.warn(
-        'AI_SERVICE_URL is not set, voice transcription is unavailable',
-      );
-      throw this.sttUnavailable();
-    }
-    try {
-      const result = await this.callAiWorkerStt(audioBuffer, filename);
-      if (result) return result;
-    } catch (err: unknown) {
-      const errorMsg = err instanceof Error ? err.message : String(err);
-      this.logger.warn(`AI Service STT failed: ${errorMsg}`);
-    }
-    throw this.sttUnavailable();
-  }
-
-  private sttUnavailable(): BusinessException {
-    return new BusinessException(
-      'AI_SERVICE_UNAVAILABLE',
-      '음성 인식을 사용할 수 없어요. 잠시 후 다시 시도해 주세요.',
-      HttpStatus.SERVICE_UNAVAILABLE,
-    );
-  }
-
-  /**
-   * 추천 경로와 의도 분석 정보를 바탕으로 자연어 브리핑을 생성합니다.
+   * 추천 경로와 의도 분석 정보로 브리핑 문장을 만든다. 규칙 문장이다(AI 브리핑은 Gemini 쿼터가 작아 쓰지 않는다, docs E-48)
    */
   async generateBriefing(
     intent: {
@@ -104,18 +59,6 @@ export class AiServiceAdapter {
     const defaultBriefing =
       `${labels?.origin ?? placeLabel(intent.originStationName)}에서 ${labels?.destination ?? placeLabel(intent.destStationName)}까지 ${modeLabel} 경로로 안내해 드릴게요. ` +
       `총 약 ${durationMin}분 소요되며 환승은 ${route.transferCount}회입니다. 안전한 이동 되세요.`;
-
-    if (this.aiServiceUrl) {
-      try {
-        const aiBriefing = await this.callAiWorkerBriefing(intent, route);
-        if (aiBriefing) return aiBriefing;
-      } catch (err: unknown) {
-        const errorMsg = err instanceof Error ? err.message : String(err);
-        this.logger.warn(
-          `AI Service Briefing failed, using rule-based briefing: ${errorMsg}`,
-        );
-      }
-    }
 
     return { briefingText: defaultBriefing };
   }
@@ -145,37 +88,5 @@ export class AiServiceAdapter {
       this.logger.warn(`intent-hint failed: ${message}`);
       return null;
     }
-  }
-
-  private async callAiWorkerStt(
-    audioBuffer: Buffer,
-    filename: string,
-  ): Promise<SttResult | null> {
-    const form = new FormData();
-    form.append('file', new Blob([new Uint8Array(audioBuffer)]), filename);
-    const res = await fetch(`${this.aiServiceUrl}/api/v1/ai/stt?language=ko`, {
-      method: 'POST',
-      body: form,
-      signal: AbortSignal.timeout(this.sttTimeoutMs),
-    });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const body = (await res.json()) as {
-      transcript?: string;
-      confidence?: number;
-    };
-    const transcript = body.transcript?.trim();
-    if (!transcript) return null;
-    return { transcript, confidence: body.confidence };
-  }
-
-  private async callAiWorkerBriefing(
-    _intent: {
-      originStationName: string;
-      destStationName: string;
-      preferredMode: RouteMode;
-    },
-    _route: SubwayRouteOptionDto,
-  ): Promise<BriefingResult | null> {
-    return null;
   }
 }
