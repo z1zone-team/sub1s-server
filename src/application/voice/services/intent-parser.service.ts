@@ -60,6 +60,15 @@ const CURRENT_LOCATION_WORD = /(?:여기|지금|현재|이곳|내\s*위치)/;
 const TRAILING_REQUEST =
   /\s*(?:가는\s*길|가자|가줘|가고\s*싶|갈래|길\s*안내|안내|알려\s*줘|찾아\s*줘).*$/;
 
+// 표지(`에서`, `까지`) 없이 역 이름만 늘어놓은 문장은 짧을 때만 앞을 출발, 뒤를 도착으로 본다.
+// 역 이름, 경로 조건 표현, 요청 끝말, 군말을 뺀 나머지 낱말이 이보다 많으면 주변 대화가 섞인 것으로 보고 규칙으로 풀지 않는다
+// (2026-10-13 실기기: "... 대화해 ... 시청아빠 ..."에서 대화 -> 시청 경로가 나왔다, docs E-59). 그런 문장은 Gemini 의도 힌트가 다시 푼다
+const MAX_MARKERLESS_EXTRA_WORDS = 2;
+const FILLER_WORDS =
+  /^(?:음+|어+|아+|그+|저기|그러니까|그니까|좀|빨리|지금|오늘|일단|혹시|제발|네|응)$/;
+const REQUEST_WORDS =
+  /^(?:가는|길|가자|가줘|가죠|갈래|가고|싶어|싶어요|알려\s*줘|알려줘|알려|줘|주세요|안내|안내해|안내해줘|찾아줘|부탁해|방법)[.?!]*$/;
+
 // 역 이름 바로 뒤에 와도 낱말이 끝난 것으로 보는 말(역, 조사, 방향 표현, 공백이나 기호)
 const STATION_WORD_END =
   /^(?:역|에서|에|으로|로|까지|부터|가는|가자|가줘|갈래|가고|길|은|는|이|가|을|를|도|쪽|근처|부근|앞|방면|[^가-힣])/;
@@ -118,6 +127,16 @@ export class IntentParserService {
     // 공백을 지우지 않은 원래 문장에서 찾는다. 지우면 단어 경계를 넘는 우연한 일치가 생긴다(`홍제에서 초당` → `에서초당`의 `서초`)
     const matchedStations = this.findKnownStationsInText(text);
     if (matchedStations.length >= 2) {
+      if (!this.isShortMarkerlessRequest(text, matchedStations)) {
+        this.logger.warn(
+          `Markerless voice text too long to trust station words: "${text}"`,
+        );
+        throw new BusinessException(
+          'VOICE_INTENT_NOT_UNDERSTOOD',
+          '어디에서 어디로 갈지 알아듣지 못했어요. "강남역에서 잠실역까지"처럼 말씀해 주세요.',
+          HttpStatus.UNPROCESSABLE_ENTITY,
+        );
+      }
       return {
         originStationName: matchedStations[0],
         destStationName: matchedStations[1],
@@ -469,6 +488,23 @@ export class IntentParserService {
   /**
    * 문장 내에 존재하는 실제 전철역 이름을 순서대로 검색합니다.
    */
+  /**
+   * 표지 없이 역 이름을 늘어놓은 짧은 요청인지("강남 잠실", "명지대역 강남역 환승 적게 가고 싶어").
+   * 역 이름이 든 낱말, 경로 조건 표현, 요청 끝말, 군말을 빼고 남는 낱말이 MAX_MARKERLESS_EXTRA_WORDS개 이하면 짧다
+   */
+  private isShortMarkerlessRequest(text: string, stations: string[]): boolean {
+    const withoutModes = text.replace(new RegExp(MODE_WORDS.source, 'g'), ' ');
+    const extra = withoutModes
+      .split(/\s+/)
+      .map((word) => word.replace(/[.,?!~…]/g, ''))
+      .filter(Boolean)
+      .filter((word) => !stations.some((station) => word.includes(station)))
+      .filter((word) => !FILLER_WORDS.test(word) && !REQUEST_WORDS.test(word))
+      // 조건 표현을 지우고 남은 꼬리(`게`, `는`, `길로`)
+      .filter((word) => !/^(?:게|는|은|길|길로|로|으로|하게)$/.test(word));
+    return extra.length <= MAX_MARKERLESS_EXTRA_WORDS;
+  }
+
   private findKnownStationsInText(text: string): string[] {
     const graph = this.graphService.getGraph();
     const candidateNames = new Set<string>();
