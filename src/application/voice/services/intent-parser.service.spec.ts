@@ -105,6 +105,8 @@ describe('IntentParserService', () => {
       '왕십리',
       '서울',
       '명지대',
+      '대화',
+      '시청',
     ];
     let parser: IntentParserService;
 
@@ -130,6 +132,32 @@ describe('IntentParserService', () => {
     it('받침이 소리 나는 대로 옮겨 적힌 역 이름을 고친다 (신도림역 → 신돌이 멱, 2026-11-26 운영 전사)', () => {
       expect(parse('신돌이 멱에서 왕십리역까지 덜 붐비는 길.')).toBe(
         '신도림 → 왕십리',
+      );
+    });
+
+    describe('표지 없이 역 이름만 말한 문장 (E-59)', () => {
+      it.each([
+        ['강남 잠실', '강남 → 잠실'],
+        ['강남역 잠실역 빠르게', '강남 → 잠실'],
+        ['명지대역 강남역 환승 적게 가고 싶어', '명지대 → 강남'],
+        ['음 강남 잠실 가자', '강남 → 잠실'],
+        ['대화 시청', '대화 → 시청'],
+      ])('짧으면 앞을 출발, 뒤를 도착으로 본다: %s', (text, expected) => {
+        expect(parse(text)).toBe(expected);
+      });
+
+      it.each([
+        '아까 엄마랑 대화해 보니까 시청아빠가 내일 온다고 했어',
+        '어제 강남에서 친구 만났는데 잠실 쪽이 더 낫대 그래서 고민이야',
+      ])(
+        '주변 대화처럼 길면 규칙으로 풀지 않는다(Gemini 힌트가 다시 푼다): %s',
+        (text) => {
+          expect(() => parser.parseIntent(text)).toThrow(
+            expect.objectContaining({
+              errorCode: 'VOICE_INTENT_NOT_UNDERSTOOD',
+            }),
+          );
+        },
       );
     });
 
