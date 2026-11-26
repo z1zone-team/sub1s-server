@@ -42,7 +42,8 @@ export class VoicePipelineProcessor implements OnModuleInit {
     config: ConfigService,
   ) {
     this.timeoutMs = Number(
-      config.get<string>('VOICE_JOB_TIMEOUT_MS') ?? DEFAULT_VOICE_JOB_TIMEOUT_MS,
+      config.get<string>('VOICE_JOB_TIMEOUT_MS') ??
+        DEFAULT_VOICE_JOB_TIMEOUT_MS,
     );
   }
 
@@ -119,26 +120,24 @@ export class VoicePipelineProcessor implements OnModuleInit {
     }
   }
 
-  private async run(
-    job: VoicePipelineJob,
-  ): Promise<VoiceResultDto> {
+  private async run(job: VoicePipelineJob): Promise<VoiceResultDto> {
     const data = job.data;
     const hint = data.options.transcriptHint?.trim();
 
-    const transcript = hint
-      ? hint
-      : (await this.sttQueue.transcribe(Buffer.from(data.audioBase64, 'base64')))
-          .transcript;
+    // 앱이 기기에서 받아 적은 문장을 보냈으면 서버 음성 인식을 건너뛴다
+    const stt = hint
+      ? undefined
+      : await this.sttQueue.transcribe(Buffer.from(data.audioBase64, 'base64'));
+    const transcript = hint ?? stt!.transcript;
 
     // 전사가 끝났으니 오디오는 큐(Valkey 메모리)에서 비운다
-    await job
-      .updateData({ ...data, audioBase64: '' })
-      .catch(() => undefined);
+    await job.updateData({ ...data, audioBase64: '' }).catch(() => undefined);
 
     return this.voiceService.recommendFromTranscript(
       data.userId,
       transcript,
       data.options,
+      stt?.intent,
     );
   }
 

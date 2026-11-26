@@ -16,7 +16,9 @@ const mockEvents = {
 const queueCtor = jest.fn(() => mockQueue);
 
 jest.mock('bullmq', () => ({
-  Queue: jest.fn().mockImplementation((...args: unknown[]) => queueCtor(...(args as []))),
+  Queue: jest
+    .fn()
+    .mockImplementation((...args: unknown[]) => queueCtor(...(args as []))),
   QueueEvents: jest.fn().mockImplementation(() => mockEvents),
 }));
 
@@ -48,22 +50,70 @@ describe('SttQueueClient', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    valkey = { options: { host: 'valkey', port: 6379 }, createConnection: jest.fn(() => ({})) };
+    valkey = {
+      options: { host: 'valkey', port: 6379 },
+      createConnection: jest.fn(() => ({})),
+    };
     mockQueue.getJob.mockResolvedValue(undefined);
   });
 
   it('stt 작업을 AI 큐에 base64 오디오로 넣고 전사문을 돌려준다', async () => {
-    const job = jobReturning({ transcript: ' 강남에서 사당까지 ', durationSec: 2.5 });
+    const job = jobReturning({
+      transcript: ' 강남에서 사당까지 ',
+      durationSec: 2.5,
+    });
     mockQueue.add.mockResolvedValue(job);
 
     const result = await make().transcribe(Buffer.from('audio-bytes'));
 
-    expect(result).toEqual({ transcript: '강남에서 사당까지', durationSec: 2.5 });
+    expect(result).toEqual({
+      transcript: '강남에서 사당까지',
+      durationSec: 2.5,
+      provider: undefined,
+      intent: undefined,
+    });
     expect(mockQueue.add).toHaveBeenCalledWith(
       'stt',
-      { action: 'stt', audioBase64: Buffer.from('audio-bytes').toString('base64') },
+      {
+        action: 'stt',
+        audioBase64: Buffer.from('audio-bytes').toString('base64'),
+      },
       expect.objectContaining({ attempts: 1 }),
     );
+  });
+
+  it('Gemini가 준 제공자와 의도 힌트를 읽는다', async () => {
+    const job = jobReturning({
+      transcript: '신도림역에서 왕십리역까지',
+      provider: 'gemini',
+      intent: {
+        origin: '신도림',
+        destination: ' 왕십리 ',
+        mode: 'COMFORTABLE',
+      },
+    });
+    mockQueue.add.mockResolvedValue(job);
+
+    const result = await make().transcribe(Buffer.from('voice'));
+
+    expect(result.provider).toBe('gemini');
+    expect(result.intent).toEqual({
+      origin: '신도림',
+      destination: '왕십리',
+      mode: 'COMFORTABLE',
+    });
+  });
+
+  it('의도 힌트 모양이 다르거나 비어 있으면 버린다', async () => {
+    mockQueue.add.mockResolvedValue(
+      jobReturning({
+        transcript: '강남',
+        intent: { origin: null, destination: 3 },
+      }),
+    );
+    expect(
+      (await make().transcribe(Buffer.from('voice'))).intent,
+    ).toBeUndefined();
   });
 
   it('끝난 작업은 짧게만 보관하도록 요청한다', async () => {
@@ -79,7 +129,9 @@ describe('SttQueueClient', () => {
   it('큐 이름은 VOICE_QUEUE_NAME으로 바꿀 수 있다', async () => {
     mockQueue.add.mockResolvedValue(jobReturning({ transcript: '안내' }));
 
-    await make({ VOICE_QUEUE_NAME: 'custom-voice' }).transcribe(Buffer.from('a'));
+    await make({ VOICE_QUEUE_NAME: 'custom-voice' }).transcribe(
+      Buffer.from('a'),
+    );
 
     expect(queueCtor).toHaveBeenCalledWith('custom-voice', expect.anything());
   });
@@ -143,7 +195,9 @@ describe('SttQueueClient', () => {
   it('AI 워커가 작업을 실패시키면 503이다', async () => {
     mockQueue.add.mockResolvedValue(
       jobReturning(null, {
-        waitUntilFinished: jest.fn().mockRejectedValue(new Error('whisper crashed')),
+        waitUntilFinished: jest
+          .fn()
+          .mockRejectedValue(new Error('whisper crashed')),
       }),
     );
 
@@ -228,7 +282,9 @@ describe('SttQueueClient', () => {
     it('작업 상태가 completed이면 이벤트가 없어도 결과를 돌려준다', async () => {
       mockQueue.add.mockResolvedValue(jobWithoutEvent());
       mockQueue.getJob.mockResolvedValue(
-        storedJob('completed', { returnvalue: { transcript: '강남에서 사당까지' } }),
+        storedJob('completed', {
+          returnvalue: { transcript: '강남에서 사당까지' },
+        }),
       );
 
       const pending = make().transcribe(Buffer.from('a'));

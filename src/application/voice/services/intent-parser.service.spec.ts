@@ -151,6 +151,7 @@ describe('IntentParserService', () => {
         ],
         ['강남역에서 잠실역까지 한산한 길', 'COMFORTABLE'],
         ['강남역에서 잠실역까지 덜 붐비는 길', 'COMFORTABLE'],
+        ['신도림역에서 왕십리역까지 덜 분비는 길', 'COMFORTABLE'],
         ['강남역에서 잠실역까지 가는 길 알려줘.', 'OPTIMAL'],
       ])('%s → %s', (text, expected) => {
         expect(mode(text)).toBe(expected);

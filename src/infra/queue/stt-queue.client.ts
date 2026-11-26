@@ -9,9 +9,34 @@ import { Queue, QueueEvents } from 'bullmq';
 import { BusinessException } from '../../common/exceptions/business.exception';
 import { ValkeyService } from './valkey.service';
 
+/** Gemini가 음성 인식과 함께 준 의도 힌트. 서버가 규칙과 역 사전으로 다시 확인한다 */
+export interface VoiceIntentHint {
+  origin?: string;
+  destination?: string;
+  mode?: string;
+}
+
 export interface QueuedSttResult {
   transcript: string;
   durationSec?: number;
+  /** 받아 적은 제공자(`gemini`, `whisper`). 예전 AI 서버는 주지 않는다 */
+  provider?: string;
+  intent?: VoiceIntentHint;
+}
+
+const text = (value: unknown): string | undefined =>
+  typeof value === 'string' && value.trim() ? value.trim() : undefined;
+
+/** AI 결과의 `intent`를 읽는다. 모양이 다르면 버린다(힌트일 뿐이라 없어도 처리는 계속된다) */
+export function parseIntentHint(value: unknown): VoiceIntentHint | undefined {
+  if (!value || typeof value !== 'object') return undefined;
+  const raw = value as Record<string, unknown>;
+  const hint: VoiceIntentHint = {
+    origin: text(raw.origin),
+    destination: text(raw.destination),
+    mode: text(raw.mode),
+  };
+  return hint.origin || hint.destination || hint.mode ? hint : undefined;
 }
 
 const DEFAULT_AI_QUEUE = 'subway-voice';
@@ -35,8 +60,7 @@ export class SttQueueClient implements OnModuleDestroy {
     private readonly valkey: ValkeyService,
     config: ConfigService,
   ) {
-    this.queueName =
-      config.get<string>('VOICE_QUEUE_NAME') ?? DEFAULT_AI_QUEUE;
+    this.queueName = config.get<string>('VOICE_QUEUE_NAME') ?? DEFAULT_AI_QUEUE;
     this.timeoutMs = Number(
       config.get<string>('VOICE_STT_TIMEOUT_MS') ?? DEFAULT_STT_TIMEOUT_MS,
     );
@@ -86,12 +110,14 @@ export class SttQueueClient implements OnModuleDestroy {
     return new Promise<unknown>((resolve, reject) => {
       let settled = false;
       let timer: NodeJS.Timeout | undefined;
-      const settle = <T>(finish: (value: T) => void) => (value: T) => {
-        if (settled) return;
-        settled = true;
-        if (timer) clearTimeout(timer);
-        finish(value);
-      };
+      const settle =
+        <T>(finish: (value: T) => void) =>
+        (value: T) => {
+          if (settled) return;
+          settled = true;
+          if (timer) clearTimeout(timer);
+          finish(value);
+        };
       const ok = settle(resolve);
       const fail = settle(reject);
 
@@ -128,6 +154,8 @@ export class SttQueueClient implements OnModuleDestroy {
     const body = result as {
       transcript?: unknown;
       durationSec?: unknown;
+      provider?: unknown;
+      intent?: unknown;
       error?: unknown;
     } | null;
     if (!body || body.error || typeof body.transcript !== 'string') {
@@ -142,6 +170,8 @@ export class SttQueueClient implements OnModuleDestroy {
       transcript,
       durationSec:
         typeof body.durationSec === 'number' ? body.durationSec : undefined,
+      provider: text(body.provider),
+      intent: parseIntentHint(body.intent),
     };
   }
 

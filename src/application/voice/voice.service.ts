@@ -7,7 +7,9 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { BusinessException } from '../../common/exceptions/business.exception';
+import { isRouteMode, RouteMode } from '../../domain/subway/models/route';
 import { SubwayGraphService } from '../../domain/subway/services/subway-graph.service';
+import { VoiceIntentHint } from '../../infra/queue/stt-queue.client';
 import { UserPlace } from '../../domain/user/models/place';
 import {
   IUserPlaceRepository,
@@ -18,6 +20,7 @@ import { PlaceService } from '../place/place.service';
 import { RouteSearchRequestDto } from '../route/dto/route-search-request.dto';
 import { RouteService } from '../route/route.service';
 import {
+  InterpretedIntentDto,
   VoiceDestinationCandidateDto,
   VoiceOriginDto,
   VoiceResultDto,
@@ -78,6 +81,31 @@ const MAX_CANDIDATES = 5;
 const comparable = (text: string): string =>
   text.replace(/[^0-9A-Za-z가-힣]/g, '').toLowerCase();
 
+/** 받아 적은 문장을 풀지 못한 오류인지(이름을 다시 해석하면 풀릴 수 있는 것만) */
+function isNotUnderstood(error: unknown): boolean {
+  if (error instanceof BusinessException) {
+    return error.errorCode === 'VOICE_INTENT_NOT_UNDERSTOOD';
+  }
+  // 말한 이름이 역도 장소도 아닐 때(resolveEndpoint)
+  return (
+    error instanceof NotFoundException &&
+    error.message.includes('지하철 노선망에서 찾을 수 없습니다')
+  );
+}
+
+const validMode = (mode: string | undefined): RouteMode | undefined =>
+  isRouteMode(mode) ? mode : undefined;
+
+/** Gemini 힌트로 규칙이 알아듣는 문장을 만든다. 도착지가 없으면 만들지 않는다 */
+function hintToSentence(hint: VoiceIntentHint): string | null {
+  const destination = hint.destination?.trim();
+  if (!destination) return null;
+  const origin = hint.origin?.trim();
+  return origin
+    ? `${origin}에서 ${destination}까지 가는 길`
+    : `${destination} 가는 길`;
+}
+
 @Injectable()
 export class VoiceService {
   private readonly logger = new Logger(VoiceService.name);
@@ -99,13 +127,84 @@ export class VoiceService {
     userId: string,
     transcript: string,
     dto?: Pick<VoiceRouteRecommendRequestDto, 'preferredMode' | 'lat' | 'lng'>,
+    sttHint?: VoiceIntentHint,
   ): Promise<VoiceResultDto> {
-    // 4. 의도 분석 및 슬롯 필링
-    const intent = this.intentParserService.parseIntent(
-      transcript,
-      dto?.preferredMode,
-    );
+    // 4. 의도 분석: 규칙(역 사전, 장소, 집과 학교)이 먼저 정한다
+    let firstError: unknown;
+    try {
+      const intent = this.applyModeHint(
+        this.intentParserService.parseIntent(transcript, dto?.preferredMode),
+        sttHint,
+        dto?.preferredMode,
+      );
+      return await this.recommendForIntent(userId, transcript, intent, dto);
+    } catch (error: unknown) {
+      if (!isNotUnderstood(error)) throw error;
+      firstError = error;
+    }
 
+    // 규칙이 풀지 못한 문장은 Gemini 힌트로 문장을 다시 만들어 같은 규칙으로 한 번 더 푼다.
+    // 음성 인식이 힌트를 함께 줬으면 그것을, 아니면(Whisper, 앱 기기 인식) AI 서버에 묻는다
+    const hint = sttHint?.destination
+      ? sttHint
+      : await this.aiServiceAdapter.intentHint(transcript);
+    const rewritten = hint && hintToSentence(hint);
+    if (!rewritten) throw firstError;
+    let retried: InterpretedIntentDto;
+    try {
+      retried = this.intentParserService.parseIntent(
+        rewritten,
+        dto?.preferredMode ?? validMode(hint.mode),
+      );
+    } catch {
+      throw firstError;
+    }
+    this.logger.log(
+      `Voice intent rescued by Gemini hint: "${transcript}" -> "${rewritten}"`,
+    );
+    const intent: InterpretedIntentDto = {
+      ...retried,
+      reason: dto?.preferredMode
+        ? retried.reason
+        : '받아 적은 문장을 AI(Gemini)로 다시 해석했습니다.',
+    };
+    try {
+      return await this.recommendForIntent(userId, transcript, intent, dto);
+    } catch (error: unknown) {
+      // 다시 풀어도 찾지 못하면 처음 오류(사용자가 말한 이름 기준)를 알린다
+      if (isNotUnderstood(error)) throw firstError;
+      throw error;
+    }
+  }
+
+  /** 규칙이 경로 조건을 못 찾아 기본(OPTIMAL)이고 Gemini가 조건을 들었으면 그 조건을 쓴다. 사용자가 고른 모드가 있으면 그대로 */
+  private applyModeHint(
+    intent: InterpretedIntentDto,
+    hint: VoiceIntentHint | undefined,
+    overrideMode: RouteMode | undefined,
+  ): InterpretedIntentDto {
+    const mode = validMode(hint?.mode);
+    if (
+      overrideMode ||
+      intent.preferredMode !== 'OPTIMAL' ||
+      !mode ||
+      mode === 'OPTIMAL'
+    ) {
+      return intent;
+    }
+    return {
+      ...intent,
+      preferredMode: mode,
+      reason: '말한 경로 조건을 AI(Gemini)가 알아들었습니다.',
+    };
+  }
+
+  private async recommendForIntent(
+    userId: string,
+    transcript: string,
+    intent: InterpretedIntentDto,
+    dto?: Pick<VoiceRouteRecommendRequestDto, 'preferredMode' | 'lat' | 'lng'>,
+  ): Promise<VoiceResultDto> {
     // 5. 역 이름, 현재 위치, 저장한 집과 학교, 장소 이름과 주소를 경로 검색 입력으로 바꾼다
     const resolvedOrigin = await this.resolveEndpoint(
       userId,
