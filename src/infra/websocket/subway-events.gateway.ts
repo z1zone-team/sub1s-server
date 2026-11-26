@@ -61,12 +61,6 @@ const MAX_ROOMS_PER_CLIENT = 5;
 const MAX_TRAIN_ROOMS = 500;
 const ID_PATTERN = /^[A-Za-z0-9_.:-]{1,64}$/;
 
-export interface EtaTickPayload {
-  sessionId: string;
-  etaTimestamp: string;
-  remainingSec: number;
-}
-
 @WebSocketGateway({
   namespace: '/ws/subway',
   cors: {
@@ -313,10 +307,6 @@ export class SubwayEventsGateway
       this.broadcastTimer = null;
       this.logger.log('Congestion broadcast scheduler stopped');
     }
-  }
-
-  sendEtaTick(userId: string, payload: EtaTickPayload): void {
-    this.emitToUser(userId, 'eta_tick', payload);
   }
 
   sendSmartAlert(userId: string, payload: SmartAlertPayload): void {

@@ -113,7 +113,7 @@ describe('Line map visited stations (e2e)', () => {
       .send({ originStationId: origin, destStationId: dest })
       .expect(201);
 
-    const map = await http().get('/api/v1/line-map').query({ period: 'ALL' }).expect(200);
+    const map = await http().get('/api/v1/travel/line-map').query({ period: 'ALL' }).expect(200);
     const visited = new Set<string>(
       map.body.data.lines.flatMap((line: { stations: { stationId: string; visited: boolean }[] }) =>
         line.stations.filter((s) => s.visited).map((s) => s.stationId),

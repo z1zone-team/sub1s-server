@@ -230,9 +230,9 @@ describe('Travel and Ranking (e2e)', () => {
     expect(res.body.data.mostVisitedStations.length).toBeGreaterThan(0);
   });
 
-  it('GET /api/v1/line-map returns subway lines with station visited status', async () => {
+  it('GET /api/v1/travel/line-map returns subway lines with station visited status', async () => {
     const res = await request(app.getHttpServer())
-      .get('/api/v1/line-map?period=MONTH')
+      .get('/api/v1/travel/line-map?period=MONTH')
       .expect(200);
 
     expect(res.body.success).toBe(true);
@@ -246,9 +246,9 @@ describe('Travel and Ranking (e2e)', () => {
     expect(line02.colorHex).toBe('#00A84D');
   });
 
-  it('GET /api/v1/line-map names and colors every line, with no gray fallback', async () => {
+  it('GET /api/v1/travel/line-map names and colors every line, with no gray fallback', async () => {
     const res = await request(app.getHttpServer())
-      .get('/api/v1/line-map?period=ALL')
+      .get('/api/v1/travel/line-map?period=ALL')
       .expect(200);
 
     const lines = res.body.data.lines as { lineId: string; lineName: string; colorHex: string }[];

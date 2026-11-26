@@ -6,7 +6,6 @@ import { WebsocketRankingNotifier } from '../../infra/websocket/websocket-rankin
 import { WebsocketModule } from '../../infra/websocket/websocket.module';
 import { RouteModule } from '../route/route.module';
 import { TrackingModule } from '../tracking/tracking.module';
-import { LineMapController } from './line-map.controller';
 import { TravelLogController } from './travel-log.controller';
 import { RankingNotifier } from './ranking.notifier';
 import { TravelLogService } from './travel-log.service';
@@ -22,7 +21,7 @@ import { UserTravelService } from './user-travel.service';
     TrackingModule,
     WebsocketModule,
   ],
-  controllers: [TravelLogController, LineMapController, UserTravelController],
+  controllers: [TravelLogController, UserTravelController],
   providers: [
     TravelLogService,
     UserTravelService,

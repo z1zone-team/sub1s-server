@@ -121,7 +121,7 @@ describe('Settlement month queries (e2e)', () => {
     expect(timeline.totalLogsCount).toBe(2);
     const map = (
       await http()
-        .get('/api/v1/line-map')
+        .get('/api/v1/travel/line-map')
         .query({ period: 'MONTH', periodKey: '2024-02' })
         .expect(200)
     ).body.data;
@@ -143,14 +143,14 @@ describe('Settlement month queries (e2e)', () => {
     expect(stats.buckets.at(-1).key).toBe('2025-12-31');
     const map = (
       await http()
-        .get('/api/v1/line-map')
+        .get('/api/v1/travel/line-map')
         .query({ period: 'MONTH', periodKey: '2025-12' })
         .expect(200)
     ).body.data;
     expect(map.lines[0].stations[2].visited).toBe(false);
   });
 
-  it.each(['/api/v1/travel/stats', '/api/v1/line-map'])(
+  it.each(['/api/v1/travel/stats', '/api/v1/travel/line-map'])(
     'validates month keys and accepts existing requests: %s',
     async (url) => {
       for (const periodKey of [
