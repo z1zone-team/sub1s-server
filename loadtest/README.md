@@ -131,3 +131,39 @@ python loadtest/analyze-observe.py results/observe-normal.tsv
 - 테스트 모드에서는 열차 위치 폴링과 푸시 스케줄러가 꺼져 있어 실제 서비스보다 서버 컨테이너의 평상시 CPU가 **약간 낮게** 나올 수 있다. 문서에 이 점을 함께 적는다.
 - 같은 조건으로 다시 재면 결과가 조금 다르다. `SEED`를 고정하고, 근거로 쓸 때는 두 번 이상 재서 범위를 적는다.
 - 웹소켓(안내 중 실시간 위치), 로그인, 랭킹 조회는 이 스크립트에 없다. 이 부하는 경로 검색과 음성 인식 대비 작다고 보지만 측정한 것은 아니다.
+
+## 로그인 사용자 서비스 측정 (`loadtest/service/`)
+
+k6 두 스크립트는 인증 없이 돌아 개인화 계산(선호 모델, 취향 임베딩, 이웃 보정), 안내 세션, 음성 작업 큐를 지나지 않는다. 이 묶음은 로그인한 사용자로 다음을 잰다. 결과와 해석은 sub1s-docs `SERVICE_MEASUREMENTS.md`에 있다.
+
+| 스크립트 | 실행 위치 | 하는 일 |
+| :--- | :--- | :--- |
+| `gen-pairs.js` | PC(서버 저장소 루트) | 역 120쌍(씨앗 고정), 출발역의 같은 노선 이웃 역, 환승 묶음을 `pairs.json`으로 만든다 |
+| `mint-session.js` | `sub1s-server` 컨테이너 | 지정한 Clerk 사용자로 측정용 세션을 만들고 40초마다 세션 토큰을 stdout으로 내보낸다. 끝나면 세션을 폐기한다 |
+| `measure-search-reroute.js` | `sub1s-server-mock` 컨테이너 | 같은 역 쌍을 비로그인, 로그인으로 번갈아 검색해 비교(search), 안내 시작 후 반대 방향 역 보고로 재탐색 성공을 센다(reroute) |
+| `measure-voice.js` | `sub1s-server-mock` 컨테이너 | WAV 발화로 `POST /voice/jobs`를 넣고 `GET /voice/jobs/:id`가 끝날 때까지 시간을 잰다 |
+
+- 요청은 같은 Docker 네트워크의 `http://server:3000/api/v1`로 보낸다. 인터넷과 nginx 시간은 빠지므로 k6(PC에서 인터넷 경유) 수치와 바로 비교하지 않는다. `server-mock`은 CPU 한도가 따로 있어 측정 스크립트가 서버 CPU를 쓰지 않는다
+- **토큰은 화면에 찍지 않는다.** `mint-session.js`의 stdout을 측정 스크립트의 stdin으로 바로 잇는다. 운영 Clerk는 live 인스턴스라 mock 토큰이 안 되고, `CLERK_SECRET_KEY`는 서버 컨테이너 안에서만 쓴다
+- 측정에 쓸 계정은 계정 주인의 동의를 받는다. 로그인 검색은 그 계정의 `user_preferences` 행(선호 벡터, 취향 임베딩)을 만들거나 고친다. 안내 세션은 서버 메모리에만 남고 이동 기록은 만들지 않는다. 음성 작업은 완료 후 10분 보관된다
+- 테스트 모드(`loadtest.sh on`)는 켜지 않아도 된다. 요청은 초당 1건 남짓이다
+
+```bash
+# 1) PC: 역 쌍 만들기와 스크립트 올리기
+node loadtest/service/gen-pairs.js . results/pairs.json
+ssh sub1s 'sudo -n docker exec -i sub1s-server sh -c "cat > /tmp/mint-session.js"' < loadtest/service/mint-session.js
+for f in measure-search-reroute.js measure-voice.js; do
+  ssh sub1s "sudo -n docker exec -i sub1s-server-mock sh -c 'cat > /tmp/$f'" < loadtest/service/$f
+done
+ssh sub1s 'sudo -n docker exec -i sub1s-server-mock sh -c "cat > /tmp/pairs.json"' < results/pairs.json
+
+# 2) 서버: 검색 비교와 재탐색(약 4분). USER는 Clerk 사용자 ID(user_...)
+ssh sub1s 'sudo -n docker exec -i sub1s-server node /tmp/mint-session.js USER 15 2>/tmp/mint.log \
+  | sudo -n docker exec -i sub1s-server-mock node /tmp/measure-search-reroute.js /tmp/pairs.json all \
+  > /tmp/service-measure.json 2>/tmp/service-measure.log; cat /tmp/mint.log'
+scp sub1s:/tmp/service-measure.json results/
+```
+
+`mint.log` 마지막 줄이 `revoke <세션 ID> 200`이어야 한다. 없으면 Clerk Backend API로 그 세션을 폐기하고(`POST /v1/sessions/<id>/revoke`) 컨테이너에 남은 `mint-session.js` 프로세스를 끝낸다.
+
+음성은 발화 WAV(16kHz 모노)를 `v0.wav`, `v1.wav` ...로, 문장을 같은 순서로 `phrases.txt`에 한 줄씩 두고 폴더째 `server-mock`의 `/tmp/v/voice`에 올린 뒤 같은 방식으로 돌린다(`measure-voice.js /tmp/v/voice /tmp/v/voice/phrases.txt 2`). 2026-11-26 측정은 Windows 한국어 음성(Microsoft Heami)으로 만든 7문장을 썼다(`System.Speech`, 16kHz 16bit 모노). 개인 녹음은 서버에 올리지 않는다.
